@@ -11,6 +11,10 @@ v30/AGENT_TEAMS_CONFIGURATOR_v30_backup.html
 # Personal/local documents
 TRAINING_CURRICULUM_AI_ENGINEER.md
 
+# Polish versions of docs (English versions are on GitHub)
+ROADMAP_pl.md
+MANIFEST_pl.md
+
 # Claude Code local settings (may contain API keys)
 .claude/settings.local.json
 
