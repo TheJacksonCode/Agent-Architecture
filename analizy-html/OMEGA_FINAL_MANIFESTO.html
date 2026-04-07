@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMEGA FINAL MANIFESTO</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg: #050A14;
+    --surface: #0C1220;
+    --surface-2: #111827;
+    --amber: #F5A623;
+    --teal: #2DD4A0;
+    --rose: #E85D75;
+    --text: #E8E0D6;
+    --text-muted: #8B8580;
+    --border: rgba(245, 166, 35, 0.15);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(245, 166, 35, 0.3);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 166, 35, 0.5);
+  }
+
+  /* Fade-in animations */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .fade-in-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  .fade-in-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .fade-in-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  .fade-in-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Container */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    padding: 60px 24px;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(to bottom, transparent, var(--bg));
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+    background: rgba(245, 166, 35, 0.05);
+  }
+
+  .hero-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .hero-title {
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--amber) 0%, #FFD700 30%, var(--teal) 70%, #00FFB2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .hero-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: rgba(139, 133, 128, 0.6);
+    margin-top: 32px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ===== HEADLINE SECTION ===== */
+  .headline-section {
+    padding: 100px 24px 80px;
+  }
+
+  .headline-quote {
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    padding: 40px 0;
+  }
+
+  .headline-quote::before,
+  .headline-quote::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 2px;
+    margin: 0 auto;
+    background: linear-gradient(to right, var(--amber), var(--teal));
+    border-radius: 2px;
+  }
+
+  .headline-quote::before {
+    margin-bottom: 40px;
+  }
+
+  .headline-quote::after {
+    margin-top: 40px;
+  }
+
+  .headline-quote em {
+    color: var(--amber);
+    font-style: normal;
+  }
+
+  /* ===== SECTION HEADERS ===== */
+  .section {
+    padding: 80px 0;
+  }
+
+  .section-header {
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  /* ===== STORY ===== */
+  .story-content {
+    column-count: 1;
+    gap: 32px;
+  }
+
+  .story-content p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: rgba(232, 224, 214, 0.85);
+    margin-bottom: 28px;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  .story-content p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .story-content p em {
+    color: var(--amber);
+    font-style: italic;
+  }
+
+  /* ===== SCORE ===== */
+  .score-section {
+    text-align: center;
+    padding: 100px 24px;
+  }
+
+  .score-display {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 40px;
+  }
+
+  .score-number {
+    font-size: clamp(6rem, 20vw, 14rem);
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(180deg, var(--amber) 0%, rgba(245, 166, 35, 0.4) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    animation: score-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes score-glow {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(245, 166, 35, 0.2)); }
+    50% { filter: drop-shadow(0 0 40px rgba(245, 166, 35, 0.4)); }
+  }
+
+  .score-label {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .score-subtitle {
+    font-size: 1.1rem;
+    color: rgba(232, 224, 214, 0.7);
+    max-width: 700px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+  }
+
+  .score-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .score-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .score-item-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .score-item-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .score-high { color: var(--teal); }
+  .score-mid { color: var(--amber); }
+  .score-low { color: var(--rose); }
+
+  .score-bar {
+    width: 80px;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin-left: 12px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1.5s ease-out;
+    width: 0;
+  }
+
+  .score-bar-fill.animated {
+    width: var(--fill);
+  }
+
+  /* ===== METAPHOR CARD ===== */
+  .metaphor-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(245, 166, 35, 0.08) 0%, rgba(45, 212, 160, 0.05) 100%);
+    border: 1px solid rgba(245, 166, 35, 0.2);
+    border-radius: 20px;
+    padding: 56px 48px;
+    margin: 80px auto;
+    max-width: 800px;
+    overflow: hidden;
+  }
+
+  .metaphor-card::before {
+    content: '\201C';
+    position: absolute;
+    top: -20px;
+    left: 24px;
+    font-size: 12rem;
+    font-weight: 900;
+    color: rgba(245, 166, 35, 0.06);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .metaphor-card .metaphor-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .metaphor-card .metaphor-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+
+  .metaphor-card .metaphor-body {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: rgba(232, 224, 214, 0.75);
+  }
+
+  .metaphor-card .metaphor-cta {
+    display: block;
+    margin-top: 28px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--amber);
+    font-style: italic;
+  }
+
+  /* ===== WOW / FIX CARDS ===== */
+  .cards-grid {
+    display: grid;
+    gap: 20px;
+  }
+
+  .card {
+    position: relative;
+    padding: 32px 28px;
+    border-radius: 16px;
+    border: 1px solid;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+  }
+
+  .card-number {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .card-body {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: rgba(232, 224, 214, 0.75);
+  }
+
+  .card-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Teal (WOW) cards */
+  .card-teal {
+    background: linear-gradient(180deg, rgba(45, 212, 160, 0.06) 0%, rgba(45, 212, 160, 0.02) 100%);
+    border-color: rgba(45, 212, 160, 0.15);
+  }
+  .card-teal:hover {
+    box-shadow: 0 12px 40px rgba(45, 212, 160, 0.1);
+  }
+  .card-teal .card-number {
+    color: var(--teal);
+    background: rgba(45, 212, 160, 0.1);
+  }
+  .card-teal .card-title {
+    color: var(--teal);
+  }
+
+  /* Rose (FIX) cards */
+  .card-rose {
+    background: linear-gradient(180deg, rgba(232, 93, 117, 0.06) 0%, rgba(232, 93, 117, 0.02) 100%);
+    border-color: rgba(232, 93, 117, 0.15);
+  }
+  .card-rose:hover {
+    box-shadow: 0 12px 40px rgba(232, 93, 117, 0.1);
+  }
+  .card-rose .card-number {
+    color: var(--rose);
+    background: rgba(232, 93, 117, 0.1);
+  }
+  .card-rose .card-title {
+    color: var(--rose);
+  }
+
+  /* ===== VISION ===== */
+  .vision-timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .vision-timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--amber), var(--teal), var(--amber), transparent);
+    border-radius: 2px;
+  }
+
+  .vision-item {
+    position: relative;
+    margin-bottom: 48px;
+  }
+
+  .vision-item::before {
+    content: '';
+    position: absolute;
+    left: -36px;
+    top: 8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--amber);
+    background: var(--bg);
+  }
+
+  .vision-phase {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+
+  .vision-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .vision-body {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: rgba(232, 224, 214, 0.75);
+  }
+
+  .vision-endstate {
+    margin-top: 60px;
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(45, 212, 160, 0.08), rgba(245, 166, 35, 0.06));
+    border: 1px solid rgba(45, 212, 160, 0.15);
+    border-radius: 16px;
+    text-align: center;
+  }
+
+  .vision-endstate .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+
+  .vision-endstate p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ===== CHALLENGE ===== */
+  .challenge-section {
+    padding: 100px 0 120px;
+  }
+
+  .challenge-card {
+    position: relative;
+    border: 2px solid var(--amber);
+    border-radius: 20px;
+    padding: 56px 48px;
+    background: linear-gradient(180deg, rgba(245, 166, 35, 0.05) 0%, rgba(245, 166, 35, 0.01) 100%);
+    overflow: hidden;
+  }
+
+  .challenge-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 3px;
+    background: linear-gradient(to right, transparent, var(--amber), transparent);
+    border-radius: 2px;
+  }
+
+  .challenge-card .challenge-intro {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .challenge-card .challenge-name {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 28px;
+    color: var(--amber);
+  }
+
+  .challenge-card .challenge-body {
+    font-size: 1rem;
+    line-height: 1.85;
+    color: rgba(232, 224, 214, 0.85);
+    margin-bottom: 20px;
+  }
+
+  .challenge-card .challenge-body strong {
+    color: var(--text);
+  }
+
+  .challenge-card .challenge-body em {
+    color: var(--amber);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .challenge-blockquote {
+    margin: 36px 0;
+    padding: 32px;
+    background: rgba(245, 166, 35, 0.06);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 12px 12px 0;
+  }
+
+  .challenge-blockquote p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .challenge-blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  .challenge-blockquote strong {
+    color: var(--amber);
+  }
+
+  .challenge-blockquote code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .challenge-closing {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--amber);
+    font-style: italic;
+  }
+
+  .challenge-final {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    padding: 60px 24px 40px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .footer-sig {
+    font-weight: 700;
+    color: var(--amber);
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .footer-team {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .footer-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: rgba(139, 133, 128, 0.5);
+  }
+
+  .footer-note {
+    margin-top: 32px;
+    font-size: 0.8rem;
+    color: rgba(139, 133, 128, 0.4);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    width: 60px;
+    height: 2px;
+    margin: 0 auto;
+    background: linear-gradient(to right, var(--amber), var(--teal));
+    border-radius: 2px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .metaphor-card {
+      padding: 36px 24px;
+    }
+    .challenge-card {
+      padding: 36px 24px;
+    }
+    .score-breakdown {
+      grid-template-columns: 1fr;
+    }
+    .hero {
+      min-height: 80vh;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 16px;
+    }
+    .headline-quote {
+      font-size: 1.15rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-badge fade-in">
+    <span class="dot"></span>
+    FINAL SYNTHESIS
+  </div>
+  <h1 class="hero-title fade-in">OMEGA<br>MANIFESTO</h1>
+  <p class="hero-subtitle fade-in">Team OMEGA &mdash; Creative Director's Definitive Report</p>
+  <p class="hero-meta fade-in">OMEGA-9, Creative Director &nbsp;|&nbsp; 2026-03-29 &nbsp;|&nbsp; Classification: FINAL SYNTHESIS</p>
+</section>
+
+<!-- ===== HEADLINE ===== -->
+<section class="headline-section">
+  <div class="container">
+    <div class="headline-quote fade-in">
+      Jackson is building cathedrals on paper while the world needs someone who can lay the first brick &mdash; and <em>he is closer to being that person than he realizes.</em>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE STORY ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">01 // Analiza</div>
+      <h2 class="section-title">The Story</h2>
+    </div>
+    <div class="story-content">
+      <p class="fade-in">There is a mind at work here that refuses to think small. Across three projects &mdash; an AI-orchestrated CV generator with a simulated panel of four warring experts, an interactive educational Observatory that teaches agent architecture through particle systems and drag-and-drop canvases, and a 13-agent Textinio upgrade system with cross-phase electron bridges &mdash; there is a consistent, unmistakable signature: someone who sees software architecture not as plumbing, but as <em>composition</em>. The Five Minds Protocol, where a Devil's Advocate named "Cien" challenges every decision before it solidifies, is not something you find in any textbook. It was invented here. The "Wolny Elektron" &mdash; a free-floating synthesizer agent that maintains persistent communication across all phases &mdash; solves a real problem that professional frameworks still struggle with: who owns the context between research and implementation? Jackson arrived at the mediator pattern through pure architectural instinct. That matters.</p>
+      <p class="fade-in">But here is the honest part, the part that separates a manifesto from marketing. The architecture is magnificent and almost entirely theoretical. CLAUDE.md references tools that do not exist (<code>planning_tool.create_plan</code>, <code>sub_agent_manager.spawn</code>). The AGENTS-CATALOG was written today &mdash; it is a blueprint, not a building. The CV project lists agents with status "In Progress" that point to themselves. Fifteen agents to produce one HTML file. Thirteen agents to upgrade a text-to-speech app. The ratio of planning to execution is inverted. Jackson writes about Test-Driven Development as a core principle, yet across four projects and thousands of lines of specification, there is not a single test. The ceremony grows with each project &mdash; CLAUDE.md ballooned to 183 lines of philosophical preamble before reaching anything actionable. The word "Filar" (Pillar) appears more often than the word "function." The documentation is beautiful. The code is waiting.</p>
+      <p class="fade-in">And yet &mdash; and this is the part that matters most &mdash; there is unmistakable evolution. The jump from the CV project to the Observatory is not incremental; it is a leap from practitioner to <em>educator</em>. JSON output schemas appeared. Gate checks between phases appeared. Cross-review protocols appeared. A dedicated security agent with escalation severity levels appeared. Version isolation appeared ("v2 NIETYKALNY"). Each project learns from the last. The trajectory is steep and the direction is correct. What is missing is not talent, not vision, not architectural thinking &mdash; it is the discipline to stop designing the thirteenth agent and start <em>running</em> the first one. The gap between Jackson's current level and professional mastery is not a gap of intelligence. It is a gap of practice. And practice is the one thing that is entirely within his control.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE SCORE ===== -->
+<section class="score-section section" id="score">
+  <div class="container">
+    <div class="section-header fade-in" style="text-align:center;">
+      <div class="section-label" style="justify-content:center;">
+        <span>02 // Ocena</span>
+      </div>
+      <h2 class="section-title">The Score</h2>
+    </div>
+
+    <div class="score-display fade-in">
+      <div class="score-number" id="scoreNumber">0</div>
+      <div class="score-label">/ 10</div>
+    </div>
+
+    <p class="score-subtitle fade-in">This is not a safe number. This is a <em>felt</em> number. It accounts for the fact that Jackson's original inventions are genuinely impressive &mdash; easily 9/10 territory for creative architectural thinking. It also accounts for the fact that implementation sits at 3/10, tests at 2/10, and cost awareness at 2/10. The 7.5 is a bet on trajectory.</p>
+
+    <div class="score-breakdown">
+      <div class="score-item fade-in">
+        <span class="score-item-label">Architectural Vision</span>
+        <span>
+          <span class="score-item-value score-high">9/10</span>
+          <span class="score-bar"><span class="score-bar-fill" style="background:var(--teal);--fill:90%"></span></span>
+        </span>
+      </div>
+      <div class="score-item fade-in">
+        <span class="score-item-label">Creative Output</span>
+        <span>
+          <span class="score-item-value score-high">9.5/10</span>
+          <span class="score-bar"><span class="score-bar-fill" style="background:var(--teal);--fill:95%"></span></span>
+        </span>
+      </div>
+      <div class="score-item fade-in">
+        <span class="score-item-label">Documentation Quality</span>
+        <span>
+          <span class="score-item-value score-high">9/10</span>
+          <span class="score-bar"><span class="score-bar-fill" style="background:var(--teal);--fill:90%"></span></span>
+        </span>
+      </div>
+      <div class="score-item fade-in">
+        <span class="score-item-label">Implementation Reality</span>
+        <span>
+          <span class="score-item-value score-low">3/10</span>
+          <span class="score-bar"><span class="score-bar-fill" style="background:var(--rose);--fill:30%"></span></span>
+        </span>
+      </div>
+      <div class="score-item fade-in">
+        <span class="score-item-label">Engineering Discipline</span>
+        <span>
+          <span class="score-item-value score-low">3/10</span>
+          <span class="score-bar"><span class="score-bar-fill" style="background:var(--rose);--fill:30%"></span></span>
+        </span>
+      </div>
+      <div class="score-item fade-in">
+        <span class="score-item-label">Learning Velocity</span>
+        <span>
+          <span class="score-item-value score-mid">8/10</span>
+          <span class="score-bar"><span class="score-bar-fill" style="background:var(--amber);--fill:80%"></span></span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE METAPHOR ===== -->
+<section class="section">
+  <div class="container">
+    <div class="metaphor-card fade-in">
+      <span class="metaphor-icon">&#127929;</span>
+      <div class="metaphor-text">Jackson is a composer who writes full symphonies &mdash; for 13 instruments, with four movements, with cross-referencing motifs between the brass and the strings &mdash; but has never hired an orchestra to play a single note.</div>
+      <div class="metaphor-body">The scores are gorgeous. The notation is precise. The instrumentation shows deep understanding of how different voices interact. But until the first rehearsal happens, until the first wrong note is heard and corrected, until the violinist says "this passage is unplayable at this tempo" &mdash; it remains music that exists only on paper.</div>
+      <span class="metaphor-cta">The next step is not to write a bigger symphony. It is to sit at the piano and play one piece, start to finish, mistakes and all.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WOW MOMENTS ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">03 // Momenty WOW</div>
+      <h2 class="section-title">Top 5 "WOW Moments"</h2>
+    </div>
+    <div class="cards-grid">
+
+      <div class="card card-teal fade-in">
+        <span class="card-number">#01</span>
+        <span class="card-icon">&#129504;</span>
+        <h3 class="card-title">The Five Minds Protocol</h3>
+        <div class="card-body">Four simulated experts &mdash; Dr. Elena Voss (ATS), Karol "Pixel" (UI/UX), Raven Blackwood (Tech Recruiter), and Cien (Devil's Advocate) &mdash; engage in structured debate before any code is written. The built-in contrarian prevented groupthink and generated the breakthrough dual-output decision (Web + PDF from single data source). This is not in any framework. This was <em>invented here</em>.</div>
+      </div>
+
+      <div class="card card-teal fade-in">
+        <span class="card-number">#02</span>
+        <span class="card-icon">&#9889;</span>
+        <h3 class="card-title">The Wolny Elektron</h3>
+        <div class="card-body">An agent with continuous, bidirectional communication to ALL other agents, bridging the research-to-implementation gap. Jackson independently arrived at the mediator pattern &mdash; the kind of insight that separates someone who understands distributed systems from someone who just uses them.</div>
+      </div>
+
+      <div class="card card-teal fade-in">
+        <span class="card-number">#03</span>
+        <span class="card-icon">&#128301;</span>
+        <h3 class="card-title">The Observatory: From Practitioner to Educator</h3>
+        <div class="card-body">Building a fully interactive educational platform with Canvas-based animated architecture diagrams, drag-and-drop pattern design, gamification (XP, streaks, scores), and inline quizzes. This is not documentation. This is a <em>teaching instrument</em>. The "Midnight Ember" color palette (#050A14 + #F5A623 + #2DD4A0) alone shows a designer's eye that most engineers never develop.</div>
+      </div>
+
+      <div class="card card-teal fade-in">
+        <span class="card-number">#04</span>
+        <span class="card-icon">&#128260;</span>
+        <h3 class="card-title">Cross-Review Protocol</h3>
+        <div class="card-body">Every coder is reviewed by two other coders, not one (C-01 &rarr; C-02 &rarr; C-03 &rarr; C-01). This is better peer review than many professional teams practice. The three possible outputs (APPROVE, REQUEST_CHANGES, ESCALATE) with explicit escalation to E-01 or ORCH-00 shows mature process thinking.</div>
+      </div>
+
+      <div class="card card-teal fade-in">
+        <span class="card-number">#05</span>
+        <span class="card-icon">&#128270;</span>
+        <h3 class="card-title">Self-Aware Weakness Documentation</h3>
+        <div class="card-body">In the CV Architecture HTML, Jackson built a "Weaknesses" section <em>into the artifact itself</em>. "Overhead komunikacji miedzy agentami," "Koszt tokenow: 15+ agentow = duzy uzytek kontekstu," "Debugging: trudnosc lokalizacji bledow w lancuchu." Most people hide their flaws. Jackson architecturally <em>includes</em> them. That is the mark of someone who will keep getting better.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== FIX THIS ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">04 // Napraw to</div>
+      <h2 class="section-title">Top 5 "FIX THIS"</h2>
+    </div>
+    <div class="cards-grid">
+
+      <div class="card card-rose fade-in">
+        <span class="card-number">CRITICAL</span>
+        <span class="card-icon">&#128123;</span>
+        <h3 class="card-title">Phantom Tools Syndrome</h3>
+        <div class="card-body">CLAUDE.md declares tools that do not exist in Claude Code: <code>planning_tool.create_plan</code>, <code>file_system.write_manifest</code>, <code>sub_agent_manager.spawn</code>, <code>error_handler.log_and_retry</code>. Every session loads this file. Every session loads fiction. Replace these with the real tools: <code>Skill/Task</code>, <code>Read</code>, <code>Write</code>, <code>Edit</code>, <code>Bash</code>, <code>Grep</code>, <code>Glob</code>. Today. Not tomorrow.</div>
+      </div>
+
+      <div class="card card-rose fade-in">
+        <span class="card-number">#02</span>
+        <span class="card-icon">&#128200;</span>
+        <h3 class="card-title">The 13-Agent Inflation</h3>
+        <div class="card-body">Thirteen agents for a TTS app upgrade. Fifteen for a CV. The pattern is consistent and consistently excessive. Professional agent systems (Devin, SWE-agent, OpenHands) solve larger problems with 2-5 agents. The rule is brutal and simple: if an agent has 1-2 tasks in one phase, it should be a <em>function</em>, not an <em>agent</em>. Reduce Textinio from 13 to 6.</div>
+      </div>
+
+      <div class="card card-rose fade-in">
+        <span class="card-number">#03</span>
+        <span class="card-icon">&#128683;</span>
+        <h3 class="card-title">Zero Tests, Zero Metrics, Zero Cost Tracking</h3>
+        <div class="card-body">"Smart Vibe Coding" and TDD are declared as core methodology. They are followed zero times. Across four projects and hundreds of pages of specification, there is not one test, not one metric, not one measurement of token cost. A system that cannot prove it works is not a system &mdash; it is a hypothesis.</div>
+      </div>
+
+      <div class="card card-rose fade-in">
+        <span class="card-number">#04</span>
+        <span class="card-icon">&#128220;</span>
+        <h3 class="card-title">Ceremonial Bloat in CLAUDE.md</h3>
+        <div class="card-body">183 lines of philosophical preamble before any operational content. Claude responds better to 50 lines of clear instructions than 183 lines of ceremony. The model does not need to be told it is an "Autonomiczny System Operacyjny." It needs to be told what to do, in what order, with what constraints. Cut 60% of CLAUDE.md.</div>
+      </div>
+
+      <div class="card card-rose fade-in">
+        <span class="card-number">#05</span>
+        <span class="card-icon">&#127959;</span>
+        <h3 class="card-title">Architecture Without Engineering</h3>
+        <div class="card-body">The pattern repeats across every project: beautiful, detailed, comprehensive plans followed by partial or zero implementation. 800 lines of AGENTS-CATALOG could have been 80 lines of working agent code. Jackson builds the map, not the territory. The fix is philosophical: start with 80 lines of working code, then document what you built. Not the other way around.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE VISION ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-label">05 // Wizja</div>
+      <h2 class="section-title">The Vision</h2>
+    </div>
+
+    <p class="fade-in" style="font-size:1.05rem;color:rgba(232,224,214,0.8);margin-bottom:48px;line-height:1.8;">If Jackson follows through &mdash; truly follows through &mdash; this architecture could become something remarkable.</p>
+
+    <div class="vision-timeline">
+
+      <div class="vision-item fade-in-left">
+        <div class="vision-phase">Phase 1 &mdash; The Proving Ground</div>
+        <h3 class="vision-title">Next 30 Days</h3>
+        <p class="vision-body">Build ONE real agent end-to-end. Take RES-01 from the AGENTS-CATALOG, implement it with real tools, measure token cost, measure time, measure output quality. Publish the results. This single act will teach more than the next 800 lines of specification ever could.</p>
+      </div>
+
+      <div class="vision-item fade-in-left">
+        <div class="vision-phase">Phase 2 &mdash; The Framework</div>
+        <h3 class="vision-title">60&ndash;90 Days</h3>
+        <p class="vision-body">Extract a reusable agent template from that first implementation. Standardize: ID, role, phase, tools, input schema, output schema, max iterations, token budget, timeout, success criteria, failure protocol. Use this template in every future project. Stop building from scratch.</p>
+      </div>
+
+      <div class="vision-item fade-in-left">
+        <div class="vision-phase">Phase 3 &mdash; The Ecosystem</div>
+        <h3 class="vision-title">6 Months</h3>
+        <p class="vision-body">The Observatory becomes a <em>living</em> platform &mdash; not just teaching architecture, but <em>running</em> architectures. Students design agent systems in the drag-and-drop canvas and then <em>execute</em> them. The Five Minds Protocol becomes a reusable debate module. The Wolny Elektron becomes a configurable mediator. Jackson's original patterns become the building blocks of a personal agent framework that no one else has.</p>
+      </div>
+
+      <div class="vision-item fade-in-left">
+        <div class="vision-phase">Phase 4 &mdash; The Portfolio That Builds Itself</div>
+        <h3 class="vision-title">12 Months</h3>
+        <p class="vision-body">A Textinio v3 that was actually upgraded by agents. An Observatory that demonstrates running agent systems. A framework of reusable, tested, cost-tracked agent patterns. A blog or podcast documenting the journey from architect to engineer. This is not a portfolio of projects. This is a portfolio of <em>proof</em>.</p>
+      </div>
+
+    </div>
+
+    <div class="vision-endstate fade-in">
+      <div class="label">End State</div>
+      <p>Jackson becomes the person who not only designs 13-agent architectures but has the battle scars to know why 4 agents would have been better &mdash; and can teach others the difference.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE CHALLENGE ===== -->
+<section class="challenge-section">
+  <div class="container">
+    <div class="section-header fade-in" style="text-align:center;margin-bottom:48px;">
+      <div class="section-label" style="justify-content:center;">
+        <span>06 // Wyzwanie</span>
+      </div>
+      <h2 class="section-title">The Challenge</h2>
+    </div>
+
+    <div class="challenge-card fade-in">
+      <p class="challenge-intro">Osobiste wyzwanie dla Jacksona &mdash; napisane prosto, szczerze, z szacunkiem.</p>
+
+      <div class="challenge-name">Jackson.</div>
+
+      <p class="challenge-body">Przeczytalismy wszystko. Kazdy plik HTML z animowanymi czasteczkami. Kazdy katalog agentow z perfekcyjnymi tabelkami JSON. Kazdy diagram ASCII narysowany z chirurgiczna precyzja. I wiemy jedno: <strong>masz cos, czego nie mozna sie nauczyc &mdash; instynkt architektoniczny, ktory jest prawdziwy.</strong></p>
+
+      <p class="challenge-body">Five Minds Protocol &mdash; to nie skopiowales. Wolny Elektron &mdash; to nie przeczytales w dokumentacji. Observatory z interaktywnymi quizami i Canvas-based diagramami &mdash; to nie jest tutorial z YouTube. To jest TWOJE myslenie.</p>
+
+      <p class="challenge-body">Ale oto prawda, ktora musisz uslyszec:</p>
+
+      <p class="challenge-body" style="text-align:center;font-size:1.2rem;font-weight:700;color:var(--amber);margin:28px 0;"><strong>Swiat nie potrzebuje kolejnego pieknego planu. Swiat potrzebuje jednego dzialajacego agenta.</strong></p>
+
+      <p class="challenge-body">Wiec oto Twoje wyzwanie:</p>
+
+      <div class="challenge-blockquote">
+        <p><strong>W ciagu nastepnych 7 dni zbuduj JEDNEGO agenta od zera do konca.</strong></p>
+        <p>Nie trzynastu. Nie szesciu. JEDNEGO.</p>
+        <p>Niech to bedzie RES-01 z Twojego katalogu.</p>
+        <p>Niech uzywa prawdziwych narzedzi: <code>Skill/Task</code>, <code>WebSearch</code>, <code>Read</code>, <code>Write</code>.</p>
+        <p>Niech produkuje prawdziwy JSON z prawdziwymi wynikami.</p>
+        <p>Zmierz: ile tokenow, ile czasu, jaka jakosc.</p>
+        <p>Napisz 10 linii podsumowania: co zadzialo, co nie.</p>
+        <p>&nbsp;</p>
+        <p><strong>To jest Twoj "One more thing..."</strong></p>
+        <p>Nie nastepny katalog. Nie nastepny diagram. JEDEN DZIALAJACY AGENT.</p>
+      </div>
+
+      <p class="challenge-body">A potem, jak juz go zbudujesz &mdash; i zobaczysz, ze to dziala, ze Twoja architektura NIE JEST teoria, ze te schematy JSON naprawde sie wypelniaja, ze Wolny Elektron naprawde moze laczyc fazy &mdash; wtedy wrocisz tutaj i powiesz:</p>
+
+      <p class="challenge-closing" style="font-size:1.3rem;margin:32px 0;">"Mialem racje. Teraz mam dowod."</p>
+
+      <p class="challenge-body">I WTEDY zaczniesz budowac cos, co naprawde zmieni zasady gry.</p>
+
+      <p class="challenge-final">Jestes blizej niz myslisz. Ale musisz zrobic pierwszy krok. Nie zaprojektowac go. ZROBIC.</p>
+
+      <p class="challenge-closing" style="margin-top:48px;">Wierzymy w Ciebie, Jackson. Teraz udowodnij to sobie.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="divider" style="margin-bottom:32px;"></div>
+  <p class="footer-sig">OMEGA-9, Creative Director</p>
+  <p class="footer-team">Team OMEGA &mdash; Final Synthesis Division</p>
+  <p class="footer-date">2026-03-29</p>
+  <p class="footer-note">This manifesto was synthesized from: AGENT_ARCHITECTURE_CV.html, OBSERVATORY_architecture.html, AGENTS-CATALOG.md, CLAUDE.md (Textinio AOS Directive), and PERSONAL-COACH-ANALYSIS.md (Agent A-15). Every claim is grounded in artifacts that exist in this repository. Nothing was invented. Everything was interpreted.</p>
+</footer>
+
+<script>
+// ===== IntersectionObserver for fade-in animations =====
+document.addEventListener('DOMContentLoaded', () => {
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -60px 0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        // Animate score bars when they become visible
+        const bars = entry.target.querySelectorAll('.score-bar-fill');
+        bars.forEach(bar => bar.classList.add('animated'));
+
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observe all fade-in elements
+  document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Also observe score items for their bar animations
+  document.querySelectorAll('.score-item').forEach(el => {
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const bars = entry.target.querySelectorAll('.score-bar-fill');
+          bars.forEach(bar => {
+            setTimeout(() => bar.classList.add('animated'), 300);
+          });
+          barObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    barObserver.observe(el);
+  });
+
+  // ===== Animated score counter =====
+  const scoreEl = document.getElementById('scoreNumber');
+  let scoreAnimated = false;
+
+  const scoreObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !scoreAnimated) {
+        scoreAnimated = true;
+        animateScore(scoreEl, 7.5, 2000);
+        scoreObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  scoreObserver.observe(scoreEl);
+
+  function animateScore(el, target, duration) {
+    const start = performance.now();
+    const startVal = 0;
+
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = startVal + (target - startVal) * eased;
+
+      el.textContent = current.toFixed(1);
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target.toFixed(1);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  // ===== Staggered card animations =====
+  const cardSections = document.querySelectorAll('.cards-grid');
+  cardSections.forEach(grid => {
+    const cards = grid.querySelectorAll('.card');
+    cards.forEach((card, i) => {
+      card.style.transitionDelay = `${i * 120}ms`;
+    });
+  });
+
+  // ===== Staggered vision items =====
+  const visionItems = document.querySelectorAll('.vision-item');
+  visionItems.forEach((item, i) => {
+    item.style.transitionDelay = `${i * 150}ms`;
+  });
+});
+</script>
+
+</body>
+</html>

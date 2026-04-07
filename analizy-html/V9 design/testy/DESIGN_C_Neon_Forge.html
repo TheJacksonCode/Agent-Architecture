@@ -1,0 +1,4254 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGENT_TEAMS_CONFIGURATOR // NEON_FORGE</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   NEON FORGE — Neo-Brutalist Agent Teams Configurator
+   Design C — Mission Control meets Cyberpunk
+   Theme: Pure black, thick borders, neon accents, terminal/mono
+   ============================================================ */
+
+:root {
+  /* Backgrounds — pure blacks */
+  --bg0: #000000;
+  --bg1: #0A0A0A;
+  --bg2: #111111;
+  --bg3: #1A1A1A;
+
+  /* Neon accents */
+  --neon1: #00FF88;   /* electric green — primary */
+  --neon2: #FF3366;   /* hot pink */
+  --neon3: #FFCC00;   /* electric yellow */
+  --neon4: #00CCFF;   /* cyan */
+
+  /* Text hierarchy */
+  --t1: #FFFFFF;
+  --t2: #666666;
+  --t3: #333333;
+
+  /* Model-specific colors */
+  --opus: #FFCC00;
+  --sonnet: #00FF88;
+  --haiku: #00CCFF;
+
+  /* Single font */
+  --font: 'JetBrains Mono', monospace;
+
+  /* Layout */
+  --topH: 46px;
+  --statusH: 26px;
+  --sideW: 260px;
+  --inspW: 300px;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg0);
+  color: var(--t1);
+  font-family: var(--font);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow: hidden;
+  cursor: default;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--neon1);
+  color: var(--bg0);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--t3);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--t2);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--bg0);
+}
+
+/* ============================================================
+   KEYFRAMES — Aggressive, mechanical animations
+   ============================================================ */
+
+/* PCB electricity flow */
+@keyframes flowDash {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -12; }
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Status dot pulse */
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(0,255,136,0.6); }
+  50% { opacity: 0.3; box-shadow: 0 0 2px rgba(0,255,136,0.2); }
+}
+
+/* Node slide-in from left with overshoot */
+@keyframes nodeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(6px);
+  }
+  80% {
+    transform: translateX(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Green flash on status change */
+@keyframes greenFlash {
+  0% { box-shadow: 0 0 40px rgba(0,255,136,0.6); }
+  100% { box-shadow: none; }
+}
+
+/* Pink error flash */
+@keyframes pinkFlash {
+  0% { border-color: var(--neon2); box-shadow: 0 0 30px rgba(255,51,102,0.5); }
+  100% { border-color: var(--t3); box-shadow: none; }
+}
+
+/* Scan line across selected item */
+@keyframes scanLineAnim {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Loading dots */
+@keyframes loadDots {
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+}
+
+/* Typewriter for learning mode */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Card entrance for learning */
+@keyframes cardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  70% {
+    transform: translateX(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Neon glow pulse */
+@keyframes neonPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(0,255,136,0.3)); }
+  50% { filter: drop-shadow(0 0 16px rgba(0,255,136,0.6)); }
+}
+
+/* Spark travel along connection */
+@keyframes sparkTravel {
+  0% { offset-distance: 0%; opacity: 1; }
+  80% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* ============================================================
+   TOP BAR — 46px fixed
+   ============================================================ */
+#topBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topH);
+  background: var(--bg1);
+  border-bottom: 2px solid var(--neon1);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  z-index: 100;
+  gap: 10px;
+}
+
+/* Brand logo — monospace uppercase */
+.brand {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--neon1);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 0 0 12px rgba(0,255,136,0.3);
+  user-select: none;
+}
+
+.brand .sep {
+  color: var(--t3);
+  font-weight: 400;
+}
+
+.brand .ver {
+  color: var(--t3);
+  font-size: 9px;
+  font-weight: 400;
+  margin-left: 6px;
+  letter-spacing: 0.08em;
+}
+
+/* Problem textarea input */
+.problem-input {
+  flex: 1;
+  height: 30px;
+  background: var(--bg0);
+  border: 2px solid var(--t3);
+  color: var(--t1);
+  font-family: var(--font);
+  font-size: 11px;
+  padding: 0 10px;
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.08s ease;
+}
+
+.problem-input:focus {
+  border-color: var(--neon1);
+  box-shadow: 0 0 12px rgba(0,255,136,0.15);
+}
+
+.problem-input::placeholder {
+  color: var(--t3);
+  font-style: normal;
+}
+
+/* Top bar action buttons */
+.top-btn {
+  height: 30px;
+  padding: 0 14px;
+  background: var(--bg0);
+  border: 2px solid var(--neon1);
+  color: var(--neon1);
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: 0;
+  white-space: nowrap;
+  transition: all 0.05s ease;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-btn:hover {
+  background: var(--neon1);
+  color: var(--bg0);
+  box-shadow: 0 0 24px rgba(0,255,136,0.3);
+}
+
+.top-btn:active {
+  transform: scale(0.96);
+}
+
+/* Scan line effect on hover */
+.top-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: none;
+}
+
+.top-btn:hover::after {
+  animation: scanLineAnim 0.4s ease-out;
+}
+
+/* Button color variants */
+.top-btn.pink {
+  border-color: var(--neon2);
+  color: var(--neon2);
+}
+.top-btn.pink:hover {
+  background: var(--neon2);
+  color: var(--bg0);
+  box-shadow: 0 0 24px rgba(255,51,102,0.3);
+}
+
+.top-btn.yellow {
+  border-color: var(--neon3);
+  color: var(--neon3);
+}
+.top-btn.yellow:hover {
+  background: var(--neon3);
+  color: var(--bg0);
+  box-shadow: 0 0 24px rgba(255,204,0,0.3);
+}
+
+.top-btn.cyan {
+  border-color: var(--neon4);
+  color: var(--neon4);
+}
+.top-btn.cyan:hover {
+  background: var(--neon4);
+  color: var(--bg0);
+  box-shadow: 0 0 24px rgba(0,204,255,0.3);
+}
+
+/* ============================================================
+   LEFT SIDEBAR — 260px
+   ============================================================ */
+#leftSidebar {
+  position: fixed;
+  top: var(--topH);
+  left: 0;
+  bottom: var(--statusH);
+  width: var(--sideW);
+  background: var(--bg1);
+  border-right: 2px solid var(--t3);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  overflow: hidden;
+}
+
+/* Tab bar */
+.sidebar-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--t3);
+  flex-shrink: 0;
+  background: var(--bg0);
+}
+
+.sidebar-tab {
+  flex: 1;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--t2);
+  cursor: pointer;
+  border-right: 1px solid var(--t3);
+  background: var(--bg0);
+  transition: all 0.05s ease;
+  text-transform: uppercase;
+  user-select: none;
+  position: relative;
+}
+
+.sidebar-tab:last-child {
+  border-right: none;
+}
+
+.sidebar-tab:hover {
+  color: var(--t1);
+  background: var(--bg1);
+}
+
+.sidebar-tab.active {
+  color: var(--neon1);
+  background: var(--bg1);
+  border-bottom: 2px solid var(--neon1);
+  margin-bottom: -2px;
+}
+
+/* Search bar in sidebar */
+.sidebar-search {
+  padding: 8px;
+  border-bottom: 1px solid var(--t3);
+  flex-shrink: 0;
+}
+
+.sidebar-search-input {
+  width: 100%;
+  height: 26px;
+  background: var(--bg0);
+  border: 1px solid var(--t3);
+  color: var(--t1);
+  font-family: var(--font);
+  font-size: 10px;
+  padding: 0 8px;
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.08s;
+}
+
+.sidebar-search-input:focus {
+  border-color: var(--neon1);
+}
+
+.sidebar-search-input::placeholder {
+  color: var(--t3);
+}
+
+/* Scrollable content area */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px;
+}
+
+.sidebar-panel {
+  display: none;
+}
+
+.sidebar-panel.active {
+  display: block;
+}
+
+/* Filter buttons for agent categories */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 4px 2px 8px;
+}
+
+.filter-btn {
+  height: 20px;
+  padding: 0 6px;
+  background: var(--bg0);
+  border: 1px solid var(--t3);
+  color: var(--t3);
+  font-family: var(--font);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: 0;
+  text-transform: uppercase;
+  transition: all 0.05s;
+}
+
+.filter-btn:hover {
+  border-color: var(--neon1);
+  color: var(--neon1);
+}
+
+.filter-btn.active {
+  background: var(--neon1);
+  border-color: var(--neon1);
+  color: var(--bg0);
+}
+
+/* Category headers in agent list */
+.cat-header {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--t2);
+  padding: 10px 6px 4px;
+  border-bottom: 1px solid var(--t3);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cat-header .count {
+  color: var(--neon1);
+  font-weight: 600;
+}
+
+/* Agent items in palette */
+.agent-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  cursor: grab;
+  border: 1px solid transparent;
+  margin-bottom: 1px;
+  transition: all 0.05s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.agent-item:hover {
+  background: var(--bg2);
+  border-color: var(--t3);
+}
+
+.agent-item:active {
+  cursor: grabbing;
+}
+
+.agent-item.on-canvas {
+  opacity: 0.4;
+}
+
+.agent-item.on-canvas::after {
+  content: 'ON';
+  position: absolute;
+  right: 8px;
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--neon1);
+  letter-spacing: 0.1em;
+}
+
+/* Color-coded dots (not icons) */
+.agent-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 0;
+}
+
+.agent-dot.opus {
+  background: var(--opus);
+  box-shadow: 0 0 6px rgba(255,204,0,0.4);
+}
+
+.agent-dot.sonnet {
+  background: var(--sonnet);
+  box-shadow: 0 0 6px rgba(0,255,136,0.4);
+}
+
+.agent-dot.haiku {
+  background: var(--haiku);
+  box-shadow: 0 0 6px rgba(0,204,255,0.4);
+}
+
+.agent-item-name {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--t1);
+}
+
+.agent-item-role {
+  font-size: 8px;
+  color: var(--t3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
+}
+
+.agent-item-model {
+  font-size: 8px;
+  font-weight: 400;
+  color: var(--t2);
+  margin-left: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+/* Preset items */
+.preset-item {
+  padding: 10px;
+  border: 2px solid var(--t3);
+  margin-bottom: 6px;
+  cursor: pointer;
+  background: var(--bg2);
+  transition: all 0.05s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-item:hover {
+  border-color: var(--neon1);
+  box-shadow: 0 0 20px rgba(0,255,136,0.08), inset 0 0 20px rgba(0,255,136,0.02);
+}
+
+.preset-item:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,255,136,0.03), transparent);
+  animation: scanLineAnim 0.5s ease-out;
+}
+
+.preset-item-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--neon1);
+  margin-bottom: 4px;
+}
+
+.preset-item-desc {
+  font-size: 8px;
+  color: var(--t3);
+  line-height: 1.4;
+  margin-bottom: 6px;
+  max-height: 28px;
+  overflow: hidden;
+}
+
+.preset-item-meta {
+  font-size: 9px;
+  color: var(--t2);
+  display: flex;
+  gap: 10px;
+}
+
+.preset-item-meta .num {
+  color: var(--neon3);
+  font-weight: 600;
+}
+
+.preset-item-meta .cost {
+  color: var(--neon2);
+}
+
+/* Saved configs */
+.saved-item {
+  padding: 8px 10px;
+  border: 1px solid var(--t3);
+  margin-bottom: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.05s ease;
+}
+
+.saved-item:hover {
+  border-color: var(--neon4);
+  background: var(--bg2);
+}
+
+.saved-item-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--t1);
+}
+
+.saved-item-info {
+  font-size: 8px;
+  color: var(--t3);
+  margin-top: 2px;
+}
+
+.saved-item-date {
+  font-size: 8px;
+  color: var(--t3);
+}
+
+.saved-delete {
+  font-size: 10px;
+  color: var(--neon2);
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0;
+  transition: opacity 0.1s;
+  font-weight: 700;
+}
+
+.saved-item:hover .saved-delete {
+  opacity: 1;
+}
+
+.saved-delete:hover {
+  background: var(--neon2);
+  color: var(--bg0);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 16px;
+  color: var(--t3);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.empty-state .big {
+  font-size: 22px;
+  color: var(--t3);
+  margin-bottom: 8px;
+  font-weight: 300;
+}
+
+.empty-state .neon {
+  color: var(--neon1);
+}
+
+/* ============================================================
+   CENTER CANVAS AREA
+   ============================================================ */
+#canvasArea {
+  position: fixed;
+  top: var(--topH);
+  left: var(--sideW);
+  right: var(--inspW);
+  bottom: var(--statusH);
+  background: var(--bg0);
+  overflow: hidden;
+}
+
+#canvasSvg {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  display: block;
+}
+
+#canvasSvg:active {
+  cursor: grabbing;
+}
+
+/* Minimap */
+#minimap {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 160px;
+  height: 100px;
+  background: var(--bg1);
+  border: 2px solid var(--t3);
+  z-index: 20;
+  overflow: hidden;
+  opacity: 0.8;
+  transition: opacity 0.1s;
+}
+
+#minimap:hover {
+  opacity: 1;
+  border-color: var(--neon1);
+}
+
+#minimapCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* Zoom controls */
+.zoom-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 20;
+}
+
+.zoom-btn {
+  width: 28px;
+  height: 28px;
+  background: var(--bg1);
+  border: 2px solid var(--t3);
+  color: var(--t1);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  transition: all 0.05s;
+}
+
+.zoom-btn:hover {
+  border-color: var(--neon1);
+  color: var(--neon1);
+  box-shadow: 0 0 10px rgba(0,255,136,0.2);
+}
+
+.zoom-btn:active {
+  background: var(--neon1);
+  color: var(--bg0);
+}
+
+/* Canvas info overlay */
+.canvas-info {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 9px;
+  color: var(--t3);
+  z-index: 15;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   SVG NODE STYLES
+   ============================================================ */
+
+/* Node group */
+.node-group {
+  cursor: pointer;
+}
+
+/* Node body rectangle */
+.node-body {
+  fill: var(--bg2);
+  stroke-width: 2;
+  rx: 0;
+  ry: 0;
+  transition: filter 0.05s;
+}
+
+.node-body.opus {
+  stroke: var(--opus);
+}
+
+.node-body.sonnet {
+  stroke: var(--sonnet);
+}
+
+.node-body.haiku {
+  stroke: var(--haiku);
+}
+
+/* Inner glow rectangles */
+.node-inner-glow {
+  fill: none;
+  stroke-width: 1;
+  opacity: 0.05;
+}
+
+/* Hover state — instant neon glow */
+.node-group:hover .node-body {
+  filter: drop-shadow(0 0 14px currentColor);
+}
+
+.node-group:hover .node-body.opus {
+  filter: drop-shadow(0 0 14px rgba(255,204,0,0.35));
+}
+
+.node-group:hover .node-body.sonnet {
+  filter: drop-shadow(0 0 14px rgba(0,255,136,0.35));
+}
+
+.node-group:hover .node-body.haiku {
+  filter: drop-shadow(0 0 14px rgba(0,204,255,0.35));
+}
+
+/* Selected state */
+.node-group.selected .node-body {
+  stroke-width: 3;
+}
+
+.node-group.selected .node-body.opus {
+  filter: drop-shadow(0 0 20px rgba(255,204,0,0.45));
+}
+
+.node-group.selected .node-body.sonnet {
+  filter: drop-shadow(0 0 20px rgba(0,255,136,0.45));
+}
+
+.node-group.selected .node-body.haiku {
+  filter: drop-shadow(0 0 20px rgba(0,204,255,0.45));
+}
+
+/* Node text elements */
+.node-icon {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 800;
+  fill: var(--neon1);
+  user-select: none;
+}
+
+.node-name {
+  font-family: var(--font);
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--t1);
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+.node-model-label {
+  font-family: var(--font);
+  font-size: 7px;
+  font-weight: 400;
+  fill: var(--t2);
+  letter-spacing: 0.08em;
+  user-select: none;
+}
+
+/* Connection anchors */
+.node-anchor {
+  fill: var(--bg0);
+  stroke: var(--t3);
+  stroke-width: 1.5;
+  cursor: crosshair;
+  transition: all 0.05s;
+  r: 4;
+}
+
+.node-anchor:hover {
+  stroke: var(--neon1);
+  fill: var(--neon1);
+  r: 5;
+}
+
+/* Scan overlay for selected nodes */
+.scan-overlay {
+  pointer-events: none;
+}
+
+/* ============================================================
+   PCB-STYLE CONNECTIONS — Thick, right-angle, animated
+   ============================================================ */
+.pcb-connection {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-dasharray: 8 4;
+  animation: flowDash 0.5s linear infinite;
+}
+
+.pcb-connection.opus {
+  stroke: var(--opus);
+  filter: drop-shadow(0 0 4px rgba(255,204,0,0.4));
+}
+
+.pcb-connection.sonnet {
+  stroke: var(--sonnet);
+  filter: drop-shadow(0 0 4px rgba(0,255,136,0.4));
+}
+
+.pcb-connection.haiku {
+  stroke: var(--haiku);
+  filter: drop-shadow(0 0 4px rgba(0,204,255,0.4));
+}
+
+.pcb-connection.temp {
+  stroke-dasharray: 4 4;
+  opacity: 0.6;
+}
+
+/* Selection rectangle */
+.selection-rect {
+  fill: rgba(0,255,136,0.04);
+  stroke: var(--neon1);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+/* Team containers — Corner bracket style (L-shaped corners only) */
+.team-corner {
+  fill: none;
+  stroke-width: 2;
+}
+
+.team-label {
+  font-family: var(--font);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  user-select: none;
+}
+
+/* ============================================================
+   RIGHT PANEL — 300px Inspector (terminal style)
+   ============================================================ */
+#rightPanel {
+  position: fixed;
+  top: var(--topH);
+  right: 0;
+  bottom: var(--statusH);
+  width: var(--inspW);
+  background: var(--bg1);
+  border-left: 2px solid var(--t3);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+}
+
+/* Inspector header bar */
+.inspector-header {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 2px solid var(--t3);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--neon1);
+  background: var(--bg0);
+  text-transform: uppercase;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.inspector-header .blink-cursor {
+  animation: blink 0.8s step-end infinite;
+  margin-left: 3px;
+}
+
+/* Inspector scrollable body */
+.inspector-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Terminal-style lines */
+.term-line {
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--t2);
+  margin-bottom: 1px;
+  word-break: break-word;
+}
+
+.term-line .prompt { color: var(--neon1); font-weight: 700; }
+.term-line .key { color: var(--t2); }
+.term-line .val { color: var(--t1); }
+.term-line .val-neon { color: var(--neon1); }
+.term-line .val-yellow { color: var(--neon3); }
+.term-line .val-pink { color: var(--neon2); }
+.term-line .val-cyan { color: var(--neon4); }
+.term-line .dim { color: var(--t3); }
+
+/* Inspector sections */
+.inspector-section {
+  margin-bottom: 16px;
+}
+
+.inspector-section-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--t3);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--t3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/* Inspector empty state */
+.inspector-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--t3);
+  font-size: 10px;
+}
+
+.inspector-empty .prompt-big {
+  font-size: 28px;
+  color: var(--t3);
+  margin-bottom: 12px;
+  font-weight: 300;
+}
+
+.inspector-empty .hint {
+  color: var(--t3);
+  margin-top: 6px;
+  font-size: 9px;
+}
+
+/* Inspector action buttons */
+.insp-btn {
+  display: inline-block;
+  height: 22px;
+  padding: 0 10px;
+  background: var(--bg0);
+  border: 1px solid var(--t3);
+  color: var(--t2);
+  font-family: var(--font);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: 0;
+  margin-right: 4px;
+  margin-top: 4px;
+  transition: all 0.05s;
+  text-transform: uppercase;
+}
+
+.insp-btn:hover {
+  border-color: var(--neon1);
+  color: var(--neon1);
+}
+
+/* Connection list in inspector */
+.conn-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.conn-item .dir {
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 4px;
+  background: var(--bg0);
+  border: 1px solid var(--t3);
+}
+
+.conn-item .dir.out {
+  color: var(--neon1);
+  border-color: var(--neon1);
+}
+
+.conn-item .dir.in {
+  color: var(--neon4);
+  border-color: var(--neon4);
+}
+
+/* ============================================================
+   STATUS BAR — 26px fixed bottom
+   ============================================================ */
+#statusBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--statusH);
+  background: var(--bg1);
+  border-top: 1px solid var(--t3);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 18px;
+  z-index: 100;
+  font-size: 9px;
+  color: var(--t2);
+  user-select: none;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-item .label {
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 8px;
+}
+
+.status-item .value {
+  color: var(--neon1);
+  font-weight: 600;
+}
+
+.status-item .value.yellow { color: var(--neon3); }
+.status-item .value.cyan { color: var(--neon4); }
+.status-item .value.pink { color: var(--neon2); }
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--neon1);
+  box-shadow: 0 0 6px rgba(0,255,136,0.5);
+  animation: pulseDot 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.status-flash {
+  margin-left: auto;
+  color: var(--neon1);
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.08s;
+  letter-spacing: 0.05em;
+}
+
+.status-flash.show {
+  opacity: 1;
+}
+
+/* Status bar separator */
+.status-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--t3);
+}
+
+/* ============================================================
+   BENTO LEARNING OVERLAY — Full-screen terminal/hacker aesthetic
+   ============================================================ */
+#learningOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg0);
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#learningOverlay.active {
+  display: flex;
+}
+
+/* Scan-line effect overlay */
+#learningOverlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,255,136,0.012) 2px,
+    rgba(0,255,136,0.012) 4px
+  );
+  pointer-events: none;
+  z-index: 1001;
+}
+
+/* Learning header */
+.learn-header {
+  padding: 30px 40px 24px;
+  border-bottom: 2px solid var(--neon1);
+  position: relative;
+  flex-shrink: 0;
+  background: var(--bg0);
+}
+
+.learn-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--neon2);
+  background: var(--bg0);
+  color: var(--neon2);
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.05s;
+  border-radius: 0;
+}
+
+.learn-close:hover {
+  background: var(--neon2);
+  color: var(--bg0);
+  box-shadow: 0 0 24px rgba(255,51,102,0.3);
+}
+
+.learn-banner {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--neon1);
+  text-shadow: 0 0 30px rgba(0,255,136,0.3);
+  margin-bottom: 8px;
+}
+
+.learn-banner .cursor-block {
+  display: inline-block;
+  width: 16px;
+  height: 28px;
+  background: var(--neon1);
+  vertical-align: middle;
+  margin-left: 4px;
+  animation: blink 0.8s step-end infinite;
+}
+
+.learn-subtitle {
+  font-size: 11px;
+  color: var(--t2);
+  letter-spacing: 0.06em;
+}
+
+.learn-subtitle .prompt { color: var(--neon1); font-weight: 700; }
+
+/* Bento grid — 4 columns, sharp corners */
+.learn-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 24px 40px 80px;
+}
+
+/* Learn cards */
+.learn-card {
+  background: var(--bg2);
+  border: 2px solid var(--t3);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: border-color 0.05s, box-shadow 0.05s;
+}
+
+.learn-card.visible {
+  opacity: 1;
+  transform: translateX(0);
+  animation: cardSlideIn 0.35s ease-out;
+}
+
+.learn-card:hover {
+  border-color: var(--neon1);
+  box-shadow: 0 0 24px rgba(0,255,136,0.08), inset 0 0 24px rgba(0,255,136,0.02);
+}
+
+/* Card span variants */
+.learn-card.span2 { grid-column: span 2; }
+.learn-card.span3 { grid-column: span 3; }
+.learn-card.span4 { grid-column: span 4; }
+
+/* Card tag */
+.learn-card-tag {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--bg0);
+  background: var(--neon1);
+  padding: 2px 8px;
+  display: inline-block;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.learn-card-tag.pink { background: var(--neon2); }
+.learn-card-tag.yellow { background: var(--neon3); }
+.learn-card-tag.cyan { background: var(--neon4); }
+
+.learn-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--t1);
+  margin-bottom: 10px;
+}
+
+.learn-card-body {
+  font-size: 10px;
+  line-height: 1.8;
+  color: var(--t2);
+}
+
+.learn-card-body .prompt { color: var(--neon1); font-weight: 700; }
+.learn-card-body .gt { color: var(--neon3); }
+.learn-card-body .err { color: var(--neon2); }
+.learn-card-body .cyan { color: var(--neon4); }
+.learn-card-body .white { color: var(--t1); }
+.learn-card-body .dim { color: var(--t3); }
+
+/* Terminal-style pre blocks */
+.learn-card-body pre {
+  background: var(--bg0);
+  border: 1px solid var(--t3);
+  padding: 10px;
+  margin: 8px 0;
+  font-family: var(--font);
+  font-size: 9px;
+  line-height: 1.6;
+  color: var(--neon1);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Bar chart in learning cards */
+.learn-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 60px;
+  margin-top: 12px;
+  padding-bottom: 18px;
+}
+
+.learn-bar {
+  flex: 1;
+  background: var(--neon1);
+  min-height: 4px;
+  position: relative;
+  transition: height 0.5s ease;
+}
+
+.learn-bar.yellow { background: var(--neon3); }
+.learn-bar.pink { background: var(--neon2); }
+.learn-bar.cyan { background: var(--neon4); }
+
+.learn-bar-label {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 7px;
+  color: var(--t3);
+  white-space: nowrap;
+  font-family: var(--font);
+}
+
+/* ============================================================
+   FLASH MESSAGES — Brief terminal-style feedback
+   ============================================================ */
+#flashMessage {
+  position: fixed;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 20px;
+  background: var(--bg0);
+  border: 2px solid var(--neon1);
+  color: var(--neon1);
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.08s;
+  box-shadow: 0 0 30px rgba(0,255,136,0.2);
+  white-space: nowrap;
+}
+
+#flashMessage.error {
+  border-color: var(--neon2);
+  color: var(--neon2);
+  box-shadow: 0 0 30px rgba(255,51,102,0.2);
+}
+
+#flashMessage.show {
+  opacity: 1;
+}
+
+/* ============================================================
+   CONTEXT MENU
+   ============================================================ */
+.ctx-menu {
+  position: fixed;
+  background: var(--bg1);
+  border: 2px solid var(--neon1);
+  min-width: 170px;
+  z-index: 500;
+  display: none;
+  box-shadow: 0 0 30px rgba(0,255,136,0.1);
+}
+
+.ctx-menu.show {
+  display: block;
+}
+
+.ctx-menu-item {
+  padding: 8px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--t1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.05s;
+}
+
+.ctx-menu-item:hover {
+  background: var(--neon1);
+  color: var(--bg0);
+}
+
+.ctx-menu-item .icon { font-weight: 800; }
+
+.ctx-menu-item .cmd {
+  color: var(--t3);
+  margin-left: auto;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.ctx-menu-item:hover .cmd {
+  color: rgba(0,0,0,0.4);
+}
+
+.ctx-sep {
+  height: 1px;
+  background: var(--t3);
+  margin: 2px 0;
+}
+
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
+.nf-tooltip {
+  position: fixed;
+  background: var(--bg0);
+  border: 2px solid var(--neon1);
+  color: var(--t1);
+  padding: 10px 14px;
+  font-size: 9px;
+  max-width: 240px;
+  z-index: 600;
+  pointer-events: none;
+  line-height: 1.5;
+  box-shadow: 0 0 24px rgba(0,255,136,0.15);
+  display: none;
+  border-radius: 0;
+}
+
+.nf-tooltip.show {
+  display: block;
+}
+
+.nf-tooltip .tt-title {
+  color: var(--neon1);
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.nf-tooltip .tt-body {
+  color: var(--t2);
+}
+
+.nf-tooltip .tt-model {
+  margin-top: 4px;
+  font-size: 8px;
+  color: var(--t3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   LOADING OVERLAY (brief)
+   ============================================================ */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s;
+}
+
+.loading-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.loading-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--neon1);
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 20px rgba(0,255,136,0.4);
+}
+
+.loading-text::after {
+  content: '';
+  animation: loadDots 1s steps(3, end) infinite;
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS (for smaller screens)
+   ============================================================ */
+@media (max-width: 1200px) {
+  :root {
+    --sideW: 220px;
+    --inspW: 260px;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --sideW: 200px;
+    --inspW: 0px;
+  }
+  #rightPanel { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     TOP BAR
+     ============================================================ -->
+<div id="topBar">
+  <div class="brand">
+    AGENT_TEAMS<span class="sep">//</span>CONFIGURATOR
+    <span class="ver">V1.0_NEON_FORGE</span>
+  </div>
+  <input class="problem-input" id="problemInput" type="text"
+         placeholder="$ opisz problem do rozwiazania..."
+         spellcheck="false" autocomplete="off">
+  <button class="top-btn yellow" onclick="toggleLearning()">TRYB NAUKI</button>
+  <button class="top-btn" onclick="saveConfig()">ZAPISZ</button>
+  <button class="top-btn pink" onclick="exportConfig()">EKSPORTUJ</button>
+  <button class="top-btn cyan" onclick="clearCanvas(); flash('> CANVAS WYCZYSZCZONY')">WYCZYSC</button>
+</div>
+
+<!-- ============================================================
+     LEFT SIDEBAR
+     ============================================================ -->
+<div id="leftSidebar">
+  <div class="sidebar-tabs">
+    <div class="sidebar-tab active" data-tab="agents" onclick="switchTab('agents',this)">AGENCI</div>
+    <div class="sidebar-tab" data-tab="presets" onclick="switchTab('presets',this)">PRESETY</div>
+    <div class="sidebar-tab" data-tab="saved" onclick="switchTab('saved',this)">ZAPISANE</div>
+  </div>
+  <div class="sidebar-search">
+    <input class="sidebar-search-input" id="searchInput"
+           type="text" placeholder="$ szukaj..." spellcheck="false"
+           oninput="filterAgents(this.value)">
+  </div>
+  <div class="sidebar-content">
+    <div id="panelAgents" class="sidebar-panel active"></div>
+    <div id="panelPresets" class="sidebar-panel"></div>
+    <div id="panelSaved" class="sidebar-panel"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CENTER CANVAS
+     ============================================================ -->
+<div id="canvasArea">
+  <svg id="canvasSvg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Dot grid pattern -->
+      <pattern id="dotGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="10" cy="10" r="0.7" fill="#1A1A1A"/>
+      </pattern>
+      <!-- Arrow markers for each model color -->
+      <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M0,0 L8,4 L0,8" fill="none" stroke="#00FF88" stroke-width="1.5"/>
+      </marker>
+      <marker id="arrowYellow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M0,0 L8,4 L0,8" fill="none" stroke="#FFCC00" stroke-width="1.5"/>
+      </marker>
+      <marker id="arrowCyan" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+        <path d="M0,0 L8,4 L0,8" fill="none" stroke="#00CCFF" stroke-width="1.5"/>
+      </marker>
+      <!-- Glow filters -->
+      <filter id="glowGreen" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+        <feFlood flood-color="#00FF88" flood-opacity="0.3"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glowYellow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+        <feFlood flood-color="#FFCC00" flood-opacity="0.3"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glowCyan" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+        <feFlood flood-color="#00CCFF" flood-opacity="0.3"/>
+        <feComposite in2="blur" operator="in"/>
+        <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <!-- Background grid -->
+    <rect width="20000" height="20000" fill="url(#dotGrid)" x="-10000" y="-10000"/>
+    <!-- Layers in order -->
+    <g id="teamContainersLayer"></g>
+    <g id="connectionsLayer"></g>
+    <g id="nodesLayer"></g>
+    <g id="tempConnLayer"></g>
+  </svg>
+
+  <!-- Canvas overlay info -->
+  <div class="canvas-info" id="canvasInfo">// NEON_FORGE CANVAS</div>
+
+  <!-- Zoom controls -->
+  <div class="zoom-controls">
+    <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+    <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">-</button>
+    <button class="zoom-btn" onclick="autoFit()" title="Auto Fit" style="font-size:10px;">F</button>
+    <button class="zoom-btn" onclick="resetView()" title="Reset" style="font-size:10px;">R</button>
+  </div>
+
+  <!-- Minimap -->
+  <div id="minimap">
+    <canvas id="minimapCanvas" width="160" height="100"></canvas>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-text">LOADING</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     RIGHT PANEL — Inspector
+     ============================================================ -->
+<div id="rightPanel">
+  <div class="inspector-header">
+    <span>$ INSPEKTOR</span><span class="blink-cursor">_</span>
+  </div>
+  <div class="inspector-body" id="inspectorBody">
+    <div class="inspector-empty">
+      <div class="prompt-big">&gt;_</div>
+      <div>WYBIERZ ELEMENT NA CANVASIE</div>
+      <div class="hint">kliknij agenta lub zaladuj preset</div>
+      <div class="hint" style="margin-top:12px;color:var(--t3);">
+        <span style="color:var(--neon1)">$</span> SHIFT+CLICK = multi-select<br>
+        <span style="color:var(--neon1)">$</span> DRAG = przesun<br>
+        <span style="color:var(--neon1)">$</span> SCROLL = zoom<br>
+        <span style="color:var(--neon1)">$</span> CTRL+F = auto-fit
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STATUS BAR
+     ============================================================ -->
+<div id="statusBar">
+  <div class="status-item">
+    <div class="status-dot"></div>
+    <span class="label">ONLINE</span>
+  </div>
+  <div class="status-sep"></div>
+  <div class="status-item">
+    <span class="label">AGENCI:</span>
+    <span class="value" id="statAgents">000</span>
+  </div>
+  <div class="status-item">
+    <span class="label">POLACZENIA:</span>
+    <span class="value yellow" id="statConns">000</span>
+  </div>
+  <div class="status-sep"></div>
+  <div class="status-item">
+    <span class="label">ZOOM:</span>
+    <span class="value cyan" id="statZoom">100%</span>
+  </div>
+  <div class="status-item">
+    <span class="label">PAN:</span>
+    <span class="value" id="statPan" style="color:var(--t3);">0,0</span>
+  </div>
+  <div class="status-sep"></div>
+  <div class="status-item">
+    <span class="label">TOKENY:</span>
+    <span class="value" id="statTokens">~0K</span>
+  </div>
+  <div class="status-item">
+    <span class="label">KOSZT:</span>
+    <span class="value pink" id="statCost">$0.00</span>
+  </div>
+  <div class="status-item">
+    <span class="label">SELECTED:</span>
+    <span class="value cyan" id="statSelected">000</span>
+  </div>
+  <div class="status-flash" id="statusFlash"></div>
+</div>
+
+<!-- ============================================================
+     BENTO LEARNING OVERLAY
+     ============================================================ -->
+<div id="learningOverlay">
+  <div class="learn-header">
+    <div class="learn-banner">TRYB_NAUKI<span class="cursor-block"></span></div>
+    <div class="learn-subtitle">
+      <span class="prompt">$</span> cat /docs/agent_teams_configurator.manifest
+    </div>
+    <div class="learn-close" onclick="toggleLearning()">X</div>
+  </div>
+  <div class="learn-grid" id="learnGrid"></div>
+</div>
+
+<!-- Flash message -->
+<div id="flashMessage"></div>
+
+<!-- Context menu -->
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-menu-item" onclick="ctxAction('inspect')">
+    <span class="icon">$</span> INSPEKCJA <span class="cmd">I</span>
+  </div>
+  <div class="ctx-menu-item" onclick="ctxAction('connect')">
+    <span class="icon">&gt;</span> POLACZ <span class="cmd">C</span>
+  </div>
+  <div class="ctx-menu-item" onclick="ctxAction('disconnect')">
+    <span class="icon">#</span> ODLACZ <span class="cmd">X</span>
+  </div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-menu-item" onclick="ctxAction('center')">
+    <span class="icon">&gt;</span> CENTRUJ <span class="cmd">F</span>
+  </div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-menu-item" onclick="ctxAction('delete')" style="color:var(--neon2);">
+    <span class="icon">!</span> USUN <span class="cmd">DEL</span>
+  </div>
+</div>
+
+<!-- Tooltip -->
+<div class="nf-tooltip" id="tooltip"></div>
+
+
+<script>
+/* ============================================================
+   AGENT DATA (AD) — 46 agents total
+   Shared (4) + Team Alpha (14) + Team Beta (14) + Team Gamma (14)
+   ============================================================ */
+
+const AD = [
+  /* ── SHARED: STRATEGIA + PLANOWANIE ── */
+  {
+    id: 'orchestrator',
+    name: 'ORKIESTRATOR',
+    icon: '>',
+    role: 'Master Orkiestrator \u2014 centralny punkt decyzyjny. Dekompozycja, delegowanie, gate control, GO/NO-GO.',
+    model: 'opus',
+    cat: 'STRATEGIA',
+    team: 'SHARED'
+  },
+  {
+    id: 'syntetyk',
+    name: 'SYNTETYK',
+    icon: '$',
+    role: 'Pami\u0119\u0107 cross-fazowa \u2014 MANIFEST.md. Zbiera wyniki, aktualizuje decyzje architektoniczne.',
+    model: 'sonnet',
+    cat: 'STRATEGIA',
+    team: 'SHARED'
+  },
+  {
+    id: 'analityk',
+    name: 'ANALITYK',
+    icon: '>',
+    role: 'Dekompozycja problem\u00f3w na podzadania. Zale\u017cno\u015bci, z\u0142o\u017cono\u015b\u0107 S/M/L/XL.',
+    model: 'sonnet',
+    cat: 'PLANOWANIE',
+    team: 'SHARED'
+  },
+  {
+    id: 'planer',
+    name: 'PLANER',
+    icon: '#',
+    role: 'Harmonogram \u2014 r\u00f3wnoleg\u0142e vs sekwencyjne, \u015bcie\u017cka krytyczna, gate sync.',
+    model: 'sonnet',
+    cat: 'PLANOWANIE',
+    team: 'SHARED'
+  }
+];
+
+/* ── Generate team agents programmatically ── */
+function generateTeamAgents(suffix, teamLabel, teamName) {
+  const agents = [];
+
+  /* Researchers — 6 per team */
+  const researchers = [
+    { base: 'res_reddit', name: 'RES_REDDIT', icon: '$',
+      role: 'Researcher Reddit \u2014 analiza dyskusji, trend\u00f3w i opinii ze spo\u0142eczno\u015bci Reddit.' },
+    { base: 'res_x', name: 'RES_X', icon: '$',
+      role: 'Researcher X/Twitter \u2014 real-time trendy, opinie ekspert\u00f3w, viral content.' },
+    { base: 'res_ux', name: 'RES_UX', icon: '$',
+      role: 'Researcher UX \u2014 analiza wzrorc\u00f3w UX, benchmarki, best practices.' },
+    { base: 'res_github', name: 'RES_GITHUB', icon: '$',
+      role: 'Researcher GitHub \u2014 analiza repo, stars, issues, code patterns.' },
+    { base: 'res_forum', name: 'RES_FORUM', icon: '$',
+      role: 'Researcher Forum \u2014 StackOverflow, HN, specjalistyczne fora.' },
+    { base: 'res_docs', name: 'RES_DOCS', icon: '$',
+      role: 'Researcher Docs \u2014 oficjalna dokumentacja, whitepapers, RFC.' }
+  ];
+
+  researchers.forEach(r => {
+    agents.push({
+      id: r.base + suffix,
+      name: r.name,
+      icon: r.icon,
+      role: r.role,
+      model: 'haiku',
+      cat: 'RESEARCH_' + teamLabel,
+      team: teamName
+    });
+  });
+
+  /* Builders — 5 per team */
+  const builders = [
+    { base: 'critic', name: 'CRITIC', icon: '#',
+      role: 'Krytyk kodu \u2014 review, analiza jako\u015bci, sugestie refaktoru. Gate pre-build.' },
+    { base: 'backend', name: 'BACKEND', icon: '>',
+      role: 'Developer Backend \u2014 API, logika biznesowa, bazy danych, serwisy.' },
+    { base: 'frontend', name: 'FRONTEND', icon: '>',
+      role: 'Developer Frontend \u2014 UI/UX, komponenty, responsywno\u015b\u0107.' },
+    { base: 'feature', name: 'FEATURE', icon: '>',
+      role: 'Developer Feature \u2014 implementacja nowych funkcjonalno\u015bci end-to-end.' },
+    { base: 'integrator', name: 'INTEGRATOR', icon: '#',
+      role: 'Integrator \u2014 \u0142\u0105czenie modu\u0142\u00f3w, CI/CD, deployment pipeline.' }
+  ];
+
+  builders.forEach(b => {
+    agents.push({
+      id: b.base + suffix,
+      name: b.name,
+      icon: b.icon,
+      role: b.role,
+      model: 'sonnet',
+      cat: 'BUILD_' + teamLabel,
+      team: teamName
+    });
+  });
+
+  /* QA — 3 per team */
+  const qaAgents = [
+    { base: 'qa_sec', name: 'QA_SEC', icon: '!',
+      role: 'QA Security \u2014 testy bezpiecze\u0144stwa, OWASP, penetracja.' },
+    { base: 'qa_qual', name: 'QA_QUAL', icon: '!',
+      role: 'QA Quality \u2014 testy funkcjonalne, regresja, edge cases.' },
+    { base: 'mgr_qa', name: 'MGR_QA', icon: '>',
+      role: 'QA Manager \u2014 koordynacja test\u00f3w, raporty jako\u015bci, gate final.' }
+  ];
+
+  qaAgents.forEach(q => {
+    agents.push({
+      id: q.base + suffix,
+      name: q.name,
+      icon: q.icon,
+      role: q.role,
+      model: q.base === 'mgr_qa' ? 'sonnet' : 'haiku',
+      cat: 'QA_' + teamLabel,
+      team: teamName
+    });
+  });
+
+  return agents;
+}
+
+/* Push all team agents into AD */
+AD.push(...generateTeamAgents('_a', 'A', 'ALPHA'));
+AD.push(...generateTeamAgents('_b', 'B', 'BETA'));
+AD.push(...generateTeamAgents('_c', 'C', 'GAMMA'));
+
+/* ============================================================
+   PRESET DATA — 7 presets
+   ============================================================ */
+
+/* Helper: generate standard team connections */
+function genTeamConns(suffix) {
+  const c = [];
+  /* researchers -> critic */
+  ['res_reddit','res_x','res_ux','res_github','res_forum','res_docs'].forEach(r => {
+    c.push([r+suffix, 'critic'+suffix]);
+  });
+  /* critic -> devs */
+  ['backend','frontend','feature'].forEach(d => {
+    c.push(['critic'+suffix, d+suffix]);
+  });
+  /* devs -> integrator */
+  ['backend','frontend','feature'].forEach(d => {
+    c.push([d+suffix, 'integrator'+suffix]);
+  });
+  /* integrator -> qa */
+  c.push(['integrator'+suffix, 'qa_sec'+suffix]);
+  c.push(['integrator'+suffix, 'qa_qual'+suffix]);
+  /* qa -> mgr_qa */
+  c.push(['qa_sec'+suffix, 'mgr_qa'+suffix]);
+  c.push(['qa_qual'+suffix, 'mgr_qa'+suffix]);
+  return c;
+}
+
+/* Helper: generate team positions */
+function genTeamPositions(suffix, offsetX) {
+  const p = {};
+  const ox = offsetX;
+  p['res_reddit'+suffix] = {x:ox, y:280};
+  p['res_x'+suffix] = {x:ox+70, y:280};
+  p['res_ux'+suffix] = {x:ox+140, y:280};
+  p['res_github'+suffix] = {x:ox+210, y:280};
+  p['res_forum'+suffix] = {x:ox+280, y:280};
+  p['res_docs'+suffix] = {x:ox+350, y:280};
+  p['critic'+suffix] = {x:ox+160, y:410};
+  p['backend'+suffix] = {x:ox+40, y:540};
+  p['frontend'+suffix] = {x:ox+160, y:540};
+  p['feature'+suffix] = {x:ox+280, y:540};
+  p['integrator'+suffix] = {x:ox+160, y:660};
+  p['qa_sec'+suffix] = {x:ox+80, y:780};
+  p['qa_qual'+suffix] = {x:ox+240, y:780};
+  p['mgr_qa'+suffix] = {x:ox+160, y:890};
+  return p;
+}
+
+const PRESETS = [
+  /* ── 0: DEEP_RESEARCH_X3 — 46 agents ── */
+  {
+    n: 'DEEP_RESEARCH_X3',
+    i: '#',
+    c: 46,
+    dsc: '3 niezalezne pipelines. Shared orchestrator. Per-team: 6 researchers + critic + 3 devs + integrator + 2 QA + QA manager.',
+    use: 'Kompleksowe projekty \u2014 3 alternatywne eksploracje rownolegle',
+    p: ['\u25B6 3 niezalezne plany', '\u25B6 Research 6 zrodel x3', '\u25B6 Porownanie 3 wynikow', '\u25B6 Full pipeline x3'],
+    m: ['! ~1800-3600K tokenow', '! $2-6 per run', '! Wymaga orkiestracji'],
+    t: '~1800-3600K',
+    $: '$2.00-6.00',
+    pt: 'TRIPLE_FANOUT_PARALLEL_AGGREGATE',
+    agents: AD.map(a => a.id),
+    positions: (function(){
+      const pos = {};
+      /* Shared */
+      pos['orchestrator'] = {x:580, y:40};
+      pos['planer'] = {x:380, y:40};
+      pos['analityk'] = {x:780, y:40};
+      pos['syntetyk'] = {x:580, y:150};
+      /* Teams */
+      Object.assign(pos, genTeamPositions('_a', 30));
+      Object.assign(pos, genTeamPositions('_b', 450));
+      Object.assign(pos, genTeamPositions('_c', 870));
+      return pos;
+    })(),
+    connections: (function(){
+      const c = [];
+      /* Shared interconnections */
+      c.push(['orchestrator','planer']);
+      c.push(['orchestrator','analityk']);
+      c.push(['orchestrator','syntetyk']);
+      c.push(['planer','syntetyk']);
+      c.push(['analityk','syntetyk']);
+      /* Syntetyk fans out to all teams' researchers */
+      ['_a','_b','_c'].forEach(s => {
+        ['res_reddit','res_x','res_ux','res_github','res_forum','res_docs'].forEach(r => {
+          c.push(['syntetyk', r+s]);
+        });
+        /* Each team's internal pipeline */
+        c.push(...genTeamConns(s));
+        /* QA managers report back */
+        c.push(['mgr_qa'+s, 'orchestrator']);
+      });
+      return c;
+    })()
+  },
+
+  /* ── 1: SOLO — 2 agents ── */
+  {
+    n: 'SOLO',
+    i: '$',
+    c: 2,
+    dsc: 'Minimalny setup. Orkiestrator + Syntetyk. Dla prostych zadan.',
+    use: 'Szybkie pytania, proste analizy',
+    p: ['\u25B6 1 agent + pamiec'],
+    m: ['! ~50-100K tokenow', '! $0.05-0.15'],
+    t: '~50-100K',
+    $: '$0.05-0.15',
+    pt: 'SINGLE_CHAIN',
+    agents: ['orchestrator','syntetyk'],
+    positions: { orchestrator:{x:400,y:200}, syntetyk:{x:400,y:380} },
+    connections: [['orchestrator','syntetyk']]
+  },
+
+  /* ── 2: QUICK_FIX — 3 agents ── */
+  {
+    n: 'QUICK_FIX',
+    i: '>',
+    c: 3,
+    dsc: 'Orkiestrator + Backend + QA. Szybka naprawa buga.',
+    use: 'Bug fixy, hotfixy, szybkie poprawki',
+    p: ['\u25B6 Diagnoza', '\u25B6 Fix', '\u25B6 Test'],
+    m: ['! ~100-200K tokenow', '! $0.10-0.30'],
+    t: '~100-200K',
+    $: '$0.10-0.30',
+    pt: 'LINEAR_CHAIN',
+    agents: ['orchestrator','backend_a','qa_qual_a'],
+    positions: {
+      orchestrator:{x:400,y:150},
+      backend_a:{x:400,y:340},
+      qa_qual_a:{x:400,y:530}
+    },
+    connections: [['orchestrator','backend_a'],['backend_a','qa_qual_a']]
+  },
+
+  /* ── 3: TRIO — 4 agents ── */
+  {
+    n: 'TRIO',
+    i: '#',
+    c: 4,
+    dsc: 'Orkiestrator + Analityk + Backend + Frontend. Ma\u0142y feature.',
+    use: 'Male featury, prototypy, POC',
+    p: ['\u25B6 Analiza', '\u25B6 Backend + Frontend rownolegle'],
+    m: ['! ~200-400K tokenow', '! $0.20-0.50'],
+    t: '~200-400K',
+    $: '$0.20-0.50',
+    pt: 'FORK_JOIN',
+    agents: ['orchestrator','analityk','backend_a','frontend_a'],
+    positions: {
+      orchestrator:{x:400,y:100},
+      analityk:{x:400,y:280},
+      backend_a:{x:260,y:460},
+      frontend_a:{x:540,y:460}
+    },
+    connections: [
+      ['orchestrator','analityk'],
+      ['analityk','backend_a'],
+      ['analityk','frontend_a']
+    ]
+  },
+
+  /* ── 4: STARTUP — 6 agents ── */
+  {
+    n: 'STARTUP',
+    i: '>',
+    c: 6,
+    dsc: 'Orkiestrator + Planer + Researcher + Backend + Frontend + QA.',
+    use: 'Srednie projekty, MVP, startupy',
+    p: ['\u25B6 Planowanie', '\u25B6 Research', '\u25B6 Build', '\u25B6 Test'],
+    m: ['! ~400-800K tokenow', '! $0.50-1.50'],
+    t: '~400-800K',
+    $: '$0.50-1.50',
+    pt: 'PIPELINE',
+    agents: ['orchestrator','planer','res_reddit_a','backend_a','frontend_a','qa_qual_a'],
+    positions: {
+      orchestrator:{x:400,y:80},
+      planer:{x:400,y:230},
+      res_reddit_a:{x:400,y:380},
+      backend_a:{x:280,y:530},
+      frontend_a:{x:520,y:530},
+      qa_qual_a:{x:400,y:680}
+    },
+    connections: [
+      ['orchestrator','planer'],
+      ['planer','res_reddit_a'],
+      ['res_reddit_a','backend_a'],
+      ['res_reddit_a','frontend_a'],
+      ['backend_a','qa_qual_a'],
+      ['frontend_a','qa_qual_a']
+    ]
+  },
+
+  /* ── 5: FULL_TEAM — 12 agents ── */
+  {
+    n: 'FULL_TEAM',
+    i: '#',
+    c: 12,
+    dsc: 'Pe\u0142ny pojedynczy team: shared + Team Alpha komplet.',
+    use: 'Duze projekty, pe\u0142ny pipeline jednego teamu',
+    p: ['\u25B6 Orchestracja', '\u25B6 Research 6 zrodel', '\u25B6 Full build', '\u25B6 Full QA'],
+    m: ['! ~600-1200K tokenow', '! $1.00-3.00'],
+    t: '~600-1200K',
+    $: '$1.00-3.00',
+    pt: 'SINGLE_PIPELINE',
+    agents: [
+      'orchestrator','syntetyk','analityk','planer',
+      'res_reddit_a','res_x_a','critic_a','backend_a','frontend_a','feature_a','integrator_a','mgr_qa_a'
+    ],
+    positions: {
+      orchestrator:{x:400,y:50}, syntetyk:{x:400,y:180},
+      analityk:{x:240,y:50}, planer:{x:560,y:50},
+      res_reddit_a:{x:280,y:310}, res_x_a:{x:520,y:310},
+      critic_a:{x:400,y:440},
+      backend_a:{x:240,y:570}, frontend_a:{x:400,y:570}, feature_a:{x:560,y:570},
+      integrator_a:{x:400,y:700},
+      mgr_qa_a:{x:400,y:840}
+    },
+    connections: [
+      ['orchestrator','analityk'], ['orchestrator','planer'], ['orchestrator','syntetyk'],
+      ['syntetyk','res_reddit_a'], ['syntetyk','res_x_a'],
+      ['res_reddit_a','critic_a'], ['res_x_a','critic_a'],
+      ['critic_a','backend_a'], ['critic_a','frontend_a'], ['critic_a','feature_a'],
+      ['backend_a','integrator_a'], ['frontend_a','integrator_a'], ['feature_a','integrator_a'],
+      ['integrator_a','mgr_qa_a'], ['mgr_qa_a','orchestrator']
+    ]
+  },
+
+  /* ── 6: DEEP_RESEARCH — 18 agents ── */
+  {
+    n: 'DEEP_RESEARCH',
+    i: '#',
+    c: 18,
+    dsc: 'Shared + pe\u0142ny Alpha + kompletny research. G\u0142\u0119boki pipeline.',
+    use: 'G\u0142\u0119boki research z jednym team',
+    p: ['\u25B6 6-source research', '\u25B6 Full build pipeline', '\u25B6 Kompletne QA'],
+    m: ['! ~1000-2000K tokenow', '! $1.50-4.00'],
+    t: '~1000-2000K',
+    $: '$1.50-4.00',
+    pt: 'SINGLE_DEEP_PIPELINE',
+    agents: [
+      'orchestrator','syntetyk','analityk','planer',
+      'res_reddit_a','res_x_a','res_ux_a','res_github_a','res_forum_a','res_docs_a',
+      'critic_a','backend_a','frontend_a','feature_a','integrator_a',
+      'qa_sec_a','qa_qual_a','mgr_qa_a'
+    ],
+    positions: (function(){
+      const p = {};
+      p['orchestrator']={x:450,y:50}; p['syntetyk']={x:450,y:170};
+      p['analityk']={x:270,y:50}; p['planer']={x:630,y:50};
+      p['res_reddit_a']={x:90,y:300}; p['res_x_a']={x:230,y:300}; p['res_ux_a']={x:370,y:300};
+      p['res_github_a']={x:510,y:300}; p['res_forum_a']={x:650,y:300}; p['res_docs_a']={x:790,y:300};
+      p['critic_a']={x:420,y:440};
+      p['backend_a']={x:260,y:580}; p['frontend_a']={x:420,y:580}; p['feature_a']={x:580,y:580};
+      p['integrator_a']={x:420,y:720};
+      p['qa_sec_a']={x:310,y:860}; p['qa_qual_a']={x:530,y:860};
+      p['mgr_qa_a']={x:420,y:990};
+      return p;
+    })(),
+    connections: (function(){
+      const c = [];
+      c.push(['orchestrator','analityk'], ['orchestrator','planer'], ['orchestrator','syntetyk']);
+      c.push(['syntetyk','res_reddit_a'], ['syntetyk','res_x_a'], ['syntetyk','res_ux_a']);
+      c.push(['syntetyk','res_github_a'], ['syntetyk','res_forum_a'], ['syntetyk','res_docs_a']);
+      ['res_reddit_a','res_x_a','res_ux_a','res_github_a','res_forum_a','res_docs_a'].forEach(r =>
+        c.push([r,'critic_a'])
+      );
+      c.push(['critic_a','backend_a'], ['critic_a','frontend_a'], ['critic_a','feature_a']);
+      ['backend_a','frontend_a','feature_a'].forEach(d => c.push([d,'integrator_a']));
+      c.push(['integrator_a','qa_sec_a'], ['integrator_a','qa_qual_a']);
+      c.push(['qa_sec_a','mgr_qa_a'], ['qa_qual_a','mgr_qa_a']);
+      c.push(['mgr_qa_a','orchestrator']);
+      return c;
+    })()
+  }
+];
+
+
+/* ============================================================
+   APPLICATION STATE
+   ============================================================ */
+const STATE = {
+  /* Canvas data */
+  nodes: [],           /* {id, x, y, agentData, el} */
+  connections: [],     /* {from, to, el} */
+  selected: [],        /* node id strings */
+
+  /* View transform */
+  zoom: 1,
+  panX: 0,
+  panY: 0,
+
+  /* Interaction modes */
+  dragging: null,      /* {id, offX, offY} */
+  panning: false,
+  panStart: {x:0, y:0, px:0, py:0},
+  connecting: null,    /* {fromId, startX, startY, tempLine} */
+  selRect: null,       /* {startX, startY, el} */
+  connectFrom: null,   /* for context menu connect mode */
+
+  /* Persistence */
+  saved: [],
+  ctxTarget: null,
+
+  /* Node dimensions */
+  nodeW: 140,
+  nodeH: 52,
+
+  /* Filter */
+  filterText: '',
+  filterCat: 'ALL'
+};
+
+
+/* ============================================================
+   UTILITY FUNCTIONS
+   ============================================================ */
+
+/** Pad number with leading zeros */
+function pad(n, digits=3) {
+  return String(n).padStart(digits, '0');
+}
+
+/** Find agent definition by id */
+function getAgent(id) {
+  return AD.find(a => a.id === id);
+}
+
+/** Find node in state by id */
+function getNode(id) {
+  return STATE.nodes.find(n => n.id === id);
+}
+
+/** Get hex color for model */
+function modelHex(model) {
+  switch(model) {
+    case 'opus': return '#FFCC00';
+    case 'haiku': return '#00CCFF';
+    default: return '#00FF88';
+  }
+}
+
+/** Get CSS class for model */
+function modelClass(model) {
+  switch(model) {
+    case 'opus': return 'opus';
+    case 'haiku': return 'haiku';
+    default: return 'sonnet';
+  }
+}
+
+/** Get marker URL for model */
+function modelMarker(model) {
+  switch(model) {
+    case 'opus': return 'url(#arrowYellow)';
+    case 'haiku': return 'url(#arrowCyan)';
+    default: return 'url(#arrowGreen)';
+  }
+}
+
+/** SVG namespace helper */
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function svgEl(tag, attrs={}) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k,v] of Object.entries(attrs)) {
+    el.setAttribute(k, v);
+  }
+  return el;
+}
+
+/** Flash message — brief terminal-style feedback */
+function flash(msg, isError=false) {
+  const el = document.getElementById('flashMessage');
+  el.textContent = msg;
+  el.className = isError ? 'error show' : 'show';
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => { el.className = ''; }, 1600);
+}
+
+/** Status bar flash — right-aligned transient message */
+function statusFlash(msg) {
+  const el = document.getElementById('statusFlash');
+  el.textContent = '> ' + msg;
+  el.classList.add('show');
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/** Show brief loading overlay */
+function showLoading(text='LOADING') {
+  const ol = document.getElementById('loadingOverlay');
+  ol.querySelector('.loading-text').textContent = text;
+  ol.classList.add('show');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+
+/* ============================================================
+   STATS UPDATE
+   ============================================================ */
+function updateStats() {
+  document.getElementById('statAgents').textContent = pad(STATE.nodes.length);
+  document.getElementById('statConns').textContent = pad(STATE.connections.length);
+  document.getElementById('statZoom').textContent = Math.round(STATE.zoom * 100) + '%';
+  document.getElementById('statPan').textContent =
+    Math.round(STATE.panX) + ',' + Math.round(STATE.panY);
+  document.getElementById('statSelected').textContent = pad(STATE.selected.length);
+
+  /* Token/cost estimate based on agents on canvas */
+  let tokens = 0, cost = 0;
+  STATE.nodes.forEach(n => {
+    const m = n.agentData.model;
+    if (m === 'opus')        { tokens += 80000;  cost += 0.15; }
+    else if (m === 'sonnet') { tokens += 40000;  cost += 0.05; }
+    else                     { tokens += 15000;  cost += 0.01; }
+  });
+  document.getElementById('statTokens').textContent =
+    tokens > 0 ? '~' + Math.round(tokens/1000) + 'K' : '~0K';
+  document.getElementById('statCost').textContent = '$' + cost.toFixed(2);
+
+  /* Canvas info */
+  document.getElementById('canvasInfo').textContent =
+    `// NEON_FORGE // ${pad(STATE.nodes.length)} AGENTS // ${pad(STATE.connections.length)} CONNS`;
+
+  /* Update sidebar on-canvas indicators */
+  updateAgentOnCanvasState();
+
+  /* Update minimap */
+  updateMinimap();
+}
+
+
+/* ============================================================
+   SVG TRANSFORM — Pan & Zoom
+   ============================================================ */
+function updateTransform() {
+  const transform = `translate(${STATE.panX},${STATE.panY}) scale(${STATE.zoom})`;
+  ['connectionsLayer','teamContainersLayer','nodesLayer','tempConnLayer'].forEach(id => {
+    document.getElementById(id).setAttribute('transform', transform);
+  });
+  /* Keep dot grid synced */
+  const pat = document.getElementById('dotGrid');
+  if (pat) {
+    pat.setAttribute('patternTransform',
+      `translate(${STATE.panX},${STATE.panY}) scale(${STATE.zoom})`);
+  }
+}
+
+
+/* ============================================================
+   NODE RENDERING
+   ============================================================ */
+function createNode(agentId, x, y, animate=true) {
+  const agent = getAgent(agentId);
+  if (!agent) return null;
+  if (getNode(agentId)) return null; /* Already on canvas */
+
+  const W = STATE.nodeW;
+  const H = STATE.nodeH;
+  const mc = modelClass(agent.model);
+  const mh = modelHex(agent.model);
+
+  /* Create SVG group */
+  const g = svgEl('g', {
+    'class': 'node-group',
+    'data-id': agentId,
+    'transform': `translate(${x},${y})`
+  });
+
+  /* Body rectangle */
+  const rect = svgEl('rect', {
+    'class': 'node-body ' + mc,
+    x: 0, y: 0, width: W, height: H,
+    rx: 0, ry: 0
+  });
+  g.appendChild(rect);
+
+  /* Inner glow (subtle) */
+  const innerGlow = svgEl('rect', {
+    'class': 'node-inner-glow',
+    x: 1, y: 1,
+    width: W-2, height: H-2,
+    stroke: mh,
+    'stroke-opacity': '0.08',
+    fill: 'none'
+  });
+  g.appendChild(innerGlow);
+
+  /* Scan overlay for selection effect */
+  const scanOverlay = svgEl('rect', {
+    'class': 'scan-overlay',
+    x: 0, y: 0,
+    width: 0, height: H,
+    fill: mh, opacity: '0.08'
+  });
+  g.appendChild(scanOverlay);
+
+  /* Icon character */
+  const icon = svgEl('text', {
+    'class': 'node-icon',
+    x: 10, y: 23,
+    fill: mh
+  });
+  icon.textContent = agent.icon;
+  g.appendChild(icon);
+
+  /* Agent name */
+  const nameEl = svgEl('text', {
+    'class': 'node-name',
+    x: 28, y: 22
+  });
+  nameEl.textContent = agent.name;
+  g.appendChild(nameEl);
+
+  /* Model label */
+  const modelLabel = svgEl('text', {
+    'class': 'node-model-label',
+    x: 28, y: 38
+  });
+  modelLabel.textContent = agent.model.toUpperCase() + ' // ' + agent.cat;
+  g.appendChild(modelLabel);
+
+  /* Connection anchors — top, bottom, left, right */
+  const anchors = [
+    { cx: W/2, cy: 0,   dir: 'top' },
+    { cx: W/2, cy: H,   dir: 'bottom' },
+    { cx: 0,   cy: H/2, dir: 'left' },
+    { cx: W,   cy: H/2, dir: 'right' }
+  ];
+  anchors.forEach(a => {
+    const circle = svgEl('circle', {
+      'class': 'node-anchor',
+      cx: a.cx, cy: a.cy, r: 4,
+      'data-dir': a.dir,
+      'data-node': agentId
+    });
+    g.appendChild(circle);
+  });
+
+  /* Add to DOM */
+  document.getElementById('nodesLayer').appendChild(g);
+
+  /* Track in state */
+  const node = { id: agentId, x: x, y: y, agentData: agent, el: g };
+  STATE.nodes.push(node);
+
+  /* Entrance animation */
+  if (animate) {
+    g.style.opacity = '0';
+    requestAnimationFrame(() => {
+      g.style.animation = 'nodeSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards';
+      setTimeout(() => { g.style.animation = ''; }, 350);
+    });
+  }
+
+  updateStats();
+  return node;
+}
+
+/** Remove node and its connections */
+function removeNode(id) {
+  const idx = STATE.nodes.findIndex(n => n.id === id);
+  if (idx < 0) return;
+
+  const node = STATE.nodes[idx];
+
+  /* Brief red flash before removal */
+  const rect = node.el.querySelector('.node-body');
+  if (rect) {
+    rect.style.stroke = '#FF3366';
+    rect.style.filter = 'drop-shadow(0 0 20px rgba(255,51,102,0.5))';
+  }
+
+  setTimeout(() => {
+    node.el.remove();
+    STATE.nodes.splice(idx, 1);
+
+    /* Remove associated connections */
+    STATE.connections = STATE.connections.filter(c => {
+      if (c.from === id || c.to === id) {
+        c.el.remove();
+        return false;
+      }
+      return true;
+    });
+
+    STATE.selected = STATE.selected.filter(s => s !== id);
+    updateStats();
+    updateInspector();
+    drawTeamContainers();
+  }, 100);
+}
+
+/** Move node to new position */
+function moveNode(id, x, y) {
+  const node = getNode(id);
+  if (!node) return;
+  node.x = x;
+  node.y = y;
+  node.el.setAttribute('transform', `translate(${x},${y})`);
+
+  /* Update all connected paths */
+  STATE.connections.forEach(c => {
+    if (c.from === id || c.to === id) {
+      updateConnectionPath(c);
+    }
+  });
+}
+
+
+/* ============================================================
+   PCB-STYLE CONNECTIONS — 90-degree corners
+   ============================================================ */
+
+/** Generate right-angle path between two points */
+function pcbPath(x1, y1, x2, y2) {
+  /* Determine best routing strategy */
+  const dy = y2 - y1;
+  const dx = x2 - x1;
+
+  if (Math.abs(dy) < 8) {
+    /* Nearly horizontal — direct line */
+    return `M${x1},${y1} L${x2},${y2}`;
+  }
+
+  if (Math.abs(dx) < 8) {
+    /* Nearly vertical — direct line */
+    return `M${x1},${y1} L${x2},${y2}`;
+  }
+
+  /* Standard: go vertical halfway, then horizontal, then vertical to target */
+  const midY = y1 + dy * 0.5;
+  return `M${x1},${y1} L${x1},${midY} L${x2},${midY} L${x2},${y2}`;
+}
+
+/** Create a connection between two nodes */
+function createConnection(fromId, toId) {
+  const fromNode = getNode(fromId);
+  const toNode = getNode(toId);
+  if (!fromNode || !toNode) return null;
+
+  /* Check for duplicate */
+  if (STATE.connections.find(c => c.from === fromId && c.to === toId)) return null;
+
+  const mc = modelClass(fromNode.agentData.model);
+
+  const path = svgEl('path', {
+    'class': 'pcb-connection ' + mc,
+    'marker-end': modelMarker(fromNode.agentData.model)
+  });
+
+  document.getElementById('connectionsLayer').appendChild(path);
+
+  const conn = { from: fromId, to: toId, el: path };
+  STATE.connections.push(conn);
+  updateConnectionPath(conn);
+  updateStats();
+  return conn;
+}
+
+/** Update path geometry for an existing connection */
+function updateConnectionPath(conn) {
+  const fromNode = getNode(conn.from);
+  const toNode = getNode(conn.to);
+  if (!fromNode || !toNode) return;
+
+  /* Source: bottom center */
+  const fx = fromNode.x + STATE.nodeW / 2;
+  const fy = fromNode.y + STATE.nodeH;
+
+  /* Target: top center */
+  const tx = toNode.x + STATE.nodeW / 2;
+  const ty = toNode.y;
+
+  /* Handle upward connections — use side anchors */
+  if (ty <= fy) {
+    /* Target is above or at same level — route right/left */
+    const fRight = fromNode.x + STATE.nodeW;
+    const tRight = toNode.x + STATE.nodeW;
+    const useRight = fx <= tx;
+
+    if (useRight) {
+      const midX = Math.max(fRight, tRight) + 30;
+      const fcy = fromNode.y + STATE.nodeH/2;
+      const tcy = toNode.y + STATE.nodeH/2;
+      conn.el.setAttribute('d',
+        `M${fRight},${fcy} L${midX},${fcy} L${midX},${tcy} L${tRight},${tcy}`
+      );
+    } else {
+      const midX = Math.min(fromNode.x, toNode.x) - 30;
+      const fcy = fromNode.y + STATE.nodeH/2;
+      const tcy = toNode.y + STATE.nodeH/2;
+      conn.el.setAttribute('d',
+        `M${fromNode.x},${fcy} L${midX},${fcy} L${midX},${tcy} L${toNode.x},${tcy}`
+      );
+    }
+    return;
+  }
+
+  conn.el.setAttribute('d', pcbPath(fx, fy, tx, ty));
+}
+
+/** Remove a specific connection */
+function removeConnection(fromId, toId) {
+  const idx = STATE.connections.findIndex(c => c.from === fromId && c.to === toId);
+  if (idx < 0) return;
+  STATE.connections[idx].el.remove();
+  STATE.connections.splice(idx, 1);
+  updateStats();
+}
+
+
+/* ============================================================
+   TEAM CONTAINERS — Corner bracket style
+   ============================================================ */
+function drawTeamContainers() {
+  const layer = document.getElementById('teamContainersLayer');
+  layer.innerHTML = '';
+
+  /* Group nodes by team */
+  const teams = {};
+  STATE.nodes.forEach(n => {
+    const team = n.agentData.team || 'OTHER';
+    if (!teams[team]) teams[team] = [];
+    teams[team].push(n);
+  });
+
+  const teamColors = {
+    SHARED: '#00FF88',
+    ALPHA:  '#FFCC00',
+    BETA:   '#00CCFF',
+    GAMMA:  '#FF3366'
+  };
+
+  Object.entries(teams).forEach(([name, nodes]) => {
+    if (nodes.length < 2) return;
+
+    /* Calculate bounding box */
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    nodes.forEach(n => {
+      minX = Math.min(minX, n.x);
+      minY = Math.min(minY, n.y);
+      maxX = Math.max(maxX, n.x + STATE.nodeW);
+      maxY = Math.max(maxY, n.y + STATE.nodeH);
+    });
+
+    const padSize = 24;
+    const x = minX - padSize;
+    const y = minY - padSize;
+    const w = (maxX - minX) + 2 * padSize;
+    const h = (maxY - minY) + 2 * padSize;
+    const cornerLen = 24;
+    const color = teamColors[name] || '#333333';
+
+    /* Top-left corner */
+    const tl = svgEl('path', {
+      d: `M${x},${y + cornerLen} L${x},${y} L${x + cornerLen},${y}`,
+      'class': 'team-corner',
+      stroke: color, opacity: '0.3'
+    });
+
+    /* Top-right corner */
+    const tr = svgEl('path', {
+      d: `M${x+w-cornerLen},${y} L${x+w},${y} L${x+w},${y+cornerLen}`,
+      'class': 'team-corner',
+      stroke: color, opacity: '0.3'
+    });
+
+    /* Bottom-left corner */
+    const bl = svgEl('path', {
+      d: `M${x},${y+h-cornerLen} L${x},${y+h} L${x+cornerLen},${y+h}`,
+      'class': 'team-corner',
+      stroke: color, opacity: '0.3'
+    });
+
+    /* Bottom-right corner */
+    const br = svgEl('path', {
+      d: `M${x+w-cornerLen},${y+h} L${x+w},${y+h} L${x+w},${y+h-cornerLen}`,
+      'class': 'team-corner',
+      stroke: color, opacity: '0.3'
+    });
+
+    [tl, tr, bl, br].forEach(e => layer.appendChild(e));
+
+    /* Team label */
+    const label = svgEl('text', {
+      'class': 'team-label',
+      x: x + 6, y: y - 6,
+      fill: color, opacity: '0.35'
+    });
+    label.textContent = '// ' + name + ' [' + pad(nodes.length) + ']';
+    layer.appendChild(label);
+  });
+}
+
+
+/* ============================================================
+   SELECTION SYSTEM
+   ============================================================ */
+function selectNode(id, multi=false) {
+  if (!multi) {
+    /* Clear previous selection */
+    STATE.selected.forEach(sid => {
+      const n = getNode(sid);
+      if (n) n.el.classList.remove('selected');
+    });
+    STATE.selected = [];
+  }
+
+  const node = getNode(id);
+  if (!node) return;
+
+  const idx = STATE.selected.indexOf(id);
+  if (idx >= 0) {
+    /* Deselect */
+    STATE.selected.splice(idx, 1);
+    node.el.classList.remove('selected');
+  } else {
+    /* Select */
+    STATE.selected.push(id);
+    node.el.classList.add('selected');
+
+    /* Run scan line animation */
+    const scan = node.el.querySelector('.scan-overlay');
+    if (scan) {
+      scan.setAttribute('width', '0');
+      scan.setAttribute('x', '0');
+      let progress = 0;
+      const step = () => {
+        progress += 10;
+        if (progress <= STATE.nodeW) {
+          scan.setAttribute('width', String(progress));
+          requestAnimationFrame(step);
+        } else {
+          setTimeout(() => scan.setAttribute('width', '0'), 150);
+        }
+      };
+      requestAnimationFrame(step);
+    }
+
+    /* Green flash on node */
+    const body = node.el.querySelector('.node-body');
+    if (body) {
+      body.style.animation = 'greenFlash 0.3s ease-out';
+      setTimeout(() => { body.style.animation = ''; }, 300);
+    }
+  }
+
+  updateStats();
+  updateInspector();
+}
+
+function clearSelection() {
+  STATE.selected.forEach(sid => {
+    const n = getNode(sid);
+    if (n) n.el.classList.remove('selected');
+  });
+  STATE.selected = [];
+  updateStats();
+  updateInspector();
+}
+
+
+/* ============================================================
+   INSPECTOR — Terminal-style right panel
+   ============================================================ */
+function updateInspector() {
+  const body = document.getElementById('inspectorBody');
+
+  /* Empty state */
+  if (STATE.selected.length === 0 && !STATE._presetShown) {
+    body.innerHTML = `
+      <div class="inspector-empty">
+        <div class="prompt-big">&gt;_</div>
+        <div>WYBIERZ ELEMENT NA CANVASIE</div>
+        <div class="hint">kliknij agenta lub zaladuj preset</div>
+        <div class="hint" style="margin-top:16px;">
+          <span style="color:var(--neon1)">$</span> SHIFT+CLICK = multi-select<br>
+          <span style="color:var(--neon1)">$</span> DRAG = przesun agenta<br>
+          <span style="color:var(--neon1)">$</span> SCROLL = zoom<br>
+          <span style="color:var(--neon1)">$</span> CTRL+F = auto-fit<br>
+          <span style="color:var(--neon1)">$</span> DELETE = usun zaznaczone<br>
+          <span style="color:var(--neon1)">$</span> ANCHOR DRAG = polacz
+        </div>
+      </div>`;
+    return;
+  }
+
+  STATE._presetShown = false;
+
+  /* Single selection */
+  if (STATE.selected.length === 1) {
+    const node = getNode(STATE.selected[0]);
+    if (!node) return;
+    const a = node.agentData;
+    const mh = modelHex(a.model);
+    const connsOut = STATE.connections.filter(c => c.from === node.id);
+    const connsIn = STATE.connections.filter(c => c.to === node.id);
+    const totalConns = connsOut.length + connsIn.length;
+
+    body.innerHTML = `
+      <div class="inspector-section">
+        <div class="inspector-section-title">// AGENT INFO</div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">id:</span> <span class="val">${a.id}</span></div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">name:</span> <span class="val" style="color:${mh}">${a.name}</span></div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">model:</span> <span class="val" style="color:${mh}">${a.model.toUpperCase()}</span></div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">cat:</span> <span class="val">${a.cat}</span></div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">team:</span> <span class="val-cyan">${a.team}</span></div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">icon:</span> <span class="val" style="color:${mh}">${a.icon}</span></div>
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">// ROLA</div>
+        <div class="term-line" style="color:var(--t2);line-height:1.6;">${a.role}</div>
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">// POZYCJA</div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">x:</span> <span class="val-neon">${Math.round(node.x)}</span> <span class="key">y:</span> <span class="val-neon">${Math.round(node.y)}</span></div>
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">// POLACZENIA [${pad(totalConns)}]</div>
+        ${connsOut.map(c => `
+          <div class="conn-item">
+            <span class="dir out">OUT</span>
+            <span class="val">\u2192 ${c.to}</span>
+          </div>
+        `).join('')}
+        ${connsIn.map(c => `
+          <div class="conn-item">
+            <span class="dir in">IN</span>
+            <span class="val">\u2190 ${c.from}</span>
+          </div>
+        `).join('')}
+        ${totalConns === 0 ? '<div class="term-line dim">brak polaczen</div>' : ''}
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">// AKCJE</div>
+        <button class="insp-btn" onclick="ctxAction('disconnect')">ODLACZ</button>
+        <button class="insp-btn" onclick="ctxAction('center')">CENTRUJ</button>
+        <button class="insp-btn" onclick="ctxAction('delete')" style="border-color:var(--neon2);color:var(--neon2);">USUN</button>
+      </div>`;
+    return;
+  }
+
+  /* Multi-selection */
+  if (STATE.selected.length > 1) {
+    const opusCount = STATE.selected.filter(id => { const n = getNode(id); return n && n.agentData.model === 'opus'; }).length;
+    const sonnetCount = STATE.selected.filter(id => { const n = getNode(id); return n && n.agentData.model === 'sonnet'; }).length;
+    const haikuCount = STATE.selected.filter(id => { const n = getNode(id); return n && n.agentData.model === 'haiku'; }).length;
+
+    /* Group by team */
+    const teamGroups = {};
+    STATE.selected.forEach(id => {
+      const n = getNode(id);
+      if (!n) return;
+      const team = n.agentData.team || 'OTHER';
+      if (!teamGroups[team]) teamGroups[team] = [];
+      teamGroups[team].push(n);
+    });
+
+    body.innerHTML = `
+      <div class="inspector-section">
+        <div class="inspector-section-title">// MULTI-SELECT [${pad(STATE.selected.length)}]</div>
+        ${STATE.selected.slice(0, 20).map(id => {
+          const n = getNode(id);
+          if (!n) return '';
+          return `<div class="term-line"><span class="prompt">&gt;</span> <span class="val" style="color:${modelHex(n.agentData.model)}">${n.agentData.name}</span> <span class="dim">${n.agentData.model}</span></div>`;
+        }).join('')}
+        ${STATE.selected.length > 20 ? `<div class="term-line dim">... i ${STATE.selected.length - 20} wiecej</div>` : ''}
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">// MODELE</div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">opus:</span> <span class="val-yellow">${pad(opusCount)}</span></div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">sonnet:</span> <span class="val-neon">${pad(sonnetCount)}</span></div>
+        <div class="term-line"><span class="prompt">$</span> <span class="key">haiku:</span> <span class="val-cyan">${pad(haikuCount)}</span></div>
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">// TEAMY</div>
+        ${Object.entries(teamGroups).map(([team, nodes]) =>
+          `<div class="term-line"><span class="prompt">#</span> <span class="val">${team}:</span> <span class="val-neon">${pad(nodes.length)}</span></div>`
+        ).join('')}
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">// AKCJE GRUPOWE</div>
+        <button class="insp-btn" onclick="deleteSelected()">USUN ZAZNACZONE</button>
+      </div>`;
+  }
+}
+
+/** Show preset info in inspector */
+function showPresetInspector(preset) {
+  STATE._presetShown = true;
+  const body = document.getElementById('inspectorBody');
+  body.innerHTML = `
+    <div class="inspector-section">
+      <div class="inspector-section-title">// PRESET</div>
+      <div class="term-line"><span class="prompt">$</span> <span class="key">name:</span> <span class="val-neon">${preset.n}</span></div>
+      <div class="term-line"><span class="prompt">$</span> <span class="key">agents:</span> <span class="val-yellow">${pad(preset.c)}</span></div>
+      <div class="term-line"><span class="prompt">$</span> <span class="key">tokens:</span> <span class="val">${preset.t}</span></div>
+      <div class="term-line"><span class="prompt">$</span> <span class="key">cost:</span> <span class="val-pink">${preset.$}</span></div>
+      <div class="term-line"><span class="prompt">$</span> <span class="key">pattern:</span> <span class="val-cyan">${preset.pt}</span></div>
+    </div>
+    <div class="inspector-section">
+      <div class="inspector-section-title">// OPIS</div>
+      <div class="term-line" style="color:var(--t2);line-height:1.6">${preset.dsc}</div>
+    </div>
+    <div class="inspector-section">
+      <div class="inspector-section-title">// ZASTOSOWANIE</div>
+      <div class="term-line" style="color:var(--t2);line-height:1.6">${preset.use}</div>
+    </div>
+    <div class="inspector-section">
+      <div class="inspector-section-title">// PIPELINE</div>
+      ${preset.p.map(s => `<div class="term-line"><span class="val-neon">${s}</span></div>`).join('')}
+    </div>
+    <div class="inspector-section">
+      <div class="inspector-section-title">// UWAGI</div>
+      ${preset.m.map(s => `<div class="term-line"><span class="val-pink">${s}</span></div>`).join('')}
+    </div>
+    <div class="inspector-section">
+      <div class="inspector-section-title">// STATYSTYKI</div>
+      <div class="term-line"><span class="prompt">$</span> <span class="key">connections:</span> <span class="val-yellow">${pad(STATE.connections.length)}</span></div>
+      <div class="term-line"><span class="prompt">$</span> <span class="key">nodes:</span> <span class="val-neon">${pad(STATE.nodes.length)}</span></div>
+    </div>`;
+}
+
+
+/* ============================================================
+   LEFT SIDEBAR — Populate & Filter
+   ============================================================ */
+
+function populateAgentPanel() {
+  const panel = document.getElementById('panelAgents');
+
+  /* Gather unique categories */
+  const cats = [];
+  AD.forEach(a => { if (!cats.includes(a.cat)) cats.push(a.cat); });
+
+  /* Filter bar */
+  let html = '<div class="filter-bar">';
+  html += `<div class="filter-btn active" onclick="setFilter('ALL',this)">ALL</div>`;
+  const teamFilters = ['SHARED','ALPHA','BETA','GAMMA'];
+  teamFilters.forEach(t => {
+    html += `<div class="filter-btn" onclick="setFilter('${t}',this)">${t}</div>`;
+  });
+  html += '</div>';
+
+  /* Agent list grouped by category */
+  const grouped = {};
+  AD.forEach(a => {
+    if (!grouped[a.cat]) grouped[a.cat] = [];
+    grouped[a.cat].push(a);
+  });
+
+  Object.entries(grouped).forEach(([cat, agents]) => {
+    html += `<div class="cat-group" data-cat="${cat}" data-team="${agents[0].team}">`;
+    html += `<div class="cat-header">${cat} <span class="count">[${pad(agents.length)}]</span></div>`;
+    agents.forEach(a => {
+      html += `<div class="agent-item" draggable="true" data-agent="${a.id}" data-team="${a.team}" data-name="${a.name}" title="${a.role}">
+        <div class="agent-dot ${modelClass(a.model)}"></div>
+        <span class="agent-item-name">${a.name}</span>
+        <span class="agent-item-model">${a.model}</span>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  panel.innerHTML = html;
+
+  /* Attach events */
+  panel.querySelectorAll('.agent-item').forEach(el => {
+    /* Drag to canvas */
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('agent-id', el.dataset.agent);
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+
+    /* Double-click to add at center */
+    el.addEventListener('dblclick', () => {
+      const id = el.dataset.agent;
+      if (getNode(id)) {
+        flash('! AGENT JUZ NA CANVASIE', true);
+        return;
+      }
+      const area = document.getElementById('canvasArea').getBoundingClientRect();
+      const cx = (area.width/2 - STATE.panX) / STATE.zoom;
+      const cy = (area.height/2 - STATE.panY) / STATE.zoom;
+      createNode(id, cx - STATE.nodeW/2, cy - STATE.nodeH/2);
+      drawTeamContainers();
+      flash('> AGENT DODANY: ' + getAgent(id).name);
+    });
+
+    /* Tooltip on hover */
+    el.addEventListener('mouseenter', e => {
+      const a = getAgent(el.dataset.agent);
+      if (a) showTooltip(e, a);
+    });
+    el.addEventListener('mouseleave', () => hideTooltip());
+    el.addEventListener('mousemove', e => moveTooltip(e));
+  });
+}
+
+/** Update on-canvas state for sidebar items */
+function updateAgentOnCanvasState() {
+  document.querySelectorAll('.agent-item').forEach(el => {
+    const id = el.dataset.agent;
+    if (getNode(id)) {
+      el.classList.add('on-canvas');
+    } else {
+      el.classList.remove('on-canvas');
+    }
+  });
+}
+
+/** Filter agents by team */
+function setFilter(team, btn) {
+  STATE.filterCat = team;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+/** Filter agents by search text */
+function filterAgents(text) {
+  STATE.filterText = text.toLowerCase().trim();
+  applyFilters();
+}
+
+/** Apply both text and category filters */
+function applyFilters() {
+  const groups = document.querySelectorAll('.cat-group');
+  const items = document.querySelectorAll('.agent-item');
+
+  items.forEach(el => {
+    const name = (el.dataset.name || '').toLowerCase();
+    const team = el.dataset.team || '';
+    const matchText = !STATE.filterText || name.includes(STATE.filterText);
+    const matchCat = STATE.filterCat === 'ALL' || team === STATE.filterCat;
+    el.style.display = (matchText && matchCat) ? '' : 'none';
+  });
+
+  /* Hide empty category groups */
+  groups.forEach(g => {
+    const visible = g.querySelectorAll('.agent-item:not([style*="display: none"])');
+    g.style.display = visible.length > 0 ? '' : 'none';
+  });
+}
+
+function populatePresetPanel() {
+  const panel = document.getElementById('panelPresets');
+  let html = '';
+  PRESETS.forEach((p, i) => {
+    html += `<div class="preset-item" onclick="loadPreset(${i})">
+      <div class="preset-item-name">${p.i} ${p.n}</div>
+      <div class="preset-item-desc">${p.dsc}</div>
+      <div class="preset-item-meta">
+        <span><span class="num">${pad(p.c)}</span> agentow</span>
+        <span class="cost">${p.$}</span>
+        <span style="color:var(--t3)">${p.t}</span>
+      </div>
+    </div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function populateSavedPanel() {
+  const panel = document.getElementById('panelSaved');
+  if (STATE.saved.length === 0) {
+    panel.innerHTML = `<div class="empty-state">
+      <div class="big">[ ]</div>
+      BRAK ZAPISANYCH KONFIGURACJI<br><br>
+      <span class="neon">$</span> uzyj ZAPISZ aby zachowac aktualna konfiguracje
+    </div>`;
+    return;
+  }
+
+  let html = '';
+  STATE.saved.forEach((s, i) => {
+    html += `<div class="saved-item" onclick="loadSaved(${i})">
+      <div>
+        <div class="saved-item-name">${s.name}</div>
+        <div class="saved-item-info">${pad(s.nodeCount)} agentow | ${pad(s.connCount)} polaczen</div>
+        <div class="saved-item-date">${s.date}</div>
+      </div>
+      <div class="saved-delete" onclick="event.stopPropagation();deleteSaved(${i})">X</div>
+    </div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+
+  const panelId = tab === 'agents' ? 'panelAgents' : tab === 'presets' ? 'panelPresets' : 'panelSaved';
+  document.getElementById(panelId).classList.add('active');
+}
+
+
+/* ============================================================
+   PRESET LOADING
+   ============================================================ */
+function loadPreset(idx) {
+  const preset = PRESETS[idx];
+  if (!preset) return;
+
+  showLoading('LOADING: ' + preset.n);
+  clearCanvas();
+
+  setTimeout(() => {
+    /* Create nodes with staggered timing */
+    let delay = 0;
+    const delayStep = Math.max(15, Math.min(40, 800 / preset.agents.length));
+
+    preset.agents.forEach(agentId => {
+      const pos = preset.positions[agentId];
+      if (!pos) return;
+      setTimeout(() => {
+        createNode(agentId, pos.x, pos.y, true);
+      }, delay);
+      delay += delayStep;
+    });
+
+    /* Create connections after all nodes are placed */
+    setTimeout(() => {
+      preset.connections.forEach(([from, to]) => {
+        createConnection(from, to);
+      });
+
+      drawTeamContainers();
+      updateStats();
+      autoFit();
+      hideLoading();
+
+      flash('> LOADED: ' + preset.n + ' [' + pad(preset.c) + ' AGENTOW]');
+      statusFlash(preset.n + ' // ' + preset.pt);
+      showPresetInspector(preset);
+    }, delay + 100);
+  }, 250);
+}
+
+
+/* ============================================================
+   CANVAS OPERATIONS
+   ============================================================ */
+
+function clearCanvas() {
+  STATE.nodes.forEach(n => n.el.remove());
+  STATE.connections.forEach(c => c.el.remove());
+  STATE.nodes = [];
+  STATE.connections = [];
+  STATE.selected = [];
+  STATE._presetShown = false;
+  document.getElementById('teamContainersLayer').innerHTML = '';
+  updateStats();
+  updateInspector();
+}
+
+function autoFit() {
+  if (STATE.nodes.length === 0) { resetView(); return; }
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  STATE.nodes.forEach(n => {
+    minX = Math.min(minX, n.x);
+    minY = Math.min(minY, n.y);
+    maxX = Math.max(maxX, n.x + STATE.nodeW);
+    maxY = Math.max(maxY, n.y + STATE.nodeH);
+  });
+
+  const area = document.getElementById('canvasArea').getBoundingClientRect();
+  const padding = 60;
+  const contentW = maxX - minX + padding * 2;
+  const contentH = maxY - minY + padding * 2;
+  const scaleX = area.width / contentW;
+  const scaleY = area.height / contentH;
+
+  STATE.zoom = Math.min(scaleX, scaleY, 1.5);
+  STATE.zoom = Math.max(STATE.zoom, 0.12);
+
+  STATE.panX = (area.width - contentW * STATE.zoom) / 2 - (minX - padding) * STATE.zoom;
+  STATE.panY = (area.height - contentH * STATE.zoom) / 2 - (minY - padding) * STATE.zoom;
+
+  updateTransform();
+  updateStats();
+}
+
+function resetView() {
+  STATE.zoom = 1;
+  STATE.panX = 0;
+  STATE.panY = 0;
+  updateTransform();
+  updateStats();
+}
+
+function zoomIn() {
+  const area = document.getElementById('canvasArea').getBoundingClientRect();
+  const cx = area.width / 2;
+  const cy = area.height / 2;
+  const oldZoom = STATE.zoom;
+  STATE.zoom = Math.min(3, STATE.zoom * 1.25);
+  STATE.panX = cx - (cx - STATE.panX) * (STATE.zoom / oldZoom);
+  STATE.panY = cy - (cy - STATE.panY) * (STATE.zoom / oldZoom);
+  updateTransform();
+  updateStats();
+}
+
+function zoomOut() {
+  const area = document.getElementById('canvasArea').getBoundingClientRect();
+  const cx = area.width / 2;
+  const cy = area.height / 2;
+  const oldZoom = STATE.zoom;
+  STATE.zoom = Math.max(0.1, STATE.zoom * 0.8);
+  STATE.panX = cx - (cx - STATE.panX) * (STATE.zoom / oldZoom);
+  STATE.panY = cy - (cy - STATE.panY) * (STATE.zoom / oldZoom);
+  updateTransform();
+  updateStats();
+}
+
+function deleteSelected() {
+  if (STATE.selected.length === 0) return;
+  const count = STATE.selected.length;
+  const toRemove = [...STATE.selected];
+  toRemove.forEach(id => removeNode(id));
+  drawTeamContainers();
+  flash('> USUNIETO ' + pad(count) + ' AGENTOW');
+}
+
+
+/* ============================================================
+   SAVE / EXPORT / LOAD
+   ============================================================ */
+function saveConfig() {
+  if (STATE.nodes.length === 0) {
+    flash('! BRAK AGENTOW NA CANVASIE', true);
+    return;
+  }
+
+  const name = 'CONFIG_' + pad(STATE.saved.length + 1) + '_' +
+    new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+  const config = {
+    name: name,
+    date: new Date().toLocaleString('pl-PL'),
+    nodeCount: STATE.nodes.length,
+    connCount: STATE.connections.length,
+    nodes: STATE.nodes.map(n => ({ id: n.id, x: n.x, y: n.y })),
+    connections: STATE.connections.map(c => ({ from: c.from, to: c.to })),
+    problem: document.getElementById('problemInput').value
+  };
+
+  STATE.saved.push(config);
+  populateSavedPanel();
+  flash('> ZAPISANO: ' + name);
+  statusFlash('CONFIG SAVED // ' + pad(config.nodeCount) + ' NODES');
+}
+
+function loadSaved(idx) {
+  const config = STATE.saved[idx];
+  if (!config) return;
+
+  showLoading('LOADING: ' + config.name);
+  clearCanvas();
+
+  setTimeout(() => {
+    config.nodes.forEach(n => createNode(n.id, n.x, n.y, false));
+    config.connections.forEach(c => createConnection(c.from, c.to));
+    drawTeamContainers();
+    if (config.problem) document.getElementById('problemInput').value = config.problem;
+    autoFit();
+    hideLoading();
+    flash('> ZALADOWANO: ' + config.name);
+    statusFlash('CONFIG LOADED');
+  }, 300);
+}
+
+function deleteSaved(idx) {
+  const name = STATE.saved[idx] ? STATE.saved[idx].name : '';
+  STATE.saved.splice(idx, 1);
+  populateSavedPanel();
+  flash('> USUNIETO: ' + name);
+}
+
+function exportConfig() {
+  if (STATE.nodes.length === 0) {
+    flash('! BRAK AGENTOW NA CANVASIE', true);
+    return;
+  }
+
+  const data = {
+    _generator: 'AGENT_TEAMS_CONFIGURATOR // NEON_FORGE',
+    _version: '1.0',
+    _exported: new Date().toISOString(),
+    problem: document.getElementById('problemInput').value,
+    agents: STATE.nodes.map(n => ({
+      id: n.id,
+      name: n.agentData.name,
+      model: n.agentData.model,
+      cat: n.agentData.cat,
+      team: n.agentData.team,
+      role: n.agentData.role,
+      position: { x: Math.round(n.x), y: Math.round(n.y) }
+    })),
+    connections: STATE.connections.map(c => ({
+      from: c.from,
+      to: c.to
+    })),
+    stats: {
+      total_agents: STATE.nodes.length,
+      total_connections: STATE.connections.length,
+      models: {
+        opus: STATE.nodes.filter(n => n.agentData.model === 'opus').length,
+        sonnet: STATE.nodes.filter(n => n.agentData.model === 'sonnet').length,
+        haiku: STATE.nodes.filter(n => n.agentData.model === 'haiku').length
+      }
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'agent_config_' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  flash('> EKSPORT UKONCZONY');
+  statusFlash('JSON EXPORTED // ' + pad(data.stats.total_agents) + ' AGENTS');
+}
+
+
+/* ============================================================
+   CANVAS INTERACTION — Mouse events
+   ============================================================ */
+const canvasArea = document.getElementById('canvasArea');
+const svg = document.getElementById('canvasSvg');
+
+/* ── Drop from sidebar ── */
+canvasArea.addEventListener('dragover', e => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+});
+
+canvasArea.addEventListener('drop', e => {
+  e.preventDefault();
+  const agentId = e.dataTransfer.getData('agent-id');
+  if (!agentId) return;
+
+  if (getNode(agentId)) {
+    flash('! AGENT JUZ NA CANVASIE: ' + agentId, true);
+    return;
+  }
+
+  const rect = canvasArea.getBoundingClientRect();
+  const x = (e.clientX - rect.left - STATE.panX) / STATE.zoom - STATE.nodeW / 2;
+  const y = (e.clientY - rect.top - STATE.panY) / STATE.zoom - STATE.nodeH / 2;
+
+  const node = createNode(agentId, x, y);
+  if (node) {
+    drawTeamContainers();
+    flash('> AGENT DODANY: ' + node.agentData.name);
+    statusFlash('NODE CREATED');
+  }
+});
+
+/* ── Mouse down ── */
+svg.addEventListener('mousedown', e => {
+  const anchor = e.target.closest('.node-anchor');
+  const nodeEl = e.target.closest('.node-group');
+
+  /* Start connection from anchor */
+  if (anchor) {
+    e.stopPropagation();
+    const fromId = anchor.dataset.node;
+    const fromNode = getNode(fromId);
+    if (!fromNode) return;
+
+    const cx = fromNode.x + parseFloat(anchor.getAttribute('cx'));
+    const cy = fromNode.y + parseFloat(anchor.getAttribute('cy'));
+
+    const tempLine = svgEl('path', {
+      'class': 'pcb-connection temp ' + modelClass(fromNode.agentData.model),
+      d: `M${cx},${cy} L${cx},${cy}`
+    });
+    document.getElementById('tempConnLayer').appendChild(tempLine);
+
+    STATE.connecting = {
+      fromId: fromId,
+      startX: cx,
+      startY: cy,
+      tempLine: tempLine
+    };
+    return;
+  }
+
+  /* Click on node */
+  if (nodeEl) {
+    const nodeId = nodeEl.dataset.id;
+    const node = getNode(nodeId);
+    if (!node) return;
+
+    if (e.shiftKey) {
+      selectNode(nodeId, true);
+    } else if (!STATE.selected.includes(nodeId)) {
+      selectNode(nodeId, false);
+    }
+
+    /* Start dragging */
+    const rect = canvasArea.getBoundingClientRect();
+    const mx = (e.clientX - rect.left - STATE.panX) / STATE.zoom;
+    const my = (e.clientY - rect.top - STATE.panY) / STATE.zoom;
+
+    STATE.dragging = {
+      id: nodeId,
+      offX: mx - node.x,
+      offY: my - node.y,
+      moved: false
+    };
+    return;
+  }
+
+  /* Pan canvas or selection rect */
+  if (e.button === 0) {
+    if (e.shiftKey) {
+      /* Start selection rectangle */
+      const rect = canvasArea.getBoundingClientRect();
+      const x = (e.clientX - rect.left - STATE.panX) / STATE.zoom;
+      const y = (e.clientY - rect.top - STATE.panY) / STATE.zoom;
+
+      const selRect = svgEl('rect', {
+        'class': 'selection-rect',
+        x: x, y: y, width: 0, height: 0
+      });
+      document.getElementById('tempConnLayer').appendChild(selRect);
+
+      STATE.selRect = { startX: x, startY: y, el: selRect };
+    } else {
+      /* Start panning */
+      STATE.panning = true;
+      STATE.panStart = {
+        x: e.clientX,
+        y: e.clientY,
+        px: STATE.panX,
+        py: STATE.panY
+      };
+      clearSelection();
+    }
+  }
+});
+
+/* ── Mouse move ── */
+svg.addEventListener('mousemove', e => {
+  const rect = canvasArea.getBoundingClientRect();
+  const mx = (e.clientX - rect.left - STATE.panX) / STATE.zoom;
+  const my = (e.clientY - rect.top - STATE.panY) / STATE.zoom;
+
+  /* Connection in progress */
+  if (STATE.connecting) {
+    const c = STATE.connecting;
+    c.tempLine.setAttribute('d', pcbPath(c.startX, c.startY, mx, my));
+    return;
+  }
+
+  /* Dragging node(s) */
+  if (STATE.dragging) {
+    STATE.dragging.moved = true;
+    const newX = mx - STATE.dragging.offX;
+    const newY = my - STATE.dragging.offY;
+
+    /* Multi-drag */
+    if (STATE.selected.length > 1 && STATE.selected.includes(STATE.dragging.id)) {
+      const dragNode = getNode(STATE.dragging.id);
+      const dx = newX - dragNode.x;
+      const dy = newY - dragNode.y;
+      STATE.selected.forEach(sid => {
+        const sn = getNode(sid);
+        if (sn) moveNode(sid, sn.x + dx, sn.y + dy);
+      });
+    } else {
+      moveNode(STATE.dragging.id, newX, newY);
+    }
+    drawTeamContainers();
+    return;
+  }
+
+  /* Panning */
+  if (STATE.panning) {
+    STATE.panX = STATE.panStart.px + (e.clientX - STATE.panStart.x);
+    STATE.panY = STATE.panStart.py + (e.clientY - STATE.panStart.y);
+    updateTransform();
+    updateStats();
+    return;
+  }
+
+  /* Selection rectangle */
+  if (STATE.selRect) {
+    const sr = STATE.selRect;
+    const w = mx - sr.startX;
+    const h = my - sr.startY;
+    sr.el.setAttribute('x', w < 0 ? mx : sr.startX);
+    sr.el.setAttribute('y', h < 0 ? my : sr.startY);
+    sr.el.setAttribute('width', Math.abs(w));
+    sr.el.setAttribute('height', Math.abs(h));
+  }
+});
+
+/* ── Mouse up ── */
+svg.addEventListener('mouseup', e => {
+  /* Finish connection */
+  if (STATE.connecting) {
+    const c = STATE.connecting;
+    c.tempLine.remove();
+
+    /* Check if over an anchor */
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    if (target) {
+      const anchor = target.closest ? target.closest('.node-anchor') : null;
+      if (anchor && anchor.dataset.node !== c.fromId) {
+        const conn = createConnection(c.fromId, anchor.dataset.node);
+        if (conn) {
+          flash('> POLACZENIE: ' + c.fromId + ' -> ' + anchor.dataset.node);
+          statusFlash('CONNECTION CREATED');
+        } else {
+          flash('! POLACZENIE JUZ ISTNIEJE', true);
+        }
+      }
+    }
+    STATE.connecting = null;
+    return;
+  }
+
+  /* Finish dragging */
+  if (STATE.dragging) {
+    if (STATE.dragging.moved) {
+      drawTeamContainers();
+      updateInspector();
+    }
+    STATE.dragging = null;
+    return;
+  }
+
+  /* Finish panning */
+  if (STATE.panning) {
+    STATE.panning = false;
+    updateStats();
+    return;
+  }
+
+  /* Finish selection rectangle */
+  if (STATE.selRect) {
+    const sr = STATE.selRect;
+    const rx = parseFloat(sr.el.getAttribute('x'));
+    const ry = parseFloat(sr.el.getAttribute('y'));
+    const rw = parseFloat(sr.el.getAttribute('width'));
+    const rh = parseFloat(sr.el.getAttribute('height'));
+    sr.el.remove();
+    STATE.selRect = null;
+
+    /* Select all nodes within the rectangle */
+    clearSelection();
+    let count = 0;
+    STATE.nodes.forEach(n => {
+      const nodeRight = n.x + STATE.nodeW;
+      const nodeBottom = n.y + STATE.nodeH;
+      if (nodeRight > rx && n.x < rx + rw && nodeBottom > ry && n.y < ry + rh) {
+        selectNode(n.id, true);
+        count++;
+      }
+    });
+    if (count > 0) {
+      statusFlash('SELECTED ' + pad(count) + ' NODES');
+    }
+  }
+});
+
+/* ── Mouse wheel — zoom ── */
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = canvasArea.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  const oldZoom = STATE.zoom;
+  const factor = e.deltaY > 0 ? 0.9 : 1.1;
+  STATE.zoom = Math.max(0.08, Math.min(4, STATE.zoom * factor));
+
+  /* Zoom towards mouse position */
+  STATE.panX = mx - (mx - STATE.panX) * (STATE.zoom / oldZoom);
+  STATE.panY = my - (my - STATE.panY) * (STATE.zoom / oldZoom);
+
+  updateTransform();
+  updateStats();
+}, { passive: false });
+
+/* ── Context menu ── */
+svg.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const nodeEl = e.target.closest('.node-group');
+  if (nodeEl) {
+    STATE.ctxTarget = nodeEl.dataset.id;
+    const menu = document.getElementById('ctxMenu');
+    menu.style.left = e.clientX + 'px';
+    menu.style.top = e.clientY + 'px';
+    menu.classList.add('show');
+  }
+});
+
+/* Close context menu on any click */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ctx-menu')) {
+    document.getElementById('ctxMenu').classList.remove('show');
+  }
+});
+
+/** Context menu actions */
+function ctxAction(action) {
+  const id = STATE.ctxTarget || (STATE.selected.length === 1 ? STATE.selected[0] : null);
+  if (!id && action !== 'connect') return;
+  document.getElementById('ctxMenu').classList.remove('show');
+
+  switch(action) {
+    case 'inspect':
+      selectNode(id, false);
+      break;
+
+    case 'connect':
+      if (STATE.connectFrom) {
+        if (id && STATE.connectFrom !== id) {
+          createConnection(STATE.connectFrom, id);
+          flash('> POLACZENIE: ' + STATE.connectFrom + ' -> ' + id);
+        }
+        STATE.connectFrom = null;
+      } else {
+        STATE.connectFrom = id;
+        flash('> KLIKNIJ DOCELOWEGO AGENTA (PPM > POLACZ)');
+      }
+      break;
+
+    case 'disconnect':
+      const removedCount = STATE.connections.filter(c => c.from === id || c.to === id).length;
+      STATE.connections = STATE.connections.filter(c => {
+        if (c.from === id || c.to === id) { c.el.remove(); return false; }
+        return true;
+      });
+      updateStats();
+      updateInspector();
+      flash('> ODLACZONO ' + pad(removedCount) + ' POLACZEN');
+      break;
+
+    case 'center': {
+      const node = getNode(id);
+      if (node) {
+        const area = canvasArea.getBoundingClientRect();
+        STATE.panX = area.width/2 - (node.x + STATE.nodeW/2) * STATE.zoom;
+        STATE.panY = area.height/2 - (node.y + STATE.nodeH/2) * STATE.zoom;
+        updateTransform();
+        updateStats();
+        statusFlash('CENTERED: ' + node.agentData.name);
+      }
+      break;
+    }
+
+    case 'delete':
+      removeNode(id);
+      drawTeamContainers();
+      flash('> USUNIETO: ' + id);
+      break;
+  }
+}
+
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+document.addEventListener('keydown', e => {
+  /* Don't capture when typing in inputs */
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  /* Delete / Backspace — remove selected */
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    if (STATE.selected.length > 0) {
+      deleteSelected();
+    }
+  }
+
+  /* Escape — clear selection or close overlay */
+  if (e.key === 'Escape') {
+    if (document.getElementById('learningOverlay').classList.contains('active')) {
+      toggleLearning();
+    } else {
+      clearSelection();
+    }
+  }
+
+  /* Ctrl+A — select all */
+  if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    STATE.nodes.forEach(n => selectNode(n.id, true));
+    statusFlash('SELECTED ALL: ' + pad(STATE.nodes.length));
+  }
+
+  /* Ctrl+F — auto fit */
+  if (e.key === 'f' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    autoFit();
+    statusFlash('AUTO-FIT');
+  }
+
+  /* Ctrl+S — save */
+  if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    saveConfig();
+  }
+
+  /* + / - — zoom */
+  if (e.key === '+' || e.key === '=') { zoomIn(); }
+  if (e.key === '-') { zoomOut(); }
+
+  /* R — reset view */
+  if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+    resetView();
+    statusFlash('VIEW RESET');
+  }
+});
+
+
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
+function showTooltip(e, agent) {
+  const tt = document.getElementById('tooltip');
+  tt.innerHTML = `
+    <div class="tt-title">${agent.name}</div>
+    <div class="tt-body">${agent.role}</div>
+    <div class="tt-model">${agent.model.toUpperCase()} // ${agent.cat} // ${agent.team}</div>
+  `;
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top = (e.clientY + 14) + 'px';
+  tt.classList.add('show');
+}
+
+function moveTooltip(e) {
+  const tt = document.getElementById('tooltip');
+  if (tt.classList.contains('show')) {
+    tt.style.left = (e.clientX + 14) + 'px';
+    tt.style.top = (e.clientY + 14) + 'px';
+  }
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').classList.remove('show');
+}
+
+
+/* ============================================================
+   MINIMAP
+   ============================================================ */
+function updateMinimap() {
+  const canvas = document.getElementById('minimapCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = '#0A0A0A';
+  ctx.fillRect(0, 0, w, h);
+
+  if (STATE.nodes.length === 0) return;
+
+  /* Calculate content bounds */
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  STATE.nodes.forEach(n => {
+    minX = Math.min(minX, n.x);
+    minY = Math.min(minY, n.y);
+    maxX = Math.max(maxX, n.x + STATE.nodeW);
+    maxY = Math.max(maxY, n.y + STATE.nodeH);
+  });
+
+  const pad = 40;
+  const cw = maxX - minX + pad * 2;
+  const ch = maxY - minY + pad * 2;
+  const scale = Math.min(w / cw, h / ch);
+  const ox = (w - cw * scale) / 2 - (minX - pad) * scale;
+  const oy = (h - ch * scale) / 2 - (minY - pad) * scale;
+
+  /* Draw connections */
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.3;
+  STATE.connections.forEach(c => {
+    const from = getNode(c.from);
+    const to = getNode(c.to);
+    if (!from || !to) return;
+
+    ctx.strokeStyle = modelHex(from.agentData.model);
+    ctx.beginPath();
+    ctx.moveTo(ox + (from.x + STATE.nodeW/2) * scale, oy + (from.y + STATE.nodeH) * scale);
+    ctx.lineTo(ox + (to.x + STATE.nodeW/2) * scale, oy + to.y * scale);
+    ctx.stroke();
+  });
+
+  /* Draw nodes */
+  ctx.globalAlpha = 0.8;
+  STATE.nodes.forEach(n => {
+    ctx.fillStyle = modelHex(n.agentData.model);
+    const nx = ox + n.x * scale;
+    const ny = oy + n.y * scale;
+    const nw = STATE.nodeW * scale;
+    const nh = STATE.nodeH * scale;
+    ctx.fillRect(nx, ny, Math.max(nw, 2), Math.max(nh, 1));
+  });
+
+  /* Draw viewport rectangle */
+  ctx.globalAlpha = 0.5;
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.lineWidth = 1;
+  const area = document.getElementById('canvasArea').getBoundingClientRect();
+  const vpX = ox + (-STATE.panX / STATE.zoom) * scale;
+  const vpY = oy + (-STATE.panY / STATE.zoom) * scale;
+  const vpW = (area.width / STATE.zoom) * scale;
+  const vpH = (area.height / STATE.zoom) * scale;
+  ctx.strokeRect(vpX, vpY, vpW, vpH);
+
+  ctx.globalAlpha = 1;
+}
+
+
+/* ============================================================
+   BENTO LEARNING MODE
+   ============================================================ */
+function toggleLearning() {
+  const overlay = document.getElementById('learningOverlay');
+  if (overlay.classList.contains('active')) {
+    overlay.classList.remove('active');
+    return;
+  }
+  overlay.classList.add('active');
+  populateLearningGrid();
+}
+
+function populateLearningGrid() {
+  const grid = document.getElementById('learnGrid');
+
+  const cards = [
+    /* Card 1: Overview */
+    {
+      tag: 'OVERVIEW', tagClass: '', title: 'DEEP_RESEARCH_X3.manifest', span: 'span2',
+      body: `<pre>$ cat DEEP_RESEARCH_X3.manifest
+> TEAMS:     3 (ALPHA, BETA, GAMMA)
+> AGENTS:    046
+> SHARED:    004 (orchestrator, syntetyk, analityk, planer)
+> PER_TEAM:  014 (6 res + 5 build + 3 qa)
+> PATTERN:   TRIPLE_FANOUT_PARALLEL_AGGREGATE
+> TOKENS:    ~1800-3600K
+> COST:      $2.00-6.00 per run
+> STATUS:    READY
+> GENERATOR: NEON_FORGE v1.0</pre>`
+    },
+
+    /* Card 2: Architecture */
+    {
+      tag: 'ARCHITEKTURA', tagClass: 'yellow', title: 'PATTERN: TRIPLE FANOUT', span: 'span2',
+      body: `<div class="term-line"><span class="prompt">$</span> <span class="white">Orkiestrator dekompozycja problemu</span></div>
+<div class="term-line"><span class="gt">&gt;</span> Planer + Analityk rownolegle</div>
+<div class="term-line"><span class="gt">&gt;</span> Syntetyk zbiera wyniki planowania</div>
+<div class="term-line"><span class="gt">&gt;</span> Fan-out do 3 niezaleznych teamow</div>
+<div class="term-line"><span class="gt">&gt;</span> Kazdy team: RESEARCH &rarr; BUILD &rarr; QA</div>
+<div class="term-line"><span class="gt">&gt;</span> 3x MGR_QA raportuje do Orkiestratora</div>
+<div class="term-line"><span class="prompt">$</span> <span class="cyan">Aggregate: porownanie 3 rozwiazan</span></div>
+<div class="term-line"><span class="prompt">$</span> <span class="white">Orkiestrator: GO/NO-GO decision</span></div>`
+    },
+
+    /* Card 3: Shared agents */
+    {
+      tag: 'SHARED AGENTS', tagClass: '', title: '// STRATEGIA + PLANOWANIE [004]', span: '',
+      body: `<div class="term-line"><span class="prompt">&gt;</span> <span class="white">ORKIESTRATOR</span> <span class="gt">[OPUS]</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">Master \u2014 centralny punkt decyzyjny</span></div>
+<div class="term-line"><span class="prompt">$</span> <span class="white">SYNTETYK</span> <span class="gt">[SONNET]</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">Pamiec cross-fazowa, MANIFEST.md</span></div>
+<div class="term-line"><span class="prompt">&gt;</span> <span class="white">ANALITYK</span> <span class="gt">[SONNET]</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">Dekompozycja na podzadania</span></div>
+<div class="term-line"><span class="prompt">#</span> <span class="white">PLANER</span> <span class="gt">[SONNET]</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">Harmonogram, sciezka krytyczna</span></div>`
+    },
+
+    /* Card 4: Research */
+    {
+      tag: 'RESEARCH', tagClass: 'cyan', title: '// 6 ZRODEL x 3 TEAMY = 018', span: '',
+      body: `<div class="term-line"><span class="prompt">$</span> <span class="cyan">RES_REDDIT</span> <span class="dim">\u2014 spolecznosci</span></div>
+<div class="term-line"><span class="prompt">$</span> <span class="cyan">RES_X</span> <span class="dim">\u2014 real-time trendy</span></div>
+<div class="term-line"><span class="prompt">$</span> <span class="cyan">RES_UX</span> <span class="dim">\u2014 wzorce UX</span></div>
+<div class="term-line"><span class="prompt">$</span> <span class="cyan">RES_GITHUB</span> <span class="dim">\u2014 repo, issues</span></div>
+<div class="term-line"><span class="prompt">$</span> <span class="cyan">RES_FORUM</span> <span class="dim">\u2014 SO, HN, fora</span></div>
+<div class="term-line"><span class="prompt">$</span> <span class="cyan">RES_DOCS</span> <span class="dim">\u2014 docs, RFC</span></div>
+<div style="margin-top:8px;border-top:1px solid var(--t3);padding-top:6px;">
+  <div class="term-line"><span class="dim">MODEL:</span> <span class="cyan">HAIKU</span> <span class="dim">(szybki, tani)</span></div>
+  <div class="term-line"><span class="dim">TOTAL:</span> <span class="white">18 researcherow (6 x 3)</span></div>
+</div>`
+    },
+
+    /* Card 5: Build pipeline */
+    {
+      tag: 'BUILD', tagClass: '', title: '// PIPELINE BUDOWANIA [005/team]', span: '',
+      body: `<pre>$ describe build_pipeline
+
+CRITIC  [SONNET]
+  &rarr; code review gate, analiza jakosci
+  |
+  +\u2500\u2500\u2500+\u2500\u2500\u2500+
+  |   |   |
+  v   v   v
+BACK FRONT FEAT  [SONNET x3]
+  &rarr; API  UI   e2e
+  |   |   |
+  +\u2500\u2500\u2500+\u2500\u2500\u2500+
+      |
+      v
+INTEGRATOR [SONNET]
+  &rarr; CI/CD, merge, deploy</pre>`
+    },
+
+    /* Card 6: QA */
+    {
+      tag: 'QA', tagClass: 'pink', title: '// QUALITY ASSURANCE [003/team]', span: '',
+      body: `<div class="term-line"><span class="err">!</span> <span class="white">QA_SEC</span> <span class="cyan">[HAIKU]</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">OWASP top 10, security audit</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">testy penetracyjne, vulns</span></div>
+<div class="term-line" style="margin-top:6px;"><span class="err">!</span> <span class="white">QA_QUAL</span> <span class="cyan">[HAIKU]</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">testy funkcjonalne, regresja</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">edge cases, integration tests</span></div>
+<div class="term-line" style="margin-top:6px;"><span class="prompt">&gt;</span> <span class="white">MGR_QA</span> <span class="gt">[SONNET]</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">koordynacja, raporty, gate final</span></div>
+<div class="term-line" style="padding-left:14px;"><span class="dim">raportuje do Orkiestratora</span></div>`
+    },
+
+    /* Card 7: Model distribution */
+    {
+      tag: 'MODELE', tagClass: 'yellow', title: '// ROZKLAD MODELI W SYSTEMIE', span: 'span2',
+      body: `<div style="display:flex;gap:20px;margin-top:6px;">
+<div style="flex:1;">
+  <div class="term-line"><span style="color:var(--neon3);">&#9608;&#9608;</span> <span class="white">OPUS</span></div>
+  <div class="term-line" style="padding-left:14px;"><span class="gt">001</span> agent</div>
+  <div class="term-line" style="padding-left:14px;"><span class="dim">Orkiestrator only</span></div>
+  <div class="term-line" style="padding-left:14px;"><span class="dim">~80K tok, ~$0.15</span></div>
+</div>
+<div style="flex:1;">
+  <div class="term-line"><span style="color:var(--neon1);">&#9608;&#9608;</span> <span class="white">SONNET</span></div>
+  <div class="term-line" style="padding-left:14px;"><span class="gt">021</span> agentow</div>
+  <div class="term-line" style="padding-left:14px;"><span class="dim">Build + strategia</span></div>
+  <div class="term-line" style="padding-left:14px;"><span class="dim">~840K tok, ~$1.05</span></div>
+</div>
+<div style="flex:1;">
+  <div class="term-line"><span style="color:var(--neon4);">&#9608;&#9608;</span> <span class="white">HAIKU</span></div>
+  <div class="term-line" style="padding-left:14px;"><span class="gt">024</span> agentow</div>
+  <div class="term-line" style="padding-left:14px;"><span class="dim">Research + QA</span></div>
+  <div class="term-line" style="padding-left:14px;"><span class="dim">~360K tok, ~$0.24</span></div>
+</div>
+</div>
+<div class="learn-bar-chart" style="margin-top:14px;">
+  <div class="learn-bar yellow" style="height:6px;"><div class="learn-bar-label">OPUS 1</div></div>
+  <div class="learn-bar" style="height:38px;"><div class="learn-bar-label">SONNET 21</div></div>
+  <div class="learn-bar cyan" style="height:44px;"><div class="learn-bar-label">HAIKU 24</div></div>
+</div>`
+    },
+
+    /* Card 8: Cost analysis */
+    {
+      tag: 'KOSZT', tagClass: 'pink', title: '// ANALIZA KOSZTOW DEEP_X3', span: 'span2',
+      body: `<pre>$ calculate --model=pricing --preset=DEEP_RESEARCH_X3
+
+OPUS   x  1:  ~80K tok   = ~$0.15/run
+SONNET x 21:  ~840K tok  = ~$1.05/run
+HAIKU  x 24:  ~360K tok  = ~$0.24/run
+\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+TOTAL (min):  ~1280K tok = ~$1.44
+TOTAL (max):  ~3600K tok = ~$6.00
+
+BREAKDOWN BY PHASE:
+  research:  $0.24 (17%)
+  build:     $1.05 (73%)
+  qa:        $0.15 (10%)</pre>
+<div style="margin-top:8px;">
+  <div class="term-line"><span class="err">!</span> <span class="dim">Koszt zalezy od zlozonosci problemu</span></div>
+  <div class="term-line"><span class="err">!</span> <span class="dim">Orkiestracja dodaje overhead ~10-20%</span></div>
+  <div class="term-line"><span class="err">!</span> <span class="dim">Retry-logic moze podwoic koszt</span></div>
+</div>`
+    },
+
+    /* Card 9: All presets */
+    {
+      tag: 'PRESETY', tagClass: 'cyan', title: '// WSZYSTKIE KONFIGURACJE', span: 'span4',
+      body: `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+<div style="border:1px solid var(--t3);padding:10px;">
+  <div class="term-line"><span class="prompt">$</span> <span class="white">SOLO</span></div>
+  <div class="term-line"><span class="cyan">002</span> agentow</div>
+  <div class="term-line" style="color:var(--neon2);">$0.05-0.15</div>
+  <div class="term-line"><span class="dim">Proste pytania, szybka analiza</span></div>
+</div>
+<div style="border:1px solid var(--t3);padding:10px;">
+  <div class="term-line"><span class="prompt">&gt;</span> <span class="white">QUICK_FIX</span></div>
+  <div class="term-line"><span class="cyan">003</span> agentow</div>
+  <div class="term-line" style="color:var(--neon2);">$0.10-0.30</div>
+  <div class="term-line"><span class="dim">Bug fixy, hotfixy</span></div>
+</div>
+<div style="border:1px solid var(--t3);padding:10px;">
+  <div class="term-line"><span class="prompt">#</span> <span class="white">TRIO</span></div>
+  <div class="term-line"><span class="cyan">004</span> agentow</div>
+  <div class="term-line" style="color:var(--neon2);">$0.20-0.50</div>
+  <div class="term-line"><span class="dim">Male featury, POC</span></div>
+</div>
+<div style="border:1px solid var(--t3);padding:10px;">
+  <div class="term-line"><span class="prompt">&gt;</span> <span class="white">STARTUP</span></div>
+  <div class="term-line"><span class="cyan">006</span> agentow</div>
+  <div class="term-line" style="color:var(--neon2);">$0.50-1.50</div>
+  <div class="term-line"><span class="dim">MVP, srednie projekty</span></div>
+</div>
+<div style="border:1px solid var(--t3);padding:10px;">
+  <div class="term-line"><span class="prompt">#</span> <span class="white">FULL_TEAM</span></div>
+  <div class="term-line"><span class="cyan">012</span> agentow</div>
+  <div class="term-line" style="color:var(--neon2);">$1.00-3.00</div>
+  <div class="term-line"><span class="dim">Pelny pipeline 1 team</span></div>
+</div>
+<div style="border:1px solid var(--t3);padding:10px;">
+  <div class="term-line"><span class="prompt">#</span> <span class="white">DEEP_RESEARCH</span></div>
+  <div class="term-line"><span class="cyan">018</span> agentow</div>
+  <div class="term-line" style="color:var(--neon2);">$1.50-4.00</div>
+  <div class="term-line"><span class="dim">Gleboki research + build</span></div>
+</div>
+<div style="border:2px solid var(--neon1);padding:10px;grid-column:span 2;">
+  <div class="term-line"><span class="prompt">#</span> <span style="color:var(--neon1);font-weight:700;">DEEP_RESEARCH_X3</span></div>
+  <div class="term-line"><span class="cyan">046</span> agentow | <span style="color:var(--neon2);">$2.00-6.00</span></div>
+  <div class="term-line"><span style="color:var(--neon1);">3 niezalezne pipelines, maksymalna eksploracja</span></div>
+</div>
+</div>`
+    },
+
+    /* Card 10: Keyboard shortcuts */
+    {
+      tag: 'STEROWANIE', tagClass: 'yellow', title: '// KEYBOARD SHORTCUTS', span: 'span2',
+      body: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 18px;">
+<div class="term-line"><span class="gt">[SHIFT+CLICK]</span> <span class="dim">Multi-select</span></div>
+<div class="term-line"><span class="gt">[SHIFT+DRAG]</span> <span class="dim">Selection rect</span></div>
+<div class="term-line"><span class="gt">[SCROLL]</span> <span class="dim">Zoom in/out</span></div>
+<div class="term-line"><span class="gt">[DRAG CANVAS]</span> <span class="dim">Pan view</span></div>
+<div class="term-line"><span class="gt">[CTRL+A]</span> <span class="dim">Select all nodes</span></div>
+<div class="term-line"><span class="gt">[CTRL+F]</span> <span class="dim">Auto-fit view</span></div>
+<div class="term-line"><span class="gt">[CTRL+S]</span> <span class="dim">Save config</span></div>
+<div class="term-line"><span class="gt">[DELETE]</span> <span class="dim">Usun zaznaczone</span></div>
+<div class="term-line"><span class="gt">[ESC]</span> <span class="dim">Zamknij / anuluj</span></div>
+<div class="term-line"><span class="gt">[R]</span> <span class="dim">Reset view</span></div>
+<div class="term-line"><span class="gt">[+/-]</span> <span class="dim">Zoom in/out</span></div>
+<div class="term-line"><span class="gt">[DBLCLICK]</span> <span class="dim">Dodaj agenta</span></div>
+<div class="term-line"><span class="gt">[DRAG ANCHOR]</span> <span class="dim">Polacz agentow</span></div>
+<div class="term-line"><span class="gt">[PPM]</span> <span class="dim">Menu kontekstowe</span></div>
+</div>`
+    },
+
+    /* Card 11: Data flow */
+    {
+      tag: 'FLOW', tagClass: '', title: '// DATA FLOW DIAGRAM', span: 'span2',
+      body: `<pre style="color:var(--neon1);line-height:1.9;">
+    PROBLEM
+       |
+       v
+  ORKIESTRATOR [OPUS]
+       |
+  +----+----+
+  |         |
+  v         v
+PLANER   ANALITYK
+  |         |
+  +----+----+
+       |
+       v
+   SYNTETYK
+   /   |   \\
+  v    v    v
+TEAM  TEAM  TEAM
+ALPHA BETA  GAMMA
+  |    |     |
+  v    v     v
+RES   RES   RES     (x6 each)
+  |    |     |
+  v    v     v
+CRIT  CRIT  CRIT    (review gate)
+  |    |     |
+  v    v     v
+BUILD BUILD BUILD   (x3 devs each)
+  |    |     |
+  v    v     v
+INTEG INTEG INTEG   (CI/CD merge)
+  |    |     |
+  v    v     v
+QA    QA    QA      (sec + qual)
+  |    |     |
+  v    v     v
+MGR   MGR   MGR     (QA manager)
+  \\    |    /
+   v   v   v
+  ORKIESTRATOR
+       |
+       v
+    WYNIK</pre>`
+    },
+
+    /* Card 12: Tips */
+    {
+      tag: 'TIPS', tagClass: '', title: '// WSKAZOWKI UZYTKOWANIA', span: 'span4',
+      body: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div style="border-left:2px solid var(--neon1);padding-left:12px;">
+  <div class="term-line"><span class="prompt">01.</span> <span class="white">ZACZNIJ OD PRESETU</span></div>
+  <div class="term-line"><span class="dim">Zaladuj gotowy preset z panelu PRESETY. Mozesz potem dostosowac \u2014 usunac zbednych agentow lub dodac nowych.</span></div>
+</div>
+<div style="border-left:2px solid var(--neon3);padding-left:12px;">
+  <div class="term-line"><span class="prompt">02.</span> <span class="white">LACZ AGENTOW</span></div>
+  <div class="term-line"><span class="dim">Przeciagnij z anchora (kolko na krawedzi) jednego agenta do anchora drugiego. Polaczenia ukladaja sie w PCB-style (90 stopni).</span></div>
+</div>
+<div style="border-left:2px solid var(--neon4);padding-left:12px;">
+  <div class="term-line"><span class="prompt">03.</span> <span class="white">ZAPISUJ KONFIGURACJE</span></div>
+  <div class="term-line"><span class="dim">Uzyj ZAPISZ aby zachowac w sesji. EKSPORTUJ generuje JSON do pobrania. Konfiguracje mozesz pozniej zaladowac z zakladki ZAPISANE.</span></div>
+</div>
+<div style="border-left:2px solid var(--neon2);padding-left:12px;">
+  <div class="term-line"><span class="prompt">04.</span> <span class="white">INSPEKTOR TERMINALA</span></div>
+  <div class="term-line"><span class="dim">Kliknij agenta na canvasie aby zobaczyc szczegoly w prawym panelu. Terminal-style wyswietla model, role, polaczenia, pozycje i akcje.</span></div>
+</div>
+</div>`
+    }
+  ];
+
+  /* Render cards */
+  grid.innerHTML = '';
+  cards.forEach((card, i) => {
+    const div = document.createElement('div');
+    div.className = 'learn-card' + (card.span ? ' ' + card.span : '');
+    div.innerHTML = `
+      <div class="learn-card-tag ${card.tagClass}">${card.tag}</div>
+      <div class="learn-card-title">${card.title}</div>
+      <div class="learn-card-body">${card.body}</div>
+    `;
+    grid.appendChild(div);
+
+    /* Stagger entrance animation */
+    setTimeout(() => div.classList.add('visible'), 60 + i * 70);
+  });
+}
+
+
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
+function init() {
+  /* Populate sidebar panels */
+  populateAgentPanel();
+  populatePresetPanel();
+  populateSavedPanel();
+
+  /* Set initial transform */
+  updateTransform();
+  updateStats();
+
+  /* Load the main DEEP_RESEARCH_X3 preset by default */
+  setTimeout(() => {
+    loadPreset(0);
+  }, 350);
+
+  /* Status message */
+  statusFlash('NEON_FORGE INITIALIZED');
+}
+
+/* Launch */
+document.addEventListener('DOMContentLoaded', init);
+
+/* Prevent default context menu on the whole page */
+document.addEventListener('contextmenu', e => {
+  if (!e.target.closest('#canvasSvg')) {
+    /* Allow default on non-canvas areas for dev tools */
+  }
+});
+</script>
+</body>
+</html>

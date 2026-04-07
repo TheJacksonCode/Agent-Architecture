@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Architecture Designer v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#050A14;--bg2:#0C1425;--bg3:#111E33;--bg4:#0F1929;
+--amber:#F5A623;--teal:#2DD4A0;--red:#E85D75;--blue:#5B8DEF;--purple:#A78BFA;
+--t1:#E8E0D6;--t2:#9B8E82;--t3:#6B6058;--t4:#4A4038;
+--border:#1A2540;
+--hd:'Space Grotesk',sans-serif;--bd:'Inter',sans-serif;--mn:'JetBrains Mono',monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--t1);font-family:var(--bd);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(245,166,35,.2);border-radius:2px}
+
+/* ================================================================
+   TOP BAR
+   ================================================================ */
+.topbar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:rgba(12,20,37,.95);border-bottom:1px solid rgba(245,166,35,.08);z-index:100;flex-shrink:0}
+.topbar-brand{font-family:var(--hd);font-size:13px;font-weight:700;color:var(--amber);white-space:nowrap}
+.topbar-problem{flex:1;display:flex;align-items:center;gap:8px}
+.topbar-problem textarea{flex:1;height:36px;padding:6px 12px;border:1px solid rgba(245,166,35,.12);border-radius:8px;background:rgba(5,10,20,.6);color:var(--t1);font-family:var(--bd);font-size:12px;resize:none;outline:none;transition:border-color .2s}
+.topbar-problem textarea:focus{border-color:rgba(245,166,35,.4)}
+.topbar-problem textarea::placeholder{color:var(--t3)}
+.topbar-actions{display:flex;gap:6px;flex-shrink:0}
+.btn{padding:7px 14px;border-radius:7px;font-family:var(--hd);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid}
+.btn-amber{border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.08);color:var(--amber)}
+.btn-amber:hover{background:rgba(245,166,35,.18)}
+.btn-teal{border-color:rgba(45,212,160,.3);background:rgba(45,212,160,.08);color:var(--teal)}
+.btn-teal:hover{background:rgba(45,212,160,.18)}
+.btn-red{border-color:rgba(232,93,117,.3);background:rgba(232,93,117,.08);color:var(--red)}
+.btn-red:hover{background:rgba(232,93,117,.18)}
+.btn-big{padding:9px 20px;font-size:12px}
+
+/* ================================================================
+   MAIN LAYOUT: LEFT PALETTE | CANVAS | RIGHT DETAILS
+   ================================================================ */
+.app-layout{display:flex;flex:1;overflow:hidden}
+
+/* LEFT: PALETTE */
+.palette{width:260px;flex-shrink:0;background:rgba(8,14,26,.95);border-right:1px solid rgba(245,166,35,.06);display:flex;flex-direction:column;overflow:hidden}
+.palette-header{padding:10px 14px;border-bottom:1px solid rgba(245,166,35,.06);display:flex;justify-content:space-between;align-items:center}
+.palette-header h3{font-family:var(--hd);font-size:13px;font-weight:700;color:var(--teal)}
+.palette-search{margin:8px 10px;padding:6px 10px;border:1px solid rgba(155,142,130,.1);border-radius:6px;background:rgba(5,10,20,.5);color:var(--t1);font-size:11px;outline:none}
+.palette-search:focus{border-color:rgba(45,212,160,.3)}
+.palette-scroll{flex:1;overflow-y:auto;padding:4px 0;min-height:0}
+.pal-cat{padding:6px 14px;font-family:var(--mn);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-top:4px}
+.pal-agent{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:grab;transition:all .15s;border-left:2px solid transparent;user-select:none}
+.pal-agent:hover{background:rgba(45,212,160,.03);border-left-color:var(--teal)}
+.pal-agent:active{cursor:grabbing}
+.pal-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:1.5px solid rgba(155,142,130,.15);background:rgba(5,10,20,.5);flex-shrink:0}
+.pal-info{flex:1;min-width:0}
+.pal-name{font-family:var(--hd);font-size:11px;font-weight:600;color:var(--t1)}
+.pal-role{font-size:9px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pal-model{font-family:var(--mn);font-size:8px;padding:1px 5px;border-radius:3px}
+.m-opus{background:rgba(245,166,35,.08);color:var(--amber)}.m-sonnet{background:rgba(45,212,160,.08);color:var(--teal)}.m-haiku{background:rgba(91,141,239,.08);color:var(--blue)}
+
+/* Preset section */
+.preset-section{padding:6px 8px;border-top:1px solid rgba(245,166,35,.08);max-height:280px;overflow-y:auto;flex-shrink:0}
+.preset-section-title{font-family:var(--mn);font-size:8px;color:var(--t3);letter-spacing:.1em;margin-bottom:4px;padding:0 2px;display:flex;justify-content:space-between;align-items:center}
+.preset-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:5px 8px;margin-bottom:3px;border:1px solid rgba(155,142,130,.06);border-radius:6px;background:rgba(5,10,20,.3);color:var(--t2);font-family:var(--hd);font-size:10px;cursor:pointer;transition:all .15s;text-align:left;gap:4px}
+.preset-btn:hover{border-color:rgba(245,166,35,.2);color:var(--amber);background:rgba(245,166,35,.03)}
+.preset-btn.active{border-color:rgba(245,166,35,.35);color:var(--amber);background:rgba(245,166,35,.05)}
+.pb-icon{font-size:12px;flex-shrink:0;width:16px;text-align:center}
+.pb-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-meta{font-family:var(--mn);font-size:8px;color:var(--t3);flex-shrink:0;white-space:nowrap}
+
+/* ================================================================
+   CENTER: CANVAS
+   ================================================================ */
+.canvas-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+.canvas-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(245,166,35,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,.015) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+#connectionSvg{position:absolute;inset:0;z-index:1;pointer-events:none}
+#connectionSvg line{transition:stroke .2s}
+#connectionSvg .conn-hit{stroke:transparent;stroke-width:12;pointer-events:stroke;cursor:pointer}
+
+/* Canvas nodes */
+.c-node{position:absolute;z-index:10;cursor:grab;user-select:none;transition:box-shadow .2s}
+.c-node:active{cursor:grabbing;z-index:20}
+.c-node.selected{z-index:15}
+.c-node-inner{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px 6px;border-radius:12px;border:1.5px solid rgba(155,142,130,.12);background:rgba(12,20,37,.9);backdrop-filter:blur(8px);min-width:72px;transition:all .2s}
+.c-node:hover .c-node-inner{border-color:rgba(245,166,35,.3);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.c-node.selected .c-node-inner{border-color:var(--amber);box-shadow:0 0 20px rgba(245,166,35,.2)}
+.c-node-orb{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid;position:relative}
+.c-node-label{font-family:var(--hd);font-size:9px;font-weight:600;text-align:center;max-width:70px;line-height:1.2}
+.c-node-model{font-family:var(--mn);font-size:7px;padding:1px 4px;border-radius:2px;margin-top:1px}
+.c-node-load{width:36px;height:3px;border-radius:2px;background:rgba(155,142,130,.1);margin-top:2px;overflow:hidden}
+.c-node-load-fill{height:100%;border-radius:2px}
+
+/* Node colors */
+.nc-amber .c-node-orb{border-color:rgba(245,166,35,.5);background:radial-gradient(circle,rgba(245,166,35,.12),rgba(245,166,35,.03));box-shadow:0 0 15px rgba(245,166,35,.15)}
+.nc-amber .c-node-label{color:var(--amber)}
+.nc-teal .c-node-orb{border-color:rgba(45,212,160,.4);background:radial-gradient(circle,rgba(45,212,160,.1),rgba(45,212,160,.02));box-shadow:0 0 12px rgba(45,212,160,.1)}
+.nc-teal .c-node-label{color:var(--teal)}
+.nc-blue .c-node-orb{border-color:rgba(91,141,239,.4);background:radial-gradient(circle,rgba(91,141,239,.1),rgba(91,141,239,.02));box-shadow:0 0 12px rgba(91,141,239,.1)}
+.nc-blue .c-node-label{color:var(--blue)}
+.nc-muted .c-node-orb{border-color:rgba(155,142,130,.2);background:radial-gradient(circle,rgba(155,142,130,.04),transparent)}
+.nc-muted .c-node-label{color:var(--t2)}
+.nc-red .c-node-orb{border-color:rgba(232,93,117,.4);background:radial-gradient(circle,rgba(232,93,117,.1),rgba(232,93,117,.02));box-shadow:0 0 12px rgba(232,93,117,.1)}
+.nc-red .c-node-label{color:var(--red)}
+.nc-purple .c-node-orb{border-color:rgba(167,139,250,.4);background:radial-gradient(circle,rgba(167,139,250,.1),rgba(167,139,250,.02));box-shadow:0 0 12px rgba(167,139,250,.1)}
+.nc-purple .c-node-label{color:var(--purple)}
+
+/* Connection anchor dots */
+.c-node-anchor{position:absolute;width:10px;height:10px;border-radius:50%;background:rgba(245,166,35,.3);border:1px solid rgba(245,166,35,.5);cursor:crosshair;opacity:0;transition:opacity .2s;z-index:5}
+.c-node:hover .c-node-anchor{opacity:1}
+.c-node-anchor.top{top:-5px;left:50%;transform:translateX(-50%)}
+.c-node-anchor.bottom{bottom:-5px;left:50%;transform:translateX(-50%)}
+.c-node-anchor:hover{background:var(--amber);transform:translateX(-50%) scale(1.3)}
+
+/* Canvas toolbar */
+.canvas-toolbar{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:50;padding:6px 10px;background:rgba(12,20,37,.9);border:1px solid rgba(245,166,35,.1);border-radius:10px;backdrop-filter:blur(10px)}
+.canvas-toolbar .btn{padding:5px 12px;font-size:10px}
+.canvas-info{position:absolute;top:10px;left:10px;font-family:var(--mn);font-size:9px;color:var(--t3);z-index:5;pointer-events:none}
+
+/* ================================================================
+   RIGHT: DETAILS PANEL
+   ================================================================ */
+.details{width:320px;flex-shrink:0;background:rgba(8,14,26,.95);border-left:1px solid rgba(245,166,35,.06);display:flex;flex-direction:column;overflow:hidden}
+.details-header{padding:10px 14px;border-bottom:1px solid rgba(245,166,35,.06)}
+.details-header h3{font-family:var(--hd);font-size:13px;font-weight:700;color:var(--amber)}
+.details-scroll{flex:1;overflow-y:auto;padding:12px}
+.details-empty{padding:40px 20px;text-align:center;color:var(--t3);font-size:12px}
+
+/* Detail sections */
+.det-section{margin-bottom:14px}
+.det-label{font-family:var(--mn);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.det-value{font-size:13px;color:var(--t2);line-height:1.6}
+.det-card{padding:10px 12px;border:1px solid rgba(155,142,130,.08);border-radius:8px;background:rgba(5,10,20,.4);margin-bottom:8px}
+.det-card h4{font-family:var(--hd);font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.det-card p{font-size:11px;color:var(--t2);line-height:1.6}
+
+/* Model selector in details */
+.det-models{display:flex;gap:4px;margin-top:6px}
+.det-model{flex:1;padding:6px;border:1.5px solid rgba(155,142,130,.08);border-radius:6px;text-align:center;cursor:pointer;transition:all .15s;background:rgba(5,10,20,.3)}
+.det-model:hover{border-color:rgba(245,166,35,.2)}
+.det-model.active{box-shadow:0 0 8px rgba(245,166,35,.1)}
+.det-model.act-opus{border-color:rgba(245,166,35,.5);background:rgba(245,166,35,.05)}
+.det-model.act-sonnet{border-color:rgba(45,212,160,.5);background:rgba(45,212,160,.05)}
+.det-model.act-haiku{border-color:rgba(91,141,239,.5);background:rgba(91,141,239,.05)}
+.det-model-name{font-family:var(--hd);font-size:11px;font-weight:700}
+.det-model-cost{font-family:var(--mn);font-size:8px;color:var(--t3)}
+
+/* Prompt textarea in details */
+.det-prompt{width:100%;min-height:180px;padding:10px;border:1px solid rgba(245,166,35,.1);border-radius:8px;background:rgba(0,0,0,.2);color:var(--t2);font-family:var(--mn);font-size:11px;line-height:1.6;resize:vertical;outline:none;transition:border-color .2s}
+.det-prompt:focus{border-color:rgba(245,166,35,.35)}
+
+/* Connections list */
+.det-conn{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(155,142,130,.06);border-radius:6px;margin-bottom:3px;font-size:11px;color:var(--t2)}
+.det-conn-arrow{color:var(--amber);font-weight:700;font-size:14px}
+.det-conn-del{margin-left:auto;cursor:pointer;color:var(--t3);font-size:12px;transition:color .2s}
+.det-conn-del:hover{color:var(--red)}
+
+/* Preset info in details panel */
+.pi-badge{font-family:var(--mn);font-size:11px;color:var(--amber);padding:4px 10px;border:1px solid rgba(245,166,35,.15);border-radius:6px;display:inline-block;background:rgba(245,166,35,.03)}
+.pi-cost-row{display:flex;gap:12px;margin:6px 0}
+.pi-cost-val{font-family:var(--mn);font-size:13px;font-weight:600}
+.pi-list{list-style:none;padding:0;margin:0}
+.pi-list li{font-size:11px;margin:3px 0;padding:2px 0}
+.pi-pro{color:var(--teal)}.pi-con{color:var(--red)}
+.pi-hint{margin-top:12px;font-size:10px;color:var(--t3);padding:8px;border:1px solid rgba(155,142,130,.06);border-radius:6px;background:rgba(5,10,20,.3);line-height:1.5}
+
+/* ================================================================
+   FINAL PROMPT MODAL
+   ================================================================ */
+.modal-overlay{position:fixed;inset:0;background:rgba(5,10,20,.85);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{width:90%;max-width:800px;max-height:85vh;background:rgba(12,20,37,.98);border:1px solid rgba(245,166,35,.2);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.modal-header{padding:16px 20px;border-bottom:1px solid rgba(245,166,35,.08);display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{font-family:var(--hd);font-size:18px;font-weight:700;color:var(--amber)}
+.modal-body{flex:1;overflow-y:auto;padding:20px}
+.modal-body textarea{width:100%;min-height:400px;padding:16px;border:1px solid rgba(245,166,35,.1);border-radius:10px;background:rgba(0,0,0,.25);color:var(--t1);font-family:var(--mn);font-size:12px;line-height:1.7;resize:vertical;outline:none}
+.modal-footer{padding:12px 20px;border-top:1px solid rgba(245,166,35,.08);display:flex;justify-content:flex-end;gap:8px}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media(max-width:1100px){.details{width:260px}}
+@media(max-width:900px){.palette{width:200px}.details{width:220px}}
+@media(max-width:700px){.palette{display:none}.details{display:none}.canvas-wrap{width:100%}}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">&#9734; Agent Designer</div>
+  <div class="topbar-problem">
+    <textarea id="problemInput" placeholder="Opisz swoj problem / case / projekt tutaj... np. 'Chce stworzyc SaaS dashboard do analizy danych z Next.js + Supabase'"></textarea>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-teal" onclick="generateFinalPrompt()">&#9889; Generuj Final Prompt</button>
+    <button class="btn btn-amber" onclick="saveCase()">&#128190; Zapisz</button>
+    <button class="btn btn-red" onclick="clearCanvas()">&#128465; Wyczysc</button>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="app-layout">
+
+  <!-- LEFT: AGENT PALETTE -->
+  <div class="palette" id="palette">
+    <div class="palette-header"><h3>&#129302; Agenci</h3><span style="font-size:9px;color:var(--t3)">PRZECIAGNIJ</span></div>
+    <input class="palette-search" id="paletteSearch" placeholder="&#128269; Szukaj agenta..." oninput="filterPalette()">
+    <div class="palette-scroll" id="paletteScroll"></div>
+    <div class="preset-section" id="presetSection">
+      <div class="preset-section-title"><span>PRESETY</span><span id="presetCount">15</span></div>
+      <!-- Preset buttons rendered by JS -->
+    </div>
+  </div>
+
+  <!-- CENTER: CANVAS -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="canvas-grid"></div>
+    <svg id="connectionSvg"></svg>
+    <div class="canvas-info" id="canvasInfo">Agentow: 0 | Polaczen: 0</div>
+    <div class="canvas-toolbar">
+      <button class="btn btn-amber" id="connectModeBtn" onclick="toggleConnectMode()">&#128279; Polacz</button>
+      <button class="btn btn-red" onclick="deleteSelected()">&#128465; Usun zaznaczone</button>
+    </div>
+    <!-- Nodes rendered here dynamically -->
+  </div>
+
+  <!-- RIGHT: DETAILS -->
+  <div class="details" id="detailsPanel">
+    <div class="details-header"><h3>&#128203; Szczegoly</h3></div>
+    <div class="details-scroll" id="detailsScroll">
+      <div class="details-empty">Kliknij agenta na canvasie lub w palecie, aby zobaczyc szczegoly.<br><br>Przeciagnij agentow z lewego panelu na canvas.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL PROMPT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header"><h2>&#9889; Final Prompt do Claude Code</h2><button class="btn btn-red" onclick="closeModal()">&#10005; Zamknij</button></div>
+    <div class="modal-body"><textarea id="finalPromptArea" readonly></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-amber btn-big" onclick="copyFinalPrompt()">&#128203; Kopiuj do schowka</button>
+      <button class="btn btn-teal btn-big" onclick="closeModal()">Gotowe</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// AGENT DEFINITIONS (palette data)
+// ================================================================
+const AGENT_DEFS = [
+  // STRATEGY
+  { cat:'STRATEGIA', id:'orchestrator', name:'Orkiestrator', icon:'\u2734', color:'amber', model:'opus', load:50,
+    role:'Centralny punkt decyzyjny. Analizuje zadanie, dekomponuje, deleguje, syntetyzuje wyniki.',
+    tools:'Agent (sub-agenty), Read/Write, Bash, TaskCreate',
+    prompt:'Jestes Master Orkiestratorem. NIE generujesz tresci - ZARZADZASZ SYSTEMEM.\n\nTWOJE OBOWIAZKI:\n1. Dekompozycja zadania na podzadania\n2. Delegowanie do wyspecjalizowanych agentow\n3. Kontrola gate\'ow miedzy fazami\n4. Synteza wynikow i rozwiazywanie konfliktow\n5. GO/NO-GO decisions\n\nZASADY:\n- Kazdy agent dostaje TYLKO swoj kontekst\n- MANIFEST.md jako shared scratchpad\n- Max 10 krokow sekwencyjnych\n- Eskaluj do uzytkownika decyzje krytyczne',
+    connType:'source' },
+  { cat:'STRATEGIA', id:'synthesizer', name:'Syntetyk', icon:'\u26A1', color:'purple', model:'sonnet', load:65,
+    role:'Pamiec cross-fazowa. Utrzymuje MANIFEST.md. Syntetyzuje wyniki miedzy fazami.',
+    tools:'Read/Write (MANIFEST.md)',
+    prompt:'Jestes Syntetykiem - "pamiec systemu". Utrzymujesz MANIFEST.md.\n\nPo kazdej fazie:\n1. Zbierz kluczowe wyniki\n2. Zaktualizuj sekcje w MANIFEST.md:\n   - Decyzje Architektoniczne\n   - Stack Technologiczny\n   - Design System\n   - Known Risks\n   - Reference Materials\n3. Wyciagnij wnioski cross-fazowe\n4. Oznacz sprzecznosci miedzy agentami',
+    connType:'both' },
+
+  // PLANNING
+  { cat:'PLANOWANIE', id:'analyst', name:'Analityk', icon:'\u269B', color:'teal', model:'sonnet', load:55,
+    role:'Dekompozycja zlozonych problemow na niezalezne podzadania z zaleznosami.',
+    tools:'Read (wymagania), Write (plan dekompozycji)',
+    prompt:'Jestes Analitykiem. Rozloz problem na NIEZALEZNE podzadania.\n\nDla kazdego podzadania okresl:\n1. Zakres funkcjonalny\n2. Co wymaga researchu vs implementacji\n3. Wymagania techniczne i UX/designowe\n4. Zaleznosci od innych podzadan\n5. Zlozonosc: S/M/L/XL\n\nOutput: strukturalny plan w Markdown.',
+    connType:'both' },
+  { cat:'PLANOWANIE', id:'planner', name:'Planer', icon:'\u2699', color:'teal', model:'sonnet', load:40,
+    role:'Harmonogram operacji. Co rownolegle, co sekwencyjne, sciezka krytyczna.',
+    tools:'Read (plan analityka), Write (harmonogram)',
+    prompt:'Jestes Planerem. Na podstawie dekompozycji Analityka:\n\n1. Co moze biec ROWNOLEGLE\n2. Co jest SEKWENCYJNE (z zaleznosci)\n3. Punkty synchronizacji (gate\'y)\n4. Estymacja czasu na faze\n5. Sciezka krytyczna\n\nOutput: harmonogram timeline z gate\'ami.',
+    connType:'both' },
+
+  // RESEARCH
+  { cat:'RESEARCH', id:'res_tech', name:'Researcher Tech', icon:'\uD83D\uDD0D', color:'blue', model:'haiku', load:55,
+    role:'Badania techniczne: frameworki, API, architektura, benchmarki.',
+    tools:'WebSearch, WebFetch, Read (dokumentacja)',
+    prompt:'Jestes Technical Researcher.\n\nDla kazdego zagadnienia:\n- Porownaj min. 3 opcje (framework/biblioteka/podejscie)\n- Podaj pros/cons kazdej opcji\n- Rekomenduj najlepsza z uzasadnieniem\n- Podaj snippet kodu setup/konfiguracji\n- Sprawdz znane issues i ograniczenia\n\nKazde twierdzenie z URL zrodla.\nFormat: {temat, opcje[], rekomendacja, uzasadnienie, zrodlo}',
+    connType:'sink' },
+  { cat:'RESEARCH', id:'res_ux', name:'Researcher UX', icon:'\uD83C\uDFA8', color:'blue', model:'haiku', load:50,
+    role:'Trendy UI/UX, inspiracje z Dribbble/Behance/Awwwards, accessibility.',
+    tools:'WebSearch, WebFetch',
+    prompt:'Jestes UX Researcher.\n\nZbadaj:\n- Top 10 wizualnych przykladow w tej kategorii\n- Aktualne trendy UI: kolory, typografia, layout\n- Mikro-interakcje i animacje\n- Dark mode vs light mode\n- Accessibility patterns (WCAG 2.1 AA)\n\nZrodla: Dribbble, Behance, Awwwards, Mobbin, Nielsen Norman.\nOutput: opisowy mood board z referencjami.',
+    connType:'sink' },
+  { cat:'RESEARCH', id:'res_reddit', name:'Researcher Reddit', icon:'\uD83D\uDCAC', color:'blue', model:'haiku', load:50,
+    role:'Reddit: niefiltrowane opinie, realne doswiadczenia, porownania.',
+    tools:'WebSearch, WebFetch',
+    prompt:'Jestes Reddit Researcher.\n\nPrzeszukaj subreddity: r/webdev, r/programming, r/reactjs, r/SaaS\n(dostosuj do domeny projektu)\n\nSzukaj:\n- Dyskusje o podobnych projektach\n- Narzekania na istniejace rozwiazania (= szanse)\n- Rekomendacje stacku z realnych doswiadczen\n- Porownania narzedzi z perspektywy userow\n\nOutput: TOP 10 insightow z linkami do watkow.',
+    connType:'sink' },
+  { cat:'RESEARCH', id:'res_x', name:'Researcher X', icon:'\uD835\uDD4F', color:'blue', model:'haiku', load:45,
+    role:'X/Twitter: trendy, eksperci, launche, kontrowersyjne opinie.',
+    tools:'WebSearch, WebFetch',
+    prompt:'Jestes X/Twitter Researcher.\n\nSzukaj wg hashtagow i kont ekspertow:\n- Najnowsze trendy od key influencers\n- Launche podobnych produktow i reakcje\n- Techniczne thready z poradami\n- Kontrowersyjne opinie (czesto cenne insights)\n\nOutput: TOP 10 postow z kontekstem i analiza.',
+    connType:'sink' },
+  { cat:'RESEARCH', id:'res_github', name:'Researcher GitHub', icon:'\uD83D\uDCBB', color:'blue', model:'haiku', load:55,
+    role:'GitHub: repozytoria open-source, architektura, issues, wzorce.',
+    tools:'WebSearch, WebFetch',
+    prompt:'Jestes GitHub Researcher.\n\nSzukaj repozytoriow open-source podobnych do projektu:\n- Najwyzszy engagement (stars, forks, activity)\n- Architektura plikow i folderow\n- Uzyty stack i dlaczego (README)\n- Issues i PR - jakie problemy\n- Ciekawe wzorce implementacji\n\nOutput: TOP 5 repo z analiza architektury.',
+    connType:'sink' },
+  { cat:'RESEARCH', id:'res_forums', name:'Researcher Forum', icon:'\uD83C\uDF10', color:'blue', model:'haiku', load:50,
+    role:'Stack Overflow, Dev.to, Medium, HackerNews: tutoriale, lessons learned.',
+    tools:'WebSearch, WebFetch',
+    prompt:'Jestes Forum & Blog Researcher.\n\nPrzeszukaj: Stack Overflow, Dev.to, Medium, Hashnode, HN\n\nSzukaj:\n- Tutoriale dla wybranego stacku\n- Najczestsze bledy w tym typie projektow\n- Porownania performance roznych podejsc\n- Posty "lessons learned"\n- Problemy z integracjami\n\nOutput: TOP 10 artykulow z takeaways.',
+    connType:'sink' },
+  { cat:'RESEARCH', id:'res_docs', name:'Researcher Docs', icon:'\uD83D\uDCDA', color:'blue', model:'haiku', load:40,
+    role:'Oficjalne dokumentacje, RFC, changelogi, best practices.',
+    tools:'WebSearch, WebFetch, Read',
+    prompt:'Jestes Official Docs Researcher.\n\nZbierz z oficjalnych dokumentacji:\n- Getting started guides\n- Best practices\n- Performance optimization\n- Security guidelines\n- Config snippety i boilerplate\n\nOutput: ustrukturyzowany index z excerptami.',
+    connType:'sink' },
+  { cat:'RESEARCH', id:'res_critic', name:'Research Critic', icon:'\uD83D\uDC41', color:'red', model:'sonnet', load:85,
+    role:'Walidacja wynikow researchu. Sprawdza sprzecznosci, bias, luki.',
+    tools:'Read (raporty researcherow)',
+    prompt:'Jestes Research Critic. WALIDACJA wynikow Researcherow:\n\n1. Sprzecznosci miedzy raportami\n2. Wiarygodnosc zrodel (docs > blog > tweet)\n3. Confirmation bias\n4. LUKI - czego brakuje\n\nRubrika (per Researcher):\n- Completeness 25%, Accuracy 25%\n- Relevance 20%, Freshness 20%, Actionability 10%\n\nWynik < 6/10 = REVISE z pytaniami.\nOutput: zbiorczy raport z ocenami.',
+    connType:'both' },
+
+  // BUILD
+  { cat:'BUILD', id:'backend', name:'Backend Dev', icon:'\uD83D\uDD27', color:'muted', model:'sonnet', load:75,
+    role:'API endpoints, logika biznesowa, modele danych, testy.',
+    tools:'Write, Edit, Bash (testy), Read',
+    prompt:'Jestes Backend Developer.\n\nImplementuj backend wg specyfikacji:\n- API-first (endpointy, schematy, walidacja)\n- Testy jednostkowe dla kluczowej logiki\n- Error handling z sensownymi komunikatami\n- Dokumentacja API (OpenAPI/Swagger)\n- Env vars zamiast hardcoded config\n- TDD: test PRZED implementacja',
+    connType:'sink' },
+  { cat:'BUILD', id:'frontend', name:'Frontend Dev', icon:'\uD83C\uDF10', color:'muted', model:'sonnet', load:70,
+    role:'Komponenty UI, routing, state management, responsive layout.',
+    tools:'Write, Edit, Bash, Read',
+    prompt:'Jestes Frontend Developer.\n\nImplementuj UI wg specyfikacji:\n- Responsive design (mobile-first)\n- Komponenty reuzywalne\n- Obsluga stanow ladowania i bledow\n- Accessibility (aria, keyboard nav)\n- Spojnosc z design systemem\n- Performance (lazy loading, code split)',
+    connType:'sink' },
+  { cat:'BUILD', id:'feature', name:'Feature Dev', icon:'\uD83D\uDE80', color:'muted', model:'sonnet', load:65,
+    role:'Specjalne feature: real-time, AI, data viz, integracje.',
+    tools:'Write, Edit, Bash, Read',
+    prompt:'Jestes Feature Developer.\n\nImplementujesz SPECJALNE feature:\n- Real-time communication (WebSocket)\n- AI/ML integrations\n- Complex data visualizations\n- Third-party API integrations\n- Features ktore nie pasuja do standard backend/frontend',
+    connType:'sink' },
+  { cat:'BUILD', id:'designer', name:'Designer', icon:'\uD83C\uDFA8', color:'muted', model:'sonnet', load:55,
+    role:'CSS/SCSS, layout HTML, animacje, ikony SVG, design system.',
+    tools:'Write, Edit, Read',
+    prompt:'Jestes Designerem.\n\nStworz warstwe wizualna:\n- CSS/SCSS z design tokenami\n- Layout HTML (grid/flexbox)\n- Animacje i mikro-interakcje\n- Ikony SVG\n- Dark/light mode\n- Spojnosc z design systemem',
+    connType:'sink' },
+  { cat:'BUILD', id:'integrator', name:'Integrator', icon:'\uD83D\uDD17', color:'muted', model:'sonnet', load:70,
+    role:'Laczenie wynikow od workerow w spojny projekt. Rozwiazywanie konfliktow.',
+    tools:'Read, Write, Edit, Bash',
+    prompt:'Jestes Integratorem.\n\nPolacz prace workerow:\n- Upewnij sie ze API contracts sa spojne\n- Rozwiaz konflikty (CSS naming vs JS naming)\n- Stworz E2E test sprawdzajacy caly flow\n- Zweryfikuj ze MANIFEST.md jest spelniony\n- Wyprodukuj zintegrowany output',
+    connType:'both' },
+  { cat:'BUILD', id:'writer', name:'Redaktor', icon:'\u270D', color:'muted', model:'sonnet', load:35,
+    role:'README, CHANGELOG, komentarze, dokumentacja techniczna.',
+    tools:'Read, Write',
+    prompt:'Jestes Redaktorem.\n\nStworz dokumentacje:\n- README.md z instrukcja uruchomienia\n- API docs (jesli REST/GraphQL)\n- CHANGELOG.md\n- Komentarze w kodzie TYLKO dla nietrywianych decyzji\n- Styl: zwiezly, techniczny, bez marketingu',
+    connType:'sink' },
+
+  // QA
+  { cat:'QA / AUDYT', id:'qa_security', name:'QA Security', icon:'\uD83D\uDD12', color:'red', model:'haiku', load:50,
+    role:'Audyt bezpieczenstwa: OWASP Top 10, secrets, CORS, CVEs.',
+    tools:'Read, Grep, Bash',
+    prompt:'Jestes QA Security Auditor.\n\nSzukaj WYLACZNIE podatnosci:\n- OWASP Top 10 (injection, XSS, SSRF...)\n- Hardcoded secrets i credentials\n- Niezabezpieczone endpointy\n- Wyciek danych w logach/errors\n- Dependency vulnerabilities (CVE)\n\nNIE naprawiasz - RAPORTUJESZ.\n{severity, lokalizacja, opis, remediacja}',
+    connType:'sink' },
+  { cat:'QA / AUDYT', id:'qa_quality', name:'QA Quality', icon:'\u2705', color:'red', model:'haiku', load:55,
+    role:'Testy, edge cases, code smells, zgodnosc z wymaganiami.',
+    tools:'Read, Grep, Bash (testy)',
+    prompt:'Jestes QA Quality Auditor.\n\nSprawdz:\n- Zgodnosc z wymaganiami (kazde = check)\n- Pokrycie testami (ktore sciezki brak)\n- Edge cases i error handling\n- Performance (N+1, duze bundle)\n- Code smells i tech debt\n\n{kategoria, severity, lokalizacja, opis, sugestia}',
+    connType:'sink' },
+  { cat:'QA / AUDYT', id:'qa_perf', name:'QA Performance', icon:'\u23F1', color:'red', model:'haiku', load:45,
+    role:'Benchmarki wydajnosci, latencja, memory leaks, bundle size.',
+    tools:'Bash (benchmarki), Read',
+    prompt:'Jestes QA Performance Auditor.\n\nZmierz:\n- Response time endpointow\n- Bundle size (frontend)\n- Memory usage i leaks\n- Database query performance\n- Core Web Vitals (LCP, FID, CLS)\n\nOutput: raport z benchmarkami i rekomendacjami.',
+    connType:'sink' },
+  { cat:'QA / AUDYT', id:'qa_manager', name:'Manager QA', icon:'\uD83D\uDCDD', color:'red', model:'sonnet', load:50,
+    role:'Zbiera raporty QA, priorytetyzuje, GO/NO-GO recommendation.',
+    tools:'Read (raporty), Write (zbiorczy raport)',
+    prompt:'Jestes Manager QA.\n\nZbierz raporty od QA agentow:\n1. Priorytetyzuj: CRITICAL > HIGH > MEDIUM > LOW\n2. Stworz ZBIORCZY RAPORT:\n   - Issues posortowane wg severity\n   - Recommended fix order\n   - Ocena ogolna 1-10\n   - GO/NO-GO recommendation\n3. Jesli NO-GO: lista taskow naprawczych\n\nMax 2 iteracje naprawcze, potem eskaluj.',
+    connType:'both' },
+];
+
+// Auto-inject model info into prompts
+const MODEL_INFO = {
+  opus: '[MODEL: Claude Opus 4.6 | 1M context | Cena: $15/$75 per 1M tokenow in/out]',
+  sonnet: '[MODEL: Claude Sonnet 4.6 | 200K context | Cena: $3/$15 per 1M tokenow in/out]',
+  haiku: '[MODEL: Claude Haiku 4.5 | 200K context | Cena: $0.80/$4 per 1M tokenow in/out]'
+};
+AGENT_DEFS.forEach(def => {
+  def.prompt = MODEL_INFO[def.model] + '\n\n' + def.prompt;
+});
+
+// ================================================================
+// STATE
+// ================================================================
+let nodes = []; // { id, defId, x, y, model, customPrompt }
+let connections = []; // { id, fromId, toId, type:'one'|'two'|'continuous' }
+let selectedNodeId = null;
+let connectMode = false;
+let connectFrom = null;
+let dragging = null;
+let dragOff = { x:0, y:0 };
+let idCounter = 0;
+let activePresetId = null;
+
+// ================================================================
+// RENDER PALETTE
+// ================================================================
+function renderPalette() {
+  const scroll = document.getElementById('paletteScroll');
+  let html = '', lastCat = '';
+  AGENT_DEFS.forEach(def => {
+    if (def.cat !== lastCat) { html += `<div class="pal-cat">${def.cat}</div>`; lastCat = def.cat; }
+    const mc = def.model === 'opus' ? 'm-opus' : def.model === 'sonnet' ? 'm-sonnet' : 'm-haiku';
+    html += `<div class="pal-agent" data-def-id="${def.id}" draggable="true" ondragstart="onPalDragStart(event,'${def.id}')" onclick="showDefDetails('${def.id}')">
+      <div class="pal-icon">${def.icon}</div>
+      <div class="pal-info"><div class="pal-name">${def.name}</div><div class="pal-role">${def.role.substring(0,40)}...</div></div>
+      <span class="pal-model ${mc}">${def.model.toUpperCase()}</span>
+    </div>`;
+  });
+  scroll.innerHTML = html;
+}
+
+function filterPalette() {
+  const q = document.getElementById('paletteSearch').value.toLowerCase();
+  document.querySelectorAll('.pal-agent').forEach(el => {
+    const name = el.querySelector('.pal-name').textContent.toLowerCase();
+    const role = el.querySelector('.pal-role').textContent.toLowerCase();
+    el.style.display = (name.includes(q) || role.includes(q)) ? '' : 'none';
+  });
+}
+
+// ================================================================
+// DRAG FROM PALETTE TO CANVAS
+// ================================================================
+function onPalDragStart(e, defId) {
+  e.dataTransfer.setData('defId', defId);
+}
+const canvasWrap = document.getElementById('canvasWrap');
+canvasWrap.addEventListener('dragover', e => e.preventDefault());
+canvasWrap.addEventListener('drop', e => {
+  e.preventDefault();
+  const defId = e.dataTransfer.getData('defId');
+  if (!defId) return;
+  const rect = canvasWrap.getBoundingClientRect();
+  addNodeFromDef(defId, e.clientX - rect.left - 36, e.clientY - rect.top - 30);
+});
+
+function addNodeFromDef(defId, x, y) {
+  const def = AGENT_DEFS.find(d => d.id === defId);
+  if (!def) return;
+  const id = 'n' + (idCounter++);
+  nodes.push({ id, defId, x: Math.max(10,x), y: Math.max(10,y), model: def.model, customPrompt: def.prompt });
+  renderNodes();
+  selectNode(id);
+  updateInfo();
+}
+
+// ================================================================
+// RENDER CANVAS NODES
+// ================================================================
+function renderNodes() {
+  // Remove old nodes
+  canvasWrap.querySelectorAll('.c-node').forEach(el => el.remove());
+  nodes.forEach(node => {
+    const def = AGENT_DEFS.find(d => d.id === node.defId);
+    if (!def) return;
+    const colorClass = { amber:'nc-amber', teal:'nc-teal', blue:'nc-blue', muted:'nc-muted', red:'nc-red', purple:'nc-purple' }[def.color] || 'nc-muted';
+    const mc = node.model === 'opus' ? 'm-opus' : node.model === 'sonnet' ? 'm-sonnet' : 'm-haiku';
+    const load = def.load + (node.model === 'haiku' ? 10 : node.model === 'opus' ? -15 : 0);
+    const loadColor = load >= 80 ? 'var(--red)' : load >= 55 ? 'var(--amber)' : 'var(--teal)';
+
+    const el = document.createElement('div');
+    el.className = `c-node ${colorClass}` + (node.id === selectedNodeId ? ' selected' : '');
+    el.id = node.id;
+    el.style.left = node.x + 'px';
+    el.style.top = node.y + 'px';
+    el.innerHTML = `
+      <div class="c-node-anchor top" data-node="${node.id}" data-pos="top"></div>
+      <div class="c-node-inner">
+        <div class="c-node-orb">${def.icon}</div>
+        <div class="c-node-label">${def.name}</div>
+        <span class="c-node-model ${mc}">${node.model.toUpperCase()}</span>
+        <div class="c-node-load"><div class="c-node-load-fill" style="width:${Math.min(100,load)}%;background:${loadColor}"></div></div>
+      </div>
+      <div class="c-node-anchor bottom" data-node="${node.id}" data-pos="bottom"></div>`;
+
+    // Mouse events for drag
+    el.addEventListener('mousedown', e => {
+      if (e.target.classList.contains('c-node-anchor')) {
+        onAnchorClick(node.id);
+        return;
+      }
+      if (connectMode) { onAnchorClick(node.id); return; }
+      dragging = node;
+      dragOff.x = e.clientX - node.x;
+      dragOff.y = e.clientY - node.y;
+      e.preventDefault();
+    });
+    el.addEventListener('click', e => {
+      if (!connectMode) selectNode(node.id);
+    });
+
+    canvasWrap.appendChild(el);
+  });
+  renderConnections();
+}
+
+// ================================================================
+// DRAG NODES ON CANVAS
+// ================================================================
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const rect = canvasWrap.getBoundingClientRect();
+  dragging.x = Math.max(0, Math.min(rect.width - 80, e.clientX - dragOff.x));
+  dragging.y = Math.max(0, Math.min(rect.height - 80, e.clientY - dragOff.y));
+  const el = document.getElementById(dragging.id);
+  if (el) { el.style.left = dragging.x + 'px'; el.style.top = dragging.y + 'px'; }
+  renderConnections();
+});
+document.addEventListener('mouseup', () => { dragging = null; });
+
+// ================================================================
+// CONNECTIONS (SVG with arrows)
+// ================================================================
+function onAnchorClick(nodeId) {
+  if (!connectFrom) {
+    connectFrom = nodeId;
+    document.getElementById(nodeId)?.classList.add('selected');
+  } else if (connectFrom !== nodeId) {
+    // Check if connection exists
+    const exists = connections.some(c => (c.fromId===connectFrom && c.toId===nodeId) || (c.fromId===nodeId && c.toId===connectFrom));
+    if (!exists) {
+      connections.push({ id:'c'+(idCounter++), fromId:connectFrom, toId:nodeId, type:'one' });
+      renderConnections();
+      updateInfo();
+    }
+    document.getElementById(connectFrom)?.classList.remove('selected');
+    connectFrom = null;
+    if (!connectMode) connectMode = false;
+  }
+}
+
+function toggleConnectMode() {
+  connectMode = !connectMode;
+  connectFrom = null;
+  const btn = document.getElementById('connectModeBtn');
+  btn.textContent = connectMode ? '\uD83D\uDD17 Kliknij 2 agentow...' : '\uD83D\uDD17 Polacz';
+  btn.style.background = connectMode ? 'rgba(245,166,35,.2)' : '';
+}
+
+function renderConnections() {
+  const svg = document.getElementById('connectionSvg');
+  const rect = canvasWrap.getBoundingClientRect();
+  svg.setAttribute('width', rect.width);
+  svg.setAttribute('height', rect.height);
+
+  // Arrow marker defs
+  let html = `<defs>
+    <marker id="arrowOne" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(245,166,35,.6)"/></marker>
+    <marker id="arrowTwo" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6" fill="rgba(45,212,160,.6)"/></marker>
+    <marker id="arrowCont" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(167,139,250,.6)"/></marker>
+  </defs>`;
+
+  connections.forEach(conn => {
+    const from = nodes.find(n => n.id === conn.fromId);
+    const to = nodes.find(n => n.id === conn.toId);
+    if (!from || !to) return;
+
+    const x1 = from.x + 36, y1 = from.y + 40;
+    const x2 = to.x + 36, y2 = to.y + 10;
+
+    const colors = { one:'rgba(245,166,35,.35)', two:'rgba(45,212,160,.35)', continuous:'rgba(167,139,250,.35)' };
+    const markers = { one:'url(#arrowOne)', two:'url(#arrowTwo)', continuous:'url(#arrowCont)' };
+    const color = colors[conn.type] || colors.one;
+    const dashArray = conn.type === 'continuous' ? '' : '6 4';
+    const marker = markers[conn.type] || markers.one;
+
+    // Curved line
+    const mx = (x1+x2)/2, my = (y1+y2)/2 - 20;
+    html += `<path d="M${x1},${y1} Q${mx},${my} ${x2},${y2}" fill="none" stroke="${color}" stroke-width="2" stroke-dasharray="${dashArray}" marker-end="${marker}"/>`;
+    // Animated dot
+    html += `<circle r="3" fill="${color.replace('.35','.7')}"><animateMotion dur="2s" repeatCount="indefinite" path="M${x1},${y1} Q${mx},${my} ${x2},${y2}"/></circle>`;
+    // Hit area for clicking connection type
+    html += `<path class="conn-hit" d="M${x1},${y1} Q${mx},${my} ${x2},${y2}" fill="none" stroke="transparent" stroke-width="14" pointer-events="stroke" style="cursor:pointer" onclick="cycleConnType('${conn.id}')"/>`;
+
+    // If two-way, add reverse arrow
+    if (conn.type === 'two') {
+      html += `<path d="M${x2},${y2} Q${mx},${my+40} ${x1},${y1}" fill="none" stroke="rgba(45,212,160,.2)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrowTwo)"/>`;
+    }
+  });
+
+  // Drawing line while connecting
+  if (connectFrom && connectMode) {
+    const from = nodes.find(n => n.id === connectFrom);
+    if (from) {
+      html += `<line x1="${from.x+36}" y1="${from.y+40}" x2="${from.x+36}" y2="${from.y+40}" stroke="rgba(245,166,35,.3)" stroke-width="2" stroke-dasharray="4 4" id="tempLine"/>`;
+    }
+  }
+
+  svg.innerHTML = html;
+}
+
+function cycleConnType(connId) {
+  const conn = connections.find(c => c.id === connId);
+  if (!conn) return;
+  const types = ['one','two','continuous'];
+  const idx = types.indexOf(conn.type);
+  conn.type = types[(idx+1)%types.length];
+  renderConnections();
+  if (selectedNodeId) showNodeDetails(selectedNodeId);
+}
+
+// ================================================================
+// SELECT NODE & SHOW DETAILS
+// ================================================================
+function selectNode(nodeId) {
+  selectedNodeId = nodeId;
+  canvasWrap.querySelectorAll('.c-node').forEach(el => el.classList.toggle('selected', el.id === nodeId));
+  showNodeDetails(nodeId);
+}
+
+function showNodeDetails(nodeId) {
+  const node = nodes.find(n => n.id === nodeId);
+  if (!node) return;
+  const def = AGENT_DEFS.find(d => d.id === node.defId);
+  if (!def) return;
+
+  const outConns = connections.filter(c => c.fromId === nodeId);
+  const inConns = connections.filter(c => c.toId === nodeId);
+  const typeLabels = { one:'\u2192 jednokierunkowe', two:'\u21C4 dwukierunkowe', continuous:'\u21CB ci\u0105g\u0142e' };
+
+  const load = def.load + (node.model === 'haiku' ? 10 : node.model === 'opus' ? -15 : 0);
+  const loadColor = load >= 80 ? 'var(--red)' : load >= 55 ? 'var(--amber)' : 'var(--teal)';
+  const loadWarn = load >= 80 ? '<br><span style="color:var(--red)">\u26A0 BOTTLENECK - zmien model na Opus lub podziel agenta</span>' : '';
+
+  let html = `
+    <div class="det-card"><h4>${def.icon} ${def.name}</h4><p>${def.role}</p></div>
+
+    <div class="det-section"><div class="det-label">NARZEDZIA</div><div class="det-value" style="font-size:11px">${def.tools}</div></div>
+
+    <div class="det-section"><div class="det-label">MODEL</div>
+      <div class="det-models">
+        <div class="det-model ${node.model==='opus'?'active act-opus':''}" onclick="changeModel('${nodeId}','opus')"><div class="det-model-name" style="color:var(--amber)">Opus</div><div class="det-model-cost">1M ctx / $$$</div></div>
+        <div class="det-model ${node.model==='sonnet'?'active act-sonnet':''}" onclick="changeModel('${nodeId}','sonnet')"><div class="det-model-name" style="color:var(--teal)">Sonnet</div><div class="det-model-cost">200K ctx / $$</div></div>
+        <div class="det-model ${node.model==='haiku'?'active act-haiku':''}" onclick="changeModel('${nodeId}','haiku')"><div class="det-model-name" style="color:var(--blue)">Haiku</div><div class="det-model-cost">200K ctx / $</div></div>
+      </div>
+    </div>
+
+    <div class="det-section"><div class="det-label">OBCIAZENIE: ${Math.min(100,load)}%</div>
+      <div style="width:100%;height:6px;border-radius:3px;background:rgba(155,142,130,.1);overflow:hidden;margin:4px 0">
+        <div style="width:${Math.min(100,load)}%;height:100%;background:${loadColor};border-radius:3px"></div>
+      </div>
+      <div style="font-size:10px;color:var(--t3)">${inConns.length} input(ow), ${outConns.length} output(ow)${loadWarn}</div>
+    </div>
+
+    <div class="det-section"><div class="det-label">POLACZENIA WYCHODZACE (${outConns.length})</div>`;
+  outConns.forEach(c => {
+    const target = nodes.find(n => n.id === c.toId);
+    const tDef = target ? AGENT_DEFS.find(d => d.id === target.defId) : null;
+    html += `<div class="det-conn"><span class="det-conn-arrow">\u2192</span>${tDef?tDef.name:'?'} <span style="font-size:9px;color:var(--t3)">(${typeLabels[c.type]})</span><span class="det-conn-del" onclick="deleteConn('${c.id}')">\u2715</span></div>`;
+  });
+  html += `</div><div class="det-section"><div class="det-label">POLACZENIA PRZYCHODZACE (${inConns.length})</div>`;
+  inConns.forEach(c => {
+    const source = nodes.find(n => n.id === c.fromId);
+    const sDef = source ? AGENT_DEFS.find(d => d.id === source.defId) : null;
+    html += `<div class="det-conn"><span class="det-conn-arrow">\u2190</span>${sDef?sDef.name:'?'} <span style="font-size:9px;color:var(--t3)">(${typeLabels[c.type]})</span><span class="det-conn-del" onclick="deleteConn('${c.id}')">\u2715</span></div>`;
+  });
+
+  html += `</div><div class="det-section"><div class="det-label">PROMPT AGENTA <span style="color:var(--t3);font-weight:400">(edytowalny)</span></div>
+    <textarea class="det-prompt" id="nodePrompt" oninput="saveNodePrompt('${nodeId}')">${node.customPrompt || def.prompt}</textarea>
+  </div>`;
+
+  document.getElementById('detailsScroll').innerHTML = html;
+}
+
+function showDefDetails(defId) {
+  const def = AGENT_DEFS.find(d => d.id === defId);
+  if (!def) return;
+  let html = `
+    <div class="det-card"><h4>${def.icon} ${def.name}</h4><p>${def.role}</p></div>
+    <div class="det-section"><div class="det-label">NARZEDZIA</div><div class="det-value" style="font-size:11px">${def.tools}</div></div>
+    <div class="det-section"><div class="det-label">DOMYSLNY MODEL</div><div class="det-value">${def.model.toUpperCase()}</div></div>
+    <div class="det-section"><div class="det-label">DOMYSLNY PROMPT</div>
+      <textarea class="det-prompt" readonly style="min-height:200px">${def.prompt}</textarea>
+    </div>
+    <div style="margin-top:10px"><button class="btn btn-teal btn-big" onclick="addToCenter('${def.id}')" style="width:100%">+ Dodaj na canvas</button></div>`;
+  document.getElementById('detailsScroll').innerHTML = html;
+}
+
+function addToCenter(defId) {
+  const rect = canvasWrap.getBoundingClientRect();
+  addNodeFromDef(defId, rect.width/2 - 36 + (Math.random()-.5)*100, rect.height/2 - 30 + (Math.random()-.5)*100);
+}
+
+function changeModel(nodeId, model) {
+  const node = nodes.find(n => n.id === nodeId);
+  if (node) {
+    // Update model header in prompt
+    const headerRe = /^\[MODEL:.*?\]\n\n/;
+    if (node.customPrompt.match(headerRe)) {
+      node.customPrompt = node.customPrompt.replace(headerRe, MODEL_INFO[model] + '\n\n');
+    }
+    node.model = model;
+    renderNodes();
+    selectNode(nodeId);
+  }
+}
+
+function saveNodePrompt(nodeId) {
+  const node = nodes.find(n => n.id === nodeId);
+  const ta = document.getElementById('nodePrompt');
+  if (node && ta) node.customPrompt = ta.value;
+}
+
+function deleteConn(connId) {
+  connections = connections.filter(c => c.id !== connId);
+  renderConnections();
+  if (selectedNodeId) showNodeDetails(selectedNodeId);
+  updateInfo();
+}
+
+function deleteSelected() {
+  if (!selectedNodeId) return;
+  nodes = nodes.filter(n => n.id !== selectedNodeId);
+  connections = connections.filter(c => c.fromId !== selectedNodeId && c.toId !== selectedNodeId);
+  selectedNodeId = null;
+  renderNodes();
+  document.getElementById('detailsScroll').innerHTML = '<div class="details-empty">Zaznacz agenta na canvasie.</div>';
+  updateInfo();
+}
+
+function clearCanvas() {
+  if (!confirm('Wyczysc caly canvas?')) return;
+  nodes = []; connections = []; selectedNodeId = null; connectFrom = null; idCounter = 0; activePresetId = null;
+  renderNodes(); updateInfo();
+  document.getElementById('detailsScroll').innerHTML = '<div class="details-empty">Przeciagnij agentow z palety.</div>';
+  highlightPresetBtn(null);
+}
+
+function updateInfo() {
+  document.getElementById('canvasInfo').textContent = `Agentow: ${nodes.length} | Polaczen: ${connections.length}`;
+}
+
+// ================================================================
+// PRESETS (15 configurations)
+// ================================================================
+const PRESETS = {
+  // 1. Solo + Walidator (2)
+  solo: [
+    { def:'orchestrator', x:300, y:60 },
+    { def:'backend', x:300, y:220 },
+  ],
+  // 2. Recon Squad (3)
+  recon: [
+    { def:'orchestrator', x:300, y:30 },
+    { def:'res_tech', x:180, y:160 },
+    { def:'backend', x:420, y:160 },
+  ],
+  // 3. Classic Trio (3)
+  trio: [
+    { def:'backend', x:160, y:60 },
+    { def:'frontend', x:440, y:60 },
+    { def:'qa_quality', x:300, y:220 },
+  ],
+  // 4. Reflective Loop (3)
+  reflect: [
+    { def:'res_tech', x:300, y:30 },
+    { def:'analyst', x:300, y:170 },
+    { def:'res_critic', x:300, y:310 },
+  ],
+  // 5. Content Pipeline (4)
+  content: [
+    { def:'res_forums', x:140, y:40 },
+    { def:'res_tech', x:460, y:40 },
+    { def:'writer', x:300, y:190 },
+    { def:'qa_quality', x:300, y:340 },
+  ],
+  // 6. Plan & Execute (4)
+  plan_exec: [
+    { def:'analyst', x:300, y:20 },
+    { def:'planner', x:300, y:140 },
+    { def:'backend', x:300, y:260 },
+    { def:'qa_quality', x:300, y:380 },
+  ],
+  // 7. Startup MVP (5)
+  startup: [
+    { def:'orchestrator', x:300, y:20 },
+    { def:'analyst', x:300, y:120 },
+    { def:'res_tech', x:160, y:230 },
+    { def:'backend', x:440, y:230 },
+    { def:'qa_quality', x:300, y:340 },
+  ],
+  // 8. Cascade Cost (5)
+  cascade: [
+    { def:'res_tech', x:120, y:30 },
+    { def:'res_docs', x:480, y:30 },
+    { def:'backend', x:180, y:170 },
+    { def:'qa_quality', x:420, y:170 },
+    { def:'orchestrator', x:300, y:320 },
+  ],
+  // 9. Security Audit (6)
+  security: [
+    { def:'orchestrator', x:300, y:15 },
+    { def:'backend', x:300, y:120 },
+    { def:'qa_security', x:110, y:250 },
+    { def:'qa_quality', x:300, y:250 },
+    { def:'qa_perf', x:490, y:250 },
+    { def:'qa_manager', x:300, y:380 },
+  ],
+  // 10. Code Review Pipeline (6)
+  review: [
+    { def:'orchestrator', x:300, y:10 },
+    { def:'analyst', x:300, y:110 },
+    { def:'backend', x:160, y:220 },
+    { def:'frontend', x:440, y:220 },
+    { def:'qa_security', x:160, y:350 },
+    { def:'qa_quality', x:440, y:350 },
+  ],
+  // 11. Standard Dev (8)
+  standard: [
+    { def:'orchestrator', x:300, y:15 },
+    { def:'analyst', x:200, y:100 },
+    { def:'planner', x:400, y:100 },
+    { def:'res_tech', x:140, y:200 },
+    { def:'res_ux', x:460, y:200 },
+    { def:'backend', x:180, y:310 },
+    { def:'frontend', x:420, y:310 },
+    { def:'qa_security', x:300, y:410 },
+  ],
+  // 12. Research Swarm (9)
+  research: [
+    { def:'orchestrator', x:300, y:5 },
+    { def:'res_tech', x:30, y:120 },
+    { def:'res_reddit', x:140, y:120 },
+    { def:'res_github', x:250, y:120 },
+    { def:'res_forums', x:360, y:120 },
+    { def:'res_docs', x:470, y:120 },
+    { def:'res_x', x:580, y:120 },
+    { def:'res_critic', x:300, y:260 },
+    { def:'synthesizer', x:300, y:390 },
+  ],
+  // 13. Full-Stack SaaS (10)
+  saas: [
+    { def:'orchestrator', x:300, y:5 },
+    { def:'analyst', x:300, y:85 },
+    { def:'res_tech', x:140, y:170 },
+    { def:'res_ux', x:460, y:170 },
+    { def:'backend', x:100, y:270 },
+    { def:'frontend', x:300, y:270 },
+    { def:'designer', x:500, y:270 },
+    { def:'integrator', x:300, y:370 },
+    { def:'qa_security', x:180, y:460 },
+    { def:'qa_quality', x:420, y:460 },
+  ],
+  // 14. Full Hierarchy (13)
+  full: [
+    { def:'orchestrator', x:300, y:10 },
+    { def:'analyst', x:210, y:90 },
+    { def:'planner', x:400, y:90 },
+    { def:'res_tech', x:80, y:175 },
+    { def:'res_ux', x:300, y:175 },
+    { def:'res_docs', x:520, y:175 },
+    { def:'backend', x:60, y:270 },
+    { def:'frontend', x:210, y:270 },
+    { def:'designer', x:380, y:270 },
+    { def:'integrator', x:540, y:270 },
+    { def:'qa_security', x:140, y:370 },
+    { def:'qa_quality', x:320, y:370 },
+    { def:'qa_manager', x:480, y:370 },
+  ],
+  // 15. Deep Research + Build (18)
+  deep: [
+    { def:'orchestrator', x:320, y:5 },
+    { def:'analyst', x:150, y:75 },
+    { def:'planner', x:350, y:75 },
+    { def:'synthesizer', x:520, y:75 },
+    { def:'res_reddit', x:20, y:165 },
+    { def:'res_x', x:130, y:165 },
+    { def:'res_ux', x:240, y:165 },
+    { def:'res_github', x:350, y:165 },
+    { def:'res_forums', x:460, y:165 },
+    { def:'res_docs', x:570, y:165 },
+    { def:'res_critic', x:320, y:250 },
+    { def:'backend', x:100, y:340 },
+    { def:'frontend', x:270, y:340 },
+    { def:'feature', x:430, y:340 },
+    { def:'integrator', x:570, y:340 },
+    { def:'qa_security', x:160, y:430 },
+    { def:'qa_quality', x:340, y:430 },
+    { def:'qa_manager', x:500, y:430 },
+  ]
+};
+
+const PRESET_CONNS = {
+  solo: [[0,1,'two']],
+  recon: [[0,1,'one'],[0,2,'one'],[1,2,'one']],
+  trio: [[0,2,'one'],[1,2,'one'],[0,1,'two']],
+  reflect: [[0,1,'one'],[1,2,'one'],[2,0,'continuous']],
+  content: [[0,2,'one'],[1,2,'one'],[2,3,'one']],
+  plan_exec: [[0,1,'one'],[1,2,'one'],[2,3,'one'],[3,0,'continuous']],
+  startup: [[0,1,'one'],[0,2,'one'],[0,3,'one'],[2,3,'one'],[3,4,'one']],
+  cascade: [[0,2,'one'],[1,3,'one'],[2,4,'one'],[3,4,'one']],
+  security: [[0,1,'one'],[1,2,'one'],[1,3,'one'],[1,4,'one'],[2,5,'one'],[3,5,'one'],[4,5,'one'],[5,0,'one']],
+  review: [[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,0,'one'],[5,0,'one']],
+  standard: [[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[3,5,'one'],[4,6,'one'],[5,7,'one'],[6,7,'one']],
+  research: [[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[0,5,'one'],[0,6,'one'],[1,7,'one'],[2,7,'one'],[3,7,'one'],[4,7,'one'],[5,7,'one'],[6,7,'one'],[7,8,'one'],[8,0,'two']],
+  saas: [[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[3,6,'one'],[4,7,'one'],[5,7,'one'],[6,7,'one'],[7,8,'one'],[7,9,'one']],
+  full: [[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[0,5,'one'],[3,6,'one'],[4,7,'one'],[5,8,'one'],[6,9,'one'],[7,9,'one'],[8,9,'one'],[9,10,'one'],[9,11,'one'],[10,12,'one'],[11,12,'one'],[12,0,'one']],
+  deep: [[0,1,'one'],[0,2,'one'],[0,3,'two'],[1,4,'one'],[1,5,'one'],[1,6,'one'],[1,7,'one'],[1,8,'one'],[1,9,'one'],[4,10,'one'],[5,10,'one'],[6,10,'one'],[7,10,'one'],[8,10,'one'],[9,10,'one'],[10,3,'one'],[3,11,'one'],[3,12,'one'],[3,13,'one'],[11,14,'one'],[12,14,'one'],[13,14,'one'],[14,15,'one'],[14,16,'one'],[15,17,'one'],[16,17,'one'],[17,0,'one']],
+};
+
+// ================================================================
+// PRESET METADATA (descriptions, pros/cons, costs)
+// ================================================================
+const PRESET_META = {
+  solo: {
+    name:'Solo + Walidator', icon:'\u26A1', count:2,
+    desc:'Minimalny zespol: orkiestrator steruje jednym workerem z dwukierunkowa petla walidacji. Regula 45%: jesli jeden agent osiaga >45% skutecznosci, nie potrzebujesz wiecej.',
+    useCase:'Proste bugi, refactoring jednego pliku, szybkie skrypty, szybkie prototypy, pojedyncze endpointy.',
+    pros:['\u2713 Najnizszy koszt (~40-80K tokenow)','\u2713 Zerowy overhead komunikacji','\u2713 Szybki czas realizacji (<30s)','\u2713 Idealny gdy 1 agent >45% skutecznosci'],
+    cons:['\u2717 Brak fazy researchu','\u2717 Brak dedykowanego QA','\u2717 Ograniczona perspektywa','\u2717 Nieodpowiedni dla zlozonych problemow'],
+    tokens:'~40-80K', costEst:'$0.04 - $0.15', pattern:'Direct Delegation'
+  },
+  recon: {
+    name:'Recon Squad', icon:'\uD83D\uDD0D', count:3,
+    desc:'Szybki zwiad: orkiestrator + researcher techniczny + builder. Minimum viable research przed kodem. Sprawdzony wzorzec "spike technologiczny".',
+    useCase:'Szybkie prototypy z minimalnym researchem, badanie wykonalnosci, spike technologiczny, proof-of-concept.',
+    pros:['\u2713 Niski koszt (~80-120K tokenow)','\u2713 Research PRZED implementacja','\u2713 Szybka iteracja','\u2713 Dobry do spike\'ow i POC'],
+    cons:['\u2717 Tylko 1 zrodlo researchu','\u2717 Brak QA','\u2717 Brak planowania formalneg','\u2717 Ograniczona perspektywa UX'],
+    tokens:'~80-120K', costEst:'$0.08 - $0.20', pattern:'Hub-and-Spoke (mini)'
+  },
+  trio: {
+    name:'Classic Trio', icon:'\uD83D\uDD3A', count:3,
+    desc:'Klasyczny zespol webdev: backend + frontend + QA. Wzorzec "Reddit golden team" sprawdzony w produkcji. Optymalny dla typowego full-stack development.',
+    useCase:'Typowe zadania full-stack, CRUD aplikacje, REST API + UI, feature development, mniejsze projekty webowe.',
+    pros:['\u2713 Naturalny podzial backend/frontend','\u2713 QA jako warstwa kontroli jakosci','\u2713 Niski koszt (~120-180K)','\u2713 Sprawdzony w produkcji (Reddit golden team)'],
+    cons:['\u2717 Brak researchu - wymaga gotowej specyfikacji','\u2717 Brak architekta/planera','\u2717 Brak designera (CSS inline)','\u2717 Ograniczona skalowalnosc'],
+    tokens:'~120-180K', costEst:'$0.10 - $0.30', pattern:'Triangle'
+  },
+  reflect: {
+    name:'Reflective Loop', icon:'\uD83D\uDD04', count:3,
+    desc:'Wzorzec Elastic AI: Research \u2192 Analiza \u2192 Krytyka z petla ci\u0105g\u0142\u0105 z powrotem. Samokorekcja az do osiagniecia progu jakosci. Quality threshold loop.',
+    useCase:'Gleboki research wymagajacy walidacji, analiza rynku, audyt technologii, due diligence, competitive analysis.',
+    pros:['\u2713 Samokorekcja przez petle zwrotna','\u2713 Wysoka jakosc wynikow (iteracyjne doskonalenie)','\u2713 Wzorzec sprawdzony (Elastic AI Search)','\u2713 Critic eliminuje bias i luki'],
+    cons:['\u2717 Ryzyko nieskonczonej petli bez limitu iteracji','\u2717 Brak fazy implementacji (tylko research)','\u2717 Koszty rosna z kazda iteracja','\u2717 Wymaga jasnych kryteriow "wystarczajacej jakosci"'],
+    tokens:'~100-200K (zaleznie od iteracji)', costEst:'$0.08 - $0.35', pattern:'Reflective Trio (Elastic)'
+  },
+  content: {
+    name:'Content Pipeline', icon:'\uD83D\uDCDD', count:4,
+    desc:'Pipeline do tworzenia tresci: 2 niezaleznych researcherow \u2192 redaktor \u2192 QA. Jak zespol redakcyjny - badanie, pisanie, korekta.',
+    useCase:'Dokumentacja techniczna, README, changelogi, artykuly techniczne, raporty, content marketing, white papers.',
+    pros:['\u2713 Specjalizacja: research vs pisanie','\u2713 QA jako korekta na koncu','\u2713 2 niezalezne zrodla researchu = szersza perspektywa','\u2713 Niski koszt (~100-180K)'],
+    cons:['\u2717 Nie generuje kodu (tylko tresc)','\u2717 Liniowy pipeline - brak petli zwrotnej','\u2717 Brak designera (formatowanie manualne)','\u2717 Ograniczony do tresci tekstowej'],
+    tokens:'~100-180K', costEst:'$0.08 - $0.25', pattern:'Linear Pipeline'
+  },
+  plan_exec: {
+    name:'Plan & Execute', icon:'\uD83D\uDCCB', count:4,
+    desc:'Wzorzec Chanl.ai: analiza \u2192 planowanie \u2192 implementacja \u2192 walidacja z petla ci\u0105g\u0142\u0105. 83% redukcja kosztow vs brute-force podejscie. Jasna struktura plan\u2192execute.',
+    useCase:'Strukturalne zadania z jasnymi wymaganiami, migracje kodu, refactoring, feature development, ETL pipelines.',
+    pros:['\u2713 83% redukcja kosztow (case study Chanl.ai)','\u2713 Jasna struktura plan \u2192 execute','\u2713 Petla walidacyjna QA \u2192 Analityk','\u2713 Dobry do powtarzalnych zadan'],
+    cons:['\u2717 Brak fazy researchu','\u2717 Liniowy workflow - brak rownoleglosci','\u2717 Wolniejszy start (planowanie przed kodem)','\u2717 Tylko 1 builder - waskie gardlo'],
+    tokens:'~120-200K', costEst:'$0.10 - $0.30', pattern:'Plan-and-Execute Loop'
+  },
+  startup: {
+    name:'Startup MVP', icon:'\uD83D\uDE80', count:5,
+    desc:'Zbalansowany zespol MVP: orkiestrator + analityk + researcher + builder + QA. Minimum viable team pokrywajacy pelny cykl od analizy do testowania.',
+    useCase:'MVP produktu, maly SaaS, landing page z backendem, aplikacja webowa, startup prototype.',
+    pros:['\u2713 Pelny cykl: research \u2192 plan \u2192 build \u2192 test','\u2713 Zbalansowany koszt/jakosc','\u2713 Dobry punkt startowy - skalowalny w gore','\u2713 Orkiestrator koordynuje calosc'],
+    cons:['\u2717 1 researcher = ograniczony research','\u2717 1 builder = waskie gardlo na implementacji','\u2717 Brak designera','\u2717 Srednio zlozony - wymaga dobrej koordynacji'],
+    tokens:'~150-250K', costEst:'$0.15 - $0.40', pattern:'Hub-and-Spoke'
+  },
+  cascade: {
+    name:'Cascade Cost', icon:'\uD83D\uDCB0', count:5,
+    desc:'Wzorzec eskalacji kosztow: Tier 3 (Haiku, najtanszy) \u2192 Tier 2 (Sonnet) \u2192 Tier 1 (Opus). 70-80% zadan rozwiazywanych przez najtanszy tier. Sprawdzony w IBM, AWS.',
+    useCase:'Duze volume zadan, przetwarzanie batch, triage bugow, code review na duzym repo, pipeline CI/CD.',
+    pros:['\u2713 70-80% rozwiazane przez najtanszy tier (Haiku)','\u2713 Drastyczna redukcja kosztow vs all-Opus','\u2713 Automatyczna eskalacja wg zlozonosci','\u2713 Sprawdzony w produkcji (IBM, AWS, cascade pattern)'],
+    cons:['\u2717 Liniowy czas odpowiedzi przy eskalacji','\u2717 Wymaga jasnych kryteriow eskalacji','\u2717 Zlozonosc w logice routingu miedzy tierami','\u2717 Mniej efektywny dla jednorazowych zlozonych zadan'],
+    tokens:'~80-200K (srednia ~120K)', costEst:'$0.06 - $0.30', pattern:'Cascade Escalation (IBM/AWS)'
+  },
+  security: {
+    name:'Security Audit', icon:'\uD83D\uDEE1', count:6,
+    desc:'Audyt bezpieczenstwa: orkiestrator \u2192 builder \u2192 trojka QA (security, quality, performance) \u2192 manager QA z GO/NO-GO. Trojstopniowy audyt z aggregacja.',
+    useCase:'Audyt kodu pod katem bezpieczenstwa, compliance review, przegladanie PR, pre-deployment check, OWASP audit.',
+    pros:['\u2713 3 niezalezne warstwy audytu rownolegle','\u2713 Manager QA jako aggregator i decydent','\u2713 GO/NO-GO decision na koncu','\u2713 Pelne pokrycie: OWASP + perf + quality'],
+    cons:['\u2717 Glownie audyt - budowanie jest jednoagentowe','\u2717 Wzglednie kosztowny (~150-280K)','\u2717 Moze byc nadmierny dla prostych projektow','\u2717 Ryzyko false positives z wielu audytorow'],
+    tokens:'~150-280K', costEst:'$0.12 - $0.40', pattern:'Fan-out \u2192 Aggregate'
+  },
+  review: {
+    name:'Code Review', icon:'\uD83D\uDC41', count:6,
+    desc:'Wzorzec AWS Code Review: analiza \u2192 implementacja (backend+frontend rownolegle) \u2192 przeglad (security+quality rownolegle) \u2192 raport do orkiestratora.',
+    useCase:'Feature development z pelnym review, krytyczne komponenty, refactoring legacy kodu, PR review automation.',
+    pros:['\u2713 Podzial budowania i review w osobne fazy','\u2713 Backend + Frontend budowane rownolegle','\u2713 Security + Quality review rownolegle','\u2713 Pelna petla zwrotna do orkiestratora'],
+    cons:['\u2717 Sredni koszt (~180-280K)','\u2717 Brak fazy researchu','\u2717 Wymaga gotowych wymagan na wejsciu','\u2717 3 sekwencyjne fazy = wolniejsze niz flat'],
+    tokens:'~180-280K', costEst:'$0.15 - $0.45', pattern:'Pipeline + Fan-out (AWS)'
+  },
+  standard: {
+    name:'Standard Dev', icon:'\u2699', count:8,
+    desc:'Standardowy zespol deweloperski: orkiestrator + planowanie (2) + research (2) + implementacja (2) + QA. Zbalansowany i uniwersalny. Najczesciej uzywany wzorzec.',
+    useCase:'Standardowe projekty webowe, REST API + frontend, SaaS, aplikacje biznesowe, średniej złożoności.',
+    pros:['\u2713 Pelny cykl rozwoju oprogramowania','\u2713 Rownolegly research (tech + UX)','\u2713 Rownolegla implementacja (backend + frontend)','\u2713 QA bezpieczenstwa na koncu'],
+    cons:['\u2717 Srednio-wysoki koszt (~250-400K)','\u2717 Overhead koordynacji 8 agentow','\u2717 Brak specjalistow (designer, perf QA)','\u2717 Moze byc za duzy dla prostych zadan'],
+    tokens:'~250-400K', costEst:'$0.25 - $0.65', pattern:'Hierarchical Pipeline'
+  },
+  research: {
+    name:'Research Swarm', icon:'\uD83E\uDDE0', count:9,
+    desc:'Pelny zespol badawczy: 6 wyspecjalizowanych researcherow (tech, Reddit, GitHub, forums, docs, X) + krytyk walidujacy + syntetyk pamiec. Max glebokosc analizy.',
+    useCase:'Due diligence technologiczny, analiza rynku, wybor stacku, competitive analysis, eksploracja nowej domeny.',
+    pros:['\u2713 6 niezaleznych zrodel danych rownolegle','\u2713 Research Critic jako warstwa walidacji jakosci','\u2713 Syntetyk utrzymuje MANIFEST.md','\u2713 Maksymalna glebokosc i szerokosc researchu'],
+    cons:['\u2717 BRAK fazy implementacji (tylko research)','\u2717 Research Critic moze byc bottleneck (6 inputow)','\u2717 Wysoki koszt przy duzym volume researchu','\u2717 Wymaga jasnych pytan badawczych na wejsciu'],
+    tokens:'~200-400K', costEst:'$0.20 - $0.60', pattern:'Fan-out \u2192 Critique \u2192 Synthesize'
+  },
+  saas: {
+    name:'Full-Stack SaaS', icon:'\uD83C\uDFD7', count:10,
+    desc:'Kompletny zespol produktowy: analiza \u2192 research (tech+UX) \u2192 implementacja (backend+frontend+design) \u2192 integracja \u2192 QA (security+quality). Pelny cykl.',
+    useCase:'Budowa SaaS od zera, dashboard analityczny, e-commerce, platforma z wieloma komponentami, full product.',
+    pros:['\u2713 Pelny cykl: research \u2192 build \u2192 integrate \u2192 test','\u2713 Designer w zespole (CSS/design system)','\u2713 Integrator laczy komponenty w calosc','\u2713 Dwa QA: security + quality'],
+    cons:['\u2717 Wysoki koszt (~300-500K tokenow)','\u2717 Zlozonosc koordynacji 10 agentow','\u2717 Ryzyko "Politeness Loops" przy >5 agentach','\u2717 Wymaga jasnej dekompozycji zadan na wejsciu'],
+    tokens:'~300-500K', costEst:'$0.35 - $0.80', pattern:'Hierarchical Squads (McKinsey)'
+  },
+  full: {
+    name:'Full Hierarchy', icon:'\uD83D\uDC51', count:13,
+    desc:'Pelna hierarchia 5-poziomowa: strategia \u2192 planowanie (2) \u2192 research (3) \u2192 build (4 role) \u2192 QA (3 role). Gold Standard z Observatory Team. Max pokrycie.',
+    useCase:'Duze projekty z wieloma komponentami, enterprise, pelny produkt od koncepcji do deployment, mission-critical.',
+    pros:['\u2713 Wszystkie warstwy pokryte - zero luk','\u2713 Rownolegly research i build','\u2713 Trojstopniowe QA (security + quality + manager)','\u2713 Integrator zapewnia spojnosc'],
+    cons:['\u2717 Wysoki koszt (~400-700K tokenow)','\u2717 Overhead komunikacji rosnie O(n^1.724)','\u2717 Risk bottleneck na Orkiestratorze','\u2717 Wymaga doswiadczenia w zarzadzaniu agentami'],
+    tokens:'~400-700K', costEst:'$0.45 - $1.20', pattern:'Full 5-Layer Hierarchy (Gold Standard)'
+  },
+  deep: {
+    name:'Deep Research + Build', icon:'\uD83C\uDF0A', count:18,
+    desc:'Maksymalny zespol: pelny research swarm (6 researcherow + krytyk) + syntetyk + planowanie + 4 builderow + 3 QA. Najglebsza analiza + pelna implementacja.',
+    useCase:'Projekty mission-critical, platformy enterprise, systemy wymagajace glebokiego researchu I pelnej implementacji jednoczesnie.',
+    pros:['\u2713 Maksymalna glebokosc researchu (6 zrodel)','\u2713 Pelna implementacja (4 role build)','\u2713 Trojstopniowe QA + Syntetyk pamiec','\u2713 Wzorzec Observatory Team - 76.9% parallelization'],
+    cons:['\u2717 Najwyzszy koszt (~600-1200K tokenow)','\u2717 Zlozonosc koordynacji 18 agentow','\u2717 "Politeness Loops" ryzyko przy >5 agentach','\u2717 Wymaga doswiadczonego orkiestratora Opus'],
+    tokens:'~600-1200K', costEst:'$0.70 - $2.00', pattern:'Full Orchestra (Observatory)'
+  }
+};
+
+// Ordered list for rendering buttons
+const PRESET_ORDER = ['solo','recon','trio','reflect','content','plan_exec','startup','cascade','security','review','standard','research','saas','full','deep'];
+
+// ================================================================
+// RENDER PRESET BUTTONS
+// ================================================================
+function renderPresetButtons() {
+  const section = document.getElementById('presetSection');
+  let html = '<div class="preset-section-title"><span>PRESETY</span><span>' + PRESET_ORDER.length + '</span></div>';
+  PRESET_ORDER.forEach(pid => {
+    const meta = PRESET_META[pid];
+    if (!meta) return;
+    const costDots = meta.count <= 3 ? '$' : meta.count <= 6 ? '$$' : meta.count <= 10 ? '$$$' : '$$$$';
+    html += `<button class="preset-btn" id="pbtn_${pid}" onclick="loadPreset('${pid}')" oncontextmenu="event.preventDefault();showPresetInfo('${pid}')">
+      <span class="pb-icon">${meta.icon}</span>
+      <span class="pb-name">${meta.name}</span>
+      <span class="pb-meta">${meta.count} | ${costDots}</span>
+    </button>`;
+  });
+  section.innerHTML = html;
+}
+
+function highlightPresetBtn(presetId) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  if (presetId) {
+    const btn = document.getElementById('pbtn_' + presetId);
+    if (btn) btn.classList.add('active');
+  }
+}
+
+// ================================================================
+// LOAD PRESET
+// ================================================================
+function loadPreset(presetId) {
+  nodes = []; connections = []; selectedNodeId = null; idCounter = 0;
+  activePresetId = presetId;
+  const preset = PRESETS[presetId];
+  if (!preset) return;
+
+  preset.forEach(p => {
+    const def = AGENT_DEFS.find(d => d.id === p.def);
+    if (!def) return;
+    const id = 'n' + (idCounter++);
+    nodes.push({ id, defId: p.def, x: p.x, y: p.y, model: def.model, customPrompt: def.prompt });
+  });
+
+  const conns = PRESET_CONNS[presetId] || [];
+  conns.forEach(c => {
+    if (nodes[c[0]] && nodes[c[1]]) {
+      connections.push({ id:'c'+(idCounter++), fromId:nodes[c[0]].id, toId:nodes[c[1]].id, type:c[2]||'one' });
+    }
+  });
+
+  renderNodes();
+  updateInfo();
+  highlightPresetBtn(presetId);
+  showPresetInfo(presetId);
+}
+
+// ================================================================
+// SHOW PRESET INFO IN DETAILS PANEL
+// ================================================================
+function showPresetInfo(presetId) {
+  const meta = PRESET_META[presetId];
+  if (!meta) return;
+
+  const prosHtml = meta.pros.map(p => `<li class="pi-pro">${p}</li>`).join('');
+  const consHtml = meta.cons.map(c => `<li class="pi-con">${c}</li>`).join('');
+
+  // Calculate model breakdown
+  const preset = PRESETS[presetId] || [];
+  const modelCounts = { opus:0, sonnet:0, haiku:0 };
+  preset.forEach(p => {
+    const def = AGENT_DEFS.find(d => d.id === p.def);
+    if (def) modelCounts[def.model]++;
+  });
+  let modelHtml = '';
+  if (modelCounts.opus > 0) modelHtml += `<span style="color:var(--amber)">${modelCounts.opus}x Opus</span> `;
+  if (modelCounts.sonnet > 0) modelHtml += `<span style="color:var(--teal)">${modelCounts.sonnet}x Sonnet</span> `;
+  if (modelCounts.haiku > 0) modelHtml += `<span style="color:var(--blue)">${modelCounts.haiku}x Haiku</span>`;
+
+  let html = `
+    <div class="det-card">
+      <h4>${meta.icon} ${meta.name} <span style="font-size:11px;color:var(--t3);font-weight:400">(${meta.count} agentow)</span></h4>
+      <p>${meta.desc}</p>
+    </div>
+
+    <div class="det-section">
+      <div class="det-label">KIEDY UZYWAC</div>
+      <div class="det-value" style="font-size:11px;line-height:1.5">${meta.useCase}</div>
+    </div>
+
+    <div class="det-section">
+      <div class="det-label">WZORZEC ARCHITEKTONICZNY</div>
+      <div class="pi-badge">${meta.pattern}</div>
+    </div>
+
+    <div class="det-section">
+      <div class="det-label">ROZKLAD MODELI</div>
+      <div style="font-family:var(--mn);font-size:11px;margin:4px 0">${modelHtml}</div>
+    </div>
+
+    <div class="det-section">
+      <div class="det-label">SZACUNKOWY KOSZT</div>
+      <div class="pi-cost-row">
+        <div><div style="font-size:9px;color:var(--t3)">TOKENY</div><div class="pi-cost-val" style="color:var(--teal)">${meta.tokens}</div></div>
+        <div><div style="font-size:9px;color:var(--t3)">USD (API)</div><div class="pi-cost-val" style="color:var(--amber)">${meta.costEst}</div></div>
+      </div>
+    </div>
+
+    <div class="det-section">
+      <div class="det-label">ZALETY</div>
+      <ul class="pi-list">${prosHtml}</ul>
+    </div>
+
+    <div class="det-section">
+      <div class="det-label">WADY / RYZYKA</div>
+      <ul class="pi-list">${consHtml}</ul>
+    </div>
+
+    <div class="pi-hint">
+      Kliknij agenta na canvasie aby zobaczyc szczegoly i edytowac prompt.<br>
+      Kliknij linie polaczenia aby zmienic typ (\u2192 jedno \u2192 \u21C4 dwu \u2192 \u223C ciagle).<br>
+      PPM na preset = pokaz opis bez ladowania.
+    </div>`;
+
+  document.getElementById('detailsScroll').innerHTML = html;
+}
+
+// ================================================================
+// GENERATE FINAL PROMPT
+// ================================================================
+function generateFinalPrompt() {
+  const problem = document.getElementById('problemInput').value.trim();
+  if (nodes.length === 0) { alert('Dodaj agentow na canvas!'); return; }
+
+  let prompt = `Jestes Master Orkiestratorem zespolu ${nodes.length} agentow AI.\n\n`;
+
+  if (problem) {
+    prompt += `## ZADANIE / PROBLEM\n${problem}\n\n`;
+  } else {
+    prompt += `## ZADANIE / PROBLEM\n[WPISZ OPIS PROJEKTU]\n\n`;
+  }
+
+  // Add preset info if loaded from preset
+  if (activePresetId && PRESET_META[activePresetId]) {
+    const meta = PRESET_META[activePresetId];
+    prompt += `## KONFIGURACJA: ${meta.name} (${meta.pattern})\n`;
+    prompt += `Szacunkowe zuzycie: ${meta.tokens} | ~${meta.costEst}\n\n`;
+  }
+
+  prompt += `## STRUKTURA ZESPOLU (${nodes.length} agentow)\n\n`;
+
+  // Group by level (approximate from Y position)
+  const sorted = [...nodes].sort((a,b) => a.y - b.y);
+  sorted.forEach((node, i) => {
+    const def = AGENT_DEFS.find(d => d.id === node.defId);
+    if (!def) return;
+    const outConns = connections.filter(c => c.fromId === node.id);
+    const inConns = connections.filter(c => c.toId === node.id);
+    const outNames = outConns.map(c => { const t=nodes.find(n=>n.id===c.toId); const td=t?AGENT_DEFS.find(d=>d.id===t.defId):null; return td?td.name:'?'; });
+    const inNames = inConns.map(c => { const s=nodes.find(n=>n.id===c.fromId); const sd=s?AGENT_DEFS.find(d=>d.id===s.defId):null; return sd?sd.name:'?'; });
+
+    prompt += `### Agent ${i+1}: ${def.name} [${node.model.toUpperCase()}]\n`;
+    prompt += `Rola: ${def.role}\n`;
+    if (inNames.length) prompt += `Odbiera od: ${inNames.join(', ')}\n`;
+    if (outNames.length) prompt += `Wysyla do: ${outNames.join(', ')}\n`;
+    prompt += `\nPrompt:\n"""\n${node.customPrompt}\n"""\n\n`;
+  });
+
+  prompt += `## ZASADY OGOLNE\n`;
+  prompt += `- Kazdy agent dostaje TYLKO swoj kontekst (zasada waskiego kontekstu)\n`;
+  prompt += `- MANIFEST.md jako shared scratchpad\n`;
+  prompt += `- Gate'y miedzy fazami - nie przechodz dalej bez zatwierdzenia\n`;
+  prompt += `- Max 10 krokow sekwencyjnych\n`;
+  prompt += `- Smart model routing: Opus=strategia, Sonnet=implementacja, Haiku=research/QA\n\n`;
+
+  prompt += `## KOLEJNOSC URUCHAMIANIA\n`;
+  prompt += `Uruchom agentow w kolejnosci od gory do dolu. Agentow na tym samym poziomie uruchom ROWNOLEGLE.\n`;
+  prompt += `Po kazdej fazie sprawdz wyniki przed przejsciem dalej.\n`;
+
+  document.getElementById('finalPromptArea').value = prompt;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function copyFinalPrompt() {
+  const ta = document.getElementById('finalPromptArea');
+  navigator.clipboard.writeText(ta.value).then(() => {
+    const btn = event.target;
+    btn.textContent = '\u2705 Skopiowano!';
+    setTimeout(() => btn.textContent = '\uD83D\uDCCB Kopiuj do schowka', 2000);
+  });
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+// ================================================================
+// SAVE / LOAD CASES
+// ================================================================
+function saveCase() {
+  const name = prompt('Nazwa case\'u:') || 'Case ' + new Date().toLocaleString('pl-PL');
+  const data = {
+    name, nodes: JSON.parse(JSON.stringify(nodes)),
+    connections: JSON.parse(JSON.stringify(connections)),
+    problem: document.getElementById('problemInput').value,
+    idCounter, timestamp: new Date().toISOString()
+  };
+  const cases = JSON.parse(localStorage.getItem('agentCases') || '[]');
+  cases.push(data);
+  localStorage.setItem('agentCases', JSON.stringify(cases));
+  alert('Zapisano: ' + name);
+}
+
+// ================================================================
+// INIT
+// ================================================================
+renderPalette();
+renderPresetButtons();
+loadPreset('recon');
+</script>
+</body>
+</html>

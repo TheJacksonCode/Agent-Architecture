@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production Playbook | Multi-Agent AI Systems in Production</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#050A14;--surface:#0C1220;--surface2:#111827;--surface3:#1A2332;
+    --amber:#F5A623;--teal:#2DD4A0;--rose:#E85D75;--text:#E8E0D6;
+    --text-dim:#9BA3AF;--border:#1E293B;--border-light:#2A3545;
+    --font-mono:'SF Mono','Fira Code','JetBrains Mono',monospace;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --radius:12px;--radius-lg:16px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  html{scroll-behavior:smooth;font-size:16px}
+  body{
+    background:var(--bg);color:var(--text);font-family:var(--font-sans);
+    line-height:1.7;overflow-x:hidden;position:relative;
+  }
+
+  /* Grain overlay */
+  body::before{
+    content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+    opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size:128px 128px;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--amber)}
+
+  /* Fade-in animations */
+  .fade-in{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+  .fade-in.visible{opacity:1;transform:translateY(0)}
+  .fade-in-delay-1{transition-delay:.1s}
+  .fade-in-delay-2{transition-delay:.2s}
+  .fade-in-delay-3{transition-delay:.3s}
+
+  /* Layout */
+  .container{max-width:1200px;margin:0 auto;padding:0 24px}
+  section{padding:80px 0}
+
+  /* Hero */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+    background:radial-gradient(ellipse at 30% 20%,rgba(245,166,35,.06) 0%,transparent 50%),
+               radial-gradient(ellipse at 70% 80%,rgba(45,212,160,.04) 0%,transparent 50%);
+    animation:heroGlow 15s ease-in-out infinite alternate;
+  }
+  @keyframes heroGlow{
+    0%{transform:translate(0,0) scale(1)}
+    100%{transform:translate(-3%,2%) scale(1.05)}
+  }
+  .hero-content{position:relative;z-index:1}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);
+    border-radius:100px;padding:6px 16px;font-size:.8rem;font-weight:500;
+    color:var(--amber);letter-spacing:.05em;text-transform:uppercase;
+    margin-bottom:24px;
+  }
+  .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .hero h1{
+    font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;line-height:1.05;
+    letter-spacing:-.03em;margin-bottom:20px;
+    background:linear-gradient(135deg,var(--text) 0%,var(--amber) 50%,var(--teal) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .hero-sub{
+    font-size:clamp(1rem,2vw,1.25rem);color:var(--text-dim);max-width:680px;
+    line-height:1.7;margin-bottom:40px;
+  }
+  .hero-sub strong{color:var(--teal);font-weight:600}
+
+  /* Stats Dashboard */
+  .stats-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:16px;margin-top:20px;
+  }
+  .stat-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:24px;text-align:center;
+    position:relative;overflow:hidden;transition:border-color .3s,transform .3s;
+  }
+  .stat-card:hover{border-color:var(--amber);transform:translateY(-2px)}
+  .stat-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--amber),transparent);
+    opacity:0;transition:opacity .3s;
+  }
+  .stat-card:hover::before{opacity:1}
+  .stat-number{
+    font-size:2rem;font-weight:800;
+    background:linear-gradient(135deg,var(--amber),var(--teal));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;margin-bottom:4px;
+  }
+  .stat-label{font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+
+  /* Section headers */
+  .section-label{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:.75rem;font-weight:600;text-transform:uppercase;
+    letter-spacing:.12em;color:var(--amber);margin-bottom:12px;
+  }
+  .section-label .line{width:32px;height:1px;background:var(--amber)}
+  .section-title{
+    font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;
+    letter-spacing:-.02em;margin-bottom:16px;line-height:1.15;
+  }
+  .section-desc{color:var(--text-dim);font-size:1.05rem;max-width:700px;margin-bottom:48px}
+
+  /* Case Study Cards */
+  .case-study-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden;
+    transition:border-color .3s,box-shadow .3s;
+  }
+  .case-study-card:hover{border-color:var(--border-light);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+  .case-study-header{
+    display:flex;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;
+    user-select:none;transition:background .2s;
+  }
+  .case-study-header:hover{background:rgba(255,255,255,.02)}
+  .case-study-icon{
+    width:52px;height:52px;border-radius:var(--radius);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.6rem;flex-shrink:0;
+    background:var(--surface2);border:1px solid var(--border);
+  }
+  .case-study-meta{flex:1;min-width:0}
+  .case-study-meta h3{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+  .case-study-meta .subtitle{font-size:.85rem;color:var(--text-dim)}
+  .case-study-badge{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:4px 10px;border-radius:6px;font-size:.7rem;font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;
+  }
+  .badge-framework{background:rgba(45,212,160,.1);color:var(--teal);border:1px solid rgba(45,212,160,.2)}
+  .case-study-chevron{
+    width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+    color:var(--text-dim);transition:transform .3s;flex-shrink:0;
+  }
+  .case-study-card.open .case-study-chevron{transform:rotate(180deg)}
+
+  .case-study-body{
+    max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.22,1,.36,1);
+  }
+  .case-study-card.open .case-study-body{max-height:2000px}
+  .case-study-content{padding:0 24px 24px;border-top:1px solid var(--border)}
+  .case-study-content .inner{padding-top:20px}
+
+  /* Metrics inside cards */
+  .metrics-row{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;margin:16px 0;
+  }
+  .metric-box{
+    background:var(--surface2);border:1px solid var(--border);
+    border-radius:8px;padding:14px 16px;text-align:center;
+  }
+  .metric-box .value{
+    font-size:1.2rem;font-weight:700;color:var(--amber);margin-bottom:2px;
+  }
+  .metric-box .label{font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em}
+  .metric-highlight{
+    border-left:3px solid var(--amber);
+    background:rgba(245,166,35,.04);
+  }
+
+  /* Detail grid */
+  .detail-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:16px 0;
+  }
+  .detail-block h4{
+    font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--teal);margin-bottom:8px;font-weight:600;
+  }
+  .detail-block p,.detail-block li{font-size:.9rem;color:var(--text-dim);line-height:1.6}
+  .detail-block ul{list-style:none;padding:0}
+  .detail-block li{padding-left:16px;position:relative;margin-bottom:4px}
+  .detail-block li::before{
+    content:'';position:absolute;left:0;top:10px;
+    width:6px;height:6px;border-radius:50%;background:var(--amber);opacity:.6;
+  }
+
+  /* Architecture diagram */
+  .arch-diagram{
+    background:var(--bg);border:1px solid var(--border);border-radius:8px;
+    padding:16px 20px;margin:16px 0;font-family:var(--font-mono);
+    font-size:.78rem;line-height:1.6;color:var(--teal);
+    overflow-x:auto;white-space:pre;
+  }
+
+  /* Relevance box */
+  .relevance-box{
+    background:rgba(45,212,160,.04);border:1px solid rgba(45,212,160,.15);
+    border-radius:8px;padding:14px 18px;margin-top:16px;
+    font-size:.88rem;color:var(--text-dim);line-height:1.6;
+  }
+  .relevance-box strong{color:var(--teal);font-weight:600}
+
+  /* Production Reality / Failure Sections */
+  .insight-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:24px 28px;margin-bottom:16px;
+    border-left:3px solid var(--teal);
+  }
+  .insight-card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
+  .insight-card p{font-size:.9rem;color:var(--text-dim);line-height:1.65}
+
+  .failure-card{border-left-color:var(--rose)}
+  .failure-card h3{color:var(--rose)}
+
+  /* Cost Table */
+  .cost-table{
+    width:100%;border-collapse:collapse;margin:20px 0;
+    font-size:.88rem;
+  }
+  .cost-table th{
+    text-align:left;padding:12px 16px;
+    background:var(--surface2);color:var(--amber);
+    font-weight:600;font-size:.75rem;text-transform:uppercase;
+    letter-spacing:.06em;border-bottom:2px solid var(--amber);
+  }
+  .cost-table td{
+    padding:12px 16px;border-bottom:1px solid var(--border);
+    color:var(--text-dim);
+  }
+  .cost-table tr:hover td{background:rgba(255,255,255,.015)}
+  .cost-table .highlight-val{color:var(--amber);font-weight:700}
+
+  /* Framework comparison */
+  .framework-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:16px;margin:24px 0;
+  }
+  .framework-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:24px;
+    transition:border-color .3s,transform .3s;
+  }
+  .framework-card:hover{border-color:var(--teal);transform:translateY(-2px)}
+  .framework-card h4{font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--teal)}
+  .framework-card .users{font-size:.78rem;color:var(--amber);margin-bottom:10px;font-weight:500}
+  .framework-card p{font-size:.85rem;color:var(--text-dim);line-height:1.6;margin-bottom:8px}
+  .framework-card .weakness{font-size:.8rem;color:var(--rose);font-style:italic}
+
+  /* Recommendations */
+  .rec-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:20px;
+    position:relative;overflow:hidden;
+    transition:border-color .3s;
+  }
+  .rec-card:hover{border-color:var(--amber)}
+  .rec-number{
+    position:absolute;top:16px;right:20px;
+    font-size:3.5rem;font-weight:900;
+    background:linear-gradient(135deg,rgba(245,166,35,.12),rgba(245,166,35,.03));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;line-height:1;
+  }
+  .rec-card h3{font-size:1.15rem;font-weight:700;margin-bottom:10px;padding-right:60px}
+  .rec-card p{font-size:.9rem;color:var(--text-dim);line-height:1.65;margin-bottom:12px}
+  .rec-rationale{
+    background:rgba(245,166,35,.04);border:1px solid rgba(245,166,35,.12);
+    border-radius:8px;padding:12px 16px;font-size:.85rem;
+    color:var(--text-dim);line-height:1.6;
+  }
+  .rec-rationale strong{color:var(--amber);font-weight:600}
+
+  /* Decision Matrix */
+  .matrix-table{
+    width:100%;border-collapse:collapse;margin:20px 0;font-size:.85rem;
+  }
+  .matrix-table th{
+    text-align:left;padding:14px 16px;
+    background:var(--surface2);color:var(--amber);
+    font-weight:600;font-size:.72rem;text-transform:uppercase;
+    letter-spacing:.06em;border-bottom:2px solid var(--amber);
+  }
+  .matrix-table td{padding:14px 16px;border-bottom:1px solid var(--border);color:var(--text-dim);vertical-align:top}
+  .matrix-table td:first-child{color:var(--text);font-weight:500}
+  .matrix-table .yes{color:var(--teal)}
+  .matrix-table .no{color:var(--rose)}
+
+  /* Risk table */
+  .risk-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:.85rem}
+  .risk-table th{
+    text-align:left;padding:12px 16px;background:var(--surface2);
+    color:var(--rose);font-weight:600;font-size:.72rem;
+    text-transform:uppercase;letter-spacing:.06em;
+    border-bottom:2px solid var(--rose);
+  }
+  .risk-table td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text-dim);vertical-align:top}
+  .risk-high{color:var(--rose);font-weight:600}
+  .risk-medium{color:var(--amber);font-weight:600}
+
+  /* HITL patterns */
+  .hitl-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);padding:24px;margin-bottom:16px;
+  }
+  .hitl-card h3{font-size:1rem;font-weight:700;color:var(--teal);margin-bottom:8px}
+  .hitl-card p,.hitl-card li{font-size:.88rem;color:var(--text-dim);line-height:1.65}
+  .hitl-card ol,.hitl-card ul{padding-left:20px;margin-top:8px}
+  .hitl-card li{margin-bottom:4px}
+
+  /* Sources */
+  .sources-list{columns:2;column-gap:32px;margin-top:20px}
+  .sources-list a{
+    display:block;font-size:.8rem;color:var(--text-dim);
+    text-decoration:none;padding:6px 0;transition:color .2s;
+    break-inside:avoid;line-height:1.5;
+  }
+  .sources-list a:hover{color:var(--amber)}
+
+  /* Footer */
+  .footer{
+    text-align:center;padding:48px 24px;border-top:1px solid var(--border);
+    color:var(--text-dim);font-size:.8rem;
+  }
+  .footer .sig{
+    font-family:var(--font-mono);font-size:.7rem;
+    color:var(--border-light);margin-top:12px;letter-spacing:.04em;
+  }
+
+  /* Responsive */
+  @media(max-width:768px){
+    section{padding:48px 0}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .detail-grid{grid-template-columns:1fr}
+    .sources-list{columns:1}
+    .framework-grid{grid-template-columns:1fr}
+    .rec-number{font-size:2.5rem}
+    .case-study-badge{display:none}
+    .metrics-row{grid-template-columns:repeat(2,1fr)}
+    .hero h1{font-size:2rem}
+  }
+  @media(max-width:480px){
+    .stats-grid{grid-template-columns:1fr}
+    .metrics-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+<div class="container hero-content">
+  <div class="fade-in">
+    <div class="hero-badge"><span class="dot"></span> A-05 Production Research</div>
+    <h1>Multi-Agent AI<br>Production Playbook</h1>
+    <p class="hero-sub">
+      Synthesized from <strong>10 verified production deployments</strong> across enterprise-grade systems as of March 2026.
+      Multi-agent systems achieve <strong>92% success on complex tasks</strong> vs. 35% for single agents --
+      but only <strong>14% of enterprises have scaled beyond pilot</strong>. The gap is not technology. It is evaluation infrastructure, monitoring, and organizational ownership.
+    </p>
+  </div>
+
+  <div class="stats-grid fade-in fade-in-delay-1">
+    <div class="stat-card">
+      <div class="stat-number">10</div>
+      <div class="stat-label">Case Studies</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">10</div>
+      <div class="stat-label">Companies Analyzed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">92%</div>
+      <div class="stat-label">Complex Task Success</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">14%</div>
+      <div class="stat-label">Scaled Beyond Pilot</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">30+</div>
+      <div class="stat-label">Sources Researched</div>
+    </div>
+  </div>
+
+  <div class="stats-grid fade-in fade-in-delay-2" style="margin-top:16px">
+    <div class="stat-card">
+      <div class="stat-number">$250M</div>
+      <div class="stat-label">McKinsey Savings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">21K</div>
+      <div class="stat-label">Uber Dev Hours Saved</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">$15M</div>
+      <div class="stat-label">Danfoss Annual Savings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">1,445%</div>
+      <div class="stat-label">Gartner Inquiry Surge</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">7x</div>
+      <div class="stat-label">PwC Accuracy Gain</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== CRITICAL STATS ==================== -->
+<section style="padding-top:0">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Critical Statistics</div>
+    <h2 class="section-title">The Production Reality</h2>
+    <p class="section-desc">Key data points shaping architecture decisions for multi-agent systems in 2026.</p>
+  </div>
+  <div class="metrics-row fade-in fade-in-delay-1">
+    <div class="metric-box metric-highlight">
+      <div class="value">68%</div>
+      <div class="label">Hit human intervention within 10 steps</div>
+    </div>
+    <div class="metric-box metric-highlight">
+      <div class="value">40%+</div>
+      <div class="label">Agentic AI projects scrapped by 2027</div>
+    </div>
+    <div class="metric-box metric-highlight">
+      <div class="value">31%</div>
+      <div class="label">Workflows automated on average</div>
+    </div>
+    <div class="metric-box metric-highlight">
+      <div class="value">$3.2K-$13K</div>
+      <div class="label">Monthly cost per production agent</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== CASE STUDIES ==================== -->
+<section id="case-studies">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 1</div>
+    <h2 class="section-title">Verified Production Case Studies</h2>
+    <p class="section-desc">10 real-world deployments from McKinsey to LinkedIn, dissected for architectural patterns and lessons learned.</p>
+  </div>
+
+  <!-- CS 1: McKinsey -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#127970;</div>
+      <div class="case-study-meta">
+        <h3>McKinsey "Agent Factory"</h3>
+        <span class="subtitle">Bank Legacy Modernization -- 100+ AI Agents</span>
+      </div>
+      <span class="case-study-badge badge-framework">Proprietary</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box metric-highlight"><div class="value">$250M</div><div class="label">Savings from $600M budget</div></div>
+          <div class="metric-box"><div class="value">60%</div><div class="label">Engineering time reduced</div></div>
+          <div class="metric-box"><div class="value">100+</div><div class="label">AI Agents in squads</div></div>
+          <div class="metric-box"><div class="value">400</div><div class="label">Legacy apps modernized</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Modernize 400 interconnected legacy applications at a major bank. Original budget exceeded $600M.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>Hierarchical squad model: human supervisors overseeing coordinated agent squads that document, generate code, review, and integrate.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>McKinsey proprietary "LegacyX" platform. Agents organized into squads with shared objectives and defined sequences.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Human-in-the-loop as supervisory role, not approval role</li>
+              <li>Agent squads need shared objectives and defined sequences</li>
+              <li>Validates hierarchical orchestration model</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[Human Supervisor]
+       |
+  [Squad Lead Agent]
+       |
+  +---------+---------+---------+
+  |         |         |         |
+[Documenter] [Coder] [Reviewer] [Integrator]
+  |         |         |         |
+  +------> Shared Code Repository <------+</div>
+        <div class="relevance-box"><strong>Relevance:</strong> Validates the hierarchical orchestration model. The "squad" pattern maps directly to the Two-Phase Protocol -- parallel research agents feeding sequential build agents.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 2: Uber -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#128663;</div>
+      <div class="case-study-meta">
+        <h3>Uber</h3>
+        <span class="subtitle">AI Developer Tools -- 21,000 Hours Saved</span>
+      </div>
+      <span class="case-study-badge badge-framework">LangGraph</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box metric-highlight"><div class="value">21K</div><div class="label">Developer hours saved</div></div>
+          <div class="metric-box"><div class="value">5,000</div><div class="label">Engineers served</div></div>
+          <div class="metric-box"><div class="value">100M+</div><div class="label">Lines of code managed</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Code migrations and test generation across hundreds of millions of lines of code for 5,000 engineers.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>Central coordinator agent delegating to domain-specific sub-agents: Validator, Autocover, workflow assistants. Modular graph nodes.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>LangGraph wrapped in Uber-native abstractions. Real-time security vulnerability detection with one-click fix proposals.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Wrap framework in company-native abstractions for adoption</li>
+              <li>Modular nodes let non-AI teams encode domain logic</li>
+              <li>Separate coordination from domain logic</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[Central Coordinator Agent]
+       |
+  +----+----+----+
+  |    |    |    |
+[LLM  [Static  [Unit Test  [Workflow
+Query] Linter]  Generator]  Assistant]
+  |    |    |    |
+  +--> Uber Developer Platform <--+</div>
+        <div class="relevance-box"><strong>Relevance:</strong> Demonstrates that LangGraph's graph-based architecture works at massive scale. The "wrap in native abstractions" principle applies to orchestrator design.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 3: Danfoss -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#9881;&#65039;</div>
+      <div class="case-study-meta">
+        <h3>Danfoss</h3>
+        <span class="subtitle">Autonomous Order Processing -- $15M Annual Savings</span>
+      </div>
+      <span class="case-study-badge badge-framework">Go Autonomous</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box metric-highlight"><div class="value">$15M</div><div class="label">Annual savings</div></div>
+          <div class="metric-box"><div class="value">80%+</div><div class="label">Decisions automated</div></div>
+          <div class="metric-box"><div class="value">95%</div><div class="label">Accuracy maintained</div></div>
+          <div class="metric-box"><div class="value">6mo</div><div class="label">Payback period</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Manual email order processing with 42-hour turnaround time at a global industrial manufacturer.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>Autonomous agent reads emails, extracts data from attachments, validates against SAP, performs checks, prepares orders. Near real-time response.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>Go Autonomous platform with calibrated autonomy: 80% auto-processed, 20% edge cases routed to humans.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Start with one region, prove ROI, then scale globally</li>
+              <li>5 minutes saved per order compounds massively</li>
+              <li>Human review needed only for 20% edge cases</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[Email Inbox] --> [Document Parser Agent]
+                       |
+                  [Data Extractor]
+                       |
+                  [SAP Validator]
+                       |
+                  [Decision Engine]
+                      / \
+                [Auto-Process] [Route to Human]
+                   (80%)          (20%)</div>
+        <div class="relevance-box"><strong>Relevance:</strong> Proves the "calibrated autonomy" pattern -- auto-process high-confidence, route uncertain to humans. The 80/20 split is a strong production baseline.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 4: Exa -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#128269;</div>
+      <div class="case-study-meta">
+        <h3>Exa</h3>
+        <span class="subtitle">Multi-Agent Web Research -- Dynamic Task Scaling</span>
+      </div>
+      <span class="case-study-badge badge-framework">LangGraph</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box"><div class="value">100s</div><div class="label">Research queries daily</div></div>
+          <div class="metric-box"><div class="value">15s-3m</div><div class="label">Per query time</div></div>
+          <div class="metric-box"><div class="value">3</div><div class="label">Core agents</div></div>
+          <div class="metric-box"><div class="value">Dynamic</div><div class="label">Task worker count</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Complex web research queries requiring structured, multi-faceted investigation at scale.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>3 core agents: Planner, Task Workers (dynamic count), Observer. Number of parallel research tasks scales with query complexity.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>LangGraph + LangSmith (observability). Intelligent snippet vs. full content retrieval for token optimization.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Dynamic task count (not fixed agents) is key</li>
+              <li>Observer maintains full context; workers get only cleaned outputs</li>
+              <li>Balance snippet vs. full retrieval for token optimization</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[User Query]
+     |
+  [Planner Agent] -- analyzes complexity
+     |
+  +--+--+--+--+ (dynamic # of parallel tasks)
+  |  |  |  |  |
+[T1][T2][T3][T4][T5] -- independent research tasks
+  |  |  |  |  |
+  +--+--+--+--+
+     |
+  [Observer Agent] -- full context, citations, synthesis
+     |
+  [Structured JSON Output]</div>
+        <div class="relevance-box"><strong>Relevance:</strong> The Planner->Workers->Observer pattern maps almost 1:1 to the Design Phase (parallel research agents) -> Analytical Agent (synthesizer) flow. Key insight: <strong>dynamic agent count based on task complexity</strong>.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 5: PwC -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#128202;</div>
+      <div class="case-study-meta">
+        <h3>PwC</h3>
+        <span class="subtitle">Code Generation -- 10% to 70% Accuracy (7x)</span>
+      </div>
+      <span class="case-study-badge badge-framework">CrewAI</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box metric-highlight"><div class="value">7x</div><div class="label">Accuracy improvement</div></div>
+          <div class="metric-box"><div class="value">10%</div><div class="label">Before (single shot)</div></div>
+          <div class="metric-box"><div class="value">70%+</div><div class="label">After (iterative loop)</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Proprietary-language code generation. Early GenAI prototypes had ~10% accuracy with no feedback loops.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>SDLC workflow with agents that generate, execute, and iteratively validate code in a generate-execute-validate loop.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>CrewAI with native monitoring integrations. Real-time monitoring tracks task durations, tool selection, human-vs-agent effort.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Iterative validation loop is essential (not one-shot generation)</li>
+              <li>Monitoring human-vs-agent effort is key for ROI proof</li>
+              <li>CrewAI has low barrier for non-expert developers</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[Spec Input]
+     |
+  [Code Generator Agent]
+     |
+  [Code Executor Agent] -- runs code
+     |
+  [Validator Agent] -- checks output
+     |          |
+  [PASS]    [FAIL] --> back to Generator (iterative loop)
+     |
+  [Monitoring Dashboard] -- task duration, tool usage, accuracy</div>
+        <div class="relevance-box"><strong>Relevance:</strong> Directly validates the Critic Agent pattern with iterative improvement loops. The 10% to 70% improvement proves that multi-agent validation loops are not overhead -- <strong>they are the core value</strong>.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 6: IBM -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#127963;&#65039;</div>
+      <div class="case-study-meta">
+        <h3>IBM Consulting</h3>
+        <span class="subtitle">Federal Eligibility -- Hybrid Rules + Agents</span>
+      </div>
+      <span class="case-study-badge badge-framework">CrewAI + WatsonX</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box"><div class="value">2</div><div class="label">Federal agency pilots</div></div>
+          <div class="metric-box"><div class="value">Hybrid</div><div class="label">Rules + Agents architecture</div></div>
+          <div class="metric-box"><div class="value">Faster</div><div class="label">Than traditional RPA</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Automating federal eligibility determinations for U.S. federal agencies, replacing traditional RPA approaches.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>Hybrid "AI Flows + Crew Agents" -- rules-based decisions when deterministic, autonomous agents when judgment is needed.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>CrewAI + IBM WatsonX foundation models. Enterprise license secured for multiple federal deals.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Hybrid architecture (rules + agents) is production-essential</li>
+              <li>Not everything needs an agent -- use deterministic flows where possible</li>
+              <li>Compliance requires audit trails</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[Document Input]
+     |
+  [Rule Engine] -- deterministic checks first
+     |
+  +--+--+
+  |     |
+[Pass] [Needs AI Judgment]
+  |          |
+  |     [Data Extractor Agent]
+  |          |
+  |     [Summarizer Agent]
+  |          |
+  |     [Eligibility Calculator Agent]
+  |          |
+  +----+-----+
+       |
+  [Decision + Audit Trail]</div>
+        <div class="relevance-box"><strong>Relevance:</strong> The hybrid "rules + agents" pattern is critical. Deterministic operations (file conversion, audio normalization) should use direct code, with <strong>agents reserved for complex decisions</strong>.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 7: Elastic -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#128737;&#65039;</div>
+      <div class="case-study-meta">
+        <h3>Elastic</h3>
+        <span class="subtitle">Security Threat Detection -- Reflection Pattern</span>
+      </div>
+      <span class="case-study-badge badge-framework">LangGraph</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box"><div class="value">3-Layer</div><div class="label">Analysis pipeline</div></div>
+          <div class="metric-box"><div class="value">Real-time</div><div class="label">Threat detection</div></div>
+          <div class="metric-box"><div class="value">Reflection</div><div class="label">Generate + Critique loop</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Real-time security threat detection. Labor-intensive SecOps analysis requiring multi-source correlation.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>Reflection pattern with generator + critic agents. 3-layer analysis: semantic search, internet search, LLM correlation.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>LangGraph + LangChain + Elasticsearch. Powers the Elastic Security AI Assistant in production.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Reflection pattern significantly improves output quality</li>
+              <li>Combine internal KB + external search + LLM reasoning</li>
+              <li>3-layer analysis is a generalizable pattern</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[Security Event]
+     |
+  [Semantic Search Agent] -- internal knowledge base
+     |
+  [Internet Search Agent] -- external threat intelligence
+     |
+  [LLM Correlator Agent] -- combines + prioritizes
+     |
+  [Critique Agent] -- reflection loop
+     |        |
+  [Accept]  [Revise] --> back to Correlator
+     |
+  [Alert + Mitigation Steps]</div>
+        <div class="relevance-box"><strong>Relevance:</strong> Validates the reflection/critique pattern. The <strong>3-layer analysis (internal data + external data + reasoning)</strong> is a generalizable pattern for any domain.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 8: Vodafone -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#128225;</div>
+      <div class="case-study-meta">
+        <h3>Vodafone</h3>
+        <span class="subtitle">AI-Powered Data Operations -- Intent Routing</span>
+      </div>
+      <span class="case-study-badge badge-framework">LangGraph</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box"><div class="value">Multi-DC</div><div class="label">Deployed across data centers</div></div>
+          <div class="metric-box"><div class="value">NL2SQL</div><div class="label">Natural language to SQL</div></div>
+          <div class="metric-box"><div class="value">Auto</div><div class="label">Chart/graph generation</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Engineers spending excessive time on manual performance monitoring and documentation search across data centers.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>LangGraph orchestrator routes queries to appropriate chain: NL2SQL, document retrieval, chart generation based on intent detection.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>LangGraph + LangSmith on Google Cloud. 2 primary AI assistants (Insight Engine, Enigma) with multiple internal chains.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Intent detection as first routing step</li>
+              <li>Chain-of-chains architecture (NL2SQL -> query -> visualization)</li>
+              <li>Event-driven patterns for tool orchestration</li>
+              <li>Validation tools essential for testing multi-agent workflows</li>
+            </ul>
+          </div>
+        </div>
+        <div class="arch-diagram">[Engineer Query]
+     |
+  [Intent Router (LangGraph)]
+     |
+  +--+--+--+
+  |        |
+[Insight Engine]  [Enigma]
+  |                  |
+[NL2SQL Chain]    [Document RAG]
+  |                  |
+[Query Executor]  [Retriever]
+  |                  |
+[Chart Generator] [Answer Synthesizer]</div>
+        <div class="relevance-box"><strong>Relevance:</strong> The intent-based routing pattern is directly applicable to applications with multiple providers. <strong>Route by intent, not by hardcoded paths.</strong></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 9: Deloitte + UiPath -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#129302;</div>
+      <div class="case-study-meta">
+        <h3>Deloitte + UiPath</h3>
+        <span class="subtitle">Autonomous SAP Testing -- 93% Clean Core</span>
+      </div>
+      <span class="case-study-badge badge-framework">UiPath Test Cloud</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box"><div class="value">60%</div><div class="label">Test case automation</div></div>
+          <div class="metric-box metric-highlight"><div class="value">93%</div><div class="label">Clean core (vs. 80% benchmark)</div></div>
+          <div class="metric-box"><div class="value">85%+</div><div class="label">Finance workflows automated</div></div>
+          <div class="metric-box"><div class="value">&lt;48h</div><div class="label">Test suite generation</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>SAP S/4HANA migration testing. Manual validation across complex ERP workflows at enterprise scale.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>Network of autonomous testing agents + 1,500+ pre-built automation bots. Agents monitor SAP change logs, identify impacted scenarios, trigger test automation.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>UiPath Test Cloud. 10% acceleration in project delivery. Adaptive testing strategies that evolve with the codebase.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Pre-built bot libraries dramatically accelerate deployment</li>
+              <li>Agent-driven testing catches regressions humans miss</li>
+              <li>Continuous monitoring + adaptive testing > static test suites</li>
+            </ul>
+          </div>
+        </div>
+        <div class="relevance-box"><strong>Relevance:</strong> The continuous monitoring + adaptive testing pattern should inform QA phases. <strong>Pre-built testing libraries</strong> accelerate testing significantly.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CS 10: LinkedIn -->
+  <div class="case-study-card fade-in" data-cs>
+    <div class="case-study-header" onclick="toggleCS(this)">
+      <div class="case-study-icon">&#128101;</div>
+      <div class="case-study-meta">
+        <h3>LinkedIn</h3>
+        <span class="subtitle">AI-Powered Recruiter -- 90%+ Time Freed</span>
+      </div>
+      <span class="case-study-badge badge-framework">LangGraph</span>
+      <div class="case-study-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="case-study-body">
+      <div class="case-study-content"><div class="inner">
+        <div class="metrics-row">
+          <div class="metric-box metric-highlight"><div class="value">90%+</div><div class="label">Recruiter time freed</div></div>
+          <div class="metric-box"><div class="value">E2E</div><div class="label">Automated workflow</div></div>
+          <div class="metric-box"><div class="value">Hierarchical</div><div class="label">Multi-agent system</div></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Problem</h4>
+            <p>Candidate sourcing, matching, and messaging at scale across LinkedIn's massive professional network.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Solution</h4>
+            <p>Hierarchical multi-agent system with specialized sub-agents for sourcing, matching, and messaging. Automated end-to-end recruiter workflow.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Architecture</h4>
+            <p>LangGraph-based hierarchical system. Human recruiters shifted from executor role to strategic work.</p>
+          </div>
+          <div class="detail-block">
+            <h4>Lessons Learned</h4>
+            <ul>
+              <li>Hierarchical patterns work well for multi-step professional workflows</li>
+              <li>Human role shifts from executor to strategist</li>
+              <li>End-to-end automation creates compound value</li>
+            </ul>
+          </div>
+        </div>
+        <div class="relevance-box"><strong>Relevance:</strong> Validates that <strong>hierarchical agent patterns scale</strong> for complex, multi-step professional workflows where human judgment adds strategic value.</div>
+      </div></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ==================== WHAT WORKS ==================== -->
+<section id="what-works">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 2</div>
+    <h2 class="section-title">What Actually Works in Production</h2>
+    <p class="section-desc">Five patterns that separate production deployments from demos, distilled from all 10 case studies.</p>
+  </div>
+
+  <div class="insight-card fade-in">
+    <h3>1. Calibrated Autonomy (not full autonomy)</h3>
+    <p>Every successful deployment uses <strong style="color:var(--amber)">confidence-based routing</strong>: High confidence + reversible + low stakes = full agent autonomy. Low confidence OR irreversible OR high stakes = human review. The Danfoss 80/20 split is representative: 80% automated, 20% routed to humans.</p>
+  </div>
+
+  <div class="insight-card fade-in">
+    <h3>2. Deterministic First, Agentic Second</h3>
+    <p>IBM's hybrid "AI Flows + Crew Agents" is the gold standard. Use deterministic rules where possible, agents only where judgment is needed. This is <strong style="color:var(--teal)">cheaper, faster, and more reliable</strong>.</p>
+  </div>
+
+  <div class="insight-card fade-in">
+    <h3>3. Iterative Validation Loops (Not One-Shot)</h3>
+    <p>PwC went from 10% to 70% accuracy by adding generate->execute->validate loops. Elastic uses reflection patterns. McKinsey's agents review each other's code. <strong style="color:var(--amber)">Every production system has a critic/validator.</strong></p>
+  </div>
+
+  <div class="insight-card fade-in">
+    <h3>4. Dynamic Task Scaling</h3>
+    <p>Exa dynamically adjusts agent count based on query complexity. Fixed agent counts waste resources on simple tasks and underperform on complex ones. <strong style="color:var(--teal)">Adapt agent count to task complexity.</strong></p>
+  </div>
+
+  <div class="insight-card fade-in">
+    <h3>5. Observability is Non-Negotiable</h3>
+    <p>Every production system uses monitoring: LangSmith (Exa, Vodafone), CrewAI monitoring (PwC), UiPath dashboards (Deloitte). <strong style="color:var(--rose)">Teams that skipped monitoring could not prove ROI or debug failures.</strong></p>
+  </div>
+</div>
+</section>
+
+<!-- ==================== WHAT FAILS ==================== -->
+<section id="failures">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 3</div>
+    <h2 class="section-title">What Fails and Why</h2>
+    <p class="section-desc">The 5 gaps that kill 89% of scaling attempts, plus specific failure patterns observed in production.</p>
+  </div>
+
+  <div class="insight-card failure-card fade-in">
+    <h3>Integration Complexity (Most Common)</h3>
+    <p>Legacy system connectors break under load. Brittle I/O between agents and external systems is the number one killer.</p>
+  </div>
+  <div class="insight-card failure-card fade-in">
+    <h3>Inconsistent Output Quality (Very Common)</h3>
+    <p>Works in demo, fails at volume. "Dumb RAG" with bad memory management produces hallucinations under real-world conditions.</p>
+  </div>
+  <div class="insight-card failure-card fade-in">
+    <h3>Absent Monitoring (Common)</h3>
+    <p>No evaluation infrastructure. Teams cannot tell when agents fail, cannot measure degradation, cannot debug at scale.</p>
+  </div>
+  <div class="insight-card failure-card fade-in">
+    <h3>Unclear Ownership (Common)</h3>
+    <p>No team owns the agent system end-to-end. Responsibility is diffused across ML, platform, and product teams.</p>
+  </div>
+  <div class="insight-card failure-card fade-in">
+    <h3>Insufficient Domain Data (Common)</h3>
+    <p>Generic models without domain-specific training or RAG underperform when facing specialized tasks.</p>
+  </div>
+
+  <div style="margin-top:32px" class="fade-in">
+    <h3 style="font-size:1.15rem;font-weight:700;margin-bottom:16px;color:var(--rose)">Specific Failure Patterns</h3>
+    <div class="metrics-row">
+      <div class="metric-box" style="border-left:3px solid var(--rose)">
+        <div class="value" style="color:var(--rose)">78%</div>
+        <div class="label">Have AI pilots running</div>
+      </div>
+      <div class="metric-box" style="border-left:3px solid var(--rose)">
+        <div class="value" style="color:var(--rose)">14%</div>
+        <div class="label">Scaled org-wide</div>
+      </div>
+      <div class="metric-box" style="border-left:3px solid var(--rose)">
+        <div class="value" style="color:var(--rose)">10</div>
+        <div class="label">Max steps before HITL (68%)</div>
+      </div>
+      <div class="metric-box" style="border-left:3px solid var(--rose)">
+        <div class="value" style="color:var(--rose)">40%+</div>
+        <div class="label">Projects scrapped by 2027</div>
+      </div>
+    </div>
+    <div class="insight-card failure-card" style="margin-top:16px">
+      <h3>The "Pilot Hell" Problem</h3>
+      <p>78% of enterprises have AI agent pilots running, but only 14% have scaled to organization-wide use. The gap is <strong style="color:var(--rose)">organizational, not technical</strong>. Hundred-step autonomous chains shown in demos do not work reliably in production. Design for short, focused agent executions with clear checkpoints.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== COST METRICS ==================== -->
+<section id="costs">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 4</div>
+    <h2 class="section-title">Cost Metrics Reality</h2>
+    <p class="section-desc">Real development and operating costs for production multi-agent systems in 2026.</p>
+  </div>
+
+  <div class="fade-in">
+    <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px">Development Costs (2026)</h3>
+    <table class="cost-table">
+      <thead><tr><th>Complexity Level</th><th>Cost</th><th>Timeline</th></tr></thead>
+      <tbody>
+        <tr><td>Simple single agent</td><td class="highlight-val">$5K-$25K</td><td>2-4 weeks</td></tr>
+        <tr><td>Multi-agent with tools</td><td class="highlight-val">$25K-$50K</td><td>4-8 weeks</td></tr>
+        <tr><td>Complex multi-agent with memory</td><td class="highlight-val">$50K-$150K</td><td>8-16 weeks</td></tr>
+        <tr><td>Enterprise multi-agent platform</td><td class="highlight-val">$150K-$300K+</td><td>16+ weeks</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="fade-in" style="margin-top:32px">
+    <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px">Operating Costs (Monthly)</h3>
+    <table class="cost-table">
+      <thead><tr><th>Component</th><th>Range</th></tr></thead>
+      <tbody>
+        <tr><td>LLM API costs</td><td>$100-$5,000/month</td></tr>
+        <tr><td>Cloud infrastructure</td><td>$200-$1,500/month</td></tr>
+        <tr><td>Vector databases</td><td>$25-$1,750/month</td></tr>
+        <tr><td>Monitoring tools</td><td>$50-$250/month</td></tr>
+        <tr><td style="font-weight:700;color:var(--text)">Total production agent</td><td class="highlight-val" style="font-size:1.05rem">$3,200-$13,000/month</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="fade-in" style="margin-top:32px">
+    <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px">Cost Optimization Strategies</h3>
+    <table class="cost-table">
+      <thead><tr><th>Strategy</th><th>Savings</th></tr></thead>
+      <tbody>
+        <tr><td>Smart model routing (GPT-4 for complex, GPT-3.5 for simple)</td><td class="highlight-val">Up to 80%</td></tr>
+        <tr><td>Prefix caching (reused context)</td><td class="highlight-val">50% discount</td></tr>
+        <tr><td>Semantic caching (repeated queries)</td><td class="highlight-val">20-40% traffic eliminated</td></tr>
+        <tr><td>Short-circuit deterministic paths</td><td class="highlight-val">50-70% reduction</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ==================== HITL PATTERNS ==================== -->
+<section id="hitl">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 5</div>
+    <h2 class="section-title">Human-in-the-Loop Production Patterns</h2>
+    <p class="section-desc">Four proven patterns for integrating human oversight into agent workflows.</p>
+  </div>
+
+  <div class="hitl-card fade-in">
+    <h3>Pattern 1: Calibrated Autonomy (Recommended)</h3>
+    <p>Route based on confidence score + risk assessment. High confidence, reversible, low stakes = auto-execute. Low confidence OR irreversible OR high stakes = route to human with structured approval checklist.</p>
+    <div class="arch-diagram">[Agent Action Proposed]
+       |
+  [Confidence Score + Risk Assessment]
+       |
+  +----+----+
+  |         |
+[High Conf   [Low Conf OR Irreversible
+ Reversible   OR High Stakes]
+ Low Stakes]       |
+  |          [Route to Human]
+[Auto-Execute]     |
+              [Structured Approval Checklist]
+                   |
+              [Execute or Reject + Feedback]</div>
+  </div>
+
+  <div class="hitl-card fade-in">
+    <h3>Pattern 2: Asynchronous Human Review</h3>
+    <p>Do NOT block agents waiting for human approval. Instead:</p>
+    <ol>
+      <li>Agent proposes action</li>
+      <li>Posts task to approval queue</li>
+      <li>Agent continues with other work</li>
+      <li>Checks for approval result later</li>
+      <li>Executes only when approved</li>
+    </ol>
+  </div>
+
+  <div class="hitl-card fade-in">
+    <h3>Pattern 3: Structured Briefings (for High-Risk Runs)</h3>
+    <p>Before high-risk agent operations, require:</p>
+    <ul>
+      <li>Mission definition</li>
+      <li>Role assignments</li>
+      <li>Abort criteria</li>
+      <li>Escalation ladder</li>
+      <li>Rollback plan</li>
+    </ul>
+  </div>
+
+  <div class="hitl-card fade-in">
+    <h3>Pattern 4: HITL as Continuous Evaluation</h3>
+    <p>Use human reviewer decisions as ground-truth labels to continuously improve agent accuracy and recalibrate confidence thresholds. HITL is not separate from evaluation -- <strong>it IS the production evaluation pipeline</strong>.</p>
+  </div>
+</div>
+</section>
+
+<!-- ==================== FRAMEWORKS ==================== -->
+<section id="frameworks">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 6</div>
+    <h2 class="section-title">Framework Comparison</h2>
+    <p class="section-desc">Production-proven frameworks ranked by real-world adoption and capabilities.</p>
+  </div>
+
+  <div class="framework-grid fade-in">
+    <div class="framework-card">
+      <h4>LangGraph</h4>
+      <div class="users">Uber, LinkedIn, Elastic, Vodafone, Exa</div>
+      <p>Complex stateful workflows. Graph-based orchestration with fine-grained control. Best for teams needing maximum flexibility.</p>
+      <div class="weakness">Steeper learning curve; requires more boilerplate</div>
+    </div>
+    <div class="framework-card">
+      <h4>CrewAI</h4>
+      <div class="users">PwC, IBM Consulting</div>
+      <p>Role-based agent teams. Rapid prototyping with enterprise deployment capabilities. Low barrier for non-expert developers.</p>
+      <div class="weakness">Less fine-grained control than LangGraph; newer ecosystem</div>
+    </div>
+    <div class="framework-card">
+      <h4>UiPath Agents</h4>
+      <div class="users">Deloitte, Enterprise RPA</div>
+      <p>Testing automation and RPA augmentation. Excels at SAP/ERP workflows with 1,500+ pre-built bots.</p>
+      <div class="weakness">Tied to UiPath platform; less flexible for custom agents</div>
+    </div>
+    <div class="framework-card">
+      <h4>Claude Code Agent Teams</h4>
+      <div class="users">Developer teams (experimental)</div>
+      <p>Software development and code review. 28 specialized agents, 116 skills, 59 commands. One session as team lead with independent teammates.</p>
+      <div class="weakness">Still experimental; limited to development workflows</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== RECOMMENDATIONS ==================== -->
+<section id="recommendations">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 7</div>
+    <h2 class="section-title">Concrete Recommendations</h2>
+    <p class="section-desc">Seven actionable recommendations distilled from all 10 case studies for building production multi-agent systems.</p>
+  </div>
+
+  <div class="rec-card fade-in">
+    <div class="rec-number">01</div>
+    <h3>Use Hybrid Architecture (IBM Pattern)</h3>
+    <p>Route user requests through an intent router. Deterministic paths handle direct API calls, file conversion, audio normalization, and format export. Agent paths handle complex orchestration, voice matching, quality optimization, and multi-provider routing.</p>
+    <div class="rec-rationale"><strong>Rationale:</strong> Not every operation needs an agent. Direct API calls for simple tasks. Agents only for complex decisions (provider selection, quality optimization, batch orchestration).</div>
+  </div>
+
+  <div class="rec-card fade-in">
+    <div class="rec-number">02</div>
+    <h3>Implement 10-Step Maximum Agent Chains</h3>
+    <p>Design agent workflows with a maximum of 10 sequential steps. After 10 steps, checkpoint and either report to user for approval, save state and start new chain, or escalate to human.</p>
+    <div class="rec-rationale"><strong>Rationale:</strong> 68% of production agents hit human intervention within 10 steps. Design for this reality.</div>
+  </div>
+
+  <div class="rec-card fade-in">
+    <div class="rec-number">03</div>
+    <h3>Build Monitoring From Day 1</h3>
+    <p>Track these metrics from the first deployment: agent task duration, tool usage frequency and success rate, human-vs-agent effort ratio, error rates by agent type, token consumption by agent, end-to-end latency per workflow.</p>
+    <div class="rec-rationale"><strong>Rationale:</strong> Every successful production deployment (PwC, Vodafone, Exa) invested in monitoring before scaling. Teams without monitoring could not debug failures or prove ROI.</div>
+  </div>
+
+  <div class="rec-card fade-in">
+    <div class="rec-number">04</div>
+    <h3>Implement Semantic Caching</h3>
+    <p>For applications with repeated similar requests: cache voice configurations, cache provider routing decisions, cache quality optimization parameters.</p>
+    <div class="rec-rationale"><strong>Rationale:</strong> Expected savings: 20-40% of LLM costs eliminated through intelligent caching of recurring decision patterns.</div>
+  </div>
+
+  <div class="rec-card fade-in">
+    <div class="rec-number">05</div>
+    <h3>Dynamic Agent Count (Exa Pattern)</h3>
+    <p>Instead of a fixed agent catalog for every task: simple requests use 1-2 agents, complex requests use 5-8 agents, full pipeline requests use all agents. Scale agent count to match task complexity.</p>
+    <div class="rec-rationale"><strong>Rationale:</strong> Exa's dynamic task generation outperforms fixed agent counts on both cost and quality metrics.</div>
+  </div>
+
+  <div class="rec-card fade-in">
+    <div class="rec-number">06</div>
+    <h3>Iterative Validation is Core Value</h3>
+    <p>The Critic Agent is not optional overhead. Implement generate->validate loops with a structured Evaluation Rubric covering coherence, fidelity, tool efficacy, and structure.</p>
+    <div class="rec-rationale"><strong>Rationale:</strong> PwC proved 7x accuracy improvement with generate->validate loops. Multi-agent validation loops are the core value, not overhead.</div>
+  </div>
+
+  <div class="rec-card fade-in">
+    <div class="rec-number">07</div>
+    <h3>Start Regional, Scale Global (Danfoss Pattern)</h3>
+    <p>Deploy for one provider or region first. Prove the architecture works end-to-end. Then expand to additional providers. Do not try to support all options simultaneously on day 1.</p>
+    <div class="rec-rationale"><strong>Rationale:</strong> Danfoss proved ROI in Spain/France/Italy before global rollout. 5 minutes saved per order compounds massively at scale.</div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== DECISION MATRIX ==================== -->
+<section id="decision-matrix">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 8</div>
+    <h2 class="section-title">Architecture Decision Matrix</h2>
+    <p class="section-desc">For each component, use this matrix to decide the right level of agent involvement.</p>
+  </div>
+
+  <div class="fade-in" style="overflow-x:auto">
+    <table class="matrix-table">
+      <thead><tr><th>Question</th><th>If YES</th><th>If NO</th></tr></thead>
+      <tbody>
+        <tr><td>Can this be solved with deterministic code?</td><td class="yes">Use direct code, skip agents</td><td class="no">Consider agent</td></tr>
+        <tr><td>Does this require &lt;3 steps?</td><td class="yes">Single agent or no agent</td><td class="no">Multi-agent workflow</td></tr>
+        <tr><td>Is the output format fixed/predictable?</td><td class="yes">Use structured output, minimal agent</td><td class="no">Use agent with validation loop</td></tr>
+        <tr><td>Does this need real-time performance?</td><td class="yes">Use caching + direct code</td><td class="no">Agent is acceptable</td></tr>
+        <tr><td>Is this high-stakes/irreversible?</td><td class="no">Auto-execute with logging</td><td class="yes">Add human-in-the-loop</td></tr>
+        <tr><td>Will this be called >100x/day?</td><td class="yes">Optimize for cost (caching, model routing)</td><td class="no">Standard agent is fine</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ==================== RISK ASSESSMENT ==================== -->
+<section id="risks">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Section 9</div>
+    <h2 class="section-title">Risk Assessment</h2>
+    <p class="section-desc">Key risks for multi-agent system deployments with likelihood, impact, and mitigation strategies.</p>
+  </div>
+
+  <div class="fade-in" style="overflow-x:auto">
+    <table class="risk-table">
+      <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Agent coordination overhead exceeds benefit</td>
+          <td class="risk-medium">Medium</td>
+          <td class="risk-high">High</td>
+          <td>Hybrid architecture: agents only where needed</td>
+        </tr>
+        <tr>
+          <td>Token costs spiral with multi-agent system</td>
+          <td class="risk-high">High</td>
+          <td class="risk-medium">Medium</td>
+          <td>Dynamic agent count + semantic caching + model routing</td>
+        </tr>
+        <tr>
+          <td>Pilot works, production fails at scale</td>
+          <td class="risk-medium">Medium</td>
+          <td class="risk-high">High</td>
+          <td>Build monitoring from day 1; test at 10x expected load</td>
+        </tr>
+        <tr>
+          <td>Agent output quality inconsistent</td>
+          <td class="risk-medium">Medium</td>
+          <td class="risk-high">High</td>
+          <td>Mandatory validation loops (Critic Agent)</td>
+        </tr>
+        <tr>
+          <td>Over-engineering simple operations</td>
+          <td class="risk-high">High</td>
+          <td class="risk-medium">Medium</td>
+          <td>Decision matrix; deterministic-first principle</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ==================== SOURCES ==================== -->
+<section id="sources">
+<div class="container">
+  <div class="fade-in">
+    <div class="section-label"><span class="line"></span> Sources</div>
+    <h2 class="section-title">References & Sources</h2>
+    <p class="section-desc">30+ verified sources spanning enterprise case studies, frameworks, failure analyses, and production metrics.</p>
+  </div>
+  <div class="sources-list fade-in">
+    <a href="https://www.mckinsey.com/capabilities/quantumblack/our-insights/seizing-the-agentic-ai-advantage" target="_blank">McKinsey: Seizing the Agentic AI Advantage</a>
+    <a href="https://www.mckinsey.com/about-us/new-at-mckinsey-blog/mckinseys-legacyx-rejuvenating-legacy-infrastructure-with-agentic-ai" target="_blank">McKinsey: LegacyX Platform</a>
+    <a href="https://www.zenml.io/llmops-database/building-ai-developer-tools-using-langgraph-for-large-scale-software-development" target="_blank">Uber: AI Developer Tools with LangGraph</a>
+    <a href="https://blog.tmcnet.com/blog/rich-tehrani/ai/how-uber-built-ai-agents-that-saved-21000-developer-hours.html" target="_blank">How Uber Built AI Agents That Saved 21,000 Developer Hours</a>
+    <a href="https://goautonomous.io/news/articles/danfoss-streamlines-order-intake-with-ai/" target="_blank">Danfoss Streamlines Order Intake with AI Agents</a>
+    <a href="https://cloud.google.com/customers/danfoss" target="_blank">Danfoss Case Study - Google Cloud</a>
+    <a href="https://blog.langchain.com/exa/" target="_blank">Exa Multi-Agent Web Research with LangGraph</a>
+    <a href="https://crewai.com/case-studies/pwc-accelerates-enterprise-scale-genai-adoption-with-crewai" target="_blank">PwC Accelerates Enterprise GenAI with CrewAI</a>
+    <a href="https://www.crewai.com/case-studies/ibm-automates-federal-eligibility-with-agents" target="_blank">IBM Automates Federal Eligibility with Agents</a>
+    <a href="https://www.elastic.co/search-labs/blog/multi-agent-system-llm-agents-elasticsearch-langgraph" target="_blank">Elastic Multi-Agent System with LangGraph</a>
+    <a href="https://www.blog.langchain.com/customers-vodafone/" target="_blank">Vodafone Transforms Data Operations with LangGraph</a>
+    <a href="https://blog.langchain.com/customers-vodafone-italy/" target="_blank">Fastweb + Vodafone: AI Agents with LangGraph</a>
+    <a href="https://www.uipath.com/resources/automation-case-studies/uipath-and-deloitte-revolutionizing-erp-modernization" target="_blank">Deloitte + UiPath: ERP Modernization Case Study</a>
+    <a href="https://www.alphabold.com/langgraph-agents-in-production/" target="_blank">LangGraph Agents in Production: Architecture, Costs</a>
+    <a href="https://blog.langchain.com/is-langgraph-used-in-production/" target="_blank">Is LangGraph Used In Production?</a>
+    <a href="https://www.agentframeworkhub.com/blog/ai-agent-production-costs-2026" target="_blank">AI Agent Production Costs 2026</a>
+    <a href="https://machinelearningmastery.com/5-production-scaling-challenges-for-agentic-ai-in-2026/" target="_blank">5 Production Scaling Challenges for Agentic AI 2026</a>
+    <a href="https://composio.dev/blog/why-ai-agent-pilots-fail-2026-integration-roadmap" target="_blank">Why AI Pilots Fail in Production -- 2026 Integration Roadmap</a>
+    <a href="https://www.digitalapplied.com/blog/ai-agent-scaling-gap-march-2026-pilot-to-production" target="_blank">AI Agent Scaling Gap March 2026</a>
+    <a href="https://www.permit.io/blog/human-in-the-loop-for-ai-agents-best-practices-frameworks-use-cases-and-demo" target="_blank">Human-in-the-Loop for AI Agents: Best Practices</a>
+    <a href="https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html" target="_blank">Humans and Agents in Software Engineering Loops - Martin Fowler</a>
+    <a href="https://www.databricks.com/blog/multi-agent-supervisor-architecture-orchestrating-enterprise-ai-scale" target="_blank">Multi-Agent Supervisor Architecture - Databricks</a>
+    <a href="https://www.crewai.com/blog/the-state-of-agentic-ai-in-2026" target="_blank">CrewAI: State of Agentic AI in 2026</a>
+    <a href="https://www.multimodal.dev/post/agentic-ai-statistics" target="_blank">10 AI Agent Statistics for 2026</a>
+    <a href="https://cloud.google.com/transform/roi-of-ai-how-agents-help-business" target="_blank">Google Cloud: ROI of AI Agents</a>
+    <a href="https://claudefa.st/blog/guide/agents/agent-teams" target="_blank">Claude Code Agent Teams Setup Guide</a>
+    <a href="https://byteiota.com/everything-claude-code-production-agent-framework/" target="_blank">Everything-Claude-Code Production Agent Framework</a>
+    <a href="https://hbr.org/2026/03/to-scale-ai-agents-successfully-think-of-them-like-team-members" target="_blank">HBR: To Scale AI Agents, Think of Them Like Team Members</a>
+    <a href="https://azuretechinsider.com/from-hype-to-reality-what-production-ai-agents-actually-look-like/" target="_blank">From Hype to Reality: Production AI Agents in 2026</a>
+    <a href="https://www.ampcome.com/post/why-agentic-ai-projects-fail" target="_blank">Why Agentic AI Projects Fail: #1 Enterprise Problem 2026</a>
+  </div>
+</div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <p>A-05 Production Research | Multi-Agent AI Production Playbook</p>
+  <p style="margin-top:4px">Agent A-05 Status: RESEARCH COMPLETE | Confidence Level: HIGH</p>
+  <p class="sig">Synthesized from 10 verified enterprise deployments | 30+ sources | March 2026</p>
+</footer>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// Toggle case study cards
+function toggleCS(headerEl) {
+  const card = headerEl.closest('.case-study-card');
+  card.classList.toggle('open');
+}
+
+// IntersectionObserver for fade-in
+document.addEventListener('DOMContentLoaded', () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.08,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+});
+</script>
+</body>
+</html>

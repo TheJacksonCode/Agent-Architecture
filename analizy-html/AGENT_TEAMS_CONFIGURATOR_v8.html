@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Architecture Designer v8.0 — Mind Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg0:#070b14;--bg1:#0c1221;--bg2:#121a2d;--bg3:#1a2338;--bg4:#222d44;
+  --cy:#22d3ee;--vi:#8b5cf6;--am:#f59e0b;--em:#10b981;--ro:#ef4444;
+  --t1:#e8edf5;--t2:#8b95a8;--t3:#5b6478;--t4:#3d4659;
+  --brd:rgba(255,255,255,.06);--glass:rgba(12,18,33,.82);
+  --grad:linear-gradient(135deg,var(--cy),var(--vi));
+  --hd:'Space Grotesk',sans-serif;--bd:'Inter',sans-serif;--mn:'JetBrains Mono',monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg0);color:var(--t1);font-family:var(--bd);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(34,211,238,.15);border-radius:3px}
+::selection{background:rgba(34,211,238,.2)}
+
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;gap:10px;padding:0 14px;height:46px;background:var(--bg1);border-bottom:1px solid var(--brd);position:relative;z-index:100;flex-shrink:0}
+.topbar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--grad);opacity:.3}
+.tb-brand{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-brand span{font-family:var(--hd);font-size:13px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb-brand small{font-size:9px;font-family:var(--mn);color:var(--t4);padding:1px 5px;border:1px solid var(--brd);border-radius:3px}
+.tb-sep{width:1px;height:22px;background:var(--brd);flex-shrink:0}
+.tb-problem{flex:1}
+.tb-problem textarea{width:100%;height:30px;padding:5px 10px;border:1px solid var(--brd);border-radius:6px;background:var(--bg0);color:var(--t1);font-family:var(--bd);font-size:11px;resize:none;outline:none;transition:border-color .2s}
+.tb-problem textarea:focus{border-color:rgba(34,211,238,.3)}
+.tb-problem textarea::placeholder{color:var(--t4)}
+.tb-actions{display:flex;gap:5px;flex-shrink:0}
+.btn{padding:5px 12px;border-radius:6px;font-family:var(--hd);font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid var(--brd);background:var(--bg2);color:var(--t2);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.btn:hover{background:var(--bg3);color:var(--t1)}
+.btn-p{background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(139,92,246,.1));border-color:rgba(34,211,238,.25);color:var(--cy)}
+.btn-p:hover{background:linear-gradient(135deg,rgba(34,211,238,.2),rgba(139,92,246,.2))}
+.btn-d{border-color:rgba(239,68,68,.2);color:var(--ro)}.btn-d:hover{background:rgba(239,68,68,.06)}
+.btn-a{border-color:rgba(245,158,11,.2);color:var(--am)}.btn-a:hover{background:rgba(245,158,11,.06)}
+
+/* WORKSPACE */
+.workspace{display:flex;flex:1;overflow:hidden}
+
+/* LEFT SIDEBAR */
+.side-l{width:250px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--brd);display:flex;flex-direction:column;overflow:hidden}
+.sl-tabs{display:flex;border-bottom:1px solid var(--brd);flex-shrink:0}
+.sl-tab{flex:1;padding:9px 0;text-align:center;font-family:var(--hd);font-size:10px;font-weight:600;color:var(--t4);cursor:pointer;position:relative;transition:color .15s}
+.sl-tab:hover{color:var(--t2)}.sl-tab.on{color:var(--cy)}
+.sl-tab.on::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:2px;background:var(--grad);border-radius:1px}
+.sl-panels{flex:1;overflow:hidden;position:relative}
+.sl-pan{position:absolute;inset:0;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .2s}
+.sl-pan.on{opacity:1;pointer-events:auto}
+
+/* Agent palette */
+.pa-search{margin:6px 8px;padding:6px 8px;border:1px solid var(--brd);border-radius:5px;background:var(--bg0);color:var(--t1);font-size:11px;outline:none;width:calc(100% - 16px)}
+.pa-search:focus{border-color:rgba(34,211,238,.25)}
+.pa-cat{padding:5px 10px;font-family:var(--mn);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t4);margin-top:4px}
+.pa-item{display:flex;align-items:center;gap:7px;padding:6px 10px;cursor:grab;transition:all .1s;border-left:2px solid transparent;user-select:none}
+.pa-item:hover{background:rgba(34,211,238,.03);border-left-color:var(--cy)}
+.pa-orb{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;border:1px solid var(--brd);background:var(--bg0)}
+.pa-txt{flex:1;min-width:0}.pa-name{font-family:var(--hd);font-size:10px;font-weight:600}.pa-desc{font-size:8px;color:var(--t4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-badge{font-family:var(--mn);font-size:7px;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.b-op{background:rgba(245,158,11,.1);color:var(--am)}.b-so{background:rgba(16,185,129,.1);color:var(--em)}.b-ha{background:rgba(34,211,238,.1);color:var(--cy)}
+
+/* Preset list */
+.pr-cat{padding:6px 10px 3px;font-family:var(--mn);font-size:7px;letter-spacing:.1em;color:var(--t4);text-transform:uppercase;margin-top:4px}
+.pr-item{display:flex;align-items:center;gap:6px;padding:5px 10px;cursor:pointer;transition:all .1s;border-left:2px solid transparent}
+.pr-item:hover{background:rgba(34,211,238,.03);border-left-color:var(--cy)}
+.pr-item.on{background:rgba(34,211,238,.05);border-left-color:var(--cy)}
+.pr-icon{font-size:12px;width:18px;text-align:center;flex-shrink:0}
+.pr-name{font-family:var(--hd);font-size:10px;font-weight:600;color:var(--t1);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-cnt{font-family:var(--mn);font-size:9px;color:var(--cy);background:rgba(34,211,238,.08);padding:1px 6px;border-radius:3px;flex-shrink:0;min-width:18px;text-align:center}
+
+/* Saved */
+.sv-list{padding:8px}
+.sv-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--brd);border-radius:6px;margin-bottom:3px;cursor:pointer;transition:all .1s}
+.sv-item:hover{border-color:rgba(245,158,11,.2)}
+.sv-name{font-family:var(--hd);font-size:10px;font-weight:600;flex:1}.sv-date{font-family:var(--mn);font-size:8px;color:var(--t4)}
+.sv-del{color:var(--t4);cursor:pointer;font-size:11px}.sv-del:hover{color:var(--ro)}
+.sv-empty{padding:30px 12px;text-align:center;color:var(--t4);font-size:10px}
+
+/* CANVAS */
+.cv-area{flex:1;position:relative;overflow:hidden;background:var(--bg0)}
+.cv-grid{position:absolute;inset:0;pointer-events:none}
+.cv-container{position:absolute;inset:0;overflow:hidden}
+.cv-transform{position:absolute;top:0;left:0;width:6000px;height:6000px;transform-origin:0 0}
+#svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+#svg .hit{pointer-events:stroke;cursor:pointer}
+
+/* Nodes */
+.nd{position:absolute;z-index:10;cursor:grab;user-select:none}
+.nd:active{cursor:grabbing;z-index:20}
+.nd.sel{z-index:15}
+.nd-body{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 9px 5px;border-radius:12px;border:1.5px solid var(--brd);background:var(--glass);backdrop-filter:blur(10px);min-width:72px;transition:border-color .2s,box-shadow .2s}
+.nd:hover .nd-body{border-color:rgba(34,211,238,.25);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.nd.sel .nd-body{border-color:var(--cy);box-shadow:0 0 20px rgba(34,211,238,.12)}
+.nd-orb{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;border:1.5px solid var(--brd);background:var(--bg0)}
+.nd-lbl{font-family:var(--hd);font-size:9px;font-weight:600;text-align:center;max-width:70px;line-height:1.2}
+.nd-mdl{font-family:var(--mn);font-size:7px;padding:1px 4px;border-radius:3px}
+.nd-load{width:36px;height:2px;border-radius:1px;background:rgba(255,255,255,.03);margin-top:1px;overflow:hidden}
+.nd-load-bar{height:100%;border-radius:1px}
+.c-am .nd-orb{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)}.c-am .nd-lbl{color:var(--am)}
+.c-cy .nd-orb{border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.04)}.c-cy .nd-lbl{color:var(--cy)}
+.c-bl .nd-orb{border-color:rgba(96,165,250,.25);background:rgba(96,165,250,.04)}.c-bl .nd-lbl{color:#60a5fa}
+.c-mu .nd-orb{border-color:rgba(148,163,184,.12)}.c-mu .nd-lbl{color:var(--t2)}
+.c-ro .nd-orb{border-color:rgba(244,63,94,.25);background:rgba(244,63,94,.04)}.c-ro .nd-lbl{color:#f43f5e}
+.c-vi .nd-orb{border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.04)}.c-vi .nd-lbl{color:var(--vi)}
+
+.nd-anc{position:absolute;width:10px;height:10px;border-radius:50%;background:rgba(34,211,238,.2);border:1.5px solid rgba(34,211,238,.4);cursor:crosshair;opacity:0;transition:opacity .15s;z-index:5}
+.nd:hover .nd-anc{opacity:1}
+.nd-anc.top{top:-5px;left:50%;transform:translateX(-50%)}
+.nd-anc.bot{bottom:-5px;left:50%;transform:translateX(-50%)}
+.nd-anc:hover{background:var(--cy);transform:translateX(-50%) scale(1.3)}
+
+.cv-ctrl{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:50;padding:5px 8px;background:var(--glass);border:1px solid var(--brd);border-radius:10px;backdrop-filter:blur(10px)}
+.cv-ctrl .btn{padding:4px 10px;font-size:9px}
+.cv-info{position:absolute;top:8px;left:8px;font-family:var(--mn);font-size:9px;color:var(--t4);z-index:5;pointer-events:none}
+.zm-ctrl{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:3px;z-index:50}
+.zm-ctrl .btn{padding:5px 8px;font-size:11px;justify-content:center}
+.zm-lbl{font-family:var(--mn);font-size:8px;color:var(--t3);text-align:center}
+
+/* RIGHT SIDEBAR */
+.side-r{width:300px;flex-shrink:0;background:var(--bg1);border-left:1px solid var(--brd);display:flex;flex-direction:column;overflow:hidden}
+.sr-hdr{padding:9px 12px;border-bottom:1px solid var(--brd)}
+.sr-hdr h3{font-family:var(--hd);font-size:12px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sr-scr{flex:1;overflow-y:auto;padding:10px}
+.sr-mt{padding:30px 16px;text-align:center;color:var(--t4);font-size:10px;line-height:1.6}
+.ds{margin-bottom:12px}.ds-l{font-family:var(--mn);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--t4);margin-bottom:4px}
+.ds-v{font-size:11px;color:var(--t2);line-height:1.5}
+.ds-card{padding:9px 11px;border:1px solid var(--brd);border-radius:10px;background:var(--bg0);margin-bottom:7px}
+.ds-card h4{font-family:var(--hd);font-size:12px;font-weight:700;margin-bottom:3px}
+.ds-card p{font-size:10px;color:var(--t2);line-height:1.5}
+.ds-mdls{display:flex;gap:3px;margin-top:5px}
+.ds-m{flex:1;padding:5px;border:1.5px solid var(--brd);border-radius:6px;text-align:center;cursor:pointer;transition:all .12s;background:var(--bg0)}
+.ds-m:hover{border-color:rgba(34,211,238,.15)}
+.ds-m.a-op{border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.03)}
+.ds-m.a-so{border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.03)}
+.ds-m.a-ha{border-color:rgba(34,211,238,.5);background:rgba(34,211,238,.03)}
+.ds-mn{font-family:var(--hd);font-size:10px;font-weight:700}.ds-mc{font-family:var(--mn);font-size:7px;color:var(--t4)}
+.ds-ta{width:100%;min-height:160px;padding:8px;border:1px solid var(--brd);border-radius:8px;background:rgba(0,0,0,.2);color:var(--t2);font-family:var(--mn);font-size:10px;line-height:1.5;resize:vertical;outline:none}
+.ds-ta:focus{border-color:rgba(34,211,238,.3)}
+.ds-cn{display:flex;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--brd);border-radius:5px;margin-bottom:2px;font-size:10px;color:var(--t2)}
+.ds-cn-a{color:var(--cy);font-weight:700;font-size:12px}.ds-cn-d{margin-left:auto;cursor:pointer;color:var(--t4);font-size:11px}.ds-cn-d:hover{color:var(--ro)}
+.pi-badge{font-family:var(--mn);font-size:10px;padding:3px 8px;border:1px solid rgba(34,211,238,.15);border-radius:5px;display:inline-block;background:rgba(34,211,238,.04);color:var(--cy)}
+.pi-costs{display:flex;gap:14px;margin:5px 0}
+.pi-cv{font-family:var(--mn);font-size:12px;font-weight:600}
+.pi-ul{list-style:none;padding:0;margin:0}.pi-ul li{font-size:10px;margin:2px 0;padding:1px 0}
+.pi-pro{color:var(--em)}.pi-con{color:var(--ro)}
+
+/* STATUS BAR */
+.statbar{display:flex;align-items:center;gap:2px;padding:0 10px;height:26px;background:var(--bg1);border-top:1px solid var(--brd);flex-shrink:0;z-index:100}
+.statbar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--grad);opacity:.15}
+.st{display:flex;align-items:center;gap:3px;padding:0 8px;font-family:var(--mn);font-size:8px;color:var(--t3);border-right:1px solid var(--brd);height:100%}
+.st:last-child{border-right:none}.st-v{color:var(--t2);font-weight:500}
+.st-d{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.st-op{background:var(--am)}.st-so{background:var(--em)}.st-ha{background:var(--cy)}
+.st-sp{flex:1}
+
+/* MODALS */
+.mo{position:fixed;inset:0;background:rgba(7,11,20,.88);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.mo.show{display:flex}
+.mo-box{width:90%;max-width:800px;max-height:85vh;background:var(--bg1);border:1px solid var(--brd);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.mo-h{padding:14px 18px;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center}
+.mo-h h2{font-family:var(--hd);font-size:16px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.mo-b{flex:1;overflow-y:auto;padding:18px}
+.mo-b textarea{width:100%;min-height:350px;padding:14px;border:1px solid var(--brd);border-radius:10px;background:rgba(0,0,0,.2);color:var(--t1);font-family:var(--mn);font-size:11px;line-height:1.6;resize:vertical;outline:none}
+.mo-f{padding:10px 18px;border-top:1px solid var(--brd);display:flex;justify-content:flex-end;gap:6px}
+.kb-g{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.kb-r{display:flex;align-items:center;gap:6px;padding:5px 7px}
+.kb-k{font-family:var(--mn);font-size:9px;padding:2px 6px;border:1px solid var(--brd);border-radius:3px;background:var(--bg3);color:var(--t2);min-width:28px;text-align:center}
+.kb-a{font-size:10px;color:var(--t2)}
+
+/* Tooltip system */
+.tt{position:relative;border-bottom:1px dotted var(--cy);cursor:help;color:var(--cy)}
+.tt:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--t1);font-family:var(--bd);font-size:10px;font-weight:400;line-height:1.5;padding:8px 12px;border-radius:8px;border:1px solid var(--brd);box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:normal;width:max-content;max-width:280px;z-index:200;pointer-events:none;animation:ttIn .15s ease}
+.tt:hover::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg3);z-index:201}
+@keyframes ttIn{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* Expand button for right sidebar */
+.btn-learn{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(139,92,246,.08));border-color:rgba(34,211,238,.2);color:var(--cy);width:100%;justify-content:center;margin-top:8px;padding:7px 12px}
+.btn-learn:hover{background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(139,92,246,.15))}
+
+/* ================================================================
+   v8 MIND MAP OVERLAY — Deep Space Constellation Theme
+   ================================================================ */
+.mm-overlay{
+  position:absolute;top:0;right:0;bottom:0;width:calc(100% - 250px);
+  z-index:80;display:none;flex-direction:column;overflow:hidden;
+  background:#0d1117;
+}
+.mm-overlay.show{display:flex;animation:mmFadeIn .4s ease}
+@keyframes mmFadeIn{from{opacity:0}to{opacity:1}}
+
+/* Starfield background */
+.mm-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.mm-star{position:absolute;border-radius:50%;background:#fff}
+
+/* Close button — larger, more visible */
+.mm-close{
+  position:absolute;top:16px;right:16px;z-index:100;
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(248,81,73,.12);border:2px solid rgba(248,81,73,.5);
+  display:flex;align-items:center;justify-content:center;
+  color:#f85149;font-size:22px;font-weight:700;cursor:pointer;
+  transition:all .25s;backdrop-filter:blur(8px);
+  box-shadow:0 0 16px rgba(248,81,73,.15);
+  animation:mmCloseGlow 2.5s ease-in-out infinite;
+}
+.mm-close:hover{background:rgba(248,81,73,.3);border-color:#f85149;transform:scale(1.15);box-shadow:0 0 28px rgba(248,81,73,.4)}
+@keyframes mmCloseGlow{0%,100%{box-shadow:0 0 12px rgba(248,81,73,.12)}50%{box-shadow:0 0 22px rgba(248,81,73,.25)}}
+
+/* Breadcrumb */
+.mm-bread{
+  position:absolute;top:16px;left:16px;z-index:100;
+  display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+}
+.mm-bread-item{
+  font-family:var(--mn);font-size:10px;padding:3px 10px;
+  border-radius:12px;border:1px solid rgba(88,166,255,.2);
+  background:rgba(88,166,255,.06);color:#58a6ff;
+  cursor:pointer;transition:all .2s;backdrop-filter:blur(4px);
+}
+.mm-bread-item:hover{background:rgba(88,166,255,.15);border-color:#58a6ff}
+.mm-bread-item.active{background:rgba(88,166,255,.15);border-color:#58a6ff;color:#fff}
+.mm-bread-sep{color:rgba(88,166,255,.3);font-size:10px}
+
+/* Minimap */
+.mm-minimap{
+  position:absolute;bottom:16px;right:16px;z-index:100;
+  width:160px;height:120px;
+  background:rgba(13,17,23,.85);border:1px solid rgba(88,166,255,.15);
+  border-radius:8px;overflow:hidden;backdrop-filter:blur(6px);
+}
+.mm-minimap svg{width:100%;height:100%}
+.mm-minimap-vp{fill:none;stroke:#58a6ff;stroke-width:2;opacity:.5}
+
+/* SVG container */
+.mm-svg-wrap{flex:1;position:relative;z-index:1;cursor:grab;overflow:hidden}
+.mm-svg-wrap:active{cursor:grabbing}
+.mm-svg-wrap svg{position:absolute;top:0;left:0}
+
+/* Node tooltip */
+.mm-tooltip{
+  position:absolute;z-index:150;pointer-events:none;
+  max-width:320px;padding:12px 16px;
+  background:rgba(22,27,34,.95);border:1px solid rgba(88,166,255,.2);
+  border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);
+  backdrop-filter:blur(10px);
+  font-family:var(--bd);font-size:11px;color:#c9d1d9;line-height:1.6;
+  opacity:0;transition:opacity .15s;
+}
+.mm-tooltip.show{opacity:1}
+.mm-tooltip-title{font-family:var(--hd);font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+
+/* Info panel in bottom-left */
+.mm-info{
+  position:absolute;bottom:16px;left:16px;z-index:100;
+  padding:10px 14px;
+  background:rgba(13,17,23,.85);border:1px solid rgba(88,166,255,.12);
+  border-radius:8px;backdrop-filter:blur(6px);
+  font-family:var(--mn);font-size:9px;color:rgba(88,166,255,.6);
+}
+.mm-info span{color:#58a6ff}
+
+/* Focus+Context — dimmed nodes */
+.mm-node-dimmed{opacity:.2;transition:opacity .5s ease}
+.mm-node-focused{opacity:1;transition:opacity .3s ease}
+.mm-node-child-enter{opacity:0;animation:mmChildFadeIn .5s cubic-bezier(0.34,1.56,0.64,1) forwards}
+@keyframes mmChildFadeIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
+/* Ambient breathing glow for unexplored nodes */
+@keyframes mmBreatheGlow{
+  0%,100%{filter:drop-shadow(0 0 3px var(--glow-color)) brightness(1)}
+  50%{filter:drop-shadow(0 0 10px var(--glow-color)) brightness(1.2)}
+}
+
+/* Semantic zoom labels */
+.mm-desc-text{opacity:0;transition:opacity .3s ease}
+.mm-desc-visible .mm-desc-text{opacity:1}
+
+@media(max-width:1100px){.side-r{width:250px}}
+@media(max-width:900px){.side-l{width:200px}.side-r{width:220px}}
+@media(max-width:700px){.side-l,.side-r{display:none}.mm-overlay{width:100%}}
+
+/* Orchestrator Mind Map — Main Canvas Panel */
+.omm-panel{
+  position:absolute;top:0;right:0;bottom:0;width:calc(100% - 250px);
+  z-index:85;display:none;overflow-y:auto;overflow-x:hidden;
+  background:linear-gradient(180deg,#0a0f1a 0%,#0d1220 50%,#0a0e18 100%);
+  animation:mmFadeIn .4s ease;
+}
+.omm-panel.show{display:block}
+.omm-panel::-webkit-scrollbar{width:6px}
+.omm-panel::-webkit-scrollbar-thumb{background:rgba(88,166,255,.15);border-radius:3px}
+.omm-inner{max-width:900px;margin:0 auto;padding:40px 32px 60px}
+.omm-close{
+  position:sticky;top:12px;float:right;margin:12px 16px 0 0;z-index:90;
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(248,81,73,.1);border:2px solid rgba(248,81,73,.4);
+  display:flex;align-items:center;justify-content:center;
+  color:#f85149;font-size:18px;font-weight:700;cursor:pointer;
+  transition:all .2s;backdrop-filter:blur(8px);
+}
+.omm-close:hover{background:rgba(248,81,73,.25);border-color:#f85149;transform:scale(1.1)}
+.omm-hdr{text-align:center;margin-bottom:32px;position:relative}
+.omm-hdr h2{font-family:var(--hd);font-size:28px;font-weight:800;background:linear-gradient(135deg,#58a6ff,#bc8cff,#58a6ff);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:ommGrad 4s ease infinite;margin-bottom:6px}
+@keyframes ommGrad{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.omm-hdr p{font-size:12px;color:var(--t3);font-family:var(--mn)}
+.omm-hdr-desc{max-width:600px;margin:12px auto 0;font-size:12px;color:var(--t2);line-height:1.7;text-align:center}
+.omm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px}
+.omm-br{border:1px solid var(--brd);border-radius:12px;overflow:hidden;transition:border-color .25s,box-shadow .25s;background:rgba(255,255,255,.01)}
+.omm-br:hover{border-color:rgba(255,255,255,.1);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.omm-br.open{border-color:rgba(88,166,255,.2);box-shadow:0 4px 30px rgba(88,166,255,.06)}
+.omm-bh{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;transition:background .15s;user-select:none}
+.omm-bh:hover{background:rgba(255,255,255,.02)}
+.omm-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;box-shadow:0 0 10px currentColor}
+.omm-bn{font-family:var(--hd);font-size:13px;font-weight:700;flex:1;color:var(--t1)}
+.omm-bc{font-family:var(--mn);font-size:9px;padding:2px 7px;border-radius:4px;flex-shrink:0;background:rgba(255,255,255,.05);color:var(--t3)}
+.omm-ba{font-size:10px;color:var(--t4);transition:transform .25s;flex-shrink:0}
+.omm-br.open .omm-ba{transform:rotate(90deg);color:var(--cy)}
+.omm-bb{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.omm-br.open .omm-bb{max-height:3000px}
+.omm-bi{padding:4px 14px 12px}
+.omm-bdesc{font-size:10px;color:var(--t3);margin-bottom:8px;font-family:var(--mn);padding-left:2px}
+.omm-leaf{padding:8px 0;border-top:1px solid rgba(255,255,255,.04)}
+.omm-leaf:first-child{border-top:none}
+.omm-lh{display:flex;align-items:center;gap:8px}
+.omm-lm{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.omm-ln{font-family:var(--hd);font-size:12px;font-weight:600}
+.omm-ld{font-size:11px;color:var(--t2);line-height:1.6;margin-top:4px;padding-left:15px}
+.omm-qr-wrap{grid-column:1/-1;margin-top:6px}
+.omm-qr{padding:16px 20px;border:1px solid rgba(88,166,255,.15);border-radius:12px;background:linear-gradient(135deg,rgba(88,166,255,.04),rgba(139,92,246,.04));font-family:var(--mn);font-size:11px;line-height:2;color:var(--t2);columns:2;column-gap:32px}
+.omm-qr strong{color:var(--cy);font-weight:600}
+@media(max-width:1000px){.omm-grid{grid-template-columns:1fr}.omm-qr{columns:1}}
+@media(max-width:700px){.omm-panel{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div class="tb-brand"><span>Agent Designer</span><small>v8.0 Mind Map</small></div>
+  <div class="tb-sep"></div>
+  <div class="tb-problem"><textarea id="probIn" placeholder="Opisz projekt lub problem..."></textarea></div>
+  <div class="tb-actions">
+    <button class="btn btn-p" onclick="genPrompt()">&#9889; Final Prompt</button>
+    <button class="btn btn-a" onclick="expCfg()">&#8599; Export</button>
+    <button class="btn" onclick="impCfg()">&#8601; Import</button>
+    <button class="btn" onclick="showKB()">?</button>
+  </div>
+</div>
+<div class="workspace">
+  <div class="side-l" id="sL">
+    <div class="sl-tabs">
+      <div class="sl-tab on" onclick="sTab('ag',this)">Agenci</div>
+      <div class="sl-tab" onclick="sTab('pr',this)">Presety</div>
+      <div class="sl-tab" onclick="sTab('sv',this)">Zapisane</div>
+    </div>
+    <div class="sl-panels">
+      <div class="sl-pan on" id="panAg"><input class="pa-search" id="paS" placeholder="&#128269; Szukaj..." oninput="fPal()"><div id="paL"></div></div>
+      <div class="sl-pan" id="panPr"><div id="prL"></div></div>
+      <div class="sl-pan" id="panSv"><div style="padding:6px 8px"><button class="btn btn-a" onclick="saveCfg()" style="width:100%">&#128190; Zapisz konfiguracje</button></div><div class="sv-list" id="svL"><div class="sv-empty">Brak zapisanych.</div></div></div>
+    </div>
+  </div>
+  <div class="cv-area" id="cvA">
+    <div class="cv-grid" id="cvG"></div>
+    <div class="cv-container"><div class="cv-transform" id="cvT"><svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg></div></div>
+    <div class="cv-info" id="cvI">0 agentow | 0 polaczen</div>
+    <div class="cv-ctrl">
+      <button class="btn btn-p" id="cBtn" onclick="togConn()">&#128279; Polacz</button>
+      <button class="btn" onclick="autoLay()">&#9638; Layout</button>
+      <button class="btn btn-d" onclick="delSel()">&#128465; Usun</button>
+      <button class="btn btn-d" onclick="clrCv()">Wyczysc</button>
+    </div>
+    <div class="zm-ctrl">
+      <button class="btn" onclick="zIn()">+</button>
+      <div class="zm-lbl" id="zL">100%</div>
+      <button class="btn" onclick="zOut()">&minus;</button>
+      <button class="btn" onclick="zRst()" style="font-size:8px">&#8634;</button>
+    </div>
+  </div>
+  <!-- MIND MAP OVERLAY -->
+  <div class="mm-overlay" id="mmOverlay">
+    <div class="mm-stars" id="mmStars"></div>
+    <div class="mm-close" id="mmClose" onclick="closeLearn()" title="Zamknij mape myslowa (Esc)">&#10005;</div>
+    <div class="mm-bread" id="mmBread"></div>
+    <div class="mm-svg-wrap" id="mmWrap">
+      <svg id="mmSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="mm-minimap" id="mmMinimap"><svg id="mmMiniSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="mm-info" id="mmInfo">Kliknij wezel aby rozwinac | Scroll = zoom (oddalenie: podglad, przyblizenie: szczegoly) | Przeciagnij = przesun | <span>Esc</span> = zamknij</div>
+    <div class="mm-tooltip" id="mmTip"></div>
+  </div>
+  <!-- ORCHESTRATOR MIND MAP PANEL -->
+  <div class="omm-panel" id="ommPanel"></div>
+  <div class="side-r" id="sR">
+    <div class="sr-hdr"><h3>&#128203; Szczegoly</h3></div>
+    <div class="sr-scr" id="srS"><div class="sr-mt">Kliknij agenta na canvasie lub wybierz preset.<br><br>Shift+klik = zaznacz wielu agentow i przesuwaj razem.</div></div>
+  </div>
+</div>
+<div class="statbar">
+  <div class="st"><span>Agentow:</span><span class="st-v" id="sA">0</span></div>
+  <div class="st"><span>Polaczen:</span><span class="st-v" id="sC">0</span></div>
+  <div class="st"><span class="st-d st-op"></span><span class="st-v" id="sO">0</span></div>
+  <div class="st"><span class="st-d st-so"></span><span class="st-v" id="sS">0</span></div>
+  <div class="st"><span class="st-d st-ha"></span><span class="st-v" id="sH">0</span></div>
+  <div class="st"><span>Tok:</span><span class="st-v" id="sT">~0K</span></div>
+  <div class="st"><span>$:</span><span class="st-v" id="s$">0.00</span></div>
+  <div class="st-sp"></div>
+  <div class="st" id="sP" style="border:none"><span class="st-v">-</span></div>
+</div>
+</div>
+<div class="mo" id="moP"><div class="mo-box"><div class="mo-h"><h2>&#9889; Final Prompt</h2><button class="btn btn-d" onclick="cMo('moP')">&#10005;</button></div><div class="mo-b"><textarea id="fpA" readonly></textarea></div><div class="mo-f"><button class="btn btn-p" onclick="cpFP(event)">&#128203; Kopiuj</button><button class="btn" onclick="cMo('moP')">Zamknij</button></div></div></div>
+<div class="mo" id="moE"><div class="mo-box" style="max-width:600px"><div class="mo-h"><h2>&#8599; Export</h2><button class="btn btn-d" onclick="cMo('moE')">&#10005;</button></div><div class="mo-b"><textarea id="exA" readonly style="min-height:200px"></textarea></div><div class="mo-f"><button class="btn btn-p" onclick="navigator.clipboard.writeText(G('exA').value).then(()=>alert('Skopiowano!'))">Kopiuj</button><button class="btn" onclick="cMo('moE')">Zamknij</button></div></div></div>
+<div class="mo" id="moI"><div class="mo-box" style="max-width:600px"><div class="mo-h"><h2>&#8601; Import</h2><button class="btn btn-d" onclick="cMo('moI')">&#10005;</button></div><div class="mo-b"><textarea id="imA" style="min-height:200px" placeholder="Wklej JSON..."></textarea></div><div class="mo-f"><button class="btn btn-p" onclick="doImp()">Importuj</button><button class="btn" onclick="cMo('moI')">Anuluj</button></div></div></div>
+<div class="mo" id="moK"><div class="mo-box" style="max-width:500px"><div class="mo-h"><h2>Skroty klawiszowe</h2><button class="btn btn-d" onclick="cMo('moK')">&#10005;</button></div><div class="mo-b"><div class="kb-g">
+  <div class="kb-r"><span class="kb-k">Del</span><span class="kb-a">Usun zaznaczonych</span></div>
+  <div class="kb-r"><span class="kb-k">C</span><span class="kb-a">Tryb laczenia</span></div>
+  <div class="kb-r"><span class="kb-k">L</span><span class="kb-a">Auto-layout</span></div>
+  <div class="kb-r"><span class="kb-k">Esc</span><span class="kb-a">Odznacz / zamknij</span></div>
+  <div class="kb-r"><span class="kb-k">+/-</span><span class="kb-a">Zoom in/out</span></div>
+  <div class="kb-r"><span class="kb-k">0</span><span class="kb-a">Reset zoom</span></div>
+  <div class="kb-r"><span class="kb-k">Shift+klik</span><span class="kb-a">Dodaj do zaznaczenia</span></div>
+  <div class="kb-r"><span class="kb-k">Ctrl+A</span><span class="kb-a">Zaznacz wszystkich</span></div>
+  <div class="kb-r"><span class="kb-k">Scroll</span><span class="kb-a">Zoom na canvasie</span></div>
+  <div class="kb-r"><span class="kb-k">Alt+drag</span><span class="kb-a">Przesun canvas</span></div>
+</div></div><div class="mo-f"><button class="btn" onclick="cMo('moK')">Zamknij</button></div></div></div>
+
+<script>
+const G=id=>document.getElementById(id);
+
+// ================================================================
+// AGENTS (22) - expanded descriptions
+// ================================================================
+const AD=[
+{cat:'STRATEGIA',id:'orchestrator',name:'Orkiestrator',icon:'\u2734',color:'am',model:'opus',load:50,
+ role:'Centralny punkt decyzyjny calego systemu agentow. Analizuje zadanie, dekomponuje na podzadania i deleguje do specjalistow. Kontroluje bramy miedzy fazami (GO/NO-GO) i syntetyzuje wyniki. Nie generuje tresci - zarzadza workflow i rozwiazuje konflikty.',
+ tools:'Agent, Read/Write, Bash, TaskCreate',
+ prompt:'Jestes Master Orkiestratorem. NIE generujesz tresci - ZARZADZASZ SYSTEMEM.\n\nOBOWIAZKI:\n1. Dekompozycja zadania na podzadania\n2. Delegowanie do agentow\n3. Kontrola gate\'ow miedzy fazami\n4. Synteza wynikow, rozwiazywanie konfliktow\n5. GO/NO-GO decisions\n\nZASADY:\n- Kazdy agent dostaje TYLKO swoj kontekst\n- MANIFEST.md jako shared scratchpad\n- Max 10 krokow sekwencyjnych\n- Eskaluj krytyczne decyzje do uzytkownika'},
+{cat:'STRATEGIA',id:'synthesizer',name:'Syntetyk',icon:'\u26A1',color:'vi',model:'sonnet',load:65,
+ role:'Pamiec cross-fazowa systemu - utrzymuje MANIFEST.md jako single source of truth. Zbiera wyniki z kazdej fazy, aktualizuje decyzje architektoniczne i stack. Identyfikuje sprzecznosci miedzy agentami i wyciaga wnioski cross-funkcyjne.',
+ tools:'Read/Write (MANIFEST.md)',
+ prompt:'Jestes Syntetykiem - "pamiec systemu". Utrzymujesz MANIFEST.md.\n\nPo kazdej fazie:\n1. Zbierz kluczowe wyniki\n2. Zaktualizuj MANIFEST.md:\n   - Decyzje Architektoniczne\n   - Stack Technologiczny\n   - Design System\n   - Known Risks\n3. Wyciagnij wnioski cross-fazowe\n4. Oznacz sprzecznosci miedzy agentami'},
+{cat:'PLANOWANIE',id:'analyst',name:'Analityk',icon:'\u269B',color:'cy',model:'sonnet',load:55,
+ role:'Specjalista dekompozycji zlozonych problemow na niezalezne podzadania. Identyfikuje zaleznosci, szacuje zlozonosc (S/M/L/XL) i okresla priorytet.',
+ tools:'Read, Write',
+ prompt:'Jestes Analitykiem. Rozloz problem na NIEZALEZNE podzadania.\n\nDla kazdego:\n1. Zakres funkcjonalny\n2. Research vs implementacja\n3. Wymagania techniczne i UX\n4. Zaleznosci od innych zadan\n5. Zlozonosc: S/M/L/XL\n\nOutput: strukturalny plan w Markdown.'},
+{cat:'PLANOWANIE',id:'planner',name:'Planer',icon:'\u2699',color:'cy',model:'sonnet',load:40,
+ role:'Tworzy harmonogram na podstawie dekompozycji Analityka. Okresla zadania rownolegle vs sekwencyjne, identyfikuje sciezke krytyczna.',
+ tools:'Read, Write',
+ prompt:'Jestes Planerem.\n\n1. Co ROWNOLEGLE\n2. Co SEKWENCYJNE\n3. Punkty synchronizacji (gate\'y)\n4. Estymacja czasu\n5. Sciezka krytyczna\n\nOutput: harmonogram timeline z gate\'ami.'},
+{cat:'RESEARCH',id:'res_tech',name:'Researcher Tech',icon:'\uD83D\uDD0D',color:'bl',model:'haiku',load:55,
+ role:'Prowadzi badania techniczne: porownuje frameworki, biblioteki, API i architekture. Analizuje minimum 3 opcje z pros/cons i benchmarkami.',
+ tools:'WebSearch, WebFetch, Read',
+ prompt:'Jestes Technical Researcher.\n\nDla kazdego zagadnienia:\n- Porownaj min. 3 opcje\n- Pros/cons kazdej\n- Rekomenduj najlepsza\n- Podaj snippet setup\n- Sprawdz znane issues\n\nKazde twierdzenie z URL zrodla.'},
+{cat:'RESEARCH',id:'res_ux',name:'Researcher UX',icon:'\uD83C\uDFA8',color:'bl',model:'haiku',load:50,
+ role:'Bada trendy UI/UX, zbiera inspiracje z Dribbble, Behance, Awwwards i Mobbin. Analizuje kolory, typografie, layouty i mikro-interakcje.',
+ tools:'WebSearch, WebFetch',
+ prompt:'Jestes UX Researcher.\n\nZbadaj:\n- Top 10 przykladow wizualnych\n- Trendy UI: kolory, typo, layout\n- Mikro-interakcje i animacje\n- Accessibility (WCAG 2.1 AA)\n\nZrodla: Dribbble, Behance, Awwwards.'},
+{cat:'RESEARCH',id:'res_reddit',name:'Researcher Reddit',icon:'\uD83D\uDCAC',color:'bl',model:'haiku',load:50,
+ role:'Przeszukuje Reddit szukajac niefiltrowanych opinii i realnych doswiadczen deweloperow.',
+ tools:'WebSearch, WebFetch',
+ prompt:'Jestes Reddit Researcher.\n\nSubreddity: r/webdev, r/programming, r/reactjs, r/SaaS\n\nSzukaj:\n- Dyskusje o podobnych projektach\n- Narzekania = szanse\n- Rekomendacje stacku\n- Porownania narzedzi\n\nOutput: TOP 10 insightow z linkami.'},
+{cat:'RESEARCH',id:'res_x',name:'Researcher X',icon:'\uD835\uDD4F',color:'bl',model:'haiku',load:45,
+ role:'Monitoruje X/Twitter szukajac trendow od influencerow technologicznych.',
+ tools:'WebSearch, WebFetch',
+ prompt:'Jestes X/Twitter Researcher.\n\nSzukaj:\n- Trendy od influencerow\n- Launche produktow i reakcje\n- Techniczne thready\n- Kontrowersyjne opinie\n\nOutput: TOP 10 postow z kontekstem.'},
+{cat:'RESEARCH',id:'res_github',name:'Researcher GitHub',icon:'\uD83D\uDCBB',color:'bl',model:'haiku',load:55,
+ role:'Przeszukuje repozytoria open-source podobne do projektu. Analizuje architekture, stack, README.',
+ tools:'WebSearch, WebFetch',
+ prompt:'Jestes GitHub Researcher.\n\nSzukaj repo podobnych do projektu:\n- Stars, forks, aktywnosc\n- Architektura plikow\n- Stack i uzasadnienie\n- Issues i PR\n\nOutput: TOP 5 z analiza.'},
+{cat:'RESEARCH',id:'res_forums',name:'Researcher Forum',icon:'\uD83C\uDF10',color:'bl',model:'haiku',load:50,
+ role:'Przeszukuje StackOverflow, Dev.to, Medium, HN szukajac tutoriali i lessons learned.',
+ tools:'WebSearch, WebFetch',
+ prompt:'Jestes Forum Researcher.\n\nPrzeszukaj: SO, Dev.to, Medium, HN\n\nSzukaj:\n- Tutoriale\n- Czeste bledy\n- Performance porownania\n- Lessons learned\n\nOutput: TOP 10 z takeaways.'},
+{cat:'RESEARCH',id:'res_docs',name:'Researcher Docs',icon:'\uD83D\uDCDA',color:'bl',model:'haiku',load:40,
+ role:'Zbiera informacje z oficjalnych dokumentacji frameworkow i narzedzi.',
+ tools:'WebSearch, WebFetch, Read',
+ prompt:'Jestes Docs Researcher.\n\nZbierz z dokumentacji:\n- Getting started\n- Best practices\n- Performance optimization\n- Security guidelines\n- Config snippety\n\nOutput: index z excerptami.'},
+{cat:'RESEARCH',id:'res_critic',name:'Research Critic',icon:'\uD83D\uDC41',color:'ro',model:'sonnet',load:85,
+ role:'Waliduje wyniki Researcherow szukajac sprzecznosci, bias i luk. Ocenia wiarygodnosc zrodel.',
+ tools:'Read',
+ prompt:'Jestes Research Critic. WALIDACJA:\n\n1. Sprzecznosci miedzy raportami\n2. Wiarygodnosc zrodel\n3. Confirmation bias\n4. LUKI\n\nRubrika: Completeness 25%, Accuracy 25%, Relevance 20%, Freshness 20%, Actionability 10%\n\n<6/10 = REVISE.'},
+{cat:'BUILD',id:'backend',name:'Backend Dev',icon:'\uD83D\uDD27',color:'mu',model:'sonnet',load:75,
+ role:'Implementuje warstwe serwerowa: API endpoints, schematy danych, walidacje i logike biznesowa.',
+ tools:'Write, Edit, Bash, Read',
+ prompt:'Jestes Backend Developer.\n\n- API-first (endpointy, schematy, walidacja)\n- Testy jednostkowe (TDD)\n- Error handling\n- Dokumentacja API\n- Env vars zamiast hardcoded\n- Test PRZED implementacja'},
+{cat:'BUILD',id:'frontend',name:'Frontend Dev',icon:'\uD83C\uDF10',color:'mu',model:'sonnet',load:70,
+ role:'Implementuje warstwe kliencka mobile-first. Tworzy reuzywalne komponenty z obsluga stanow.',
+ tools:'Write, Edit, Bash, Read',
+ prompt:'Jestes Frontend Developer.\n\n- Responsive mobile-first\n- Komponenty reuzywalne\n- Stany ladowania i bledow\n- Accessibility (aria, keyboard)\n- Design system spojnosc\n- Performance (lazy load, split)'},
+{cat:'BUILD',id:'feature',name:'Feature Dev',icon:'\uD83D\uDE80',color:'mu',model:'sonnet',load:65,
+ role:'Implementuje specjalistyczne funkcjonalnosci: real-time (WebSocket), integracje AI/ML, wizualizacje danych.',
+ tools:'Write, Edit, Bash, Read',
+ prompt:'Jestes Feature Developer.\n\nSpecjalne feature:\n- Real-time (WebSocket)\n- AI/ML integrations\n- Data visualizations\n- Third-party API\n- Niszowe biblioteki'},
+{cat:'BUILD',id:'designer',name:'Designer',icon:'\uD83C\uDFA8',color:'mu',model:'sonnet',load:55,
+ role:'Tworzy kompletna warstwe wizualna od design tokenow po animacje. CSS/SCSS z tokenami.',
+ tools:'Write, Edit, Read',
+ prompt:'Jestes Designerem.\n\n- CSS/SCSS z design tokenami\n- Layout HTML (grid/flexbox)\n- Animacje i mikro-interakcje\n- Ikony SVG\n- Dark/light mode\n- Design system spojnosc'},
+{cat:'BUILD',id:'integrator',name:'Integrator',icon:'\uD83D\uDD17',color:'mu',model:'sonnet',load:70,
+ role:'Laczy prace workerow w spojny projekt. Weryfikuje API contracts, rozwiazuje konflikty naming conventions.',
+ tools:'Read, Write, Edit, Bash',
+ prompt:'Jestes Integratorem.\n\n- API contracts spojne\n- Rozwiaz konflikty\n- E2E test calego flow\n- MANIFEST.md spelniony\n- Zintegrowany output'},
+{cat:'BUILD',id:'writer',name:'Redaktor',icon:'\u270D',color:'mu',model:'sonnet',load:35,
+ role:'Tworzy dokumentacje techniczna: README.md, CHANGELOG, API docs, decision records.',
+ tools:'Read, Write',
+ prompt:'Jestes Redaktorem.\n\n- README.md z instrukcja\n- CHANGELOG.md\n- API docs\n- Komentarze TYLKO dla nontrivial\n- Styl: zwiezly, techniczny'},
+{cat:'QA / AUDYT',id:'qa_security',name:'QA Security',icon:'\uD83D\uDD12',color:'ro',model:'haiku',load:50,
+ role:'Audyt bezpieczenstwa: OWASP Top 10, hardcoded secrets, niezabezpieczone endpointy.',
+ tools:'Read, Grep, Bash',
+ prompt:'Jestes QA Security.\n\nSzukaj WYLACZNIE podatnosci:\n- OWASP Top 10\n- Hardcoded secrets\n- Niezabezpieczone endpointy\n- CVE zalenosci\n\nNIE naprawiasz - RAPORTUJESZ.\n{severity, lokalizacja, remediacja}'},
+{cat:'QA / AUDYT',id:'qa_quality',name:'QA Quality',icon:'\u2705',color:'ro',model:'haiku',load:55,
+ role:'Sprawdza zgodnosc z wymaganiami, identyfikuje brakujace testy i edge cases.',
+ tools:'Read, Grep, Bash',
+ prompt:'Jestes QA Quality.\n\nSprawdz:\n- Zgodnosc z wymaganiami\n- Pokrycie testami\n- Edge cases\n- Performance (N+1)\n- Code smells\n\n{kategoria, severity, lokalizacja, sugestia}'},
+{cat:'QA / AUDYT',id:'qa_perf',name:'QA Performance',icon:'\u23F1',color:'ro',model:'haiku',load:45,
+ role:'Kompleksowy audyt wydajnosci: response time, bundle size, memory, query performance.',
+ tools:'Bash, Read',
+ prompt:'Jestes QA Performance.\n\nZmierz:\n- Response time\n- Bundle size\n- Memory leaks\n- DB query performance\n- Core Web Vitals\n\nRaport z benchmarkami.'},
+{cat:'QA / AUDYT',id:'qa_manager',name:'Manager QA',icon:'\uD83D\uDCDD',color:'ro',model:'sonnet',load:50,
+ role:'Zbiera i priorytetyzuje raporty QA. GO/NO-GO decision na skali 1-10. Max 2 iteracje naprawcze.',
+ tools:'Read, Write',
+ prompt:'Jestes Manager QA.\n\n1. Priorytetyzuj: CRIT>HIGH>MED>LOW\n2. Zbiorczy raport:\n   - Issues wg severity\n   - Fix order\n   - Ocena 1-10\n   - GO/NO-GO\n3. NO-GO: taski naprawcze\n\nMax 2 iteracje.'}
+];
+
+const MH={opus:'[MODEL: Claude Opus 4.6 | 1M ctx | $15/$75 per 1M tok]',sonnet:'[MODEL: Claude Sonnet 4.6 | 200K ctx | $3/$15 per 1M tok]',haiku:'[MODEL: Claude Haiku 4.5 | 200K ctx | $0.80/$4 per 1M tok]'};
+AD.forEach(d=>{d.prompt=MH[d.model]+'\n\n'+d.prompt});
+
+// ================================================================
+// AGENT EDUCATIONAL DATA (for mind map)
+// ================================================================
+const ALEARN={
+orchestrator:{role:'Centralny punkt decyzyjny calego systemu agentow. NIGDY nie generuje tresci sam, tylko ZARZADZA workflow.',position:'Zawsze na szczycie hierarchii. Widzi "big picture". Niezbedny od 4+ agentow.',tools_detail:'Agent (delegowanie), Read/Write (MANIFEST.md), Bash (stan systemu), TaskCreate (tworzenie zadan). Agent to jedyne narzedzie pozwalajace uruchamiac inne agenty.',best:['Cel opisany JASNO','Max 10 krokow sekwencyjnych','Eskaluj krytyczne decyzje do uzytkownika','Waski kontekst per agent','MANIFEST.md jako shared scratchpad'],anti:['Orkiestrator ktory sam generuje kod','Micromanager anti-pattern','Przekazywanie pelnego kontekstu'],interactions:'Komunikuje sie ze WSZYSTKIMI, ale przez MANIFEST.md. Zasada: kazdy agent dostaje TYLKO swoj kontekst (Narrow Context).'},
+synthesizer:{role:'Pamiec dlugoterminowa systemu. Utrzymuje MANIFEST.md jako Single Source of Truth.',position:'Warstwa strategii, obok orkiestratora. NIE podejmuje decyzji — DOKUMENTUJE.',tools_detail:'Tylko Read/Write do MANIFEST.md — celowo ograniczony zakres.',best:['Nie usuwaj starych decyzji — oznacz jako revised','Kazda sekcja ma wlasciciela','Timestamp i zrodlo kazdego update'],anti:['Syntetyk ktory podejmuje decyzje sam','Usuwanie historii zmian'],interactions:'Wykrywa sprzecznosci miedzy agentami. Np. Researcher mowi React, Backend mowi HTMX — Syntetyk flaguje, Orkiestrator rozwiazuje.'},
+analyst:{role:'Specjalista dekompozycji zlozonych problemow na niezalezne, realizowalne podzadania.',position:'Warstwa planowania. Dziala PRZED builderami.',tools_detail:'Read (analiza kodu), Write (plan). Celowo BEZ Bash — NIE uruchamia kodu.',best:['Kazde podzadanie realizowalne przez JEDNEGO agenta','Zaleznosci oznaczone jawnie','Research oddzielony od implementacji','Zlozonosc S/M/L/XL nie czas'],anti:['Estymowanie czasu zamiast zlozonosci','Laczenie z rola Planera'],interactions:'Output jest INPUT dla Planera i builderow. Roznica: Analityk mowi CO robic, Planer mowi KIEDY.'},
+planner:{role:'Przeksztalca dekompozycje Analityka w harmonogram. Identyfikuje sciezke krytyczna.',position:'Warstwa planowania, partnersko z Analitykiem.',tools_detail:'Read (plan Analityka), Write (harmonogram).',best:['Maksymalizuj rownoleglosc','Definiuj gate\'y jasno','Buforuj czas na feedback loops'],anti:['Planowanie sekwencyjne "bo latwiej"','Marnowanie 40-60% potencjalu rownoleglosci'],interactions:'Potrzebuje outputu Analityka. Definiuje gate\'y synchronizacji.'},
+res_tech:{role:'Wywiadowca technologiczny — przeszukuje dokumentacje, blogi, benchmarki szukajac optymalnych rozwiazan.',position:'Warstwa research. Raportuje do orkiestratora lub Critic\'a.',tools_detail:'WebSearch (szukanie), WebFetch (pobieranie stron), Read (pliki lokalne). WebSearch KLUCZOWY — bez niego bazuje na cutoff.',best:['Kazde twierdzenie z URL','Sprawdz date zrodla','Snippet kodu > opis slowny','Min. 3 opcje porownania'],anti:['Rekomendowanie pierwszej znalezionej opcji','Brak porownania alternatyw'],interactions:'Szuka FAKTOW TECHNICZNYCH (docs, benchmarki), nie opinii.'},
+res_ux:{role:'Lacznik ze swiatem designu — Dribbble, Behance, Awwwards, Mobbin.',position:'Warstwa research, partnersko z Tech.',tools_detail:'WebSearch + WebFetch. Bez narzedzi edycji — rola to ZBIERANIE informacji.',best:['Mood board min. 5 referencji','Dark/light mode','Mobile-first','WCAG kontrasty'],anti:['Kopiowanie jednego designu zamiast syntezy trendow'],interactions:'Tech bada JAK zbudowac, UX bada JAK powinno WYGLADAC.'},
+res_reddit:{role:'Przeszukuje Reddit szukajac NIEFILTROWANYCH opinii deweloperow. Ground truth.',position:'Warstwa research, jeden z 6 specjalistow.',tools_detail:'WebSearch + WebFetch. Subreddity: r/webdev, r/programming, r/reactjs, r/SaaS.',best:['Sprawdz date','Szukaj kontrowersji','TOP 10 z linkami','Szukaj WZORCOW w wielu postach'],anti:['Traktowanie jednego komentarza jako prawdy'],interactions:'Reddit daje "ground truth". Narzekania = szanse na lepsze rozwiazanie.'},
+res_x:{role:'Monitoruje X szukajac trendow od influencerow i reakcji na launche.',position:'Warstwa research, najlepszy do wykrywania nowych trendow.',tools_detail:'WebSearch + WebFetch.',best:['Odrozniaj hype od wartosci','Sprawdz credentials autora','X ma krotki attention span'],anti:['Podazanie za hype bez walidacji'],interactions:'X jest najszybszym medium. Waliduj z Tech Researcher i Docs.'},
+res_github:{role:'Przeszukuje repozytoria open-source. Analizuje architekture, Issues, PR.',position:'Warstwa research, dostarcza DZIALAJACY KOD jako referencje.',tools_detail:'WebSearch + WebFetch.',best:['Stars>100 jako minimum','Data commitu — >2 lata = abandoned','Czytaj Issues zanim adoptujesz'],anti:['Kopiowanie kodu bez zrozumienia kontekstu'],interactions:'GitHub daje REALNY kod, nie teorie.'},
+res_forums:{role:'Przeszukuje StackOverflow, Dev.to, Medium, HN szukajac tutoriali i lessons learned.',position:'Warstwa research, komplementarny do Tech i Reddit.',tools_detail:'WebSearch + WebFetch.',best:['SO: sprawdz date i wersje','Medium: szukaj production-grade','Priorytetyzuj accepted answers'],anti:['Kopiowanie kodu z SO bez zrozumienia'],interactions:'"What I wish I knew before..." posty sa ZLOTE.'},
+res_docs:{role:'Zbiera info z OFICJALNYCH dokumentacji. Arbiter prawdy.',position:'Warstwa research, NAJWYZSZY priorytet wiarygodnosci (Docs > Blog > Tweet).',tools_detail:'WebSearch + WebFetch + Read.',best:['Sprawdz wersje docs vs twoja wersja','Changelogi = breaking changes','RFC = insight w decyzje maintainerow'],anti:['Ignorowanie Docs na rzecz tutoriali'],interactions:'Oficjalna dokumentacja to JEDYNE zrodlo gwarantowane przez maintainerow.'},
+res_critic:{role:'Adwokat diabla — NIE zbiera danych, WALIDUJE wyniki researcherow.',position:'GATE miedzy research a build. Score <6/10 = rewizja.',tools_detail:'Tylko Read — celowo ograniczony. NIE szuka nowych danych.',best:['Szukaj sprzecznosci MIEDZY raportami','Hierarchia: Docs > Blog > Tweet','Szukaj LUK'],anti:['Critic ktory akceptuje wszystko ("rubber stamp")'],interactions:'Rubrika: Completeness 25%, Accuracy 25%, Relevance 20%, Freshness 20%, Actionability 10%.'},
+backend:{role:'Implementuje warstwe serwerowa: API endpoints, schematy danych, walidacje. Metodologia TDD.',position:'Warstwa build. Output do Integratora/QA.',tools_detail:'Write (tworzenie), Edit (modyfikacja), Bash (testy), Read (analiza).',best:['API-first design','Walidacja inputu na kazdym endpoincie','Idempotentnosc POST/PUT','Paginacja i rate limiting'],anti:['Pisanie kodu bez testow','Hardcoded credentials'],interactions:'Spec od Analityka, sync API contracts z Frontend, walidacja przez QA.'},
+frontend:{role:'Implementuje warstwe kliencka mobile-first. Reuzywalne komponenty.',position:'Warstwa build, rownolegle z Backend.',tools_detail:'Write, Edit, Bash, Read.',best:['Responsive mobile-first','Error boundaries','Semantic HTML','ARIA roles i keyboard nav'],anti:['Pixel-perfect bez error handling','Div-soup zamiast semantic HTML'],interactions:'Design od Designera, API contracts od Backend, testowanie przez QA.'},
+feature:{role:'Specjalista od nietypowych funkcji: real-time, AI/ML, wizualizacje danych.',position:'Warstwa build, rownolegle z Backend/Frontend.',tools_detail:'Write, Edit, Bash, Read.',best:['Abstrakcja za czytelnym interfejsem','Fallback dla niedostepnych serwisow','Retry logic z exponential backoff'],anti:['Budowanie od zera zamiast sprawdzonych bibliotek'],interactions:'Buduje to czego standardowi builderzy nie umieja.'},
+designer:{role:'Tworzy kompletna warstwe wizualna: design tokeny, layout, ikony, animacje.',position:'Warstwa build, rownolegle z Frontend.',tools_detail:'Write, Edit, Read. BEZ Bash — nie uruchamia kodu.',best:['Design Tokens jako single source of truth','Contrast ratio min 4.5:1','Konsystentnosc > kreatywnosc'],anti:['Inline styles zamiast tokenow','Brak dark/light mode'],interactions:'Designer tworzy SYSTEM, Frontend IMPLEMENTUJE w kodzie.'},
+integrator:{role:'Laczy prace workerow w spojny projekt. Weryfikuje API contracts.',position:'Warstwa build, ZAWSZE po builderach i PRZED QA.',tools_detail:'Read (analiza), Write (testy), Edit (konflikty), Bash (E2E testy).',best:['E2E testy PRZED QA','MANIFEST.md jako checklist','Rozwiaz konflikty naming bez zmiany logiki'],anti:['Przepisywanie kodu builderow — LACZY, nie REFAKTORUJE'],interactions:'Bez Integratora, 3 builderow tworza 3 NIEZALEZNE fragmenty.'},
+writer:{role:'Tworzy dokumentacje techniczna: README.md, CHANGELOG.md, API docs, ADR.',position:'Warstwa build, czesto na koncu.',tools_detail:'Read (analiza kodu), Write (dokumenty). BEZ Bash i Edit.',best:['Pisz dla NOWEGO dewelopera','Testuj instrukcje','Przyklady kodu > opis slowny'],anti:['Opisywanie CO kod robi zamiast DLACZEGO'],interactions:'ADR (Architecture Decision Records) to najcenniejsza dokumentacja.'},
+qa_security:{role:'Audyt OWASP Top 10, hardcoded secrets, niezabezpieczone endpointy, CVE.',position:'Warstwa QA. NIE NAPRAWIA — RAPORTUJE.',tools_detail:'Read (kod), Grep (wzorce), Bash (npm audit).',best:['Zacznij od CRITICAL','False positives OK','Sprawdz .gitignore'],anti:['Naprawianie kodu sam — moze wprowadzic nowe bugi'],interactions:'Raportuje z severity, lokalizacja, remediacja.'},
+qa_quality:{role:'Zgodnosc z wymaganiami, brakujace testy, edge cases, code smells.',position:'Warstwa QA, komplementarny do Security.',tools_detail:'Read, Grep (TODO, FIXME, console.log), Bash (testy).',best:['Testuj happy path I error path','Szukaj brakujacych walidacji','Poprawnosc > performance > styl'],anti:['Sprawdzanie TYLKO happy path'],interactions:'Bugi zyja w edge cases, nie w happy path.'},
+qa_perf:{role:'Audyt wydajnosci: response time, bundle size, memory leaks, Core Web Vitals.',position:'Warstwa QA, specjalista metryczny.',tools_detail:'Bash (Lighthouse, profiler), Read.',best:['Mierz PRZED i PO','Production-like env','Liczby nie opinie','LCP <2.5s, INP <200ms, CLS <0.1'],anti:['Optymalizacja bez pomiaru'],interactions:'Performance to LICZBY, nie odczucia.'},
+qa_manager:{role:'Zbiera raporty z Security, Quality i Performance. GO/NO-GO (1-10).',position:'OSTATNI gate przed deployem.',tools_detail:'Read (raporty QA), Write (zbiorczy raport). BEZ Bash.',best:['1 CRITICAL > 10 LOW','Fix order wg zaleznosci','Max 2 iteracje naprawcze'],anti:['Przepuszczanie CRITICAL bo deadline'],interactions:'Score: ile CRITICAL (-3 kazdy), ile HIGH (-1). <6 = NO-GO.'}
+};
+
+// ================================================================
+// 27 PRESETS (positions + connections + metadata)
+// ================================================================
+const PR={
+solo:[{d:'orchestrator',x:400,y:100},{d:'backend',x:400,y:260}],
+quick_fix:[{d:'orchestrator',x:400,y:60},{d:'backend',x:400,y:200},{d:'qa_quality',x:400,y:340}],
+recon:[{d:'orchestrator',x:400,y:60},{d:'res_tech',x:260,y:200},{d:'backend',x:540,y:200}],
+trio:[{d:'backend',x:250,y:100},{d:'frontend',x:550,y:100},{d:'qa_quality',x:400,y:270}],
+reflect:[{d:'res_tech',x:400,y:60},{d:'analyst',x:400,y:210},{d:'res_critic',x:400,y:360}],
+bug_hunt:[{d:'orchestrator',x:400,y:50},{d:'backend',x:400,y:180},{d:'qa_security',x:250,y:320},{d:'qa_quality',x:550,y:320}],
+content:[{d:'res_forums',x:240,y:60},{d:'res_tech',x:560,y:60},{d:'writer',x:400,y:220},{d:'qa_quality',x:400,y:370}],
+plan_exec:[{d:'analyst',x:400,y:40},{d:'planner',x:400,y:170},{d:'backend',x:400,y:300},{d:'qa_quality',x:400,y:430}],
+perf_boost:[{d:'analyst',x:400,y:50},{d:'backend',x:250,y:190},{d:'qa_perf',x:550,y:190},{d:'integrator',x:400,y:340}],
+startup:[{d:'orchestrator',x:400,y:40},{d:'analyst',x:400,y:150},{d:'res_tech',x:240,y:270},{d:'backend',x:560,y:270},{d:'qa_quality',x:400,y:400}],
+cascade:[{d:'res_tech',x:220,y:60},{d:'res_docs',x:580,y:60},{d:'backend',x:280,y:210},{d:'qa_quality',x:520,y:210},{d:'orchestrator',x:400,y:370}],
+test_suite:[{d:'orchestrator',x:400,y:40},{d:'qa_security',x:200,y:180},{d:'qa_quality',x:400,y:180},{d:'qa_perf',x:600,y:180},{d:'qa_manager',x:400,y:330}],
+a11y:[{d:'res_ux',x:400,y:40},{d:'designer',x:250,y:180},{d:'frontend',x:550,y:180},{d:'qa_quality',x:400,y:320},{d:'writer',x:400,y:450}],
+security:[{d:'orchestrator',x:400,y:30},{d:'backend',x:400,y:150},{d:'qa_security',x:200,y:290},{d:'qa_quality',x:400,y:290},{d:'qa_perf',x:600,y:290},{d:'qa_manager',x:400,y:430}],
+review:[{d:'orchestrator',x:400,y:30},{d:'analyst',x:400,y:140},{d:'backend',x:250,y:260},{d:'frontend',x:550,y:260},{d:'qa_security',x:250,y:400},{d:'qa_quality',x:550,y:400}],
+design_sys:[{d:'orchestrator',x:400,y:20},{d:'res_ux',x:250,y:140},{d:'res_docs',x:550,y:140},{d:'designer',x:250,y:280},{d:'frontend',x:550,y:280},{d:'writer',x:400,y:420}],
+api_modern:[{d:'orchestrator',x:400,y:20},{d:'analyst',x:400,y:130},{d:'res_tech',x:400,y:240},{d:'backend',x:250,y:360},{d:'integrator',x:550,y:360},{d:'qa_quality',x:400,y:490}],
+ui_overhaul:[{d:'orchestrator',x:400,y:10},{d:'res_ux',x:230,y:120},{d:'res_docs',x:570,y:120},{d:'analyst',x:400,y:230},{d:'designer',x:230,y:350},{d:'frontend',x:570,y:350},{d:'qa_quality',x:400,y:470}],
+feature_sprint:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:400,y:110},{d:'res_tech',x:230,y:220},{d:'res_ux',x:570,y:220},{d:'backend',x:230,y:350},{d:'frontend',x:570,y:350},{d:'qa_quality',x:400,y:470}],
+standard:[{d:'orchestrator',x:400,y:15},{d:'analyst',x:280,y:110},{d:'planner',x:520,y:110},{d:'res_tech',x:220,y:220},{d:'res_ux',x:580,y:220},{d:'backend',x:260,y:340},{d:'frontend',x:540,y:340},{d:'qa_security',x:400,y:460}],
+data_pipe:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:280,y:110},{d:'planner',x:520,y:110},{d:'res_tech',x:230,y:220},{d:'res_docs',x:570,y:220},{d:'backend',x:230,y:340},{d:'feature',x:570,y:340},{d:'integrator',x:400,y:460}],
+research:[{d:'orchestrator',x:400,y:10},{d:'res_tech',x:120,y:130},{d:'res_reddit',x:240,y:130},{d:'res_github',x:360,y:130},{d:'res_forums',x:480,y:130},{d:'res_docs',x:600,y:130},{d:'res_x',x:720,y:130},{d:'res_critic',x:400,y:280},{d:'synthesizer',x:400,y:420}],
+legacy:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:400,y:105},{d:'res_tech',x:230,y:200},{d:'res_github',x:570,y:200},{d:'backend',x:180,y:310},{d:'frontend',x:400,y:310},{d:'integrator',x:620,y:310},{d:'qa_security',x:300,y:430},{d:'qa_quality',x:500,y:430}],
+saas:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:400,y:100},{d:'res_tech',x:230,y:200},{d:'res_ux',x:570,y:200},{d:'backend',x:180,y:310},{d:'frontend',x:400,y:310},{d:'designer',x:620,y:310},{d:'integrator',x:400,y:420},{d:'qa_security',x:280,y:530},{d:'qa_quality',x:520,y:530}],
+microservices:[{d:'orchestrator',x:400,y:5},{d:'analyst',x:280,y:90},{d:'planner',x:520,y:90},{d:'res_tech',x:400,y:180},{d:'backend',x:160,y:280},{d:'feature',x:320,y:280},{d:'integrator',x:480,y:280},{d:'frontend',x:640,y:280},{d:'qa_security',x:230,y:400},{d:'qa_quality',x:400,y:400},{d:'qa_manager',x:570,y:400}],
+full:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:290,y:100},{d:'planner',x:510,y:100},{d:'res_tech',x:170,y:200},{d:'res_ux',x:400,y:200},{d:'res_docs',x:630,y:200},{d:'backend',x:150,y:310},{d:'frontend',x:310,y:310},{d:'designer',x:490,y:310},{d:'integrator',x:650,y:310},{d:'qa_security',x:240,y:420},{d:'qa_quality',x:420,y:420},{d:'qa_manager',x:600,y:420}],
+deep:[{d:'orchestrator',x:420,y:5},{d:'analyst',x:240,y:85},{d:'planner',x:450,y:85},{d:'synthesizer',x:620,y:85},{d:'res_reddit',x:100,y:175},{d:'res_x',x:220,y:175},{d:'res_ux',x:340,y:175},{d:'res_github',x:460,y:175},{d:'res_forums',x:580,y:175},{d:'res_docs',x:700,y:175},{d:'res_critic',x:420,y:270},{d:'backend',x:190,y:365},{d:'frontend',x:370,y:365},{d:'feature',x:530,y:365},{d:'integrator',x:680,y:365},{d:'qa_security',x:260,y:460},{d:'qa_quality',x:440,y:460},{d:'qa_manager',x:610,y:460}]
+};
+
+const PC={
+solo:[[0,1,'two']],
+quick_fix:[[0,1,'one'],[1,2,'one'],[2,0,'continuous']],
+recon:[[0,1,'one'],[0,2,'one'],[1,2,'one']],
+trio:[[0,2,'one'],[1,2,'one'],[0,1,'two']],
+reflect:[[0,1,'one'],[1,2,'one'],[2,0,'continuous']],
+bug_hunt:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,0,'one'],[3,0,'one']],
+content:[[0,2,'one'],[1,2,'one'],[2,3,'one']],
+plan_exec:[[0,1,'one'],[1,2,'one'],[2,3,'one'],[3,0,'continuous']],
+perf_boost:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,3,'one']],
+startup:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[2,3,'one'],[3,4,'one']],
+cascade:[[0,2,'one'],[1,3,'one'],[2,4,'one'],[3,4,'one']],
+test_suite:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[1,4,'one'],[2,4,'one'],[3,4,'one']],
+a11y:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,3,'one'],[3,4,'one']],
+security:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[1,4,'one'],[2,5,'one'],[3,5,'one'],[4,5,'one'],[5,0,'one']],
+review:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,0,'one'],[5,0,'one']],
+design_sys:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,5,'one']],
+api_modern:[[0,1,'one'],[1,2,'one'],[2,3,'one'],[2,4,'one'],[3,5,'one'],[4,5,'one']],
+ui_overhaul:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,3,'one'],[3,4,'one'],[3,5,'one'],[4,6,'one'],[5,6,'one']],
+feature_sprint:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,6,'one'],[5,6,'one']],
+standard:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[3,5,'one'],[4,6,'one'],[5,7,'one'],[6,7,'one']],
+data_pipe:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,6,'one'],[5,7,'one'],[6,7,'one']],
+research:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[0,5,'one'],[0,6,'one'],[1,7,'one'],[2,7,'one'],[3,7,'one'],[4,7,'one'],[5,7,'one'],[6,7,'one'],[7,8,'one'],[8,0,'two']],
+legacy:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,6,'one'],[5,6,'one'],[6,7,'one'],[6,8,'one']],
+saas:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[3,6,'one'],[4,7,'one'],[5,7,'one'],[6,7,'one'],[7,8,'one'],[7,9,'one']],
+microservices:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[3,4,'one'],[3,5,'one'],[3,6,'one'],[3,7,'one'],[4,8,'one'],[5,8,'one'],[6,9,'one'],[7,9,'one'],[8,10,'one'],[9,10,'one'],[10,0,'one']],
+full:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[0,5,'one'],[3,6,'one'],[4,7,'one'],[5,8,'one'],[6,9,'one'],[7,9,'one'],[8,9,'one'],[9,10,'one'],[9,11,'one'],[10,12,'one'],[11,12,'one'],[12,0,'one']],
+deep:[[0,1,'one'],[0,2,'one'],[0,3,'two'],[1,4,'one'],[1,5,'one'],[1,6,'one'],[1,7,'one'],[1,8,'one'],[1,9,'one'],[4,10,'one'],[5,10,'one'],[6,10,'one'],[7,10,'one'],[8,10,'one'],[9,10,'one'],[10,3,'one'],[3,11,'one'],[3,12,'one'],[3,13,'one'],[11,14,'one'],[12,14,'one'],[13,14,'one'],[14,15,'one'],[14,16,'one'],[15,17,'one'],[16,17,'one'],[17,0,'one']]
+};
+
+const PM={
+solo:{n:'Solo + Walidator',i:'\u26A1',c:2,dsc:'Orkiestrator + worker z petla.',use:'Bugi, refactoring, skrypty.',p:['\u2713 ~40-80K tok','\u2713 Zero overhead'],m:['\u2717 Brak QA'],t:'~40-80K',$:'$0.04-0.15',pt:'Direct Delegation'},
+quick_fix:{n:'Szybka Naprawa',i:'\uD83D\uDD27',c:3,dsc:'Cykl fix-test-fix.',use:'Bugfixy, hotfixy, patche.',p:['\u2713 Petla zwrotna'],m:['\u2717 1 builder'],t:'~80-120K',$:'$0.08-0.20',pt:'Fix-Test Loop'},
+recon:{n:'Recon Squad',i:'\uD83D\uDD0D',c:3,dsc:'Orkiestrator + researcher + builder.',use:'POC, spike, badanie wykonalnosci.',p:['\u2713 Research przed kodem'],m:['\u2717 1 zrodlo'],t:'~80-120K',$:'$0.08-0.20',pt:'Hub-and-Spoke (mini)'},
+trio:{n:'Classic Trio',i:'\uD83D\uDD3A',c:3,dsc:'Backend + Frontend + QA.',use:'Full-stack, CRUD, REST API + UI.',p:['\u2713 Naturalny podzial BE/FE'],m:['\u2717 Brak researchu'],t:'~120-180K',$:'$0.10-0.30',pt:'Triangle'},
+reflect:{n:'Reflective Loop',i:'\uD83D\uDD04',c:3,dsc:'Research \u2192 Analiza \u2192 Krytyka z petla.',use:'Gleboki research, due diligence.',p:['\u2713 Samokorekcja'],m:['\u2717 Brak implementacji'],t:'~100-200K',$:'$0.08-0.35',pt:'Reflective Trio'},
+bug_hunt:{n:'Bug Hunter',i:'\uD83D\uDC1B',c:4,dsc:'Orkiestrator + builder + 2x QA.',use:'Debugowanie, triage bugow.',p:['\u2713 2 QA rownolegle'],m:['\u2717 Brak researchu'],t:'~120-180K',$:'$0.10-0.28',pt:'Fork QA'},
+content:{n:'Content Pipeline',i:'\uD83D\uDCDD',c:4,dsc:'2 researcherow \u2192 redaktor \u2192 QA.',use:'Dokumentacja, README, artykuly.',p:['\u2713 2 zrodla danych'],m:['\u2717 Nie generuje kodu'],t:'~100-180K',$:'$0.08-0.25',pt:'Linear Pipeline'},
+plan_exec:{n:'Plan & Execute',i:'\uD83D\uDCCB',c:4,dsc:'Plan \u2192 harmonogram \u2192 build \u2192 walidacja.',use:'Migracje, refactoring.',p:['\u2713 83% redukcja kosztow'],m:['\u2717 1 builder'],t:'~120-200K',$:'$0.10-0.30',pt:'Plan-and-Execute Loop'},
+perf_boost:{n:'Performance Boost',i:'\u26A1',c:4,dsc:'Analiza \u2192 backend + audyt perf \u2192 integracja.',use:'Optymalizacja API, CWV.',p:['\u2713 Dedykowany QA Perf'],m:['\u2717 Brak frontendu'],t:'~100-160K',$:'$0.08-0.25',pt:'Measure-Fix Cycle'},
+startup:{n:'Startup MVP',i:'\uD83D\uDE80',c:5,dsc:'Orkiestrator + analityk + researcher + builder + QA.',use:'MVP, maly SaaS, prototyp.',p:['\u2713 Pelny cykl'],m:['\u2717 1 researcher'],t:'~150-250K',$:'$0.15-0.40',pt:'Hub-and-Spoke'},
+cascade:{n:'Cascade Cost',i:'\uD83D\uDCB0',c:5,dsc:'Haiku \u2192 Sonnet \u2192 Opus. 70-80% tanio.',use:'Duze volume, batch.',p:['\u2713 70-80% tanio'],m:['\u2717 Routing logic'],t:'~80-200K',$:'$0.06-0.30',pt:'Cascade Escalation'},
+test_suite:{n:'Testing Suite',i:'\uD83E\uDDEA',c:5,dsc:'Orkiestrator + 3x QA + Manager.',use:'Pre-release testing.',p:['\u2713 3 typy QA'],m:['\u2717 Brak builderow'],t:'~120-200K',$:'$0.10-0.30',pt:'Triple QA Gate'},
+a11y:{n:'Accessibility Sprint',i:'\u267F',c:5,dsc:'UX research \u2192 designer + frontend \u2192 QA \u2192 docs.',use:'WCAG audit, a11y compliance.',p:['\u2713 UX specjalista'],m:['\u2717 Brak backendu'],t:'~130-200K',$:'$0.10-0.30',pt:'A11y Pipeline'},
+security:{n:'Security Hardening',i:'\uD83D\uDEE1',c:6,dsc:'Builder + 3x QA + Manager z GO/NO-GO.',use:'Audyt bezpieczenstwa.',p:['\u2713 3 warstwy audytu'],m:['\u2717 False positives'],t:'~150-280K',$:'$0.12-0.40',pt:'Fan-out \u2192 Aggregate'},
+review:{n:'Code Review',i:'\uD83D\uDC41',c:6,dsc:'Analiza \u2192 build (BE+FE) \u2192 review (sec+quality).',use:'Feature z review, krytyczne PR.',p:['\u2713 Build + review osobno'],m:['\u2717 Brak researchu'],t:'~180-280K',$:'$0.15-0.45',pt:'Pipeline + Fan-out'},
+design_sys:{n:'Design System',i:'\uD83C\uDFA8',c:6,dsc:'UX + docs research \u2192 designer + frontend \u2192 dokumentacja.',use:'Design system, component library.',p:['\u2713 Research UX+docs'],m:['\u2717 Brak backendu'],t:'~150-250K',$:'$0.12-0.38',pt:'Design Pipeline'},
+api_modern:{n:'API Modernization',i:'\uD83D\uDD0C',c:6,dsc:'Analiza \u2192 research \u2192 backend + integrator \u2192 QA.',use:'REST\u2192GraphQL, wersjonowanie.',p:['\u2713 Analiza pierwsza'],m:['\u2717 Brak FE'],t:'~150-260K',$:'$0.12-0.40',pt:'API Upgrade Pipeline'},
+ui_overhaul:{n:'UI/UX Overhaul',i:'\u2728',c:7,dsc:'2x research \u2192 analiza \u2192 designer + frontend \u2192 QA.',use:'Redesign UI, rebranding.',p:['\u2713 2 zrodla researchu'],m:['\u2717 Sredni koszt'],t:'~180-300K',$:'$0.15-0.45',pt:'UI Redesign Pipeline'},
+feature_sprint:{n:'Feature Sprint',i:'\uD83C\uDFC3',c:7,dsc:'Analiza \u2192 research (tech+UX) \u2192 build (BE+FE) \u2192 QA.',use:'Nowa funkcja, feature flag.',p:['\u2713 2x research'],m:['\u2717 1 QA'],t:'~180-300K',$:'$0.15-0.48',pt:'Sprint Pipeline'},
+standard:{n:'Standard Dev',i:'\u2699',c:8,dsc:'Orkiestrator + planowanie + research + build + QA.',use:'Typowe projekty web.',p:['\u2713 Pelny cykl'],m:['\u2717 ~250-400K'],t:'~250-400K',$:'$0.25-0.65',pt:'Hierarchical Pipeline'},
+data_pipe:{n:'Data Pipeline',i:'\uD83D\uDCCA',c:8,dsc:'Planowanie + research \u2192 backend + feature dev \u2192 integrator.',use:'ETL, data warehouse.',p:['\u2713 Feature Dev na dane'],m:['\u2717 Brak QA'],t:'~200-350K',$:'$0.20-0.55',pt:'Data Engineering'},
+research:{n:'Research Swarm',i:'\uD83E\uDDE0',c:9,dsc:'6 researcherow + krytyk + syntetyk.',use:'Due diligence, analiza rynku.',p:['\u2713 6 zrodel'],m:['\u2717 BRAK implementacji'],t:'~200-400K',$:'$0.20-0.60',pt:'Fan-out \u2192 Critique'},
+legacy:{n:'Legacy Refactor',i:'\uD83C\uDFDA',c:9,dsc:'Analiza + research \u2192 3x build \u2192 2x QA.',use:'Refaktor legacy, migracja.',p:['\u2713 GitHub wzorce'],m:['\u2717 Wysoki koszt'],t:'~250-420K',$:'$0.25-0.65',pt:'Legacy Modernization'},
+saas:{n:'Full-Stack SaaS',i:'\uD83C\uDFD7',c:10,dsc:'Research \u2192 build (3 role) \u2192 integracja \u2192 QA.',use:'SaaS od zera, dashboard.',p:['\u2713 Designer'],m:['\u2717 ~300-500K'],t:'~300-500K',$:'$0.35-0.80',pt:'Hierarchical Squads'},
+microservices:{n:'Microservices',i:'\uD83E\uDDE9',c:11,dsc:'Planowanie \u2192 research \u2192 4x build \u2192 3x QA.',use:'Service mesh, konteneryzacja.',p:['\u2713 4 builderow'],m:['\u2717 11 agentow'],t:'~350-600K',$:'$0.35-0.90',pt:'Monolith Decomposition'},
+full:{n:'Full Hierarchy',i:'\uD83D\uDC51',c:13,dsc:'5-poziomowa hierarchia. Gold Standard.',use:'Enterprise, mission-critical.',p:['\u2713 Zero luk'],m:['\u2717 ~400-700K'],t:'~400-700K',$:'$0.45-1.20',pt:'Full 5-Layer Hierarchy'},
+deep:{n:'Deep Research+Build',i:'\uD83C\uDF0A',c:18,dsc:'6 researcherow + krytyk + syntetyk + 4 build + 3 QA.',use:'Enterprise z gleboka analiza.',p:['\u2713 Max research'],m:['\u2717 18 agentow'],t:'~600-1200K',$:'$0.70-2.00',pt:'Full Orchestra'}
+};
+
+const PCAT=[
+{name:'MICRO (2-3)',ids:['solo','quick_fix','recon','trio','reflect']},
+{name:'MALE (4-5)',ids:['bug_hunt','content','plan_exec','perf_boost','startup','cascade','test_suite','a11y']},
+{name:'SREDNIE (6-8)',ids:['security','review','design_sys','api_modern','ui_overhaul','feature_sprint','standard','data_pipe']},
+{name:'DUZE (9-12)',ids:['research','legacy','saas','microservices']},
+{name:'ENTERPRISE (13+)',ids:['full','deep']}
+];
+
+// ================================================================
+// DYNAMIC MODEL ANALYSIS
+// ================================================================
+function getModelAnalysis(pid,mdl){
+const pr=PR[pid]||[];const nc=pr.length;
+const rates={opus:{i:15,o:75},sonnet:{i:3,o:15},haiku:{i:.8,o:4}};
+const r=rates[mdl];
+const minC=nc*((20000/1e6*r.i)+(10000/1e6*r.o));
+const maxC=nc*((40000/1e6*r.i)+(20000/1e6*r.o));
+const minT=nc*20,maxT=nc*40;
+const cats={};pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(d){cats[d.cat]=(cats[d.cat]||0)+1}});
+const nR=cats['RESEARCH']||0,nB=cats['BUILD']||0,nQ=cats['QA / AUDYT']||0,nS=cats['STRATEGIA']||0;
+let pros=[],cons=[];
+if(mdl==='opus'){pros.push('\u2713 Najwyzsza jakosc');cons.push('\u2717 Koszt: $'+minC.toFixed(2)+'-'+maxC.toFixed(2))}
+else if(mdl==='sonnet'){pros.push('\u2713 Optymalny balans');cons.push('\u2717 Koszt: $'+minC.toFixed(2)+'-'+maxC.toFixed(2))}
+else{pros.push('\u2713 Minimalny koszt: $'+minC.toFixed(2)+'-'+maxC.toFixed(2));cons.push('\u2717 Slabsze rozumowanie')}
+return{t:'~'+minT+'-'+maxT+'K',$:'$'+minC.toFixed(2)+'-'+maxC.toFixed(2),p:pros,m:cons};
+}
+
+// ================================================================
+// STATE
+// ================================================================
+let nodes=[],conns=[],sel=new Set(),connMode=false,connFrom=null,idC=0,actPr=null;
+let scale=1,panX=0,panY=0,isPan=false,panSt={x:0,y:0,px:0,py:0};
+let dragGroup=null;
+const cvA=G('cvA'),cvT=G('cvT');
+const cMap={am:'c-am',cy:'c-cy',bl:'c-bl',mu:'c-mu',ro:'c-ro',vi:'c-vi'};
+const bMap={opus:'b-op',sonnet:'b-so',haiku:'b-ha'};
+
+// ================================================================
+// ZOOM / PAN (Canvas)
+// ================================================================
+function apTr(){cvT.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;G('zL').textContent=Math.round(scale*100)+'%';upGrid()}
+function upGrid(){const s=Math.max(20,40*scale);const g=G('cvG');g.style.backgroundImage=`linear-gradient(rgba(34,211,238,${.01*Math.min(1,scale)}) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,${.01*Math.min(1,scale)}) 1px,transparent 1px)`;g.style.backgroundSize=s+'px '+s+'px';g.style.backgroundPosition=panX%s+'px '+panY%s+'px'}
+cvA.addEventListener('wheel',e=>{e.preventDefault();const d=e.deltaY>0?.92:1.08;const ns=Math.max(.15,Math.min(3,scale*d));const r=cvA.getBoundingClientRect();const cx=e.clientX-r.left,cy=e.clientY-r.top;panX=cx-(cx-panX)*(ns/scale);panY=cy-(cy-panY)*(ns/scale);scale=ns;apTr()},{passive:false});
+cvA.addEventListener('mousedown',e=>{if(e.button===1||(e.button===0&&e.altKey)){isPan=true;panSt={x:e.clientX,y:e.clientY,px:panX,py:panY};e.preventDefault()}});
+document.addEventListener('mousemove',e=>{
+  if(isPan){panX=panSt.px+(e.clientX-panSt.x);panY=panSt.py+(e.clientY-panSt.y);apTr();return}
+  if(!dragGroup)return;
+  const r=cvA.getBoundingClientRect();
+  dragGroup.forEach(g=>{g.node.x=(e.clientX-r.left-panX)/scale-g.ox;g.node.y=(e.clientY-r.top-panY)/scale-g.oy;const el=G(g.node.id);if(el){el.style.left=g.node.x+'px';el.style.top=g.node.y+'px'}});
+  rConn();
+});
+document.addEventListener('mouseup',()=>{if(isPan){isPan=false;return}if(dragGroup){dragGroup=null}});
+function zIn(){scale=Math.min(3,scale*1.2);apTr()}
+function zOut(){scale=Math.max(.15,scale/1.2);apTr()}
+function zRst(){scale=1;panX=0;panY=0;apTr()}
+
+// ================================================================
+// RENDER PALETTE
+// ================================================================
+function rPal(){let h='',lc='';AD.forEach(d=>{if(d.cat!==lc){h+=`<div class="pa-cat">${d.cat}</div>`;lc=d.cat}h+=`<div class="pa-item" draggable="true" ondragstart="pDS(event,'${d.id}')" onclick="showDef('${d.id}')"><div class="pa-orb">${d.icon}</div><div class="pa-txt"><div class="pa-name">${d.name}</div><div class="pa-desc">${d.role.substring(0,35)}...</div></div><span class="pa-badge ${bMap[d.model]}">${d.model.toUpperCase()}</span></div>`});G('paL').innerHTML=h}
+function fPal(){const q=G('paS').value.toLowerCase();document.querySelectorAll('.pa-item').forEach(e=>{e.style.display=(e.querySelector('.pa-name').textContent+e.querySelector('.pa-desc').textContent).toLowerCase().includes(q)?'':'none'})}
+
+function rPre(){let h='';PCAT.forEach(cat=>{h+=`<div class="pr-cat">${cat.name}</div>`;cat.ids.forEach(pid=>{const m=PM[pid];if(!m)return;h+=`<div class="pr-item" id="pi_${pid}" onclick="ldPr('${pid}')" oncontextmenu="event.preventDefault();shPI('${pid}')"><span class="pr-icon">${m.i}</span><span class="pr-name">${m.n}</span><span class="pr-cnt">${m.c}</span></div>`})});G('prL').innerHTML=h}
+
+function rSv(){const c=JSON.parse(localStorage.getItem('acV8')||'[]');if(!c.length){G('svL').innerHTML='<div class="sv-empty">Brak zapisanych.</div>';return}let h='';c.forEach((x,i)=>{const d=new Date(x.ts).toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});h+=`<div class="sv-item" onclick="ldSv(${i})"><span class="sv-name">${x.name}</span><span class="sv-date">${d}</span><span class="sv-del" onclick="event.stopPropagation();dlSv(${i})">\u2715</span></div>`});G('svL').innerHTML=h}
+
+function pDS(e,id){e.dataTransfer.setData('did',id)}
+cvA.addEventListener('dragover',e=>e.preventDefault());
+cvA.addEventListener('drop',e=>{e.preventDefault();const did=e.dataTransfer.getData('did');if(!did)return;const r=cvA.getBoundingClientRect();addN(did,(e.clientX-r.left-panX)/scale-36,(e.clientY-r.top-panY)/scale-30)});
+function addN(did,x,y){const d=AD.find(a=>a.id===did);if(!d)return;const id='n'+(idC++);nodes.push({id,defId:did,x,y,model:d.model,cp:d.prompt});rNd();sel.clear();sel.add(id);upSel();showND(id);upSt();upCI()}
+
+function rNd(){cvT.querySelectorAll('.nd').forEach(e=>e.remove());nodes.forEach(nd=>{const d=AD.find(a=>a.id===nd.defId);if(!d)return;const cc=cMap[d.color]||'c-mu';const bc=bMap[nd.model]||'b-so';const ld=d.load+(nd.model==='haiku'?10:nd.model==='opus'?-15:0);const lc=ld>=80?'var(--ro)':ld>=55?'var(--am)':'var(--em)';
+const el=document.createElement('div');el.className='nd '+cc+(sel.has(nd.id)?' sel':'');el.id=nd.id;el.style.left=nd.x+'px';el.style.top=nd.y+'px';
+el.innerHTML=`<div class="nd-anc top" data-n="${nd.id}"></div><div class="nd-body"><div class="nd-orb">${d.icon}</div><div class="nd-lbl">${d.name}</div><span class="nd-mdl ${bc}">${nd.model.toUpperCase()}</span><div class="nd-load"><div class="nd-load-bar" style="width:${Math.min(100,ld)}%;background:${lc}"></div></div></div><div class="nd-anc bot" data-n="${nd.id}"></div>`;
+el.addEventListener('mousedown',e=>{if(e.target.classList.contains('nd-anc')){onAnc(nd.id);return}if(connMode){onAnc(nd.id);return}
+  const r=cvA.getBoundingClientRect();
+  if(!sel.has(nd.id)){if(!e.shiftKey){sel.clear()}sel.add(nd.id);upSel()}
+  dragGroup=[...sel].map(sid=>{const n=nodes.find(x=>x.id===sid);return{node:n,ox:(e.clientX-r.left-panX)/scale-n.x,oy:(e.clientY-r.top-panY)/scale-n.y}});
+  e.preventDefault();e.stopPropagation()});
+el.addEventListener('click',e=>{if(!connMode){if(e.shiftKey){if(sel.has(nd.id))sel.delete(nd.id);else sel.add(nd.id);upSel()}else{sel.clear();sel.add(nd.id);upSel()}showND(nd.id)}e.stopPropagation()});
+cvT.appendChild(el)});rConn()}
+function upSel(){cvT.querySelectorAll('.nd').forEach(e=>e.classList.toggle('sel',sel.has(e.id)))}
+
+function onAnc(nid){if(!connFrom){connFrom=nid;G(nid)?.classList.add('sel')}else if(connFrom!==nid){if(!conns.some(c=>(c.fi===connFrom&&c.ti===nid)||(c.fi===nid&&c.ti===connFrom))){conns.push({id:'c'+(idC++),fi:connFrom,ti:nid,tp:'one'});rConn();upSt();upCI()}G(connFrom)?.classList.remove('sel');connFrom=null}}
+function togConn(){connMode=!connMode;connFrom=null;const b=G('cBtn');b.textContent=connMode?'\uD83D\uDD17 Kliknij 2...':'\uD83D\uDD17 Polacz';b.style.borderColor=connMode?'rgba(34,211,238,.5)':''}
+function rConn(){const svg=G('svg');svg.setAttribute('viewBox','0 0 6000 6000');svg.setAttribute('width',6000);svg.setAttribute('height',6000);
+let h=`<defs><marker id="a1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(34,211,238,.6)"/></marker><marker id="a2" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6" fill="rgba(16,185,129,.6)"/></marker><marker id="a3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(139,92,246,.6)"/></marker></defs>`;
+const cs={one:'rgba(34,211,238,.3)',two:'rgba(16,185,129,.3)',continuous:'rgba(139,92,246,.3)'};
+const ms={one:'url(#a1)',two:'url(#a2)',continuous:'url(#a3)'};
+const ds={one:'rgba(34,211,238,.6)',two:'rgba(16,185,129,.6)',continuous:'rgba(139,92,246,.6)'};
+conns.forEach(c=>{const f=nodes.find(n=>n.id===c.fi),t=nodes.find(n=>n.id===c.ti);if(!f||!t)return;
+const x1=f.x+36,y1=f.y+40,x2=t.x+36,y2=t.y+8;const dy=y2-y1;
+const p=`M${x1},${y1} C${x1},${y1+dy*.35} ${x2},${y2-dy*.35} ${x2},${y2}`;
+const cl=cs[c.tp]||cs.one;const mk=ms[c.tp]||ms.one;const dc=ds[c.tp]||ds.one;const da=c.tp==='continuous'?'':'6 4';
+h+=`<path d="${p}" fill="none" stroke="${cl}" stroke-width="2" stroke-dasharray="${da}" marker-end="${mk}"/>`;
+h+=`<circle r="3" fill="${dc}"><animateMotion dur="2.5s" repeatCount="indefinite" path="${p}"/></circle>`;
+h+=`<path class="hit" d="${p}" fill="none" stroke="transparent" stroke-width="14" onclick="cycC('${c.id}')"/>`;
+if(c.tp==='two'){h+=`<path d="M${x2},${y2} C${x2},${y2-dy*.35+40} ${x1},${y1+dy*.35-40} ${x1},${y1}" fill="none" stroke="rgba(16,185,129,.15)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#a2)"/>`}});
+svg.innerHTML=h}
+function cycC(cid){const c=conns.find(x=>x.id===cid);if(!c)return;const t=['one','two','continuous'];c.tp=t[(t.indexOf(c.tp)+1)%t.length];rConn();if(sel.size===1)showND([...sel][0])}
+
+cvA.addEventListener('click',e=>{if(e.target===cvA||e.target.classList.contains('cv-grid')||e.target.closest('.cv-container')===e.target.closest('.cv-area>*:first-child')){if(!e.target.closest('.nd')){sel.clear();upSel();if(actPr)shPI(actPr);else G('srS').innerHTML='<div class="sr-mt">Kliknij agenta lub preset.</div>'}}});
+
+function showND(nid){const nd=nodes.find(n=>n.id===nid);if(!nd)return;const d=AD.find(a=>a.id===nd.defId);if(!d)return;
+const oC=conns.filter(c=>c.fi===nid),iC=conns.filter(c=>c.ti===nid);
+const tl={one:'\u2192',two:'\u21C4',continuous:'\u223C'};
+let h=`<div class="ds-card"><h4>${d.icon} ${d.name}</h4><p>${d.role}</p></div>
+<div class="ds"><div class="ds-l">NARZEDZIA</div><div class="ds-v">${d.tools}</div></div>
+<div class="ds"><div class="ds-l">MODEL</div><div class="ds-mdls">
+<div class="ds-m ${nd.model==='opus'?'a-op':''}" onclick="chMdl('${nid}','opus')"><div class="ds-mn" style="color:var(--am)">Opus</div><div class="ds-mc">1M/$$$</div></div>
+<div class="ds-m ${nd.model==='sonnet'?'a-so':''}" onclick="chMdl('${nid}','sonnet')"><div class="ds-mn" style="color:var(--em)">Sonnet</div><div class="ds-mc">200K/$$</div></div>
+<div class="ds-m ${nd.model==='haiku'?'a-ha':''}" onclick="chMdl('${nid}','haiku')"><div class="ds-mn" style="color:var(--cy)">Haiku</div><div class="ds-mc">200K/$</div></div>
+</div></div>`;
+if(oC.length){h+=`<div class="ds"><div class="ds-l">WY (${oC.length})</div>`;oC.forEach(c=>{const t=nodes.find(n=>n.id===c.ti);const td=t?AD.find(a=>a.id===t.defId):null;h+=`<div class="ds-cn"><span class="ds-cn-a">${tl[c.tp]}</span>${td?td.name:'?'}<span class="ds-cn-d" onclick="dlCn('${c.id}')">\u2715</span></div>`});h+=`</div>`}
+if(iC.length){h+=`<div class="ds"><div class="ds-l">WE (${iC.length})</div>`;iC.forEach(c=>{const s=nodes.find(n=>n.id===c.fi);const sd=s?AD.find(a=>a.id===s.defId):null;h+=`<div class="ds-cn"><span class="ds-cn-a">\u2190</span>${sd?sd.name:'?'}<span class="ds-cn-d" onclick="dlCn('${c.id}')">\u2715</span></div>`});h+=`</div>`}
+h+=`<div class="ds"><div class="ds-l">PROMPT (edytowalny)</div><textarea class="ds-ta" id="nP" oninput="svPr('${nid}')">${nd.cp||d.prompt}</textarea></div>`;
+h+='<button class="btn btn-learn" onclick="openLearn(\'agent\',\''+nd.defId+'\')">&#127760; Mapa Myslowa &#8212; Tryb Nauki</button>';
+G('srS').innerHTML=h}
+
+function showDef(did){const d=AD.find(a=>a.id===did);if(!d)return;
+G('srS').innerHTML=`<div class="ds-card"><h4>${d.icon} ${d.name}</h4><p>${d.role}</p></div><div class="ds"><div class="ds-l">NARZEDZIA</div><div class="ds-v">${d.tools}</div></div><div class="ds"><div class="ds-l">MODEL</div><div class="ds-v">${d.model.toUpperCase()}</div></div><div class="ds"><div class="ds-l">PROMPT</div><textarea class="ds-ta" readonly style="min-height:180px">${d.prompt}</textarea></div><button class="btn btn-learn" onclick="openLearn('agent','${did}')">&#127760; Mapa Myslowa &#8212; Tryb Nauki</button><div style="margin-top:8px"><button class="btn btn-p" onclick="addC('${d.id}')" style="width:100%">+ Dodaj na canvas</button></div>`}
+
+function addC(did){const r=cvA.getBoundingClientRect();addN(did,(r.width/2-panX)/scale-36+(Math.random()-.5)*80,(r.height/2-panY)/scale-30+(Math.random()-.5)*80)}
+function chMdl(nid,m){const nd=nodes.find(n=>n.id===nid);if(!nd)return;const re=/^\[MODEL:.*?\]\n\n/;if(nd.cp.match(re))nd.cp=nd.cp.replace(re,MH[m]+'\n\n');nd.model=m;rNd();upSt();showND(nid)}
+function chAllMdl(m){nodes.forEach(nd=>{const re=/^\[MODEL:.*?\]\n\n/;if(nd.cp.match(re))nd.cp=nd.cp.replace(re,MH[m]+'\n\n');nd.model=m});rNd();upSt();if(actPr)shPI(actPr);else if(sel.size===1)showND([...sel][0])}
+function svPr(nid){const nd=nodes.find(n=>n.id===nid);const ta=G('nP');if(nd&&ta)nd.cp=ta.value}
+function dlCn(cid){conns=conns.filter(c=>c.id!==cid);rConn();upSt();upCI();if(sel.size===1)showND([...sel][0])}
+function delSel(){if(!sel.size)return;nodes=nodes.filter(n=>!sel.has(n.id));conns=conns.filter(c=>!sel.has(c.fi)&&!sel.has(c.ti));sel.clear();rNd();upSt();upCI();G('srS').innerHTML='<div class="sr-mt">Zaznacz agenta.</div>'}
+function clrCv(){if(!confirm('Wyczysc?'))return;nodes=[];conns=[];sel.clear();connFrom=null;idC=0;actPr=null;rNd();upSt();upCI();hlPr(null);G('srS').innerHTML='<div class="sr-mt">Przeciagnij agentow.</div>'}
+function upCI(){G('cvI').textContent=nodes.length+' agentow | '+conns.length+' polaczen'}
+
+function ldPr(pid){nodes=[];conns=[];sel.clear();idC=0;actPr=pid;const pr=PR[pid];if(!pr)return;
+pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(!d)return;nodes.push({id:'n'+(idC++),defId:p.d,x:p.x,y:p.y,model:d.model,cp:d.prompt})});
+(PC[pid]||[]).forEach(c=>{if(nodes[c[0]]&&nodes[c[1]])conns.push({id:'c'+(idC++),fi:nodes[c[0]].id,ti:nodes[c[1]].id,tp:c[2]||'one'})});
+rNd();upSt();upCI();hlPr(pid);shPI(pid);
+if(nodes.length){const mnX=Math.min(...nodes.map(n=>n.x)),mxX=Math.max(...nodes.map(n=>n.x));const mnY=Math.min(...nodes.map(n=>n.y)),mxY=Math.max(...nodes.map(n=>n.y));
+const cw=cvA.clientWidth,ch=cvA.clientHeight;const nw=mxX-mnX+160,nh=mxY-mnY+160;
+scale=Math.min(1,Math.min(cw/nw,ch/nh)*.85);panX=(cw-nw*scale)/2-mnX*scale+40;panY=(ch-nh*scale)/2-mnY*scale+20;apTr()}}
+function hlPr(pid){document.querySelectorAll('.pr-item').forEach(e=>e.classList.remove('on'));if(pid){const el=G('pi_'+pid);if(el)el.classList.add('on')}G('sP').querySelector('.st-v').textContent=pid?PM[pid]?.n||pid:'-'}
+
+function shPI(pid){const m=PM[pid];if(!m)return;
+const pr=PR[pid]||[];const mc={opus:0,sonnet:0,haiku:0};
+if(nodes.length&&actPr===pid){nodes.forEach(n=>mc[n.model]++)}else{pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(d)mc[d.model]++})}
+let mh='';if(mc.opus)mh+=`<span style="color:var(--am)">${mc.opus}x Opus</span> `;if(mc.sonnet)mh+=`<span style="color:var(--em)">${mc.sonnet}x Sonnet</span> `;if(mc.haiku)mh+=`<span style="color:var(--cy)">${mc.haiku}x Haiku</span>`;
+G('srS').innerHTML=`<div class="ds-card"><h4>${m.i} ${m.n} <span style="font-size:10px;color:var(--t3);font-weight:400">(${m.c})</span></h4><p>${m.dsc}</p></div>
+<div class="ds"><div class="ds-l">WZORZEC</div><div class="pi-badge">${m.pt}</div></div>
+<div class="ds"><div class="ds-l">SKLAD MODELI</div><div style="font-family:var(--mn);font-size:10px;margin:3px 0">${mh}</div></div>
+<div class="ds"><div class="ds-l">KOSZT</div><div class="pi-costs"><div><div style="font-size:8px;color:var(--t4)">TOKENY</div><div class="pi-cv" style="color:var(--em)">${m.t}</div></div><div><div style="font-size:8px;color:var(--t4)">USD</div><div class="pi-cv" style="color:var(--am)">${m.$}</div></div></div></div>
+<div class="ds"><div class="ds-l">ZMIEN MODEL</div>
+<div class="ds-mdls"><div class="ds-m" onclick="chAllMdl('opus')"><div class="ds-mn" style="color:var(--am)">Opus</div></div><div class="ds-m" onclick="chAllMdl('sonnet')"><div class="ds-mn" style="color:var(--em)">Sonnet</div></div><div class="ds-m" onclick="chAllMdl('haiku')"><div class="ds-mn" style="color:var(--cy)">Haiku</div></div></div></div>
+<div class="ds"><div class="ds-l">ZALETY</div><ul class="pi-ul">${m.p.map(x=>`<li class="pi-pro">${x}</li>`).join('')}</ul></div>
+<div class="ds"><div class="ds-l">WADY</div><ul class="pi-ul">${m.m.map(x=>`<li class="pi-con">${x}</li>`).join('')}</ul></div>`;
+const b=document.createElement('button');b.className='btn btn-learn';b.innerHTML='&#127760; Mapa Myslowa &#8212; Tryb Nauki';b.onclick=function(){openLearn('preset',pid)};G('srS').appendChild(b)}
+
+function upSt(){const mc={opus:0,sonnet:0,haiku:0};nodes.forEach(n=>mc[n.model]++);
+const co={opus:{i:15,o:75},sonnet:{i:3,o:15},haiku:{i:.8,o:4}};let mt=0,xt=0,mc2=0,xc=0;
+nodes.forEach(n=>{const c=co[n.model];mt+=20000;xt+=40000;mc2+=(20000/1e6*c.i)+(10000/1e6*c.o);xc+=(40000/1e6*c.i)+(20000/1e6*c.o)});
+G('sA').textContent=nodes.length;G('sC').textContent=conns.length;G('sO').textContent=mc.opus;G('sS').textContent=mc.sonnet;G('sH').textContent=mc.haiku;
+G('sT').textContent=nodes.length?`~${Math.round(mt/1000)}-${Math.round(xt/1000)}K`:'~0K';
+G('s$').textContent=nodes.length?`${mc2.toFixed(2)}-${xc.toFixed(2)}`:'0.00'}
+
+function autoLay(){if(!nodes.length)return;const adj={},ind={};nodes.forEach(n=>{adj[n.id]=[];ind[n.id]=0});
+conns.forEach(c=>{if(adj[c.fi])adj[c.fi].push(c.ti);if(ind[c.ti]!==undefined)ind[c.ti]++});
+const layers={};const vis=new Set();let q=[];nodes.forEach(n=>{if(ind[n.id]===0){q.push(n.id);layers[n.id]=0;vis.add(n.id)}});
+if(!q.length){q.push(nodes[0].id);layers[nodes[0].id]=0;vis.add(nodes[0].id)}
+while(q.length){const nq=[];q.forEach(id=>{(adj[id]||[]).forEach(tid=>{layers[tid]=Math.max(layers[tid]||0,(layers[id]||0)+1);if(!vis.has(tid)){vis.add(tid);nq.push(tid)}})});q=nq}
+nodes.forEach(n=>{if(layers[n.id]===undefined)layers[n.id]=0});
+const grp={};nodes.forEach(n=>{const l=layers[n.id];if(!grp[l])grp[l]=[];grp[l].push(n)});
+const lk=Object.keys(grp).map(Number).sort((a,b)=>a-b);
+const cw=cvA.clientWidth;lk.forEach((l,li)=>{const g=grp[l];const tw=g.length*120;const sx=(cw/scale-tw)/2+30;g.forEach((n,ni)=>{n.x=sx+ni*120;n.y=40+li*120})});
+scale=1;panX=0;panY=0;apTr();rNd();upSt();upCI()}
+
+function expCfg(){const d={v:'8.0',pr:actPr,nodes:nodes.map(n=>({d:n.defId,x:Math.round(n.x),y:Math.round(n.y),m:n.model,p:n.cp})),conns:conns.map(c=>({fi:nodes.findIndex(n=>n.id===c.fi),ti:nodes.findIndex(n=>n.id===c.ti),t:c.tp})),prob:G('probIn').value};G('exA').value=JSON.stringify(d,null,2);G('moE').classList.add('show')}
+function impCfg(){G('imA').value='';G('moI').classList.add('show')}
+function doImp(){try{const d=JSON.parse(G('imA').value);nodes=[];conns=[];idC=0;sel.clear();
+(d.nodes||[]).forEach(n=>{const def=AD.find(a=>a.id===n.d);if(!def)return;nodes.push({id:'n'+(idC++),defId:n.d,x:n.x||0,y:n.y||0,model:n.m||def.model,cp:n.p||def.prompt})});
+(d.conns||[]).forEach(c=>{if(nodes[c.fi]&&nodes[c.ti])conns.push({id:'c'+(idC++),fi:nodes[c.fi].id,ti:nodes[c.ti].id,tp:c.t||'one'})});
+if(d.prob)G('probIn').value=d.prob;actPr=d.pr||null;rNd();upSt();upCI();cMo('moI')}catch(e){alert('JSON error: '+e.message)}}
+function saveCfg(){const name=prompt('Nazwa:')||'Config '+new Date().toLocaleString('pl-PL');
+const d={name,nodes:JSON.parse(JSON.stringify(nodes)),conns:JSON.parse(JSON.stringify(conns)),prob:G('probIn').value,idC,ts:new Date().toISOString()};
+const c=JSON.parse(localStorage.getItem('acV8')||'[]');c.push(d);localStorage.setItem('acV8',JSON.stringify(c));rSv();sTab('sv',document.querySelectorAll('.sl-tab')[2])}
+function ldSv(i){const c=JSON.parse(localStorage.getItem('acV8')||'[]');const d=c[i];if(!d)return;nodes=JSON.parse(JSON.stringify(d.nodes));conns=JSON.parse(JSON.stringify(d.conns));idC=d.idC||0;sel.clear();G('probIn').value=d.prob||'';actPr=null;rNd();upSt();upCI();hlPr(null)}
+function dlSv(i){if(!confirm('Usunac?'))return;const c=JSON.parse(localStorage.getItem('acV8')||'[]');c.splice(i,1);localStorage.setItem('acV8',JSON.stringify(c));rSv()}
+
+function genPrompt(){if(!nodes.length){alert('Dodaj agentow!');return}const prob=G('probIn').value.trim();
+let p=`Jestes Master Orkiestratorem zespolu ${nodes.length} agentow AI.\n\n## ZADANIE\n${prob||'[WPISZ OPIS]'}\n\n`;
+if(actPr&&PM[actPr]){const m=PM[actPr];p+=`## KONFIGURACJA: ${m.n} (${m.pt})\nZuzycie: ${m.t} | ~${m.$}\n\n`}
+p+=`## ZESPOL (${nodes.length})\n\n`;
+[...nodes].sort((a,b)=>a.y-b.y).forEach((nd,i)=>{const d=AD.find(a=>a.id===nd.defId);if(!d)return;
+const oC=conns.filter(c=>c.fi===nd.id).map(c=>{const t=nodes.find(n=>n.id===c.ti);return t?AD.find(a=>a.id===t.defId)?.name:'?'});
+const iC=conns.filter(c=>c.ti===nd.id).map(c=>{const s=nodes.find(n=>n.id===c.fi);return s?AD.find(a=>a.id===s.defId)?.name:'?'});
+p+=`### Agent ${i+1}: ${d.name} [${nd.model.toUpperCase()}]\nRola: ${d.role}\n`;
+if(iC.length)p+=`Odbiera od: ${iC.join(', ')}\n`;if(oC.length)p+=`Wysyla do: ${oC.join(', ')}\n`;
+p+=`\nPrompt:\n"""\n${nd.cp}\n"""\n\n`});
+p+=`## ZASADY\n- Waski kontekst per agent\n- MANIFEST.md scratchpad\n- Gate'y miedzy fazami\n- Max 10 krokow sekwencyjnych\n- Opus=strategia, Sonnet=build, Haiku=research/QA\n\n## URUCHAMIANIE\nOd gory do dolu, rownolegle na poziomie.\n`;
+G('fpA').value=p;G('moP').classList.add('show')}
+function cpFP(e){navigator.clipboard.writeText(G('fpA').value).then(()=>{const b=e&&e.target||document.querySelector('#moP .btn-p');b.textContent='\u2705 OK!';setTimeout(()=>b.textContent='\uD83D\uDCCB Kopiuj',1500)})}
+
+function sTab(id,el){document.querySelectorAll('.sl-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.querySelectorAll('.sl-pan').forEach(p=>p.classList.remove('on'));G('pan'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('on')}
+function cMo(id){G(id).classList.remove('show')}
+function showKB(){G('moK').classList.add('show')}
+
+// ================================================================
+// v8 MIND MAP ENGINE
+// ================================================================
+let learnOpen = false;
+let mmTree = []; // all nodes in the mind map
+let mmPanX = 0, mmPanY = 0, mmScale = 1;
+let mmIsPan = false, mmPanSt = {};
+let mmBreadcrumb = [];
+let mmAnimFrame = null;
+
+const MM_COLORS = {
+  center: '#58a6ff',
+  role: '#58a6ff',
+  model: '#f78166',
+  cost: '#f78166',
+  tools: '#3fb950',
+  best: '#3fb950',
+  anti: '#f85149',
+  interactions: '#bc8cff',
+  position: '#bc8cff',
+  agents: '#58a6ff',
+  flow: '#3fb950',
+  pattern: '#bc8cff',
+  uses: '#d2a8ff',
+  pros: '#3fb950',
+  cons: '#f85149',
+  detail: '#8b949e'
+};
+
+const MM_SHAPES = { // circle, hexagon, diamond, square
+  concept: 'circle',
+  tool: 'hexagon',
+  metric: 'diamond',
+  practice: 'square',
+  warning: 'diamond'
+};
+
+function openLearn(type, id) {
+  if (type === 'agent' && id === 'orchestrator') { showOrchestratorMindMap(); return; }
+  learnOpen = true;
+  G('mmOverlay').classList.add('show');
+  initStarfield();
+  if (type === 'agent') buildAgentMindMap(id);
+  else buildPresetMindMap(id);
+}
+
+function closeLearn() {
+  learnOpen = false;
+  G('mmOverlay').classList.remove('show');
+  if (mmAnimFrame) cancelAnimationFrame(mmAnimFrame);
+}
+
+function closeOrchestratorMM() {
+  G('ommPanel').classList.remove('show');
+}
+
+// ---- Starfield ----
+function initStarfield() {
+  const el = G('mmStars');
+  if (el.children.length > 0) return;
+  let h = '';
+  for (let i = 0; i < 220; i++) {
+    const x = Math.random() * 100, y = Math.random() * 100;
+    const s = .5 + Math.random() * 2;
+    const oMin = .3, oMax = .8;
+    const o = oMin + Math.random() * (oMax - oMin);
+    const d = 3 + Math.random() * 2; // 3-5s per spec
+    h += `<div class="mm-star" style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${o};animation:mmTwinkle ${d}s ease-in-out infinite ${Math.random()*d}s"></div>`;
+  }
+  el.innerHTML = h;
+  // inject twinkle animation if not yet
+  if (!document.getElementById('mmTwinkleStyle')) {
+    const st = document.createElement('style');
+    st.id = 'mmTwinkleStyle';
+    st.textContent = `@keyframes mmTwinkle{0%,100%{opacity:.3}50%{opacity:.8}}`;
+    document.head.appendChild(st);
+  }
+}
+
+// ---- Mind Map Node Structure ----
+// {id, x, y, targetX, targetY, r, label, sublabel, color, shape, parentId, children:[], expanded, explored, depth, data}
+let mmIdC = 0;
+function mmNode(label, sublabel, color, shape, parentId, data, depth) {
+  return { id: 'mm'+(mmIdC++), x: 0, y: 0, targetX: 0, targetY: 0, r: depth === 0 ? 80 : depth === 1 ? 50 : 34, label, sublabel: sublabel || '', color: color || '#58a6ff', shape: shape || 'circle', parentId, children: [], expanded: false, explored: false, depth: depth || 0, data: data || null };
+}
+
+// ---- Orchestrator Mind Map — Right Sidebar Panel ----
+function showOrchestratorMindMap() {
+  const branches = [
+    {name:'Definicja i Rola', color:'#58a6ff', desc:'Kim jest orkiestrator?', items:[
+      {n:'Kierownik Projektu',d:'Dekomponuje duze zadanie na mniejsze czesci, przydziela je odpowiednim ludziom i pilnuje terminow.'},
+      {n:'Dyrygent Orkiestry',d:'Nie gra na zadnym instrumencie, ale decyduje kto gra kiedy, jak glosno i w jakim tempie. Bez dyrygenta \u2014 kakofonia.'},
+      {n:'Kontroler Ruchu Lotniczego',d:'Widzi caly obraz na radarze, koordynuje ladowania i starty, zapobiega kolizjom. Piloci wykonuja manewry, ale kontroler mowi im kiedy i gdzie.'},
+      {n:'Od 4+ agentow',d:'Przy 2-3 mozna recznie. Od 4 wzwyz orkiestrator niezbedny. Gold Standard 2026: 14 agentow w 4 fazach. Deep Research Belt: do 17.'}
+    ]},
+    {name:'Kluczowe Obowiazki', color:'#56d364', desc:'5 obszarow odpowiedzialnosci', items:[
+      {n:'Dekompozycja Zadan',d:'Rozbija zlozone zadania na podzadania realizowalne przez jednego agenta, z jasnym wejsciem i wyjsciem. Zlozonosc: S/M/L/XL.'},
+      {n:'Delegowanie do Agentow',d:'Wie ktory agent jest najlepszy. Kazdy dostaje TYLKO swoj kontekst (Narrow Context). Potrojna wygrana: mniej halucynacji, nizszy koszt, mniejsze ryzyko.'},
+      {n:'Kontrola Bram (GO/NO-GO)',d:'Decyzje GO/NO-GO miedzy fazami. Zapobiega propagacji bledow. Jesli research slaby \u2014 lepiej powtorzyc niz budowac na wadliwych fundamentach.'},
+      {n:'Synteza Wynikow',d:'Laczy wyniki wszystkich agentow w spojny output. Sprawdza czy czesci pasuja, czy nie ma sprzecznosci.'},
+      {n:'Rozwiazywanie Konfliktow',d:'Podejmuje ostateczna decyzje gdy agenty maja sprzeczne rekomendacje. Wylaczna odpowiedzialnosc \u2014 nie deleguje do innego agenta.'}
+    ]},
+    {name:'Czego NIE Robi', color:'#f85149', desc:'Single Responsibility Principle', items:[
+      {n:'\u2717 Nie generuje kodu',d:'Nie pisze ani jednej linijki. Od tego sa Koderzy. Opus kosztuje 5x wiecej niz Sonnet.'},
+      {n:'\u2717 Nie prowadzi researchu',d:'Nie przeszukuje internetu, nie analizuje dokumentacji. Od tego sa Researcherzy.'},
+      {n:'\u2717 Nie naprawia bugow',d:'QA znajduje blad \u2014 orkiestrator odsyla podzadanie do Kodera z informacja co poprawic.'},
+      {n:'\u2717 Nie pisze dokumentacji',d:'Nie tworzy raportow, nie redaguje tekstow. Od tego jest Redaktor.'},
+      {n:'\u2717 Nie projektuje UI',d:'Nie dobiera kolorow, nie rysuje layoutow. Od tego jest Designer. "Kapitan ktory sprząta poklad, traci statek."'}
+    ]},
+    {name:'Model i Koszty', color:'#f0883e', desc:'Claude Opus + Smart Routing', items:[
+      {n:'Opus $15 / $75',d:'Za 1M tokenow input/output. Najwyzsza jakosc rozumowania. Uzywa go tylko orkiestrator i syntetyk (~10% wywolan).'},
+      {n:'200K\u20141M Kontekst',d:'~500 stron tekstu. Uwaga: efekt Lost in the Middle \u2014 nie laduj niepotrzebnych danych do kontekstu.'},
+      {n:'Smart Model Routing',d:'Opus ~10% wywolan, Sonnet ~30%, Haiku ~60%. Daje 70-90% redukcji kosztow vs scenariusz all-Opus.'},
+      {n:'$6\u201410 za sesje',d:'14 agentow z routingiem: $6-10 vs $25-40 na samym Opus. 70% firm bedzie stosowac routing do 2028 (IDC).'}
+    ]},
+    {name:'Narzedzia', color:'#3fb950', desc:'Dozwolone i zakazane', items:[
+      {n:'\u2713 Agent (delegowanie)',d:'KLUCZOWE narzedzie. Uruchamia wyspecjalizowanego agenta z wlasnym kontekstem. Jedyny sposob na delegowanie pracy.'},
+      {n:'\u2713 TaskCreate / TaskUpdate',d:'Tworzy i aktualizuje zadania w systemie. Sledzenie statusow i postepu prac.'},
+      {n:'\u2713 Read (MANIFEST.md)',d:'Czyta pliki \u2014 glownie MANIFEST.md jako wspolna tablica komunikacyjna calego systemu.'},
+      {n:'\u2717 Bash \u2014 ZAKAZANE',d:'Uruchamianie komend = wykonywanie pracy, nie zarzadzanie. Jesli ma Bash, zacznie sam robic.'},
+      {n:'\u2717 Write/Edit \u2014 ZAKAZANE',d:'Pisanie/edycja plikow = generowanie tresci, nie zarzadzanie. Narzedzia definiuja role.'},
+      {n:'\u2717 WebSearch \u2014 ZAKAZANE',d:'Research = praca merytoryczna. Od tego sa Researcherzy.'}
+    ]},
+    {name:'Wzorce Architektoniczne', color:'#bc8cff', desc:'3 wzorce + skalowanie', items:[
+      {n:'Hub-and-Spoke (Gwiazda)',d:'Najpopularniejszy. Orkiestrator w centrum, specjalisci dookola. Cala komunikacja przez orkiestratora. Prosta kontrola, latwe debugowanie. Wada: single point of failure.'},
+      {n:'Hierarchiczny (Multi-Level)',d:'Orkiestrator glowny deleguje do sub-orkiestratorow (Team Lead Research, Team Lead Build). Dla systemow z 11+ agentami.'},
+      {n:'Deep Research Belt',d:'Do 17 specjalistow badawczych + syntetyk. Kazdy researcher szuka w innym zrodle. Research Critic weryfikuje jakosc.'},
+      {n:'Sweet Spot: 6\u201410 agentow',d:'Mikro (2-3): Chain. Maly (4-6): Hub-and-Spoke. Sredni (7-10): Hub+Gates. Duzy (11-14): Hierarchiczny. XL (15-18): Deep Research Belt.'}
+    ]},
+    {name:'Anty-wzorce', color:'#ff7b72', desc:'5 pulapek z realnych wdrozen', items:[
+      {n:'ANTI-01: Micro-Manager',d:'Orkiestrator sam pisze kod zamiast delegowac. Fix: usun narzedzia Bash, Write, Edit \u2014 jesli nie moze fizycznie, MUSI delegowac.'},
+      {n:'ANTI-02: God Agent',d:'Pelny kontekst projektu. Efekt Lost in the Middle + halucynacje. Fix: Narrow Context \u2014 widzi tylko MANIFEST.md.'},
+      {n:'ANTI-03: Blind Delegation',d:'"Napisz backend" bez specyfikacji. Iteracje poprawkowe zuzywaja tokeny. Fix: jasny cel + format wyjscia + ograniczenia + kryteria akceptacji.'},
+      {n:'ANTI-04: Token Waste',d:'15 agentow do zadania na 3. Over-engineering. Koszt 10x, czas 5x dluzszy. Fix: zacznij od 3, skaluj gdy potrzebne.'},
+      {n:'ANTI-05: Missing Gates',d:'Hallucination Cascade \u2014 halucynacja jednego agenta propaguje sie przez system. Fix: obowiazkowa brama miedzy kazda faza. Max 3 cykle rewizji.'}
+    ]},
+    {name:'Best Practices 2025-2026', color:'#7ee787', desc:'7 zasad od Anthropic i community', items:[
+      {n:'Narrow Context Principle',d:'Najwazniejsza zasada. Kazdy agent dostaje TYLKO niezbedny kontekst. Mniej danych = mniej halucynacji = nizszy koszt = lepsze wyniki.'},
+      {n:'MANIFEST.md = Source of Truth',d:'Centralny dokument z decyzjami, statusami i wynikami. Agenty komunikuja sie przez MANIFEST \u2014 nie bezposrednio.'},
+      {n:'Maksymalizuj rownoleglosc',d:'Jesli dwa zadania nie maja zaleznosci \u2014 wykonuj rownolegle. Planowanie sekwencyjne marnuje 40-60% potencjalu systemu.'},
+      {n:'Max 10 krokow sekwencyjnych',d:'Jesli workflow wymaga wiecej niz 10 krokow jeden po drugim \u2014 przeprojektuj (dodaj rownoleglosc lub zredukuj zlozonosc).'},
+      {n:'Human-in-the-Loop',d:'Eskaluj krytyczne decyzje do uzytkownika. Orkiestrator nie powinien podejmowac decyzji o duzym wplywie biznesowym sam.'},
+      {n:"Devil's Advocate",d:'Agent ktorego jedynym zadaniem jest kwestionowanie decyzji. Zapobiega groupthink i sycophancy chain.'},
+      {n:'Zacznij od 3, skaluj organicznie',d:'Zbuduj dzialajacy prototyp z 3 agentami, przetestuj, i dopiero potem skaluj. Nie projektuj systemu 14 agentow od razu.'}
+    ]},
+    {name:'Case Studies', color:'#d2a8ff', desc:'Realne wdrozenia korporacyjne', items:[
+      {n:'McKinsey: $250M przychodu',d:'System Lilli \u2014 70% konsultantow. Raport konsultingowy z 3 dni do 4 godzin (redukcja 94%). $250M przychodu rocznie z narzedzi AI.'},
+      {n:'Uber: 21 000 godzin',d:'Code review i migracje mikroserwisow. Multi-agent pipeline z LangGraph. 87% akceptowalnosc sugestii. Checkpointing + Human-in-the-Loop.'},
+      {n:'Danfoss: $15M oszczednosci',d:'Predykcja awarii i optymalizacja energii w 200+ budynkach. 3-agent system: Analityk + Predyktor + Optymalizator. Redukcja awarii o 34%.'}
+    ]},
+    {name:'Workflow Orkiestracji', color:'#a5d6ff', desc:'7 krokow od zadania do wyniku', items:[
+      {n:'1. Przyjmij zadanie',d:'Od uzytkownika. Na tym etapie jeszcze niczego nie deleguje \u2014 najpierw analizuje.'},
+      {n:'2. Ocen zlozonosc (S/M/L/XL)',d:'Determinuje liczbe potrzebnych agentow i wzorzec architektoniczny.'},
+      {n:'3. Zdekomponuj na podzadania',d:'Plan: Research \u2192 Analiza \u2192 Planowanie \u2192 Implementacja \u2192 Integracja \u2192 QA.'},
+      {n:'4. Deleguj rownolegle',d:'Uruchom agentow badawczych ROWNOLEGLE. Kazdy dostaje TYLKO swoj kontekst.'},
+      {n:'5. Monitoruj postep',d:'Sprawdzaj raporty w MANIFEST.md. Weryfikuj postep kazdego agenta.'},
+      {n:'6. Bramy GO/NO-GO',d:'Research\u2192Build: dane wystarczajace? Build\u2192QA: kod kompletny? QA\u2192Delivery: audyt przeszedl?'},
+      {n:'7. Syntetyzuj wynik',d:'Integrator laczy elementy. Orkiestrator sprawdza spojnosc i dostarcza gotowy produkt z podsumowaniem.'}
+    ]}
+  ];
+
+  let h = '<div class="omm-inner">';
+  h += '<div class="omm-hdr">';
+  h += '<h2>\u2734 Orkiestrator AI</h2>';
+  h += '<p>Kompletna Mapa Mysli \u2022 10 galezi \u2022 50 wezlow</p>';
+  h += '<div class="omm-hdr-desc">Centralny agent decyzyjny w systemie wieloagentowym. Analogia: kierownik projektu + dyrygent orkiestry + kontroler ruchu lotniczego. NIE generuje tresci \u2014 ZARZADZA SYSTEMEM.</div>';
+  h += '</div>';
+
+  h += '<div class="omm-grid">';
+  branches.forEach((br, i) => {
+    h += '<div class="omm-br" id="ommBr'+i+'">';
+    h += '<div class="omm-bh" onclick="document.getElementById(\'ommBr'+i+'\').classList.toggle(\'open\')">';
+    h += '<div class="omm-dot" style="color:'+br.color+';background:'+br.color+'"></div>';
+    h += '<div class="omm-bn">'+br.name+'</div>';
+    h += '<div class="omm-bc">'+br.items.length+'</div>';
+    h += '<div class="omm-ba">\u25B8</div>';
+    h += '</div>';
+    h += '<div class="omm-bb"><div class="omm-bi">';
+    if (br.desc) h += '<div class="omm-bdesc">'+br.desc+'</div>';
+    br.items.forEach(function(item) {
+      const isNeg = item.n.indexOf('\u2717') >= 0 || item.n.indexOf('ZAKAZANE') >= 0;
+      const leafClr = isNeg ? '#f85149' : br.color;
+      h += '<div class="omm-leaf">';
+      h += '<div class="omm-lh"><div class="omm-lm" style="background:'+leafClr+'"></div><div class="omm-ln" style="color:'+leafClr+'">'+item.n+'</div></div>';
+      h += '<div class="omm-ld">'+item.d+'</div>';
+      h += '</div>';
+    });
+    h += '</div></div></div>';
+  });
+
+  h += '<div class="omm-qr-wrap"><div class="omm-qr">';
+  h += '<strong>Quick Reference Card</strong><br>';
+  h += 'Model: Claude Opus ($15/$75)<br>';
+  h += 'Kontekst: 200K\u20141M tokenow<br>';
+  h += 'Narzedzia: Agent, TaskCreate, Read<br>';
+  h += 'Zakazane: Bash, Write, Edit, WebSearch<br>';
+  h += 'Wzorzec: Hub-and-Spoke (domyslny)<br>';
+  h += 'Sweet spot: 6\u201410 agentow<br>';
+  h += 'Max: 10 krokow sekwencyjnych<br>';
+  h += 'Komunikacja: MANIFEST.md<br>';
+  h += 'Koszt sesji: $6\u201410 (z routingiem)';
+  h += '</div></div>';
+
+  h += '</div></div>';
+
+  const panel = G('ommPanel');
+  panel.innerHTML = '<div class="omm-close" onclick="closeOrchestratorMM()" title="Zamknij (Esc)">\u2715</div>' + h;
+  panel.classList.add('show');
+  panel.scrollTop = 0;
+}
+
+// ---- Dedicated Orchestrator Mind Map SVG (overlay fallback) ----
+function buildOrchestratorMindMap() {
+  mmIdC = 0; mmTree = []; mmBreadcrumb = [];
+
+  const root = mmNode('Orkiestrator AI', '\u2734 Centralny Agent Zarzadzajacy', '#58a6ff', 'circle', null, {type:'text',text:'Centralny agent decyzyjny w systemie wieloagentowym. Analogia: kierownik projektu + dyrygent orkiestry + kontroler ruchu lotniczego. NIE generuje tresci \u2014 ZARZADZA SYSTEMEM. Niezbedny od 4+ agentow. Gold Standard 2026: 14 agentow w 4 fazach.'}, 0);
+  root.r = 90;
+  mmTree.push(root);
+
+  // ── Branch 1: Definicja i Rola ──
+  const nDef = mmNode('Definicja i Rola', '3 analogie', '#58a6ff', 'circle', root.id, {type:'text',text:'Kim jest orkiestrator? Centralny agent decyzyjny analogiczny do kierownika projektu, dyrygenta orkiestry i kontrolera ruchu lotniczego. Niezbedny od 4+ agentow. W Gold Standard 2026 zarzadza 14 agentami w 4 fazach.'}, 1);
+  mmTree.push(nDef); root.children.push(nDef.id);
+  [['Kierownik Projektu','Dekomponuje duze zadanie na mniejsze czesci, przydziela je odpowiednim ludziom i pilnuje terminow.','circle'],
+   ['Dyrygent Orkiestry','Nie gra na zadnym instrumencie, ale decyduje kto gra kiedy, jak glosno i w jakim tempie. Bez dyrygenta \u2014 kakofonia.','circle'],
+   ['Kontroler Ruchu','Widzi caly obraz na radarze, koordynuje ladowania i starty, zapobiega kolizjom. Piloci wykonuja manewry, ale kontroler mowi im kiedy i gdzie.','circle'],
+   ['Od 4+ agentow','Przy 2-3 mozna recznie. Od 4 wzwyz orkiestrator niezbedny. Sweet spot: 6-10 agentow. Max: 14-18 w Deep Research Belt.','diamond']
+  ].forEach(([lbl,txt,sh]) => { const n = mmNode(lbl,'','#79c0ff',sh,nDef.id,{type:'text',text:txt},2); mmTree.push(n); nDef.children.push(n.id); });
+
+  // ── Branch 2: Kluczowe Obowiazki ──
+  const nObow = mmNode('Kluczowe Obowiazki', '5 obszarow', '#56d364', 'circle', root.id, {type:'text',text:'Piec glownych obszarow odpowiedzialnosci. Pominiecie ktoregolwiek prowadzi do awarii calego systemu.'}, 1);
+  mmTree.push(nObow); root.children.push(nObow.id);
+  [['Dekompozycja Zadan','Rozbija zlozone zadania na podzadania realizowalne przez jednego agenta. Jasne wejscie/wyjscie. Zlozonosc: S/M/L/XL.','square'],
+   ['Delegowanie','Wie ktory agent jest najlepszy. Kazdy dostaje TYLKO swoj kontekst (Narrow Context). Potrojna wygrana: mniej halucynacji, nizszy koszt, mniejsze ryzyko.','square'],
+   ['Kontrola Bram','Decyzje GO/NO-GO miedzy fazami. Zapobiega propagacji bledow. Jesli research slaby \u2014 lepiej powtorzyc niz budowac na wadliwych fundamentach.','diamond'],
+   ['Synteza Wynikow','Laczy wyniki agentow w spojny output. Sprawdza sprzecznosci i czy efekt spelnia oczekiwania uzytkownika.','square'],
+   ['Rozwiazywanie Konfliktow','Ostateczna decyzja gdy agenty maja sprzeczne rekomendacje. Wylaczna odpowiedzialnosc \u2014 NIE moze delegowac do innego agenta.','diamond']
+  ].forEach(([lbl,txt,sh]) => { const n = mmNode(lbl,'','#56d364',sh,nObow.id,{type:'text',text:txt},2); mmTree.push(n); nObow.children.push(n.id); });
+
+  // ── Branch 3: Czego NIE Robi ──
+  const nNie = mmNode('Czego NIE Robi', '5 zakazow', '#f85149', 'diamond', root.id, {type:'text',text:'Single Responsibility Principle \u2014 orkiestrator ma jeden cel: zarzadzanie. Gdy zaczyna robic prace merytoryczna, traci perspektywe strategiczna. Micro-Manager Anti-Pattern.'}, 1);
+  mmTree.push(nNie); root.children.push(nNie.id);
+  [['Nie generuje kodu','Nie pisze ani jednej linijki. Od tego sa Koderzy. Opus kosztuje 5x wiecej niz Sonnet.'],
+   ['Nie prowadzi researchu','Nie przeszukuje internetu, nie analizuje dokumentacji. Od tego sa Researcherzy.'],
+   ['Nie naprawia bugow','QA znajduje blad \u2014 orkiestrator odsyla podzadanie do Kodera z informacja co poprawic.'],
+   ['Nie pisze dokumentacji','Nie tworzy raportow, nie redaguje tekstow. Od tego jest Redaktor.'],
+   ['Nie projektuje UI','Nie dobiera kolorow, nie rysuje layoutow. Od tego jest Designer. Kapitan ktory sprząta poklad traci statek.']
+  ].forEach(([lbl,txt]) => { const n = mmNode(lbl,'','#f85149','diamond',nNie.id,{type:'text',text:txt},2); mmTree.push(n); nNie.children.push(n.id); });
+
+  // ── Branch 4: Model i Koszty ──
+  const nModel = mmNode('Model i Koszty', 'Claude Opus', '#f0883e', 'diamond', root.id, {type:'text',text:'Wymaga najsilniejszego modelu \u2014 Claude Opus. Bledna dekompozycja propaguje sie przez caly system. Smart Model Routing daje 70-90% redukcji kosztow.'}, 1);
+  mmTree.push(nModel); root.children.push(nModel.id);
+  [['Opus $15/$75','Za 1M tokenow. Najwyzsza jakosc rozumowania. Tylko ~10% wywolan systemu.'],
+   ['200K-1M Kontekst','~500 stron tekstu. Uwaga: efekt Lost in the Middle \u2014 nie laduj niepotrzebnych danych.'],
+   ['Smart Routing','Opus ~10%, Sonnet ~30%, Haiku ~60%. Redukcja 70-90% kosztow vs all-Opus.'],
+   ['$6-10 / sesja','14 agentow z routingiem: $6-10 vs $25-40 na samym Opus. 70% firm do 2028 (IDC).']
+  ].forEach(([lbl,txt]) => { const n = mmNode(lbl,'','#f0883e','diamond',nModel.id,{type:'text',text:txt},2); mmTree.push(n); nModel.children.push(n.id); });
+
+  // ── Branch 5: Narzedzia ──
+  const nNarz = mmNode('Narzedzia', 'Dozwolone i zakazane', '#3fb950', 'hexagon', root.id, {type:'text',text:'Celowo ograniczone \u2014 fundamentalna decyzja projektowa. Narzedzia definiuja role. Jesli dasz orkiestratorowi Write \u2014 zacznie pisac zamiast delegowac.'}, 1);
+  mmTree.push(nNarz); root.children.push(nNarz.id);
+  [['Agent (delegowanie)','KLUCZOWE narzedzie. Uruchamia wyspecjalizowanego agenta z wlasnym kontekstem. Jedyny sposob na delegowanie pracy.','hexagon','#3fb950'],
+   ['TaskCreate/Update','Tworzy i aktualizuje zadania w systemie. Sledzenie statusow i postepu prac.','hexagon','#3fb950'],
+   ['Read (MANIFEST.md)','Czyta pliki \u2014 glownie MANIFEST.md jako wspolna tablica komunikacyjna.','hexagon','#3fb950'],
+   ['Bash \u2014 ZAKAZANE','Uruchamianie komend = wykonywanie pracy, nie zarzadzanie.','diamond','#f85149'],
+   ['Write/Edit \u2014 ZAKAZANE','Pisanie/edycja plikow = generowanie tresci, nie zarzadzanie.','diamond','#f85149'],
+   ['WebSearch \u2014 ZAKAZANE','Research = praca merytoryczna, nie zarzadzanie.','diamond','#f85149']
+  ].forEach(([lbl,txt,sh,clr]) => { const n = mmNode(lbl,'',clr,sh,nNarz.id,{type:'text',text:txt},2); mmTree.push(n); nNarz.children.push(n.id); });
+
+  // ── Branch 6: Wzorce Architektoniczne ──
+  const nWzorce = mmNode('Wzorce', '3 wzorce + skala', '#bc8cff', 'circle', root.id, {type:'text',text:'Orkiestrator moze pracowac w roznych konfiguracjach. Wybor wzorca zalezy od liczby agentow, zlozonosci zadania i wymagan niezawodnosci.'}, 1);
+  mmTree.push(nWzorce); root.children.push(nWzorce.id);
+  [['Hub-and-Spoke','Najpopularniejszy. Orkiestrator w centrum, specjalisci dookola. Cala komunikacja przez orkiestratora. Prosta kontrola, latwe debugowanie. Wada: single point of failure.','circle'],
+   ['Hierarchiczny','Sub-orkiestratorzy (Team Leads) zarzadzaja swoimi zespolami. Dla 11+ agentow, gdzie jeden orkiestrator nie jest wystarczajacy.','circle'],
+   ['Deep Research Belt','Do 17 specjalistow badawczych + syntetyk. Kazdy researcher szuka w innym zrodle. Research Critic weryfikuje jakosc.','circle'],
+   ['Sweet Spot: 6-10','Ponizej \u2014 zbyt malo specjalizacji. Powyzej 11 \u2014 diminishing returns. 14 agentow dla naprawde duzych projektow.','diamond']
+  ].forEach(([lbl,txt,sh]) => { const n = mmNode(lbl,'','#bc8cff',sh,nWzorce.id,{type:'text',text:txt},2); mmTree.push(n); nWzorce.children.push(n.id); });
+
+  // ── Branch 7: Anty-wzorce ──
+  const nAnty = mmNode('Anty-wzorce', '5 pulapek', '#ff7b72', 'diamond', root.id, {type:'text',text:'42% niepowodzen systemow wieloagentowych to bledy specyfikacji, 37% to breakdown koordynacji. Kazdy anty-wzorzec pochodzi z realnych wdrozen.'}, 1);
+  mmTree.push(nAnty); root.children.push(nAnty.id);
+  [['ANTI-01: Micro-Manager','Orkiestrator sam pisze kod. Fix: usun Bash, Write, Edit \u2014 jesli nie moze fizycznie, MUSI delegowac.'],
+   ['ANTI-02: God Agent','Pelny kontekst projektu. Lost in the Middle + halucynacje. Fix: Narrow Context \u2014 tylko MANIFEST.md.'],
+   ['ANTI-03: Blind Delegation','"Napisz backend" bez specyfikacji. Fix: jasny cel + format wyjscia + ograniczenia + kryteria akceptacji.'],
+   ['ANTI-04: Token Waste','15 agentow do zadania na 3. Koszt 10x, czas 5x. Fix: zacznij od 3, skaluj gdy potrzebne.'],
+   ['ANTI-05: Missing Gates','Hallucination Cascade \u2014 halucynacja propaguje sie przez system. Fix: obowiazkowa brama miedzy kazda faza.']
+  ].forEach(([lbl,txt]) => { const n = mmNode(lbl,'','#ff7b72','diamond',nAnty.id,{type:'text',text:txt},2); mmTree.push(n); nAnty.children.push(n.id); });
+
+  // ── Branch 8: Najlepsze Praktyki ──
+  const nBest = mmNode('Best Practices', '7 zasad', '#7ee787', 'square', root.id, {type:'text',text:'Rekomendacje Anthropic i community best practices 2025-2026 dla projektowania systemow wieloagentowych.'}, 1);
+  mmTree.push(nBest); root.children.push(nBest.id);
+  [['Narrow Context','Najwazniejsza zasada. Kazdy agent dostaje TYLKO niezbedny kontekst. Mniej = mniej halucynacji = nizszy koszt.','square'],
+   ['MANIFEST.md','Single Source of Truth. Centralny dokument z decyzjami. Agenty komunikuja sie przez MANIFEST \u2014 nie bezposrednio.','square'],
+   ['Maksymalizuj ||','Jesli dwa zadania nie maja zaleznosci \u2014 wykonuj rownolegle. Sekwencyjnosc marnuje 40-60% potencjalu.','square'],
+   ['Max 10 krokow','Jesli workflow wymaga wiecej niz 10 krokow sekwencyjnych \u2014 przeprojektuj.','square'],
+   ['Human-in-the-Loop','Eskaluj krytyczne decyzje do uzytkownika. Nie podejmuj decyzji o duzym wplywie biznesowym sam.','square'],
+   ["Devil's Advocate",'Agent kwestionujacy kazda decyzje. Zapobiega groupthink i sycophancy chain.','diamond'],
+   ['Zacznij od 3','Zbuduj prototyp z 3 agentami, przetestuj, skaluj organicznie. Nie projektuj 14 od razu.','square']
+  ].forEach(([lbl,txt,sh]) => { const n = mmNode(lbl,'','#7ee787',sh,nBest.id,{type:'text',text:txt},2); mmTree.push(n); nBest.children.push(n.id); });
+
+  // ── Branch 9: Case Studies ──
+  const nCase = mmNode('Case Studies', '3 wdrozenia', '#d2a8ff', 'circle', root.id, {type:'text',text:'Orkiestracja wieloagentowa wdrazana przez najwieksze korporacje. Do 2028: 33% oprogramowania enterprise generowane przez agentow AI (Gartner). Do 2030: 75%.'}, 1);
+  mmTree.push(nCase); root.children.push(nCase.id);
+  [['McKinsey: $250M','System Lilli \u2014 70% konsultantow. Raport z 3 dni do 4h (redukcja 94%). $250M przychodu rocznie.'],
+   ['Uber: 21 000h','Code review i migracje. Multi-agent pipeline z LangGraph. 87% akceptowalnosc sugestii. Checkpointing.'],
+   ['Danfoss: $15M','Predykcja awarii w 200+ budynkach. 3-agent system. Redukcja awarii o 34%. $15M oszczednosci rocznie.']
+  ].forEach(([lbl,txt]) => { const n = mmNode(lbl,'','#d2a8ff','circle',nCase.id,{type:'text',text:txt},2); mmTree.push(n); nCase.children.push(n.id); });
+
+  // ── Branch 10: Workflow ──
+  const nWork = mmNode('Workflow', '7 krokow', '#a5d6ff', 'circle', root.id, {type:'text',text:'Pelny cykl orkiestracji od przyjecia zadania po dostarczenie wyniku. Przyklad: interaktywna strona HTML z diagramami, quizami i drag-and-drop.'}, 1);
+  mmTree.push(nWork); root.children.push(nWork.id);
+  [['1. Przyjmij zadanie','Od uzytkownika. Najpierw analizuj, nie deleguj od razu.','square'],
+   ['2. Ocen zlozonosc','S/M/L/XL. Determinuje liczbe potrzebnych agentow i wzorzec architektoniczny.','diamond'],
+   ['3. Zdekomponuj','Plan: Research \u2192 Analiza \u2192 Planowanie \u2192 Implementacja \u2192 Integracja \u2192 QA.','square'],
+   ['4. Deleguj rownolegle','Uruchom agentow badawczych rownolegle. Kazdy dostaje TYLKO swoj kontekst.','square'],
+   ['5. Monitoruj','Sprawdzaj raporty w MANIFEST.md. Weryfikuj postep kazdego agenta.','square'],
+   ['6. Bramy GO/NO-GO','Research\u2192Build: dane wystarczajace? Build\u2192QA: kod kompletny? QA\u2192Delivery: audyt przeszedl?','diamond'],
+   ['7. Syntetyzuj wynik','Integrator laczy elementy. Orkiestrator sprawdza spojnosc i dostarcza gotowy produkt.','square']
+  ].forEach(([lbl,txt,sh]) => { const n = mmNode(lbl,'','#a5d6ff',sh,nWork.id,{type:'text',text:txt},2); mmTree.push(n); nWork.children.push(n.id); });
+
+  mmBreadcrumb = [{ label: '\u2734 Orkiestrator AI', nodeId: root.id }];
+  layoutAndRender();
+}
+
+// ---- Build Agent Mind Map ----
+function buildAgentMindMap(aid) {
+  if (aid === 'orchestrator') { buildOrchestratorMindMap(); return; }
+  mmIdC = 0; mmTree = []; mmBreadcrumb = [];
+  const d = AD.find(a => a.id === aid);
+  const learn = ALEARN[aid];
+  if (!d || !learn) return;
+
+  const root = mmNode(d.name, d.icon + ' ' + d.cat, MM_COLORS.center, 'circle', null, null, 0);
+  mmTree.push(root);
+
+  // Branch 1: Rola
+  const nRole = mmNode('Rola', 'Szczegoly', MM_COLORS.role, 'circle', root.id, { type: 'text', text: learn.role }, 1);
+  mmTree.push(nRole); root.children.push(nRole.id);
+
+  // Branch 2: Pozycja
+  const nPos = mmNode('Pozycja', 'W hierarchii', MM_COLORS.position, 'circle', root.id, { type: 'text', text: learn.position }, 1);
+  mmTree.push(nPos); root.children.push(nPos.id);
+
+  // Branch 3: Model + Koszt
+  const rt = {opus:{i:15,o:75},sonnet:{i:3,o:15},haiku:{i:.8,o:4}};
+  const r = rt[d.model]; const cst = '$'+((20000/1e6*r.i)+(10000/1e6*r.o)).toFixed(3)+' - '+((40000/1e6*r.i)+(20000/1e6*r.o)).toFixed(3);
+  const nModel = mmNode('Model', d.model.toUpperCase(), MM_COLORS.model, 'diamond', root.id, null, 1);
+  mmTree.push(nModel); root.children.push(nModel.id);
+  // sub-nodes for model
+  const nCtx = mmNode(d.model==='opus'?'1M ctx':'200K ctx', 'Kontekst', MM_COLORS.model, 'diamond', nModel.id, {type:'text',text:'Context window modelu '+d.model.toUpperCase()}, 2);
+  mmTree.push(nCtx); nModel.children.push(nCtx.id);
+  const nCost = mmNode(cst, 'Koszt/wywolanie', MM_COLORS.cost, 'diamond', nModel.id, {type:'text',text:'Koszt jednego wywolania agenta przy ~20-40K tokenow'}, 2);
+  mmTree.push(nCost); nModel.children.push(nCost.id);
+
+  // Branch 4: Narzedzia
+  const nTools = mmNode('Narzedzia', d.tools.split(',').length+' narzedzi', MM_COLORS.tools, 'hexagon', root.id, { type: 'text', text: learn.tools_detail }, 1);
+  mmTree.push(nTools); root.children.push(nTools.id);
+  d.tools.split(',').forEach(t => {
+    const nt = mmNode(t.trim(), '', MM_COLORS.tools, 'hexagon', nTools.id, { type: 'text', text: 'Narzedzie: ' + t.trim() }, 2);
+    mmTree.push(nt); nTools.children.push(nt.id);
+  });
+
+  // Branch 5: Best Practices
+  const nBest = mmNode('Best Practices', learn.best.length + ' zasad', MM_COLORS.best, 'square', root.id, null, 1);
+  mmTree.push(nBest); root.children.push(nBest.id);
+  learn.best.forEach(b => {
+    const nb = mmNode(b, '', MM_COLORS.best, 'square', nBest.id, { type: 'text', text: b }, 2);
+    mmTree.push(nb); nBest.children.push(nb.id);
+  });
+
+  // Branch 6: Anti-wzorce
+  const nAnti = mmNode('Anti-wzorce', learn.anti.length + ' ryzyk', MM_COLORS.anti, 'diamond', root.id, null, 1);
+  mmTree.push(nAnti); root.children.push(nAnti.id);
+  learn.anti.forEach(a => {
+    const na = mmNode(a, '', MM_COLORS.anti, 'diamond', nAnti.id, { type: 'text', text: a }, 2);
+    mmTree.push(na); nAnti.children.push(na.id);
+  });
+
+  // Branch 7: Interakcje
+  const nInter = mmNode('Interakcje', 'Komunikacja', MM_COLORS.interactions, 'circle', root.id, { type: 'text', text: learn.interactions }, 1);
+  mmTree.push(nInter); root.children.push(nInter.id);
+
+  mmBreadcrumb = [{ label: d.icon + ' ' + d.name, nodeId: root.id }];
+  layoutAndRender();
+}
+
+// ---- Build Preset Mind Map ----
+function buildPresetMindMap(pid) {
+  mmIdC = 0; mmTree = []; mmBreadcrumb = [];
+  const m = PM[pid]; if (!m) return;
+  const pr = PR[pid] || [];
+
+  const root = mmNode(m.n, m.i + ' ' + m.c + ' agentow', MM_COLORS.center, 'circle', null, null, 0);
+  mmTree.push(root);
+
+  // Branch: Wzorzec
+  const nPat = mmNode('Wzorzec', m.pt, MM_COLORS.pattern, 'circle', root.id, { type: 'text', text: 'Architektura: ' + m.pt }, 1);
+  mmTree.push(nPat); root.children.push(nPat.id);
+
+  // Branch: Agenci
+  const nAgents = mmNode('Agenci', m.c + ' w zespole', MM_COLORS.agents, 'circle', root.id, null, 1);
+  mmTree.push(nAgents); root.children.push(nAgents.id);
+  pr.forEach(p => {
+    const d = AD.find(a => a.id === p.d);
+    if (!d) return;
+    const na = mmNode(d.name, d.icon + ' ' + d.cat, MM_COLORS[d.cat === 'STRATEGIA' ? 'cost' : d.cat === 'RESEARCH' ? 'tools' : d.cat === 'BUILD' ? 'center' : 'anti'], 'circle', nAgents.id, { type: 'text', text: d.role }, 2);
+    mmTree.push(na); nAgents.children.push(na.id);
+  });
+
+  // Branch: Koszt
+  const nCost = mmNode('Koszt', m.$, MM_COLORS.cost, 'diamond', root.id, { type: 'text', text: 'Zuzycie tokenow: ' + m.t + ', Koszt: ' + m.$ }, 1);
+  mmTree.push(nCost); root.children.push(nCost.id);
+  const nTok = mmNode(m.t, 'Tokeny', MM_COLORS.cost, 'diamond', nCost.id, null, 2);
+  mmTree.push(nTok); nCost.children.push(nTok.id);
+  const nUsd = mmNode(m.$, 'USD', MM_COLORS.cost, 'diamond', nCost.id, null, 2);
+  mmTree.push(nUsd); nCost.children.push(nUsd.id);
+
+  // Branch: Zastosowania
+  const uses = m.use.split(',').map(u => u.trim());
+  const nUse = mmNode('Zastosowania', uses.length + ' scenariuszy', MM_COLORS.uses, 'square', root.id, null, 1);
+  mmTree.push(nUse); root.children.push(nUse.id);
+  uses.forEach(u => {
+    const nu = mmNode(u, '', MM_COLORS.uses, 'square', nUse.id, { type: 'text', text: u }, 2);
+    mmTree.push(nu); nUse.children.push(nu.id);
+  });
+
+  // Branch: Zalety
+  const nPros = mmNode('Zalety', '', MM_COLORS.pros, 'square', root.id, null, 1);
+  mmTree.push(nPros); root.children.push(nPros.id);
+  m.p.forEach(p => {
+    const np = mmNode(p, '', MM_COLORS.pros, 'square', nPros.id, { type: 'text', text: p }, 2);
+    mmTree.push(np); nPros.children.push(np.id);
+  });
+
+  // Branch: Wady
+  const nCons = mmNode('Wady', '', MM_COLORS.cons, 'diamond', root.id, null, 1);
+  mmTree.push(nCons); root.children.push(nCons.id);
+  m.m.forEach(c => {
+    const nc = mmNode(c, '', MM_COLORS.cons, 'diamond', nCons.id, { type: 'text', text: c }, 2);
+    mmTree.push(nc); nCons.children.push(nc.id);
+  });
+
+  mmBreadcrumb = [{ label: m.i + ' ' + m.n, nodeId: root.id }];
+  layoutAndRender();
+}
+
+// ---- Layout: radial tree with increasing radius per depth ----
+function layoutAndRender() {
+  const wrap = G('mmWrap');
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const cx = W / 2, cy = H / 2;
+
+  const root = mmTree[0];
+  root.targetX = cx; root.targetY = cy;
+  root.x = cx; root.y = cy;
+
+  // Radial layout: depth-1 ring, depth-2 ring at larger radius
+  const baseR = Math.min(L1.length > 7 ? 420 : 260, Math.min(W, H) * (L1.length > 7 ? .48 : .34));
+  const L1 = root.children.map(id => mmTree.find(n => n.id === id)).filter(Boolean);
+
+  L1.forEach((n, i) => {
+    const a = -Math.PI / 2 + (2 * Math.PI * i) / L1.length;
+    n._angle = a; // store for children layout
+    n.targetX = cx + baseR * Math.cos(a);
+    n.targetY = cy + baseR * Math.sin(a);
+    n.x = cx; n.y = cy; // start from center for animation
+
+    // If expanded, place level-2 children using radial distribution
+    if (n.expanded) {
+      const L2 = n.children.map(id => mmTree.find(nn => nn.id === id)).filter(Boolean);
+      const R2 = baseR * .65; // increased radius for depth 2
+      const sectorSize = (2 * Math.PI) / L1.length; // sector allocated to this branch
+      const usable = Math.min(sectorSize * .8, Math.PI * .7);
+      L2.forEach((nn, j) => {
+        const a2 = a - usable / 2 + (L2.length > 1 ? usable * j / (L2.length - 1) : 0);
+        nn.targetX = n.targetX + R2 * Math.cos(a2);
+        nn.targetY = n.targetY + R2 * Math.sin(a2);
+        nn.x = n.targetX; nn.y = n.targetY;
+      });
+    }
+  });
+
+  // Auto-fit: zoom to show all visible nodes
+  const allVis = mmTree.filter(n => n.targetX !== 0 || n.targetY !== 0 || n.depth === 0);
+  if (allVis.length > 1) {
+    const pad = 100;
+    const mnX = Math.min(...allVis.map(n => n.targetX)) - pad;
+    const mnY = Math.min(...allVis.map(n => n.targetY)) - pad;
+    const mxX = Math.max(...allVis.map(n => n.targetX)) + pad;
+    const mxY = Math.max(...allVis.map(n => n.targetY)) + pad;
+    const bw = mxX - mnX || 1, bh = mxY - mnY || 1;
+    mmScale = Math.min(1, Math.min(W / bw, H / bh) * .92);
+    mmPanX = (W - bw * mmScale) / 2 - mnX * mmScale;
+    mmPanY = (H - bh * mmScale) / 2 - mnY * mmScale;
+  } else {
+    mmPanX = 0; mmPanY = 0; mmScale = 1;
+  }
+  animateMap();
+}
+
+// ---- Animate positions with spring physics easing ----
+// cubic-bezier(0.34, 1.56, 0.64, 1) — slight overshoot for organic feel
+function springBezier(progress) {
+  // Attempt to solve cubic-bezier(0.34,1.56,0.64,1)
+  // P0=(0,0) P1=(0.34,1.56) P2=(0.64,1.0) P3=(1,1)
+  if (progress <= 0) return 0;
+  if (progress >= 1) return 1;
+  const p1x = 0.34, p1y = 1.56, p2x = 0.64, p2y = 1.0;
+  // Solve for t where bezierX(t) = progress using Newton-Raphson
+  let t = progress; // initial guess
+  for (let i = 0; i < 12; i++) {
+    const t2 = t * t, t3 = t2 * t;
+    const mt = 1 - t, mt2 = mt * mt;
+    // x(t) = 3*p1x*mt^2*t + 3*p2x*mt*t^2 + t^3
+    const xVal = 3 * p1x * mt2 * t + 3 * p2x * mt * t2 + t3;
+    // dx/dt = 3*mt^2*p1x + 6*mt*t*(p2x-p1x) + 3*t^2*(1-p2x)
+    const dxVal = 3 * mt2 * p1x + 6 * mt * t * (p2x - p1x) + 3 * t2 * (1 - p2x);
+    if (Math.abs(dxVal) < 1e-8) break;
+    t -= (xVal - progress) / dxVal;
+    t = Math.max(0, Math.min(1, t));
+  }
+  // Evaluate y(t)
+  const mt = 1 - t, mt2 = mt * mt;
+  return 3 * p1y * mt2 * t + 3 * p2y * mt * t * t + t * t * t;
+}
+
+function animateMap() {
+  if (mmAnimFrame) cancelAnimationFrame(mmAnimFrame);
+  let startT = null;
+  const dur = 700; // slightly longer for spring effect to be visible
+  const snapshots = mmTree.map(n => ({ id: n.id, sx: n.x, sy: n.y }));
+
+  function step(t) {
+    if (!startT) startT = t;
+    const p = Math.min(1, (t - startT) / dur);
+    const ease = springBezier(p); // spring physics with overshoot
+
+    mmTree.forEach(n => {
+      const s = snapshots.find(ss => ss.id === n.id);
+      if (s) {
+        n.x = s.sx + (n.targetX - s.sx) * ease;
+        n.y = s.sy + (n.targetY - s.sy) * ease;
+      }
+    });
+
+    renderMindMap();
+
+    if (p < 1) mmAnimFrame = requestAnimationFrame(step);
+    else mmAnimFrame = null;
+  }
+  mmAnimFrame = requestAnimationFrame(step);
+}
+
+// ---- Focus+Context: determine which nodes are "focused" ----
+let mmFocusedSet = null; // null = no focus, Set of node ids when focused
+
+function computeFocusSet() {
+  // If any L1 node is expanded, focus on that branch
+  const root = mmTree[0];
+  const expandedL1 = root.children.map(id => mmTree.find(n => n.id === id)).filter(n => n && n.expanded);
+  if (expandedL1.length === 0) {
+    mmFocusedSet = null; // no focus, show all normally
+    return;
+  }
+  const focused = new Set();
+  focused.add(root.id);
+  expandedL1.forEach(n => {
+    focused.add(n.id);
+    // Also add siblings for context (dimmed differently)
+    n.children.forEach(cid => focused.add(cid));
+  });
+  mmFocusedSet = focused;
+}
+
+// ---- Semantic zoom: determine detail level ----
+function getSemanticLevel() {
+  // overview (<0.8), normal (0.8-1.5), detail (>1.5)
+  if (mmScale < 0.8) return 'overview';
+  if (mmScale > 1.5) return 'detail';
+  return 'normal';
+}
+
+// ---- Render SVG ----
+function renderMindMap() {
+  const wrap = G('mmWrap');
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const svgEl = G('mmSvg');
+  svgEl.setAttribute('width', W);
+  svgEl.setAttribute('height', H);
+  svgEl.setAttribute('viewBox', `${-mmPanX / mmScale} ${-mmPanY / mmScale} ${W / mmScale} ${H / mmScale}`);
+
+  computeFocusSet();
+  const semLevel = getSemanticLevel();
+
+  let defs = `<defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glowBig"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="connGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="breatheGlow"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>`;
+  let lines = '';
+  let nodesSvg = '';
+
+  // Visibility check
+  const visible = new Set();
+  const root = mmTree[0];
+  visible.add(root.id);
+  root.children.forEach(cid => {
+    visible.add(cid);
+    const cn = mmTree.find(n => n.id === cid);
+    if (cn && cn.expanded) cn.children.forEach(ccid => visible.add(ccid));
+  });
+
+  // Draw connections with glow and "energy flow" animation
+  mmTree.forEach(n => {
+    if (!visible.has(n.id) || !n.parentId) return;
+    const parent = mmTree.find(p => p.id === n.parentId);
+    if (!parent || !visible.has(parent.id)) return;
+
+    // Focus+Context: dim connections to non-focused nodes
+    const connDimmed = mmFocusedSet && (!mmFocusedSet.has(n.id) || !mmFocusedSet.has(parent.id));
+    const connOpacity = connDimmed ? '.1' : '.4';
+    const dotOpacity = connDimmed ? '.2' : '.7';
+
+    const dashLen = 300;
+    const animDur = 1.5 + Math.random();
+    // Connection with glow filter (technique #9)
+    lines += `<line x1="${parent.x}" y1="${parent.y}" x2="${n.x}" y2="${n.y}" stroke="${n.color}" stroke-width="2" stroke-opacity="${connOpacity}" stroke-dasharray="4 4" filter="url(#connGlow)">
+      <animate attributeName="stroke-dashoffset" from="${dashLen}" to="0" dur="${animDur}s" repeatCount="indefinite"/>
+    </line>`;
+    // Traveling energy dot
+    lines += `<circle r="2.5" fill="${n.color}" opacity="${dotOpacity}">
+      <animateMotion dur="${1.5+Math.random()}s" repeatCount="indefinite" path="M${parent.x},${parent.y} L${n.x},${n.y}"/>
+    </circle>`;
+  });
+
+  // Draw nodes
+  mmTree.forEach(n => {
+    if (!visible.has(n.id)) return;
+    const isRoot = n.depth === 0;
+    const isL1 = n.depth === 1;
+    const hasChildren = n.children.length > 0;
+
+    // Focus+Context dimming (technique #3)
+    const isDimmed = mmFocusedSet && !mmFocusedSet.has(n.id);
+    const nodeOpacity = isDimmed ? 0.2 : 1.0;
+
+    // Ambient breathing glow for unexplored nodes (technique #4)
+    const needsBreathe = !n.explored && hasChildren && !isRoot && !isDimmed;
+    const filter = isRoot ? 'filter="url(#glowBig)"' : needsBreathe ? 'filter="url(#breatheGlow)"' : 'filter="url(#glow)"';
+
+    // Breathing glow animation on stroke
+    const breatheStrokeAnim = needsBreathe
+      ? `<animate attributeName="stroke-opacity" values=".3;.9;.3" dur="2.5s" repeatCount="indefinite"/>
+         <animate attributeName="stroke-width" values="1.5;3;1.5" dur="2.5s" repeatCount="indefinite"/>`
+      : '';
+
+    // Shape
+    if (n.shape === 'circle' || isRoot) {
+      nodesSvg += `<g class="mm-node" data-id="${n.id}" style="cursor:pointer;opacity:${nodeOpacity}" ${filter}>
+        <circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="rgba(13,17,23,.85)" stroke="${n.color}" stroke-width="${isRoot?2.5:1.5}" stroke-opacity="${isRoot?.9:.6}">
+          ${breatheStrokeAnim}
+        </circle>`;
+    } else if (n.shape === 'hexagon') {
+      const pts = hexPoints(n.x, n.y, n.r);
+      nodesSvg += `<g class="mm-node" data-id="${n.id}" style="cursor:pointer;opacity:${nodeOpacity}" ${filter}>
+        <polygon points="${pts}" fill="rgba(13,17,23,.85)" stroke="${n.color}" stroke-width="1.5" stroke-opacity=".6">
+          ${breatheStrokeAnim}
+        </polygon>`;
+    } else if (n.shape === 'diamond') {
+      const r = n.r;
+      nodesSvg += `<g class="mm-node" data-id="${n.id}" style="cursor:pointer;opacity:${nodeOpacity}" ${filter}>
+        <polygon points="${n.x},${n.y-r} ${n.x+r},${n.y} ${n.x},${n.y+r} ${n.x-r},${n.y}" fill="rgba(13,17,23,.85)" stroke="${n.color}" stroke-width="1.5" stroke-opacity=".6">
+          ${breatheStrokeAnim}
+        </polygon>`;
+    } else { // square
+      const r = n.r * .85;
+      nodesSvg += `<g class="mm-node" data-id="${n.id}" style="cursor:pointer;opacity:${nodeOpacity}" ${filter}>
+        <rect x="${n.x-r}" y="${n.y-r}" width="${r*2}" height="${r*2}" rx="4" fill="rgba(13,17,23,.85)" stroke="${n.color}" stroke-width="1.5" stroke-opacity=".6">
+          ${breatheStrokeAnim}
+        </rect>`;
+    }
+
+    // Semantic zoom: adjust label detail (technique #7)
+    const fs = isRoot ? 16 : isL1 ? 12 : 10;
+    let truncLabel;
+    if (semLevel === 'overview' && !isRoot) {
+      // At overview level: only show icon-like short labels for L1, hide L2 labels
+      truncLabel = isL1 ? (n.label.substring(0, 12) + (n.label.length > 12 ? '..' : '')) : '';
+    } else if (semLevel === 'detail') {
+      // At detail level: show full labels
+      truncLabel = n.label.length > 30 ? n.label.substring(0, 28) + '..' : n.label;
+    } else {
+      // Normal: moderate truncation
+      truncLabel = n.label.length > (isRoot ? 22 : isL1 ? 20 : 18) ? n.label.substring(0, isRoot ? 20 : isL1 ? 18 : 16) + '..' : n.label;
+    }
+
+    if (truncLabel) {
+      nodesSvg += `<text x="${n.x}" y="${n.y + (isRoot ? -4 : -2)}" text-anchor="middle" fill="${n.color}" font-family="'Space Grotesk',sans-serif" font-size="${fs}" font-weight="${isRoot?700:600}" style="pointer-events:none">${truncLabel}</text>`;
+    }
+
+    // Sublabel
+    if (n.sublabel && semLevel !== 'overview') {
+      nodesSvg += `<text x="${n.x}" y="${n.y + fs * .8 + (isRoot?0:-1)}" text-anchor="middle" fill="${n.color}" opacity=".5" font-family="'JetBrains Mono',monospace" font-size="${Math.max(7,fs-3)}" style="pointer-events:none">${n.sublabel.substring(0,20)}</text>`;
+    }
+
+    // Description text visible at detail zoom (semantic zoom technique #7)
+    if (semLevel === 'detail' && n.data && n.data.text && !isDimmed) {
+      const descLines = n.data.text.substring(0, 60);
+      nodesSvg += `<text x="${n.x}" y="${n.y + n.r + 14}" text-anchor="middle" fill="${n.color}" opacity=".35" font-family="'Inter',sans-serif" font-size="7" style="pointer-events:none">${descLines}${n.data.text.length>60?'...':''}</text>`;
+    }
+
+    // Expand indicator
+    if (hasChildren && !isRoot && !n.expanded && semLevel !== 'overview') {
+      nodesSvg += `<text x="${n.x}" y="${n.y + n.r + 12}" text-anchor="middle" fill="${n.color}" opacity=".4" font-size="8" font-family="'JetBrains Mono',monospace" style="pointer-events:none">+${n.children.length}</text>`;
+    }
+    nodesSvg += '</g>';
+  });
+
+  svgEl.innerHTML = defs + lines + nodesSvg;
+
+  // Render breadcrumb
+  let bh = '';
+  mmBreadcrumb.forEach((b, i) => {
+    if (i > 0) bh += '<span class="mm-bread-sep">\u203A</span>';
+    bh += `<div class="mm-bread-item${i === mmBreadcrumb.length - 1 ? ' active' : ''}" onclick="mmNavBread(${i})">${b.label}</div>`;
+  });
+  G('mmBread').innerHTML = bh;
+
+  // Minimap
+  renderMinimap();
+}
+
+function hexPoints(cx, cy, r) {
+  let pts = [];
+  for (let i = 0; i < 6; i++) {
+    const a = Math.PI / 6 + (Math.PI / 3) * i;
+    pts.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1));
+  }
+  return pts.join(' ');
+}
+
+function renderMinimap() {
+  const mini = G('mmMiniSvg');
+  const wrap = G('mmWrap');
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  // Compute bounding box
+  const vis = mmTree.filter(n => n.x !== 0 || n.y !== 0);
+  if (!vis.length) return;
+  const pad = 40;
+  const mnX = Math.min(...vis.map(n => n.x)) - pad;
+  const mnY = Math.min(...vis.map(n => n.y)) - pad;
+  const mxX = Math.max(...vis.map(n => n.x)) + pad;
+  const mxY = Math.max(...vis.map(n => n.y)) + pad;
+  const bw = mxX - mnX || 1, bh = mxY - mnY || 1;
+
+  mini.setAttribute('viewBox', `${mnX} ${mnY} ${bw} ${bh}`);
+  let h = '';
+  mmTree.forEach(n => {
+    if (n.x === 0 && n.y === 0 && n.depth > 0) return;
+    h += `<circle cx="${n.x}" cy="${n.y}" r="${n.depth===0?6:3}" fill="${n.color}" opacity=".6"/>`;
+    if (n.parentId) {
+      const p = mmTree.find(pp => pp.id === n.parentId);
+      if (p) h += `<line x1="${p.x}" y1="${p.y}" x2="${n.x}" y2="${n.y}" stroke="${n.color}" stroke-width="1" opacity=".2"/>`;
+    }
+  });
+  // Viewport rect
+  const vx = -mmPanX / mmScale, vy = -mmPanY / mmScale;
+  const vw = W / mmScale, vh = H / mmScale;
+  h += `<rect class="mm-minimap-vp" x="${vx}" y="${vy}" width="${vw}" height="${vh}"/>`;
+  mini.innerHTML = h;
+}
+
+// ---- Click handling ----
+G('mmSvg').addEventListener('click', e => {
+  const g = e.target.closest('.mm-node');
+  if (!g) return;
+  const nid = g.dataset.id;
+  const node = mmTree.find(n => n.id === nid);
+  if (!node) return;
+
+  if (node.depth === 0) return; // can't collapse root
+
+  node.explored = true;
+
+  if (node.expanded) {
+    // Collapse: hide children
+    node.expanded = false;
+    collapseRecursive(node);
+    // Remove from breadcrumb if it's there
+    const bi = mmBreadcrumb.findIndex(b => b.nodeId === node.id);
+    if (bi >= 0) mmBreadcrumb.splice(bi);
+  } else if (node.children.length > 0) {
+    // Expand this node — collapse sibling L1 nodes for focus+context
+    const root = mmTree[0];
+    if (node.depth === 1) {
+      root.children.forEach(sibId => {
+        if (sibId !== node.id) {
+          const sib = mmTree.find(n => n.id === sibId);
+          if (sib && sib.expanded) {
+            sib.expanded = false;
+            collapseRecursive(sib);
+            const sbi = mmBreadcrumb.findIndex(b => b.nodeId === sib.id);
+            if (sbi >= 0) mmBreadcrumb.splice(sbi, 1);
+          }
+        }
+      });
+    }
+
+    node.expanded = true;
+    // Update breadcrumb
+    const bi = mmBreadcrumb.findIndex(b => b.nodeId === node.id);
+    if (bi < 0) mmBreadcrumb.push({ label: node.label, nodeId: node.id });
+
+    // Layout children using radial distribution from parent angle
+    const parent = mmTree.find(p => p.id === node.parentId);
+    const baseAngle = parent ? Math.atan2(node.targetY - parent.y, node.targetX - parent.x) : 0;
+    const L2 = node.children.map(id => mmTree.find(nn => nn.id === id)).filter(Boolean);
+    const R2 = Math.min(240, 120 + L2.length * 16);
+    // Calculate sector: use parent's branch sector
+    const L1count = root.children.length;
+    const sectorSize = (2 * Math.PI) / Math.max(1, L1count);
+    const spread = Math.min(sectorSize * .8, Math.PI * .7);
+    L2.forEach((nn, j) => {
+      const a2 = baseAngle - spread / 2 + (L2.length > 1 ? spread * j / (L2.length - 1) : 0);
+      nn.targetX = node.targetX + R2 * Math.cos(a2);
+      nn.targetY = node.targetY + R2 * Math.sin(a2);
+      nn.x = node.targetX;
+      nn.y = node.targetY;
+    });
+  }
+  animateMap();
+});
+
+function collapseRecursive(node) {
+  node.children.forEach(cid => {
+    const cn = mmTree.find(n => n.id === cid);
+    if (cn) { cn.expanded = false; cn.x = node.targetX; cn.y = node.targetY; collapseRecursive(cn); }
+  });
+}
+
+// ---- Hover tooltip ----
+G('mmSvg').addEventListener('mousemove', e => {
+  const g = e.target.closest('.mm-node');
+  const tip = G('mmTip');
+  if (!g) { tip.classList.remove('show'); return; }
+  const nid = g.dataset.id;
+  const node = mmTree.find(n => n.id === nid);
+  if (!node) { tip.classList.remove('show'); return; }
+
+  let content = `<div class="mm-tooltip-title">${node.label}</div>`;
+  if (node.sublabel) content += `<div style="color:#8b949e;font-size:10px;margin-bottom:4px">${node.sublabel}</div>`;
+  if (node.data && node.data.text) content += `<div>${node.data.text}</div>`;
+  if (node.children.length && !node.expanded) content += `<div style="color:${node.color};margin-top:6px;font-size:10px">Kliknij aby rozwinac (${node.children.length} galezie)</div>`;
+  if (node.children.length && node.expanded) content += `<div style="color:#8b949e;margin-top:6px;font-size:10px">Kliknij aby zwinac</div>`;
+
+  tip.innerHTML = content;
+  tip.classList.add('show');
+
+  const r = G('mmOverlay').getBoundingClientRect();
+  let tx = e.clientX - r.left + 16;
+  let ty = e.clientY - r.top - 10;
+  if (tx + 320 > r.width) tx = e.clientX - r.left - 330;
+  if (ty + tip.offsetHeight > r.height) ty = r.height - tip.offsetHeight - 10;
+  tip.style.left = tx + 'px';
+  tip.style.top = ty + 'px';
+});
+G('mmSvg').addEventListener('mouseleave', () => G('mmTip').classList.remove('show'));
+
+// ---- Pan & Zoom on mind map ----
+const mmWrap = G('mmWrap');
+mmWrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const d = e.deltaY > 0 ? 0.92 : 1.08;
+  const ns = Math.max(.3, Math.min(3, mmScale * d));
+  const r = mmWrap.getBoundingClientRect();
+  const cx = e.clientX - r.left, cy = e.clientY - r.top;
+  mmPanX = cx - (cx - mmPanX) * (ns / mmScale);
+  mmPanY = cy - (cy - mmPanY) * (ns / mmScale);
+  mmScale = ns;
+  renderMindMap();
+}, { passive: false });
+
+mmWrap.addEventListener('mousedown', e => {
+  if (e.target.closest('.mm-node')) return;
+  mmIsPan = true;
+  mmPanSt = { x: e.clientX, y: e.clientY, px: mmPanX, py: mmPanY };
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!mmIsPan) return;
+  mmPanX = mmPanSt.px + (e.clientX - mmPanSt.x);
+  mmPanY = mmPanSt.py + (e.clientY - mmPanSt.y);
+  renderMindMap();
+});
+document.addEventListener('mouseup', () => { mmIsPan = false; });
+
+// ---- Breadcrumb navigation ----
+function mmNavBread(idx) {
+  mmBreadcrumb.splice(idx + 1);
+  // Collapse everything below the target node
+  const targetId = mmBreadcrumb[idx].nodeId;
+  mmTree.forEach(n => {
+    if (n.id !== targetId && n.depth >= (mmTree.find(nn => nn.id === targetId)?.depth || 0)) {
+      // Collapse nodes not in the breadcrumb path
+    }
+  });
+  // Simple: collapse all L1 nodes except those in breadcrumb
+  const root = mmTree[0];
+  root.children.forEach(cid => {
+    const cn = mmTree.find(n => n.id === cid);
+    if (cn) {
+      const inPath = mmBreadcrumb.some(b => b.nodeId === cn.id);
+      if (!inPath) { cn.expanded = false; collapseRecursive(cn); }
+    }
+  });
+  animateMap();
+}
+
+// ---- Keyboard ----
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  const k = e.key.toLowerCase();
+  if (k === 'escape') {
+    if (G('ommPanel').classList.contains('show')) { closeOrchestratorMM(); return; }
+    if (learnOpen) { closeLearn(); return; }
+    if (document.querySelector('.mo.show')) { document.querySelectorAll('.mo.show').forEach(m => m.classList.remove('show')); return; }
+    if (connMode) { togConn(); return; }
+    sel.clear(); upSel();
+  }
+  else if (k === 'delete' || k === 'backspace') { delSel(); e.preventDefault(); }
+  else if (k === 'c' && !e.ctrlKey) togConn();
+  else if (k === 'l') autoLay();
+  else if (k === 'e' && !e.ctrlKey) expCfg();
+  else if (k === '?' || k === '/') showKB();
+  else if (k === '=' || k === '+') { zIn(); e.preventDefault(); }
+  else if (k === '-') { zOut(); e.preventDefault(); }
+  else if (k === '0') { zRst(); e.preventDefault(); }
+  else if (e.ctrlKey && k === 'a') { e.preventDefault(); nodes.forEach(n => sel.add(n.id)); upSel(); }
+});
+
+// ================================================================
+// INIT
+// ================================================================
+rPal(); rPre(); rSv(); upGrid(); ldPr('startup');
+</script>
+</body>
+</html>

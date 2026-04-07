@@ -1,0 +1,24 @@
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Generated scripts (not needed in repo, icons are already embedded in HTML)
+ikony/generate_all.js
+ikony/regenerate_fix.js
+ikony/generate_presets.js
+ikony/agent_img_data.js
+ikony/agent_img_entries.txt
+ikony/agent_img_block.txt
+ikony/preset_img_block.txt
+ikony/dp_entry.txt
+
+# Resized intermediary files (originals in generated/)
+ikony/generated/resized/
+ikony/generated/presets_resized/
+
+# Embedded git repo
+analizy-html/GIt

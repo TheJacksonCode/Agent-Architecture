@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Five Minds Protocol -- Exhaustive Analysis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #050A14;
+    --surface: #0C1220;
+    --surface-2: #111827;
+    --surface-3: #1a2332;
+    --amber: #F5A623;
+    --amber-dim: rgba(245,166,35,0.15);
+    --amber-glow: rgba(245,166,35,0.3);
+    --teal: #2DD4A0;
+    --teal-dim: rgba(45,212,160,0.12);
+    --teal-glow: rgba(45,212,160,0.25);
+    --rose: #E85D75;
+    --rose-dim: rgba(232,93,117,0.12);
+    --rose-glow: rgba(232,93,117,0.25);
+    --text: #E8E0D6;
+    --text-dim: #9CA3AF;
+    --text-muted: #6B7280;
+    --navy: #1E40AF;
+    --navy-dim: rgba(30,64,175,0.2);
+    --border: rgba(232,224,214,0.08);
+    --border-hover: rgba(232,224,214,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-3) var(--bg);
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--surface-3);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px var(--amber-dim); }
+    50% { box-shadow: 0 0 40px var(--amber-glow); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes lineGrow {
+    from { height: 0; }
+    to { height: 100%; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* Layout */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    padding: 60px 24px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, var(--amber-dim) 0%, transparent 70%);
+    pointer-events: none;
+    filter: blur(80px);
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: var(--amber-dim);
+    border: 1px solid rgba(245,166,35,0.25);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 32px;
+    animation: fadeIn 1s ease;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+    animation: pulseGlow 2s ease infinite;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--text), var(--amber), var(--teal));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 6s ease infinite;
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--text-dim);
+    max-width: 650px;
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .hero-meta-item .value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--amber);
+  }
+  .hero-meta-item .label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%; transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: float 3s ease infinite;
+  }
+  .scroll-hint .arrow {
+    width: 20px; height: 20px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: rotate(45deg);
+  }
+
+  /* Section */
+  section {
+    padding: 80px 0;
+    position: relative;
+  }
+  .section-header {
+    margin-bottom: 56px;
+  }
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+  .section-label::before {
+    content: '';
+    width: 24px; height: 2px;
+    background: var(--teal);
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    max-width: 700px;
+    font-weight: 300;
+  }
+
+  /* Expert Cards */
+  .experts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+  }
+  .expert-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .expert-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+  }
+  .expert-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+  .expert-card.elena::before { background: linear-gradient(90deg, var(--navy), var(--teal)); }
+  .expert-card.karol::before { background: linear-gradient(90deg, var(--amber), #FF8C42); }
+  .expert-card.raven::before { background: linear-gradient(90deg, var(--teal), #60A5FA); }
+  .expert-card.cien::before { background: linear-gradient(90deg, var(--rose), #C084FC); }
+
+  .expert-avatar {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .elena .expert-avatar { background: var(--navy-dim); }
+  .karol .expert-avatar { background: var(--amber-dim); }
+  .raven .expert-avatar { background: var(--teal-dim); }
+  .cien .expert-avatar { background: var(--rose-dim); }
+
+  .expert-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .expert-role {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+  .elena .expert-role { color: #60A5FA; }
+  .karol .expert-role { color: var(--amber); }
+  .raven .expert-role { color: var(--teal); }
+  .cien .expert-role { color: var(--rose); }
+
+  .expert-position {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .expert-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .expert-tag {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .expert-outcome {
+    margin-top: 16px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+  .elena .expert-outcome { background: var(--navy-dim); color: #93C5FD; border: 1px solid rgba(30,64,175,0.3); }
+  .karol .expert-outcome { background: var(--amber-dim); color: #FCD34D; border: 1px solid rgba(245,166,35,0.3); }
+  .raven .expert-outcome { background: var(--teal-dim); color: #86EFAC; border: 1px solid rgba(45,212,160,0.3); }
+  .cien .expert-outcome { background: var(--rose-dim); color: #FCA5A5; border: 1px solid rgba(232,93,117,0.3); }
+
+  /* Timeline / Debate Flow */
+  .timeline {
+    position: relative;
+    padding-left: 48px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 18px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--amber), var(--teal), var(--rose), var(--amber));
+    border-radius: 2px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-dot {
+    position: absolute;
+    left: -38px; top: 6px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 3px solid;
+    background: var(--bg);
+    z-index: 2;
+  }
+  .timeline-item.phase-research .timeline-dot { border-color: var(--teal); }
+  .timeline-item.phase-debate .timeline-dot { border-color: var(--amber); }
+  .timeline-item.phase-conflict .timeline-dot { border-color: var(--rose); }
+  .timeline-item.phase-resolution .timeline-dot { border-color: var(--teal); box-shadow: 0 0 12px var(--teal-glow); }
+  .timeline-item.phase-output .timeline-dot { border-color: var(--amber); box-shadow: 0 0 12px var(--amber-glow); }
+
+  .timeline-phase {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+  .phase-research .timeline-phase { color: var(--teal); }
+  .phase-debate .timeline-phase { color: var(--amber); }
+  .phase-conflict .timeline-phase { color: var(--rose); }
+  .phase-resolution .timeline-phase { color: var(--teal); }
+  .phase-output .timeline-phase { color: var(--amber); }
+
+  .timeline-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    transition: border-color 0.3s;
+  }
+  .timeline-content:hover { border-color: var(--border-hover); }
+  .timeline-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .timeline-text {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .timeline-speaker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* Breakthrough Card */
+  .breakthrough {
+    background: linear-gradient(135deg, rgba(245,166,35,0.08) 0%, rgba(45,212,160,0.05) 100%);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 20px;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    animation: pulseGlow 4s ease infinite;
+  }
+  .breakthrough::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -30%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, var(--amber-dim) 0%, transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  .breakthrough-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+  .breakthrough-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-bottom: 12px;
+  }
+  .breakthrough h3 {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 800;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--amber), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .breakthrough-desc {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 700px;
+    margin-bottom: 32px;
+    line-height: 1.8;
+  }
+  .breakthrough-flow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 140px;
+  }
+  .flow-node .emoji { font-size: 1.5rem; margin-bottom: 6px; }
+  .flow-node .label { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); }
+  .flow-node.source { border-color: rgba(245,166,35,0.3); }
+  .flow-node.source .label { color: var(--amber); }
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+  }
+  .flow-outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .flow-node.web { border-color: rgba(45,212,160,0.3); }
+  .flow-node.web .label { color: var(--teal); }
+  .flow-node.pdf { border-color: rgba(96,165,250,0.3); }
+  .flow-node.pdf .label { color: #60A5FA; }
+
+  /* Devil's Advocate Section */
+  .devils-section {
+    background: linear-gradient(135deg, var(--rose-dim), transparent 60%);
+    border: 1px solid rgba(232,93,117,0.2);
+    border-radius: 20px;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .devils-section::before {
+    content: '';
+    position: absolute;
+    top: -30%; left: -20%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, var(--rose-dim) 0%, transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  .devils-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .devils-avatar {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: var(--rose-dim);
+    border: 1px solid rgba(232,93,117,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+  }
+  .devils-name {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--rose);
+  }
+  .devils-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .challenge-card {
+    background: rgba(232,93,117,0.06);
+    border: 1px solid rgba(232,93,117,0.15);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+  }
+  .challenge-card:hover { border-color: rgba(232,93,117,0.35); }
+  .challenge-type {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--rose);
+    margin-bottom: 8px;
+  }
+  .challenge-question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .challenge-question::before { content: '\201C'; color: var(--rose); margin-right: 2px; }
+  .challenge-question::after { content: '\201D'; color: var(--rose); margin-left: 2px; }
+  .challenge-resolution {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    padding-left: 14px;
+    border-left: 2px solid rgba(232,93,117,0.3);
+  }
+  .bug-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 20px;
+    padding: 6px 14px;
+    background: rgba(232,93,117,0.1);
+    border: 1px solid rgba(232,93,117,0.25);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--rose);
+  }
+
+  /* Comparison Table */
+  .table-wrapper {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  thead th {
+    background: var(--surface-2);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: var(--surface-2);
+  }
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  tbody td:first-child {
+    font-weight: 600;
+    color: var(--text);
+    position: sticky;
+    left: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  tbody tr:hover td:first-child { background: var(--surface-2); }
+  .cell-yes {
+    color: var(--teal);
+    font-weight: 700;
+  }
+  .cell-no {
+    color: var(--text-muted);
+  }
+  .cell-partial {
+    color: var(--amber);
+    font-weight: 500;
+  }
+  .cell-implicit {
+    color: #C084FC;
+    font-weight: 500;
+  }
+  .highlight-col {
+    background: rgba(245,166,35,0.04) !important;
+  }
+
+  /* Bugs Section */
+  .bugs-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .bug-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: border-color 0.3s;
+  }
+  .bug-card:hover { border-color: var(--border-hover); }
+  .bug-severity {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  .severity-medium {
+    background: rgba(245,166,35,0.15);
+    color: var(--amber);
+    border: 1px solid rgba(245,166,35,0.3);
+  }
+  .severity-low {
+    background: rgba(107,114,128,0.15);
+    color: var(--text-dim);
+    border: 1px solid rgba(107,114,128,0.3);
+  }
+  .bug-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .bug-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  /* Recommendations */
+  .rec-grid {
+    display: grid;
+    gap: 20px;
+  }
+  .rec-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .rec-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+  .rec-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .rec-card.structural::before { background: var(--teal); }
+  .rec-card.process::before { background: var(--amber); }
+  .rec-card.integration::before { background: #C084FC; }
+  .rec-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .rec-card.structural .rec-id { color: var(--teal); }
+  .rec-card.process .rec-id { color: var(--amber); }
+  .rec-card.integration .rec-id { color: #C084FC; }
+  .rec-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .rec-desc {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .rec-category-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+  .rec-card.structural .rec-category-tag { background: var(--teal-dim); color: var(--teal); }
+  .rec-card.process .rec-category-tag { background: var(--amber-dim); color: var(--amber); }
+  .rec-card.integration .rec-category-tag { background: rgba(192,132,252,0.12); color: #C084FC; }
+
+  /* Code block */
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Evolution */
+  .evolution-path {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 32px;
+  }
+  .evolution-path::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 16px;
+    bottom: 16px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--text-muted), var(--teal), var(--amber), var(--teal));
+  }
+  .evo-step {
+    position: relative;
+    padding: 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+  }
+  .evo-step:hover { border-color: var(--border-hover); }
+  .evo-step::before {
+    content: '';
+    position: absolute;
+    left: -28px; top: 20px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 3px solid var(--teal);
+    z-index: 2;
+  }
+  .evo-step.current::before {
+    border-color: var(--amber);
+    box-shadow: 0 0 10px var(--amber-glow);
+  }
+  .evo-version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--teal);
+    margin-bottom: 4px;
+  }
+  .evo-step.current .evo-version { color: var(--amber); }
+  .evo-label {
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .evo-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* Verdict */
+  .verdict-card {
+    background: linear-gradient(135deg, rgba(245,166,35,0.06), rgba(45,212,160,0.04));
+    border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    position: relative;
+  }
+  .verdict-score {
+    font-size: 4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--amber), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .verdict-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 24px;
+  }
+  .verdict-text {
+    font-size: 1.15rem;
+    max-width: 750px;
+    margin: 0 auto 32px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+  .verdict-points {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .verdict-point {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .verdict-point.strength { border-left: 3px solid var(--teal); }
+  .verdict-point.weakness { border-left: 3px solid var(--rose); }
+  .verdict-point-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .verdict-point.strength .verdict-point-label { color: var(--teal); }
+  .verdict-point.weakness .verdict-point-label { color: var(--rose); }
+  .verdict-point-text {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* Arguments Table */
+  .arguments-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .argument-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 1.5fr;
+    gap: 16px;
+    align-items: start;
+    transition: border-color 0.3s;
+  }
+  .argument-row:hover { border-color: var(--border-hover); }
+  .arg-position {
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+  .arg-for, .arg-against {
+    font-size: 0.84rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .arg-for::before {
+    content: 'FOR';
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .arg-against::before {
+    content: 'AGAINST';
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--rose);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .arg-resolution {
+    font-size: 0.84rem;
+    color: var(--amber);
+    font-weight: 500;
+    line-height: 1.6;
+  }
+  .arg-resolution::before {
+    content: 'RESOLUTION';
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  /* Consensus Section */
+  .consensus-steps {
+    display: grid;
+    gap: 12px;
+    counter-reset: step;
+  }
+  .consensus-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 24px 18px 60px;
+    position: relative;
+    transition: border-color 0.3s;
+    counter-increment: step;
+  }
+  .consensus-step:hover { border-color: var(--border-hover); }
+  .consensus-step::before {
+    content: counter(step);
+    position: absolute;
+    left: 20px; top: 18px;
+    width: 28px; height: 28px;
+    background: var(--amber-dim);
+    border: 1px solid rgba(245,166,35,0.3);
+    color: var(--amber);
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .consensus-step-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  .consensus-step-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* Footer */
+  .footer {
+    padding: 60px 0 40px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .footer-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+  .footer-link {
+    color: var(--amber);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .footer-link:hover { text-decoration: underline; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-hover), transparent);
+    margin: 60px 0;
+  }
+
+  /* Nav dots */
+  .nav-dots {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 100;
+  }
+  .nav-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .nav-dot:hover, .nav-dot.active {
+    background: var(--amber);
+    box-shadow: 0 0 10px var(--amber-glow);
+  }
+  .nav-dot .tooltip {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .nav-dot:hover .tooltip { opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .argument-row {
+      grid-template-columns: 1fr;
+    }
+    .breakthrough-flow {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .flow-arrow { transform: rotate(90deg); }
+    .nav-dots { display: none; }
+    .hero-meta { gap: 20px; }
+    .devils-section, .breakthrough { padding: 32px 24px; }
+    .verdict-card { padding: 32px 24px; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 48px 0; }
+    .container { padding: 0 16px; }
+    .experts-grid { grid-template-columns: 1fr; }
+    .hero { min-height: 80vh; }
+    table { font-size: 0.72rem; }
+    thead th, tbody td { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation Dots -->
+<nav class="nav-dots" id="navDots">
+  <button class="nav-dot active" data-target="hero"><span class="tooltip">Top</span></button>
+  <button class="nav-dot" data-target="experts"><span class="tooltip">Experts</span></button>
+  <button class="nav-dot" data-target="debate"><span class="tooltip">Debate Flow</span></button>
+  <button class="nav-dot" data-target="breakthrough"><span class="tooltip">Breakthrough</span></button>
+  <button class="nav-dot" data-target="devils"><span class="tooltip">Devil's Advocate</span></button>
+  <button class="nav-dot" data-target="arguments"><span class="tooltip">Arguments</span></button>
+  <button class="nav-dot" data-target="comparison"><span class="tooltip">Comparison</span></button>
+  <button class="nav-dot" data-target="bugs"><span class="tooltip">Bugs</span></button>
+  <button class="nav-dot" data-target="recommendations"><span class="tooltip">Recommendations</span></button>
+  <button class="nav-dot" data-target="verdict"><span class="tooltip">Verdict</span></button>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="hero">
+  <div class="hero-badge">Agent A-01 Deep Analysis</div>
+  <h1>Five Minds<br>Protocol</h1>
+  <p class="hero-sub">A structured expert debate mechanism within a multi-agent AI architecture. Rated 9/10 for architecture quality. Positioned as Phase 2 -- the strategic decision gate between research and implementation.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="value">4</span>
+      <span class="label">Expert Minds</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="value">15+</span>
+      <span class="label">Total Agents</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="value">5</span>
+      <span class="label">Pipeline Phases</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="value">9/10</span>
+      <span class="label">Quality Rating</span>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <div class="arrow"></div>
+  </div>
+</header>
+
+<!-- EXPERT PROFILES -->
+<section id="experts">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Section 01</div>
+      <h2 class="section-title">Expert Configuration</h2>
+      <p class="section-desc">Four domain-specialized personas with opposing viewpoints, designed to surface the best architectural decision through structured argumentation.</p>
+    </div>
+    <div class="experts-grid">
+
+      <!-- Elena -->
+      <div class="expert-card elena reveal reveal-delay-1">
+        <div class="expert-avatar">&#128300;</div>
+        <div class="expert-name">Dr. Elena Voss</div>
+        <div class="expert-role">ATS Expert</div>
+        <div class="expert-position">ATS-first design philosophy. Every element prioritized for maximum parseability. Monochrome palette, single-column layout, clean typography.</div>
+        <div class="expert-tags">
+          <span class="expert-tag">Monochrome</span>
+          <span class="expert-tag">Single-Column</span>
+          <span class="expert-tag">Clean PDF</span>
+          <span class="expert-tag">Parseability</span>
+        </div>
+        <div class="expert-outcome">Won the PDF design argument -- single accent color, ATS-parseable structure, selectable text</div>
+      </div>
+
+      <!-- Karol -->
+      <div class="expert-card karol reveal reveal-delay-2">
+        <div class="expert-avatar">&#127912;</div>
+        <div class="expert-name">Karol "Pixel" Nowakowski</div>
+        <div class="expert-role">UI/UX Master</div>
+        <div class="expert-position">Interactive web portfolio as a showcase of technical skills. Rich interactivity and animations, dark theme aesthetic, portfolio-first approach.</div>
+        <div class="expert-tags">
+          <span class="expert-tag">Animations</span>
+          <span class="expert-tag">Dark Theme</span>
+          <span class="expert-tag">Portfolio</span>
+          <span class="expert-tag">Interactivity</span>
+        </div>
+        <div class="expert-outcome">Won the web presence argument -- React components, responsive layout, visual showcase</div>
+      </div>
+
+      <!-- Raven -->
+      <div class="expert-card raven reveal reveal-delay-3">
+        <div class="expert-avatar">&#128188;</div>
+        <div class="expert-name">Raven Blackwood</div>
+        <div class="expert-role">Tech Recruiter</div>
+        <div class="expert-position">Evidence-based, metrics-driven content. Every bullet point must contain a number/metric. Professional framing of all projects.</div>
+        <div class="expert-tags">
+          <span class="expert-tag">Metrics</span>
+          <span class="expert-tag">Evidence-Based</span>
+          <span class="expert-tag">Dual-Output</span>
+          <span class="expert-tag">Professional</span>
+        </div>
+        <div class="expert-outcome">Won the content strategy argument + delivered the breakthrough: Dual-Output from One Source</div>
+      </div>
+
+      <!-- Cien -->
+      <div class="expert-card cien reveal reveal-delay-4">
+        <div class="expert-avatar">&#128065;</div>
+        <div class="expert-name">Cien (Shadow)</div>
+        <div class="expert-role">Devil's Advocate</div>
+        <div class="expert-position">Systematic questioning of every decision. No domain allegiance -- only the mandate to challenge, stress-test, and prevent groupthink.</div>
+        <div class="expert-tags">
+          <span class="expert-tag">Skeptic</span>
+          <span class="expert-tag">Risk Finder</span>
+          <span class="expert-tag">Simplifier</span>
+          <span class="expert-tag">Contrarian</span>
+        </div>
+        <div class="expert-outcome">Forced architecture simplification -- no animations in PDF, no charts, professional descriptions</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DEBATE FLOW -->
+<section id="debate">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Section 02</div>
+      <h2 class="section-title">Debate Flow</h2>
+      <p class="section-desc">The structured argumentation process, from parallel research inputs through conflict identification to consensus formation.</p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-item phase-research reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 1 -- Research Input</div>
+        <div class="timeline-content">
+          <div class="timeline-title">4 Parallel Research Agents Deliver Reports</div>
+          <div class="timeline-text">Four research agents working in parallel produce HTML and Markdown reports covering ATS compatibility, UI/UX trends, recruitment best practices, and technical feasibility. These reports become the shared knowledge base for the debate.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item phase-debate reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 2a -- Position Statements</div>
+        <div class="timeline-content">
+          <div class="timeline-speaker">&#128300; Dr. Elena Voss</div>
+          <div class="timeline-text" style="margin-bottom:12px;">"ATS parseability is non-negotiable. Most companies use automated screening -- if the CV doesn't parse, it never reaches human eyes. Monochrome, single-column, clean typography."</div>
+          <div class="timeline-speaker">&#127912; Karol "Pixel"</div>
+          <div class="timeline-text" style="margin-bottom:12px;">"A traditional PDF doesn't showcase coding ability. An interactive web CV demonstrates real skills, is memorable, and differentiates from mass-produced CVs."</div>
+          <div class="timeline-speaker">&#128188; Raven Blackwood</div>
+          <div class="timeline-text">"Every bullet point must contain a quantifiable metric. Recruiters scan for numbers. 'Show don't tell' -- evidence-based claims only."</div>
+        </div>
+      </div>
+
+      <div class="timeline-item phase-conflict reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 2b -- Conflict Surfaced</div>
+        <div class="timeline-content">
+          <div class="timeline-title">Elena vs. Karol -- Irreconcilable Positions</div>
+          <div class="timeline-text">The primary tension is identified: ATS parsers need minimalism (Elena), while portfolio showcasing needs visual richness (Karol). These positions appear mutually exclusive within a single artifact.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item phase-debate reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 2c -- Devil's Advocate Challenges</div>
+        <div class="timeline-content">
+          <div class="timeline-speaker">&#128065; Cien (Shadow)</div>
+          <div class="timeline-text" style="margin-bottom:8px; font-style:italic; color:var(--rose);">"Do we really need Next.js? Doesn't NaukaAI look like a hobby? Isn't a dual solution over-engineering?"</div>
+          <div class="timeline-text">Cien targets three risk areas: technical complexity, recruiter perception, and scope creep. Each challenge forces the group to justify and simplify their proposals.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item phase-resolution reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 2d -- Breakthrough Resolution</div>
+        <div class="timeline-content" style="border-color:rgba(45,212,160,0.3);">
+          <div class="timeline-speaker" style="color:var(--teal);">&#128188; Raven Blackwood -- Breakthrough</div>
+          <div class="timeline-title" style="color:var(--teal);">"DWA ARTEFAKTY z JEDNEGO ZRODLA" -- Two Artifacts from One Source</div>
+          <div class="timeline-text">Rather than choosing between ATS PDF and interactive web CV, produce BOTH from a single TypeScript data source (<code style="color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:0.82rem;">cv-data.ts</code>). This satisfies both Elena's and Karol's requirements while eliminating inconsistency risk.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item phase-output reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 2e -- Consensus &amp; Output</div>
+        <div class="timeline-content" style="border-color:rgba(245,166,35,0.3);">
+          <div class="timeline-title">FIVE_MINDS_REPORT.md Produced</div>
+          <div class="timeline-text">The Gold Solution document is finalized with: executive summary, dual-output strategy, expert positions with attribution, 4 identified risks with mitigations, and implementation guidelines for Phase 3's three parallel coders.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- BREAKTHROUGH -->
+<section id="breakthrough">
+  <div class="container">
+    <div class="reveal">
+      <div class="breakthrough">
+        <div class="breakthrough-icon">&#9889;</div>
+        <div class="breakthrough-label">The Breakthrough Decision</div>
+        <h3>Two Artifacts from One Source</h3>
+        <p class="breakthrough-desc">The central conflict between ATS minimalism and portfolio richness was resolved not by compromise, but by expanding the output space. Raven Blackwood proposed generating two complementary artifacts from a single, shared data source -- eliminating inconsistency while satisfying both camps.</p>
+        <div class="breakthrough-flow">
+          <div class="flow-node source">
+            <div class="emoji">&#128196;</div>
+            <div class="label">cv-data.ts</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Single Source of Truth</div>
+          </div>
+          <div class="flow-arrow">&#10132;</div>
+          <div class="flow-outputs">
+            <div class="flow-node web">
+              <div class="emoji">&#127760;</div>
+              <div class="label">Web CV</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Next.js + React</div>
+            </div>
+            <div class="flow-node pdf">
+              <div class="emoji">&#128462;</div>
+              <div class="label">ATS PDF</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">@react-pdf/renderer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEVIL'S ADVOCATE -->
+<section id="devils">
+  <div class="container">
+    <div class="reveal">
+      <div class="devils-section">
+        <div class="devils-header">
+          <div class="devils-avatar">&#128065;</div>
+          <div>
+            <div class="devils-name">Cien (Shadow) -- Devil's Advocate</div>
+            <div class="devils-subtitle">Structural Skeptic &bull; No Domain Allegiance &bull; Mandate to Question Everything</div>
+          </div>
+        </div>
+
+        <div class="challenge-card">
+          <div class="challenge-type">&#9888; Technology Risk</div>
+          <div class="challenge-question">Czy naprawde potrzebujemy Next.js?</div>
+          <div class="challenge-resolution"><strong>Resolution:</strong> Accepted -- Next.js justified by dual-output need. Simplified to Next.js + Tailwind only. No unnecessary charts, no animations in PDF.</div>
+        </div>
+
+        <div class="challenge-card">
+          <div class="challenge-type">&#128065; Perception Risk</div>
+          <div class="challenge-question">Czy NaukaAI nie wyglada jak hobby?</div>
+          <div class="challenge-resolution"><strong>Resolution:</strong> NaukaAI projects reframed professionally as "Technical Projects" instead of personal/hobby designations. QA3 agent tasked with verifying professional language throughout.</div>
+        </div>
+
+        <div class="challenge-card">
+          <div class="challenge-type">&#128200; Scope Risk</div>
+          <div class="challenge-question">Czy dual-output to nie over-engineering?</div>
+          <div class="challenge-resolution"><strong>Resolution:</strong> Challenge refined the scope. Dual-output accepted, but with strict simplification: no decorative animations, no complex charts, minimal dependencies. The challenge prevented feature creep.</div>
+        </div>
+
+        <div class="bug-tag">&#128027; BUG-009 (MEDIUM) -- Cien is missing from the FIVE_MINDS_REPORT.md output file. The skeptical perspective is not captured in the historical record.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARGUMENTS FOR & AGAINST -->
+<section id="arguments">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Section 05</div>
+      <h2 class="section-title">Arguments For &amp; Against</h2>
+      <p class="section-desc">Each position was contested, defended, and ultimately resolved through synthesis rather than voting.</p>
+    </div>
+
+    <div class="arguments-grid">
+
+      <div class="argument-row reveal">
+        <div class="arg-position" style="color:#60A5FA;">ATS-first PDF<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);">Elena Voss</span></div>
+        <div class="arg-for">Most companies use ATS; rejected CVs never reach humans; parseability is non-negotiable.</div>
+        <div class="arg-against">Limits visual expression; doesn't showcase coding ability; looks generic.</div>
+        <div class="arg-resolution">Elena wins for PDF output specifically.</div>
+      </div>
+
+      <div class="argument-row reveal">
+        <div class="arg-position" style="color:var(--amber);">Interactive Web CV<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);">Karol "Pixel"</span></div>
+        <div class="arg-for">Demonstrates real skills; memorable; differentiates from mass-produced CVs.</div>
+        <div class="arg-against">ATS can't parse it; many HR systems require PDF upload; too flashy for some industries.</div>
+        <div class="arg-resolution">Karol wins for web output specifically.</div>
+      </div>
+
+      <div class="argument-row reveal">
+        <div class="arg-position" style="color:var(--teal);">Metrics in Every Bullet<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);">Raven Blackwood</span></div>
+        <div class="arg-for">Recruiters scan for numbers; quantified impact is credible; "show don't tell."</div>
+        <div class="arg-against">Not all achievements are quantifiable; can feel forced.</div>
+        <div class="arg-resolution">Raven wins -- all bullets must have numbers.</div>
+      </div>
+
+      <div class="argument-row reveal">
+        <div class="arg-position" style="color:var(--teal);">Dual-Output Strategy<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);">Raven Blackwood</span></div>
+        <div class="arg-for">Satisfies both needs; single data source prevents inconsistency; maximizes value.</div>
+        <div class="arg-against">Potentially over-engineered; more code to maintain; longer build time.</div>
+        <div class="arg-resolution">Accepted after Cien's challenge refined scope.</div>
+      </div>
+
+      <div class="argument-row reveal">
+        <div class="arg-position" style="color:var(--rose);">Simplify Everything<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);">Cien (Shadow)</span></div>
+        <div class="arg-for">Prevents scope creep; faster delivery; fewer bugs; easier maintenance.</div>
+        <div class="arg-against">Might miss opportunities; could result in bland output.</div>
+        <div class="arg-resolution">Partially accepted -- simplified but not stripped.</div>
+      </div>
+
+      <div class="argument-row reveal">
+        <div class="arg-position" style="color:var(--rose);">NaukaAI as Hobby?<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);">Cien (Shadow)</span></div>
+        <div class="arg-for">Recruiters might dismiss personal AI projects as non-professional.</div>
+        <div class="arg-against">These projects demonstrate initiative and technical depth.</div>
+        <div class="arg-resolution">Resolved by professional framing ("Technical Project").</div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CONSENSUS -->
+    <div class="section-header reveal">
+      <div class="section-label">Consensus Mechanism</div>
+      <h2 class="section-title">How Agreement Was Reached</h2>
+      <p class="section-desc">Synthesis through complementary expertise -- not voting. Each expert "won" in their domain, and the contradiction was resolved by expanding the output space.</p>
+    </div>
+
+    <div class="consensus-steps">
+      <div class="consensus-step reveal"><div class="consensus-step-title">Position Staking</div><div class="consensus-step-desc">Each expert advocated for their domain's priority with specific, defended arguments.</div></div>
+      <div class="consensus-step reveal"><div class="consensus-step-title">Conflict Surfacing</div><div class="consensus-step-desc">The Elena vs. Karol conflict was identified as the primary irreconcilable tension.</div></div>
+      <div class="consensus-step reveal"><div class="consensus-step-title">Synthesis Proposal</div><div class="consensus-step-desc">Raven, with real-world hiring knowledge, proposed dual-output to satisfy both conflicting positions.</div></div>
+      <div class="consensus-step reveal"><div class="consensus-step-title">Devil's Advocate Stress-Testing</div><div class="consensus-step-desc">Cien challenged whether the synthesis was over-engineering, forcing scope refinement.</div></div>
+      <div class="consensus-step reveal"><div class="consensus-step-title">Risk Assessment</div><div class="consensus-step-desc">The group collectively identified 4 risks: ATS parsing, over-engineering, missing metrics, hobby perception.</div></div>
+      <div class="consensus-step reveal"><div class="consensus-step-title">Gold Solution</div><div class="consensus-step-desc">A unified strategy document was produced with specific decisions, becoming the single source of truth for Phase 3.</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section id="comparison">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Section 06</div>
+      <h2 class="section-title">Comparative Analysis</h2>
+      <p class="section-desc">Five Minds Protocol benchmarked against 7 established multi-agent debate patterns in AI research (2018--2026).</p>
+    </div>
+
+    <div class="table-wrapper reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="highlight-col">Five Minds</th>
+            <th>Irving Debate</th>
+            <th>MAD</th>
+            <th>CrewAI</th>
+            <th>Const. AI</th>
+            <th>A-HMAD</th>
+            <th>Red/Blue</th>
+            <th>Stochastic</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Multi-agent</td>
+            <td class="cell-yes highlight-col">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+          </tr>
+          <tr>
+            <td>Heterogeneous experts</td>
+            <td class="cell-yes highlight-col">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-partial">PARTIAL</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+          </tr>
+          <tr>
+            <td>Devil's Advocate</td>
+            <td class="cell-yes highlight-col">YES</td>
+            <td class="cell-implicit">IMPLICIT</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+          </tr>
+          <tr>
+            <td>Synthesis consensus</td>
+            <td class="cell-yes highlight-col">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+          </tr>
+          <tr>
+            <td>Formal rubric</td>
+            <td class="cell-no highlight-col">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+          </tr>
+          <tr>
+            <td>Multi-round</td>
+            <td class="cell-no highlight-col">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+          </tr>
+          <tr>
+            <td>Risk assessment output</td>
+            <td class="cell-yes highlight-col">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+          </tr>
+          <tr>
+            <td>Decision gate</td>
+            <td class="cell-yes highlight-col">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+          </tr>
+          <tr>
+            <td>Confidence scoring</td>
+            <td class="cell-no highlight-col">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+          </tr>
+          <tr>
+            <td>Dissent preservation</td>
+            <td class="cell-partial highlight-col">PARTIAL</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-no">NO</td>
+            <td class="cell-yes">YES</td>
+            <td class="cell-no">NO</td>
+          </tr>
+          <tr>
+            <td>Token efficiency</td>
+            <td class="cell-partial highlight-col">MEDIUM</td>
+            <td class="cell-no">LOW</td>
+            <td class="cell-no">LOW</td>
+            <td class="cell-yes">HIGH</td>
+            <td class="cell-yes">HIGH</td>
+            <td class="cell-no">LOW</td>
+            <td class="cell-partial">MEDIUM</td>
+            <td class="cell-no">LOW</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Unique Strengths -->
+    <div style="margin-top:48px;">
+      <div class="section-header reveal">
+        <div class="section-label">Key Differentiators</div>
+        <h2 class="section-title" style="font-size:1.6rem;">Unique Strengths</h2>
+      </div>
+      <div class="consensus-steps">
+        <div class="consensus-step reveal"><div class="consensus-step-title">Domain-Specialized Personas</div><div class="consensus-step-desc">Each expert has a professional identity with domain-authentic reasoning patterns, unlike generic debate frameworks.</div></div>
+        <div class="consensus-step reveal"><div class="consensus-step-title">Dedicated Devil's Advocate</div><div class="consensus-step-desc">Skepticism is a first-class role with explicit mandate, not emergent disagreement.</div></div>
+        <div class="consensus-step reveal"><div class="consensus-step-title">Synthesis over Voting</div><div class="consensus-step-desc">The breakthrough came from creative reframing, not majority rule -- a qualitatively different outcome.</div></div>
+        <div class="consensus-step reveal"><div class="consensus-step-title">Decision Gate Architecture</div><div class="consensus-step-desc">Mandatory gate between research and implementation. No code gets written until experts agree.</div></div>
+        <div class="consensus-step reveal"><div class="consensus-step-title">Risk Assessment as Standard Output</div><div class="consensus-step-desc">Produces not just a decision but an explicit risk register with mitigations -- uncommon in AI debate frameworks.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUGS -->
+<section id="bugs">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Section 07</div>
+      <h2 class="section-title">Known Bugs &amp; Gaps</h2>
+      <p class="section-desc">Issues discovered during exhaustive analysis of the protocol's source files and output artifacts.</p>
+    </div>
+
+    <div class="bugs-grid">
+
+      <div class="bug-card reveal">
+        <div class="bug-severity severity-low">LOW</div>
+        <div>
+          <div class="bug-id">BUG-008</div>
+          <div class="bug-desc">File named <code style="font-family:'JetBrains Mono',monospace;color:var(--amber);">FIVE_MINDS_REPORT.md</code> but internal title says "HIVE-MIND PROTOCOL". The name evolved between projects but the template was not fully updated.</div>
+        </div>
+      </div>
+
+      <div class="bug-card reveal" style="border-color:rgba(232,93,117,0.2);">
+        <div class="bug-severity severity-medium">MEDIUM</div>
+        <div>
+          <div class="bug-id">BUG-009</div>
+          <div class="bug-desc">Cien (4th expert, Devil's Advocate) is <strong style="color:var(--rose);">entirely missing</strong> from FIVE_MINDS_REPORT.md output file. Only 3 experts are listed, despite 4 participating. The skeptical perspective -- arguably the most valuable safety mechanism -- is not captured in the historical record.</div>
+        </div>
+      </div>
+
+      <div class="bug-card reveal">
+        <div class="bug-severity severity-low">LOW</div>
+        <div>
+          <div class="bug-id">BUG-010</div>
+          <div class="bug-desc">Name "Five Minds" implies 5 experts but only 4 participated. The 5th may be the Orchestrator (Claude Opus) but this is not documented anywhere.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Evolution -->
+    <div class="section-header reveal">
+      <div class="section-label">Protocol History</div>
+      <h2 class="section-title">Evolution Path</h2>
+      <p class="section-desc">From HIVE-MIND divergent brainstorming to Five Minds convergent decision-making, and the recommended future versions.</p>
+    </div>
+
+    <div class="evolution-path">
+      <div class="evo-step reveal">
+        <div class="evo-version">HIVE-MIND (Observatory)</div>
+        <div class="evo-label">Divergent Brainstorming</div>
+        <div class="evo-desc">3 experts + Shadow. Generated 10 blueprints, best elements selected. Broad creative domains.</div>
+      </div>
+      <div class="evo-step current reveal">
+        <div class="evo-version">Five Minds v1.0 (Current)</div>
+        <div class="evo-label">Convergent Decision-Making</div>
+        <div class="evo-desc">3 domain experts + Cien. Single Gold Solution with consensus. Specific technical/professional domains.</div>
+      </div>
+      <div class="evo-step reveal">
+        <div class="evo-version">Five Minds v1.5</div>
+        <div class="evo-label">Fix naming, add Cien to report, add rubric</div>
+        <div class="evo-desc">Resolve BUG-008, BUG-009, BUG-010. Add formal evaluation criteria.</div>
+      </div>
+      <div class="evo-step reveal">
+        <div class="evo-version">Five Minds v2.0</div>
+        <div class="evo-label">Multi-round debate, confidence scoring, dissent preservation</div>
+        <div class="evo-desc">5-round structured debate with rebuttal phases. Confidence-weighted consensus from A-HMAD.</div>
+      </div>
+      <div class="evo-step reveal">
+        <div class="evo-version">Five Minds v3.0</div>
+        <div class="evo-label">Standing Devil's Advocate, debate transcript as QA input</div>
+        <div class="evo-desc">Extend adversarial pressure across all pipeline phases. Full transcript available for downstream validation.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section id="recommendations">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Section 08</div>
+      <h2 class="section-title">Recommendations</h2>
+      <p class="section-desc">10 concrete improvements across structural, process, and integration dimensions.</p>
+    </div>
+
+    <div class="rec-grid">
+
+      <div class="rec-card structural reveal">
+        <div class="rec-category-tag">Structural</div>
+        <div class="rec-id">R-01</div>
+        <div class="rec-title">Multi-Round Debate with Explicit Rebuttal Phase</div>
+        <div class="rec-desc">Add 5 structured rounds: Position Statements, Cross-Examination, Synthesis Proposals, Devil's Advocate Stress Test, and Final Positions. Current single-pass debate may miss important counter-arguments.</div>
+        <div class="code-block">Round 1: Position Statements (each expert presents)
+Round 2: Cross-Examination (experts challenge each other)
+Round 3: Synthesis Proposals (anyone can propose resolution)
+Round 4: Devil's Advocate Stress Test (Cien attacks proposals)
+Round 5: Final Positions and Consensus Vote</div>
+      </div>
+
+      <div class="rec-card structural reveal">
+        <div class="rec-category-tag">Structural</div>
+        <div class="rec-id">R-02</div>
+        <div class="rec-title">Formal Evaluation Rubric for Proposals</div>
+        <div class="rec-desc">Introduce weighted scoring criteria: Feasibility (0.25), Risk Level (0.20), Domain Coverage (0.20), Simplicity (0.15), Stakeholder Satisfaction (0.20). Aligns with the existing Critique Agent rubric pattern.</div>
+      </div>
+
+      <div class="rec-card structural reveal">
+        <div class="rec-category-tag">Structural</div>
+        <div class="rec-id">R-03</div>
+        <div class="rec-title">Explicit 5th Mind Definition</div>
+        <div class="rec-desc">Either rename to "Four Minds Protocol," formally designate the Orchestrator as the 5th Mind (Moderator/Synthesizer), or add a 5th expert such as an "End User Representative."</div>
+      </div>
+
+      <div class="rec-card structural reveal">
+        <div class="rec-category-tag">Structural</div>
+        <div class="rec-id">R-04</div>
+        <div class="rec-title">Structured Output Schema for Devil's Advocate</div>
+        <div class="rec-desc">Ensure Cien's contributions are never lost by requiring structured JSON output: target_decision, challenge_type, question, worst_case_scenario, severity, resolution, and simplification_applied.</div>
+      </div>
+
+      <div class="rec-card structural reveal">
+        <div class="rec-category-tag">Structural</div>
+        <div class="rec-id">R-05</div>
+        <div class="rec-title">Dissent Preservation</div>
+        <div class="rec-desc">Every overruled position should be recorded with: the dissenting position, why it was overruled, and under what conditions it should be reconsidered. Mirrors Anthropic's red-teaming philosophy.</div>
+      </div>
+
+      <div class="rec-card process reveal">
+        <div class="rec-category-tag">Process</div>
+        <div class="rec-id">R-06</div>
+        <div class="rec-title">Pre-Debate Briefing Document</div>
+        <div class="rec-desc">Before debate begins, each expert receives: all research outputs, a structured brief with specific questions to decide, constraints (budget, timeline, technical limitations), and evaluation criteria.</div>
+      </div>
+
+      <div class="rec-card process reveal">
+        <div class="rec-category-tag">Process</div>
+        <div class="rec-id">R-07</div>
+        <div class="rec-title">Post-Debate Validation Loop</div>
+        <div class="rec-desc">After the Five Minds report is produced, present the decision to research agents for verification. Any contradiction between research findings and the decision triggers a mini-debate round.</div>
+      </div>
+
+      <div class="rec-card process reveal">
+        <div class="rec-category-tag">Process</div>
+        <div class="rec-id">R-08</div>
+        <div class="rec-title">Confidence-Weighted Consensus</div>
+        <div class="rec-desc">Adopt from A-HMAD (2025): each expert assigns a confidence score (0-1) to the final decision. If any expert's confidence falls below 0.6, their concerns are escalated for explicit resolution.</div>
+      </div>
+
+      <div class="rec-card integration reveal">
+        <div class="rec-category-tag">Integration</div>
+        <div class="rec-id">R-09</div>
+        <div class="rec-title">Devil's Advocate as Standing Role Across All Phases</div>
+        <div class="rec-desc">Extend Cien beyond Phase 2 into Phase 3 (Coding: "Is this implementation too complex?"), Phase 4 (Integration: "Are we coupling unnecessarily?"), and Phase 5 (QA: "Are our tests testing the right things?").</div>
+      </div>
+
+      <div class="rec-card integration reveal">
+        <div class="rec-category-tag">Integration</div>
+        <div class="rec-id">R-10</div>
+        <div class="rec-title">Debate Transcript as Context for QA</div>
+        <div class="rec-desc">Make the full debate transcript (not just the report) available to QA agents, allowing them to automatically derive validation criteria from expert requirements instead of manual linkage.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- VERDICT -->
+<section id="verdict">
+  <div class="container">
+    <div class="reveal">
+      <div class="verdict-card">
+        <div class="verdict-score">8.5/10</div>
+        <div class="verdict-label">Overall Strategic Assessment</div>
+        <div class="verdict-text">The Five Minds Protocol is a <strong style="color:var(--text);">genuinely novel contribution</strong> to the multi-agent design decision space. It occupies a unique niche that existing frameworks do not adequately address: structured expert deliberation for open-ended architectural decisions with built-in skepticism.</div>
+        <div class="verdict-points">
+          <div class="verdict-point strength">
+            <div class="verdict-point-label">Strength</div>
+            <div class="verdict-point-text">Produced a qualitatively superior outcome (dual-output) that no single expert or simple voting system would have generated.</div>
+          </div>
+          <div class="verdict-point strength">
+            <div class="verdict-point-label">Strength</div>
+            <div class="verdict-point-text">Devil's Advocate role prevented groupthink and scope creep -- real, measurable value.</div>
+          </div>
+          <div class="verdict-point strength">
+            <div class="verdict-point-label">Strength</div>
+            <div class="verdict-point-text">Mandatory decision gate between research and implementation is architecturally sound and universally adoptable.</div>
+          </div>
+          <div class="verdict-point weakness">
+            <div class="verdict-point-label">Weakness</div>
+            <div class="verdict-point-text">Single-pass debate limits the depth of argumentation. No multi-round exchange.</div>
+          </div>
+          <div class="verdict-point weakness">
+            <div class="verdict-point-label">Weakness</div>
+            <div class="verdict-point-text">Documentation gaps (missing Cien, naming inconsistency) undermine reproducibility.</div>
+          </div>
+          <div class="verdict-point weakness">
+            <div class="verdict-point-label">Weakness</div>
+            <div class="verdict-point-text">No formal evaluation criteria means the next use might not reach the same quality of outcome.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-text">
+      Five Minds Protocol Analysis &mdash; Agent A-01 (Deep Analyst) &mdash; 2026-03-29<br>
+      Source: <span class="footer-link">FIVE_MINDS_PROTOCOL_ANALYSIS.md</span> &bull; Architecture: Jackson / Claude Opus<br>
+      <span style="color:var(--text-muted);">Multi-Agent AI Orchestration &bull; 15+ agents &bull; 5 phases &bull; Two-Phase Protocol</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // IntersectionObserver for fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.08,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Navigation dots
+  const sections = document.querySelectorAll('section[id], header[id]');
+  const dots = document.querySelectorAll('.nav-dot');
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        dots.forEach(d => d.classList.remove('active'));
+        const dot = document.querySelector(`.nav-dot[data-target="${entry.target.id}"]`);
+        if (dot) dot.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => sectionObserver.observe(s));
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const target = document.getElementById(dot.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Architecture Designer v7.0 — Guided Tour</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg0:#070b14;--bg1:#0c1221;--bg2:#121a2d;--bg3:#1a2338;--bg4:#222d44;
+  --cy:#22d3ee;--vi:#8b5cf6;--am:#f59e0b;--em:#10b981;--ro:#ef4444;
+  --t1:#e8edf5;--t2:#8b95a8;--t3:#5b6478;--t4:#3d4659;
+  --brd:rgba(255,255,255,.06);--glass:rgba(12,18,33,.82);
+  --grad:linear-gradient(135deg,var(--cy),var(--vi));
+  --hd:'Space Grotesk',sans-serif;--bd:'Inter',sans-serif;--mn:'JetBrains Mono',monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg0);color:var(--t1);font-family:var(--bd);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(34,211,238,.15);border-radius:3px}
+::selection{background:rgba(34,211,238,.2)}
+
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;gap:10px;padding:0 14px;height:46px;background:var(--bg1);border-bottom:1px solid var(--brd);position:relative;z-index:100;flex-shrink:0}
+.topbar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--grad);opacity:.3}
+.tb-brand{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-brand span{font-family:var(--hd);font-size:13px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb-brand small{font-size:9px;font-family:var(--mn);color:var(--t4);padding:1px 5px;border:1px solid var(--brd);border-radius:3px}
+.tb-sep{width:1px;height:22px;background:var(--brd);flex-shrink:0}
+.tb-problem{flex:1}
+.tb-problem textarea{width:100%;height:30px;padding:5px 10px;border:1px solid var(--brd);border-radius:6px;background:var(--bg0);color:var(--t1);font-family:var(--bd);font-size:11px;resize:none;outline:none;transition:border-color .2s}
+.tb-problem textarea:focus{border-color:rgba(34,211,238,.3)}
+.tb-problem textarea::placeholder{color:var(--t4)}
+.tb-actions{display:flex;gap:5px;flex-shrink:0}
+.btn{padding:5px 12px;border-radius:6px;font-family:var(--hd);font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid var(--brd);background:var(--bg2);color:var(--t2);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.btn:hover{background:var(--bg3);color:var(--t1)}
+.btn-p{background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(139,92,246,.1));border-color:rgba(34,211,238,.25);color:var(--cy)}
+.btn-p:hover{background:linear-gradient(135deg,rgba(34,211,238,.2),rgba(139,92,246,.2))}
+.btn-d{border-color:rgba(239,68,68,.2);color:var(--ro)}.btn-d:hover{background:rgba(239,68,68,.06)}
+.btn-a{border-color:rgba(245,158,11,.2);color:var(--am)}.btn-a:hover{background:rgba(245,158,11,.06)}
+
+/* WORKSPACE */
+.workspace{display:flex;flex:1;overflow:hidden}
+
+/* LEFT SIDEBAR */
+.side-l{width:250px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--brd);display:flex;flex-direction:column;overflow:hidden}
+.sl-tabs{display:flex;border-bottom:1px solid var(--brd);flex-shrink:0}
+.sl-tab{flex:1;padding:9px 0;text-align:center;font-family:var(--hd);font-size:10px;font-weight:600;color:var(--t4);cursor:pointer;position:relative;transition:color .15s}
+.sl-tab:hover{color:var(--t2)}.sl-tab.on{color:var(--cy)}
+.sl-tab.on::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:2px;background:var(--grad);border-radius:1px}
+.sl-panels{flex:1;overflow:hidden;position:relative}
+.sl-pan{position:absolute;inset:0;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .2s}
+.sl-pan.on{opacity:1;pointer-events:auto}
+
+/* Agent palette */
+.pa-search{margin:6px 8px;padding:6px 8px;border:1px solid var(--brd);border-radius:5px;background:var(--bg0);color:var(--t1);font-size:11px;outline:none;width:calc(100% - 16px)}
+.pa-search:focus{border-color:rgba(34,211,238,.25)}
+.pa-cat{padding:5px 10px;font-family:var(--mn);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--t4);margin-top:4px}
+.pa-item{display:flex;align-items:center;gap:7px;padding:6px 10px;cursor:grab;transition:all .1s;border-left:2px solid transparent;user-select:none}
+.pa-item:hover{background:rgba(34,211,238,.03);border-left-color:var(--cy)}
+.pa-orb{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;border:1px solid var(--brd);background:var(--bg0)}
+.pa-txt{flex:1;min-width:0}.pa-name{font-family:var(--hd);font-size:10px;font-weight:600}.pa-desc{font-size:8px;color:var(--t4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-badge{font-family:var(--mn);font-size:7px;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.b-op{background:rgba(245,158,11,.1);color:var(--am)}.b-so{background:rgba(16,185,129,.1);color:var(--em)}.b-ha{background:rgba(34,211,238,.1);color:var(--cy)}
+
+/* Preset list */
+.pr-cat{padding:6px 10px 3px;font-family:var(--mn);font-size:7px;letter-spacing:.1em;color:var(--t4);text-transform:uppercase;margin-top:4px}
+.pr-item{display:flex;align-items:center;gap:6px;padding:5px 10px;cursor:pointer;transition:all .1s;border-left:2px solid transparent}
+.pr-item:hover{background:rgba(34,211,238,.03);border-left-color:var(--cy)}
+.pr-item.on{background:rgba(34,211,238,.05);border-left-color:var(--cy)}
+.pr-icon{font-size:12px;width:18px;text-align:center;flex-shrink:0}
+.pr-name{font-family:var(--hd);font-size:10px;font-weight:600;color:var(--t1);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-cnt{font-family:var(--mn);font-size:9px;color:var(--cy);background:rgba(34,211,238,.08);padding:1px 6px;border-radius:3px;flex-shrink:0;min-width:18px;text-align:center}
+
+/* Saved */
+.sv-list{padding:8px}
+.sv-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--brd);border-radius:6px;margin-bottom:3px;cursor:pointer;transition:all .1s}
+.sv-item:hover{border-color:rgba(245,158,11,.2)}
+.sv-name{font-family:var(--hd);font-size:10px;font-weight:600;flex:1}.sv-date{font-family:var(--mn);font-size:8px;color:var(--t4)}
+.sv-del{color:var(--t4);cursor:pointer;font-size:11px}.sv-del:hover{color:var(--ro)}
+.sv-empty{padding:30px 12px;text-align:center;color:var(--t4);font-size:10px}
+
+/* CANVAS */
+.cv-area{flex:1;position:relative;overflow:hidden;background:var(--bg0)}
+.cv-grid{position:absolute;inset:0;pointer-events:none}
+.cv-container{position:absolute;inset:0;overflow:hidden}
+.cv-transform{position:absolute;top:0;left:0;width:6000px;height:6000px;transform-origin:0 0}
+#svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+#svg .hit{pointer-events:stroke;cursor:pointer}
+
+/* Nodes */
+.nd{position:absolute;z-index:10;cursor:grab;user-select:none}
+.nd:active{cursor:grabbing;z-index:20}
+.nd.sel{z-index:15}
+.nd-body{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 9px 5px;border-radius:12px;border:1.5px solid var(--brd);background:var(--glass);backdrop-filter:blur(10px);min-width:72px;transition:border-color .2s,box-shadow .2s}
+.nd:hover .nd-body{border-color:rgba(34,211,238,.25);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.nd.sel .nd-body{border-color:var(--cy);box-shadow:0 0 20px rgba(34,211,238,.12)}
+.nd-orb{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;border:1.5px solid var(--brd);background:var(--bg0)}
+.nd-lbl{font-family:var(--hd);font-size:9px;font-weight:600;text-align:center;max-width:70px;line-height:1.2}
+.nd-mdl{font-family:var(--mn);font-size:7px;padding:1px 4px;border-radius:3px}
+.nd-load{width:36px;height:2px;border-radius:1px;background:rgba(255,255,255,.03);margin-top:1px;overflow:hidden}
+.nd-load-bar{height:100%;border-radius:1px}
+.c-am .nd-orb{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)}.c-am .nd-lbl{color:var(--am)}
+.c-cy .nd-orb{border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.04)}.c-cy .nd-lbl{color:var(--cy)}
+.c-bl .nd-orb{border-color:rgba(96,165,250,.25);background:rgba(96,165,250,.04)}.c-bl .nd-lbl{color:#60a5fa}
+.c-mu .nd-orb{border-color:rgba(148,163,184,.12)}.c-mu .nd-lbl{color:var(--t2)}
+.c-ro .nd-orb{border-color:rgba(244,63,94,.25);background:rgba(244,63,94,.04)}.c-ro .nd-lbl{color:#f43f5e}
+.c-vi .nd-orb{border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.04)}.c-vi .nd-lbl{color:var(--vi)}
+
+.nd-anc{position:absolute;width:10px;height:10px;border-radius:50%;background:rgba(34,211,238,.2);border:1.5px solid rgba(34,211,238,.4);cursor:crosshair;opacity:0;transition:opacity .15s;z-index:5}
+.nd:hover .nd-anc{opacity:1}
+.nd-anc.top{top:-5px;left:50%;transform:translateX(-50%)}
+.nd-anc.bot{bottom:-5px;left:50%;transform:translateX(-50%)}
+.nd-anc:hover{background:var(--cy);transform:translateX(-50%) scale(1.3)}
+
+.cv-ctrl{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:50;padding:5px 8px;background:var(--glass);border:1px solid var(--brd);border-radius:10px;backdrop-filter:blur(10px)}
+.cv-ctrl .btn{padding:4px 10px;font-size:9px}
+.cv-info{position:absolute;top:8px;left:8px;font-family:var(--mn);font-size:9px;color:var(--t4);z-index:5;pointer-events:none}
+.zm-ctrl{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:3px;z-index:50}
+.zm-ctrl .btn{padding:5px 8px;font-size:11px;justify-content:center}
+.zm-lbl{font-family:var(--mn);font-size:8px;color:var(--t3);text-align:center}
+
+/* RIGHT SIDEBAR */
+.side-r{width:300px;flex-shrink:0;background:var(--bg1);border-left:1px solid var(--brd);display:flex;flex-direction:column;overflow:hidden}
+.sr-hdr{padding:9px 12px;border-bottom:1px solid var(--brd)}
+.sr-hdr h3{font-family:var(--hd);font-size:12px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sr-scr{flex:1;overflow-y:auto;padding:10px}
+.sr-mt{padding:30px 16px;text-align:center;color:var(--t4);font-size:10px;line-height:1.6}
+.ds{margin-bottom:12px}.ds-l{font-family:var(--mn);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--t4);margin-bottom:4px}
+.ds-v{font-size:11px;color:var(--t2);line-height:1.5}
+.ds-card{padding:9px 11px;border:1px solid var(--brd);border-radius:10px;background:var(--bg0);margin-bottom:7px}
+.ds-card h4{font-family:var(--hd);font-size:12px;font-weight:700;margin-bottom:3px}
+.ds-card p{font-size:10px;color:var(--t2);line-height:1.5}
+.ds-mdls{display:flex;gap:3px;margin-top:5px}
+.ds-m{flex:1;padding:5px;border:1.5px solid var(--brd);border-radius:6px;text-align:center;cursor:pointer;transition:all .12s;background:var(--bg0)}
+.ds-m:hover{border-color:rgba(34,211,238,.15)}
+.ds-m.a-op{border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.03)}
+.ds-m.a-so{border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.03)}
+.ds-m.a-ha{border-color:rgba(34,211,238,.5);background:rgba(34,211,238,.03)}
+.ds-mn{font-family:var(--hd);font-size:10px;font-weight:700}.ds-mc{font-family:var(--mn);font-size:7px;color:var(--t4)}
+.ds-ta{width:100%;min-height:160px;padding:8px;border:1px solid var(--brd);border-radius:8px;background:rgba(0,0,0,.2);color:var(--t2);font-family:var(--mn);font-size:10px;line-height:1.5;resize:vertical;outline:none}
+.ds-ta:focus{border-color:rgba(34,211,238,.3)}
+.ds-cn{display:flex;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--brd);border-radius:5px;margin-bottom:2px;font-size:10px;color:var(--t2)}
+.ds-cn-a{color:var(--cy);font-weight:700;font-size:12px}.ds-cn-d{margin-left:auto;cursor:pointer;color:var(--t4);font-size:11px}.ds-cn-d:hover{color:var(--ro)}
+.pi-badge{font-family:var(--mn);font-size:10px;padding:3px 8px;border:1px solid rgba(34,211,238,.15);border-radius:5px;display:inline-block;background:rgba(34,211,238,.04);color:var(--cy)}
+.pi-costs{display:flex;gap:14px;margin:5px 0}
+.pi-cv{font-family:var(--mn);font-size:12px;font-weight:600}
+.pi-ul{list-style:none;padding:0;margin:0}.pi-ul li{font-size:10px;margin:2px 0;padding:1px 0}
+.pi-pro{color:var(--em)}.pi-con{color:var(--ro)}
+
+/* STATUS BAR */
+.statbar{display:flex;align-items:center;gap:2px;padding:0 10px;height:26px;background:var(--bg1);border-top:1px solid var(--brd);flex-shrink:0;z-index:100}
+.statbar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--grad);opacity:.15}
+.st{display:flex;align-items:center;gap:3px;padding:0 8px;font-family:var(--mn);font-size:8px;color:var(--t3);border-right:1px solid var(--brd);height:100%}
+.st:last-child{border-right:none}.st-v{color:var(--t2);font-weight:500}
+.st-d{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.st-op{background:var(--am)}.st-so{background:var(--em)}.st-ha{background:var(--cy)}
+.st-sp{flex:1}
+
+/* MODALS */
+.mo{position:fixed;inset:0;background:rgba(7,11,20,.88);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.mo.show{display:flex}
+.mo-box{width:90%;max-width:800px;max-height:85vh;background:var(--bg1);border:1px solid var(--brd);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.mo-h{padding:14px 18px;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center}
+.mo-h h2{font-family:var(--hd);font-size:16px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.mo-b{flex:1;overflow-y:auto;padding:18px}
+.mo-b textarea{width:100%;min-height:350px;padding:14px;border:1px solid var(--brd);border-radius:10px;background:rgba(0,0,0,.2);color:var(--t1);font-family:var(--mn);font-size:11px;line-height:1.6;resize:vertical;outline:none}
+.mo-f{padding:10px 18px;border-top:1px solid var(--brd);display:flex;justify-content:flex-end;gap:6px}
+.kb-g{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.kb-r{display:flex;align-items:center;gap:6px;padding:5px 7px}
+.kb-k{font-family:var(--mn);font-size:9px;padding:2px 6px;border:1px solid var(--brd);border-radius:3px;background:var(--bg3);color:var(--t2);min-width:28px;text-align:center}
+.kb-a{font-size:10px;color:var(--t2)}
+
+/* Tooltip system */
+.tt{position:relative;border-bottom:1px dotted var(--cy);cursor:help;color:var(--cy)}
+.tt:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--t1);font-family:var(--bd);font-size:10px;font-weight:400;line-height:1.5;padding:8px 12px;border-radius:8px;border:1px solid var(--brd);box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:normal;width:max-content;max-width:280px;z-index:200;pointer-events:none;animation:ttIn .15s ease}
+.tt:hover::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg3);z-index:201}
+@keyframes ttIn{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* Expand button for right sidebar */
+.btn-learn{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(139,92,246,.08));border-color:rgba(34,211,238,.2);color:var(--cy);width:100%;justify-content:center;margin-top:8px;padding:7px 12px}
+.btn-learn:hover{background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(139,92,246,.15))}
+
+/* ============================================================
+   v7 GUIDED TOUR WIZARD — ENHANCED WITH UX RESEARCH
+   ============================================================ */
+.wizard-overlay{
+  position:absolute;top:0;right:0;bottom:0;width:calc(100% - 250px);z-index:80;
+  display:none;flex-direction:column;overflow:hidden;
+  background:#ffffff;
+}
+.wizard-overlay.show{display:flex;animation:wizFadeIn .35s ease}
+@keyframes wizFadeIn{from{opacity:0}to{opacity:1}}
+
+/* Progress bar — smooth fill */
+.wiz-progress{height:4px;background:#e2e8f0;flex-shrink:0;position:relative;overflow:hidden}
+.wiz-progress-fill{height:100%;background:linear-gradient(90deg,#2563eb,#10b981);transition:width .5s cubic-bezier(.4,0,.2,1);border-radius:0 2px 2px 0}
+
+/* Top bar with estimated time */
+.wiz-topbar{
+  display:flex;align-items:center;padding:16px 24px;
+  border-bottom:1px solid #e2e8f0;flex-shrink:0;background:#ffffff;gap:16px;
+}
+.wiz-step-counter{font-family:var(--mn);font-size:12px;color:#64748b;font-weight:500;flex-shrink:0}
+.wiz-est-time{font-family:var(--mn);font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.wiz-est-time svg{width:14px;height:14px;fill:none;stroke:#94a3b8;stroke-width:2}
+
+/* Linear stepper with numbered circles */
+.wiz-stepper{flex:1;display:flex;align-items:center;justify-content:center;gap:0;padding:0 8px;overflow:hidden}
+.wiz-stepper-circle{
+  width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--hd);font-size:10px;font-weight:700;transition:all .3s cubic-bezier(.4,0,.2,1);
+  flex-shrink:0;cursor:pointer;position:relative;
+}
+.wiz-stepper-circle.upcoming{background:#f1f5f9;color:#94a3b8;border:2px solid #e2e8f0}
+.wiz-stepper-circle.active{background:#2563eb;color:#ffffff;border:2px solid #2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.15);transform:scale(1.15)}
+.wiz-stepper-circle.done{background:#10b981;color:#ffffff;border:2px solid #10b981}
+.wiz-stepper-line{width:16px;height:2px;flex-shrink:0;transition:background .3s ease}
+.wiz-stepper-line.done{background:#10b981}
+.wiz-stepper-line.active{background:linear-gradient(90deg,#10b981,#2563eb)}
+.wiz-stepper-line.upcoming{background:#e2e8f0}
+
+@keyframes checkFlash{0%{transform:scale(0.6);opacity:0}50%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:1}}
+.wiz-stepper-circle.done .check-icon{animation:checkFlash .4s cubic-bezier(.4,0,.2,1)}
+
+.wiz-close{
+  display:flex;align-items:center;gap:6px;padding:8px 20px;border-radius:24px;border:1.5px solid #e2e8f0;
+  background:#f8fafc;color:#64748b;font-family:var(--hd);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;flex-shrink:0;min-height:40px;
+}
+.wiz-close:hover{background:#fee2e2;color:#ef4444;border-color:#fca5a5}
+
+/* Content area — slide-over card stack */
+.wiz-content-wrap{flex:1;overflow:hidden;position:relative}
+.wiz-slide-container{position:absolute;inset:0;display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.wiz-slide{min-width:100%;height:100%;overflow-y:auto;display:flex;justify-content:center;padding:48px 24px 120px}
+.wiz-slide-inner{max-width:640px;width:100%}
+
+/* Staggered children animation */
+.wiz-slide.animating .wiz-slide-inner > *{opacity:0;transform:translateY(16px);animation:staggerIn .4s cubic-bezier(.4,0,.2,1) forwards}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(1){animation-delay:0ms}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(2){animation-delay:80ms}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(3){animation-delay:160ms}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(4){animation-delay:240ms}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(5){animation-delay:320ms}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(6){animation-delay:400ms}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(7){animation-delay:480ms}
+.wiz-slide.animating .wiz-slide-inner > *:nth-child(8){animation-delay:560ms}
+@keyframes staggerIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Step type badges */
+.wiz-type-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mn);font-size:10px;font-weight:500;padding:4px 10px;border-radius:16px;margin:0 auto 24px;text-align:center}
+.wiz-type-badge.tb-explanation{background:#eff6ff;color:#2563eb}
+.wiz-type-badge.tb-diagram{background:#f0fdf4;color:#16a34a}
+.wiz-type-badge.tb-comparison{background:#fffbeb;color:#d97706}
+.wiz-type-badge.tb-fact{background:#faf5ff;color:#7c3aed}
+.wiz-type-badge.tb-quiz{background:#fef2f2;color:#dc2626}
+
+/* Step icon — 8px grid */
+.wiz-icon{width:96px;height:96px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:48px;margin:0 auto 24px;background:#f1f5f9;border:2px solid #e2e8f0}
+.wiz-icon.ic-blue{background:#eff6ff;border-color:#bfdbfe}
+.wiz-icon.ic-green{background:#ecfdf5;border-color:#a7f3d0}
+.wiz-icon.ic-amber{background:#fffbeb;border-color:#fde68a}
+.wiz-icon.ic-red{background:#fef2f2;border-color:#fecaca}
+.wiz-icon.ic-violet{background:#f5f3ff;border-color:#ddd6fe}
+.wiz-icon.ic-cyan{background:#ecfeff;border-color:#a5f3fc}
+
+/* Type scale — 28px/700 title, 16px/400 body 1.6lh, 13px/500 caption */
+.wiz-step-title{font-family:var(--hd);font-size:28px;font-weight:700;color:#0f172a;text-align:center;margin-bottom:8px;line-height:1.2}
+.wiz-step-sub{font-size:16px;font-weight:400;color:#64748b;text-align:center;margin-bottom:32px;line-height:1.6;max-width:640px;margin-left:auto;margin-right:auto}
+
+/* Visual elements — 8px grid spacing */
+.wiz-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px}
+.wiz-card-title{font-family:var(--hd);font-size:13px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
+
+.wiz-metric{display:flex;align-items:center;gap:24px;padding:24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;margin-bottom:24px}
+.wiz-metric-val{font-family:var(--hd);font-size:36px;font-weight:800;line-height:1;flex-shrink:0}
+.wiz-metric-label{font-size:13px;font-weight:500;color:#64748b;line-height:1.5}
+.wiz-metric-val.v-blue{color:#2563eb}.wiz-metric-val.v-green{color:#10b981}.wiz-metric-val.v-amber{color:#f59e0b}.wiz-metric-val.v-red{color:#ef4444}.wiz-metric-val.v-violet{color:#8b5cf6}
+
+.wiz-table{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:24px;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0}
+.wiz-table th{background:#f1f5f9;padding:12px 16px;text-align:left;font-family:var(--mn);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0}
+.wiz-table td{padding:12px 16px;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9}
+.wiz-table tr:last-child td{border-bottom:none}
+.wiz-table tr:hover td{background:#f8fafc}
+.wiz-table .hl-blue{color:#2563eb;font-weight:600}.wiz-table .hl-green{color:#10b981;font-weight:600}.wiz-table .hl-amber{color:#f59e0b;font-weight:600}
+
+/* "Czy wiesz?" — scale+fade pop-in */
+.wiz-fact{background:linear-gradient(135deg,#eff6ff,#ecfdf5);border:1px solid #bfdbfe;border-radius:16px;padding:24px;margin-bottom:24px;display:flex;gap:16px;align-items:flex-start}
+.wiz-slide.animating .wiz-fact{animation:factPopIn .5s cubic-bezier(.4,0,.2,1) forwards;animation-delay:inherit}
+@keyframes factPopIn{0%{opacity:0;transform:scale(0.95)}100%{opacity:1;transform:scale(1)}}
+.wiz-fact-icon{font-size:24px;flex-shrink:0;margin-top:2px}
+.wiz-fact-label{font-family:var(--hd);font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.wiz-fact-text{font-size:13px;font-weight:500;color:#334155;line-height:1.6}
+
+.wiz-tip{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:16px;padding:24px;margin-bottom:24px;display:flex;gap:16px;align-items:flex-start}
+.wiz-tip-icon{font-size:20px;flex-shrink:0}
+.wiz-tip-text{font-size:13px;font-weight:500;color:#065f46;line-height:1.6}
+
+.wiz-warn{background:#fef2f2;border:1px solid #fecaca;border-radius:16px;padding:24px;margin-bottom:24px;display:flex;gap:16px;align-items:flex-start}
+.wiz-warn-icon{font-size:20px;flex-shrink:0}
+.wiz-warn-text{font-size:13px;font-weight:500;color:#991b1b;line-height:1.6}
+
+.wiz-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;padding:24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;margin-bottom:24px;overflow-x:auto}
+.wiz-flow-node{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 16px;border:2px solid #e2e8f0;border-radius:12px;background:#ffffff;min-width:80px}
+.wiz-flow-node.fn-blue{border-color:#93c5fd;background:#eff6ff}
+.wiz-flow-node.fn-green{border-color:#86efac;background:#ecfdf5}
+.wiz-flow-node.fn-amber{border-color:#fcd34d;background:#fffbeb}
+.wiz-flow-node.fn-red{border-color:#fca5a5;background:#fef2f2}
+.wiz-flow-node.fn-violet{border-color:#c4b5fd;background:#f5f3ff}
+.wiz-flow-node.fn-gray{border-color:#d1d5db;background:#f9fafb}
+.wiz-flow-emoji{font-size:22px}
+.wiz-flow-name{font-family:var(--hd);font-size:10px;font-weight:700;color:#334155;text-align:center}
+.wiz-flow-role{font-family:var(--mn);font-size:8px;color:#94a3b8}
+.wiz-flow-arrow{font-size:20px;color:#94a3b8;padding:0 8px;flex-shrink:0}
+.wiz-flow-arrow.arr-down{transform:rotate(90deg);padding:8px 0}
+
+.wiz-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.wiz-tag{font-family:var(--mn);font-size:10px;padding:4px 12px;border-radius:8px;font-weight:500}
+.wiz-tag.tg-blue{background:#dbeafe;color:#1d4ed8}.wiz-tag.tg-green{background:#d1fae5;color:#065f46}
+.wiz-tag.tg-amber{background:#fef3c7;color:#92400e}.wiz-tag.tg-red{background:#fee2e2;color:#991b1b}
+.wiz-tag.tg-violet{background:#ede9fe;color:#5b21b6}.wiz-tag.tg-gray{background:#f1f5f9;color:#475569}
+
+.wiz-challenge{background:#f5f3ff;border:2px dashed #c4b5fd;border-radius:16px;padding:24px;margin-bottom:24px}
+.wiz-challenge-q{font-family:var(--hd);font-size:16px;font-weight:700;color:#5b21b6;margin-bottom:16px;line-height:1.4}
+.wiz-challenge-opts{display:flex;flex-direction:column;gap:8px}
+.wiz-challenge-opt{padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:12px;background:#ffffff;cursor:pointer;transition:all .15s;font-size:14px;font-weight:400;color:#334155;min-height:48px;display:flex;align-items:center}
+.wiz-challenge-opt:hover{border-color:#8b5cf6;background:#faf5ff}
+.wiz-challenge-opt.correct{border-color:#10b981;background:#ecfdf5;color:#065f46}
+.wiz-challenge-opt.wrong{border-color:#ef4444;background:#fef2f2;color:#991b1b}
+.wiz-challenge-opt.disabled{pointer-events:none;opacity:.7}
+.wiz-challenge-feedback{margin-top:16px;font-size:13px;font-weight:500;line-height:1.6;padding:16px;border-radius:12px;display:none}
+.wiz-challenge-feedback.show{display:block}
+.wiz-challenge-feedback.fb-ok{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.wiz-challenge-feedback.fb-bad{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+
+.wiz-checkpoint{background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:2px solid #93c5fd;border-radius:24px;padding:32px;margin-bottom:24px;text-align:center}
+.wiz-checkpoint-title{font-family:var(--hd);font-size:22px;font-weight:800;color:#1e3a5f;margin-bottom:16px}
+.wiz-checkpoint-items{display:flex;flex-direction:column;gap:8px;text-align:left}
+.wiz-checkpoint-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#ffffff;border-radius:12px;border:1px solid #e2e8f0;font-size:13px;font-weight:500;color:#334155}
+.wiz-checkpoint-check{color:#10b981;font-size:18px;flex-shrink:0}
+
+.wiz-complete{text-align:center;padding:48px 24px}
+.wiz-complete-emoji{font-size:80px;margin-bottom:24px;animation:completeBounce 2s ease infinite}
+@keyframes completeBounce{0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.1) rotate(-5deg)}50%{transform:scale(1) rotate(0deg)}75%{transform:scale(1.1) rotate(5deg)}}
+.wiz-complete-title{font-family:var(--hd);font-size:32px;font-weight:800;color:#0f172a;margin-bottom:16px}
+.wiz-complete-sub{font-size:16px;font-weight:400;color:#64748b;margin-bottom:32px;line-height:1.6}
+.wiz-complete-stats{display:flex;gap:16px;justify-content:center;margin-bottom:32px;flex-wrap:wrap}
+.wiz-complete-stat{padding:16px 24px;background:#f1f5f9;border-radius:16px;border:1px solid #e2e8f0;min-width:120px}
+.wiz-complete-stat-val{font-family:var(--hd);font-size:24px;font-weight:800;color:#2563eb}
+.wiz-complete-stat-label{font-size:11px;font-weight:500;color:#64748b;margin-top:4px}
+
+.wiz-achievement{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:24px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;margin-bottom:24px;font-family:var(--hd);font-size:14px;font-weight:700;color:#92400e;animation:achieveIn .6s cubic-bezier(.4,0,.2,1) .3s both}
+@keyframes achieveIn{0%{opacity:0;transform:scale(0.5) rotate(-10deg)}60%{transform:scale(1.1) rotate(3deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
+
+#confettiCanvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
+
+/* Bottom nav — large clear buttons min 48px */
+.wiz-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #e2e8f0;flex-shrink:0;background:#ffffff}
+.wiz-nav-btn{display:flex;align-items:center;gap:8px;padding:12px 32px;border-radius:12px;font-family:var(--hd);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);border:none;min-height:48px}
+.wiz-nav-prev{background:#f1f5f9;color:#64748b}
+.wiz-nav-prev:hover{background:#e2e8f0;color:#334155}
+.wiz-nav-prev:disabled{opacity:.3;cursor:default}
+.wiz-nav-next{background:#2563eb;color:#ffffff;box-shadow:0 2px 12px rgba(37,99,235,.3)}
+.wiz-nav-next:hover{background:#1d4ed8;box-shadow:0 4px 16px rgba(37,99,235,.4)}
+.wiz-nav-next.finish{background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 2px 12px rgba(16,185,129,.3)}
+.wiz-nav-next.finish:hover{box-shadow:0 4px 16px rgba(16,185,129,.4)}
+.wiz-nav-center{font-family:var(--mn);font-size:12px;color:#94a3b8;font-weight:500}
+
+@media(max-width:1100px){.side-r{width:250px}}
+@media(max-width:900px){.side-l{width:200px}.side-r{width:220px}}
+@media(max-width:700px){.side-l,.side-r{display:none}.wizard-overlay{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div class="tb-brand"><span>Agent Designer</span><small>v7.0</small></div>
+  <div class="tb-sep"></div>
+  <div class="tb-problem"><textarea id="probIn" placeholder="Opisz projekt lub problem..."></textarea></div>
+  <div class="tb-actions">
+    <button class="btn btn-p" onclick="genPrompt()">&#9889; Final Prompt</button>
+    <button class="btn btn-a" onclick="expCfg()">&#8599; Export</button>
+    <button class="btn" onclick="impCfg()">&#8601; Import</button>
+    <button class="btn" onclick="showKB()">?</button>
+  </div>
+</div>
+<div class="workspace">
+  <div class="side-l" id="sL">
+    <div class="sl-tabs">
+      <div class="sl-tab on" onclick="sTab('ag',this)">Agenci</div>
+      <div class="sl-tab" onclick="sTab('pr',this)">Presety</div>
+      <div class="sl-tab" onclick="sTab('sv',this)">Zapisane</div>
+    </div>
+    <div class="sl-panels">
+      <div class="sl-pan on" id="panAg"><input class="pa-search" id="paS" placeholder="&#128269; Szukaj..." oninput="fPal()"><div id="paL"></div></div>
+      <div class="sl-pan" id="panPr"><div id="prL"></div></div>
+      <div class="sl-pan" id="panSv"><div style="padding:6px 8px"><button class="btn btn-a" onclick="saveCfg()" style="width:100%">&#128190; Zapisz konfiguracje</button></div><div class="sv-list" id="svL"><div class="sv-empty">Brak zapisanych.</div></div></div>
+    </div>
+  </div>
+  <div class="cv-area" id="cvA">
+    <div class="cv-grid" id="cvG"></div>
+    <div class="cv-container"><div class="cv-transform" id="cvT"><svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg></div></div>
+    <div class="cv-info" id="cvI">0 agentow | 0 polaczen</div>
+    <div class="cv-ctrl">
+      <button class="btn btn-p" id="cBtn" onclick="togConn()">&#128279; Polacz</button>
+      <button class="btn" onclick="autoLay()">&#9638; Layout</button>
+      <button class="btn btn-d" onclick="delSel()">&#128465; Usun</button>
+      <button class="btn btn-d" onclick="clrCv()">Wyczysc</button>
+    </div>
+    <div class="zm-ctrl">
+      <button class="btn" onclick="zIn()">+</button>
+      <div class="zm-lbl" id="zL">100%</div>
+      <button class="btn" onclick="zOut()">&minus;</button>
+      <button class="btn" onclick="zRst()" style="font-size:8px">&#8634;</button>
+    </div>
+  </div>
+  <!-- v7 WIZARD OVERLAY — Enhanced -->
+  <div class="wizard-overlay" id="wizOverlay">
+    <div class="wiz-progress"><div class="wiz-progress-fill" id="wizProgress"></div></div>
+    <div class="wiz-topbar">
+      <div class="wiz-step-counter" id="wizCounter">Krok 1 z 8</div>
+      <div class="wiz-est-time" id="wizEstTime"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~4 min</div>
+      <div class="wiz-stepper" id="wizStepper"></div>
+      <button class="wiz-close" onclick="closeWizard()">&#10005; Zamknij</button>
+    </div>
+    <div class="wiz-content-wrap">
+      <div class="wiz-slide-container" id="wizSlides"></div>
+      <canvas id="confettiCanvas"></canvas>
+    </div>
+    <div class="wiz-nav">
+      <button class="wiz-nav-btn wiz-nav-prev" id="wizPrev" onclick="wizPrevFn()">&#8592; Wstecz</button>
+      <div class="wiz-nav-center" id="wizNavCenter">Krok 1 z 8</div>
+      <button class="wiz-nav-btn wiz-nav-next" id="wizNext" onclick="wizNextFn()">Dalej &#8594;</button>
+    </div>
+  </div>
+  <div class="side-r" id="sR">
+    <div class="sr-hdr"><h3>&#128203; Szczegoly</h3></div>
+    <div class="sr-scr" id="srS"><div class="sr-mt">Kliknij agenta na canvasie lub wybierz preset.<br><br>Shift+klik = zaznacz wielu agentow i przesuwaj razem.</div></div>
+  </div>
+</div>
+<div class="statbar">
+  <div class="st"><span>Agentow:</span><span class="st-v" id="sA">0</span></div>
+  <div class="st"><span>Polaczen:</span><span class="st-v" id="sC">0</span></div>
+  <div class="st"><span class="st-d st-op"></span><span class="st-v" id="sO">0</span></div>
+  <div class="st"><span class="st-d st-so"></span><span class="st-v" id="sS">0</span></div>
+  <div class="st"><span class="st-d st-ha"></span><span class="st-v" id="sH">0</span></div>
+  <div class="st"><span>Tok:</span><span class="st-v" id="sT">~0K</span></div>
+  <div class="st"><span>$:</span><span class="st-v" id="s$">0.00</span></div>
+  <div class="st-sp"></div>
+  <div class="st" id="sP" style="border:none"><span class="st-v">-</span></div>
+</div>
+</div>
+<div class="mo" id="moP"><div class="mo-box"><div class="mo-h"><h2>&#9889; Final Prompt</h2><button class="btn btn-d" onclick="cMo('moP')">&#10005;</button></div><div class="mo-b"><textarea id="fpA" readonly></textarea></div><div class="mo-f"><button class="btn btn-p" onclick="cpFP(event)">&#128203; Kopiuj</button><button class="btn" onclick="cMo('moP')">Zamknij</button></div></div></div>
+<div class="mo" id="moE"><div class="mo-box" style="max-width:600px"><div class="mo-h"><h2>&#8599; Export</h2><button class="btn btn-d" onclick="cMo('moE')">&#10005;</button></div><div class="mo-b"><textarea id="exA" readonly style="min-height:200px"></textarea></div><div class="mo-f"><button class="btn btn-p" onclick="navigator.clipboard.writeText(G('exA').value).then(()=>alert('Skopiowano!'))">Kopiuj</button><button class="btn" onclick="cMo('moE')">Zamknij</button></div></div></div>
+<div class="mo" id="moI"><div class="mo-box" style="max-width:600px"><div class="mo-h"><h2>&#8601; Import</h2><button class="btn btn-d" onclick="cMo('moI')">&#10005;</button></div><div class="mo-b"><textarea id="imA" style="min-height:200px" placeholder="Wklej JSON..."></textarea></div><div class="mo-f"><button class="btn btn-p" onclick="doImp()">Importuj</button><button class="btn" onclick="cMo('moI')">Anuluj</button></div></div></div>
+<div class="mo" id="moK"><div class="mo-box" style="max-width:500px"><div class="mo-h"><h2>Skroty klawiszowe</h2><button class="btn btn-d" onclick="cMo('moK')">&#10005;</button></div><div class="mo-b"><div class="kb-g">
+  <div class="kb-r"><span class="kb-k">Del</span><span class="kb-a">Usun zaznaczonych</span></div>
+  <div class="kb-r"><span class="kb-k">C</span><span class="kb-a">Tryb laczenia</span></div>
+  <div class="kb-r"><span class="kb-k">L</span><span class="kb-a">Auto-layout</span></div>
+  <div class="kb-r"><span class="kb-k">Esc</span><span class="kb-a">Odznacz / zamknij</span></div>
+  <div class="kb-r"><span class="kb-k">+/-</span><span class="kb-a">Zoom in/out</span></div>
+  <div class="kb-r"><span class="kb-k">0</span><span class="kb-a">Reset zoom</span></div>
+  <div class="kb-r"><span class="kb-k">Shift+klik</span><span class="kb-a">Dodaj do zaznaczenia</span></div>
+  <div class="kb-r"><span class="kb-k">Ctrl+A</span><span class="kb-a">Zaznacz wszystkich</span></div>
+  <div class="kb-r"><span class="kb-k">&#8592;/&#8594;</span><span class="kb-a">Nawigacja w trybie nauki</span></div>
+  <div class="kb-r"><span class="kb-k">Scroll</span><span class="kb-a">Zoom na canvasie</span></div>
+</div></div><div class="mo-f"><button class="btn" onclick="cMo('moK')">Zamknij</button></div></div></div>
+
+<script>
+const G=id=>document.getElementById(id);
+const AD=[
+{cat:'STRATEGIA',id:'orchestrator',name:'Orkiestrator',icon:'\u2734',color:'am',model:'opus',load:50,role:'Centralny punkt decyzyjny calego systemu agentow. Analizuje zadanie, dekomponuje na podzadania i deleguje do specjalistow. Kontroluje bramy miedzy fazami (GO/NO-GO) i syntetyzuje wyniki.',tools:'Agent, Read/Write, Bash, TaskCreate',prompt:'Jestes Master Orkiestratorem. NIE generujesz tresci - ZARZADZASZ SYSTEMEM.\n\nOBOWIAZKI:\n1. Dekompozycja zadania na podzadania\n2. Delegowanie do agentow\n3. Kontrola gate\'ow miedzy fazami\n4. Synteza wynikow, rozwiazywanie konfliktow\n5. GO/NO-GO decisions\n\nZASADY:\n- Kazdy agent dostaje TYLKO swoj kontekst\n- MANIFEST.md jako shared scratchpad\n- Max 10 krokow sekwencyjnych\n- Eskaluj krytyczne decyzje do uzytkownika'},
+{cat:'STRATEGIA',id:'synthesizer',name:'Syntetyk',icon:'\u26A1',color:'vi',model:'sonnet',load:65,role:'Pamiec cross-fazowa systemu - utrzymuje MANIFEST.md jako single source of truth. Zbiera wyniki z kazdej fazy, aktualizuje decyzje architektoniczne i stack.',tools:'Read/Write (MANIFEST.md)',prompt:'Jestes Syntetykiem - "pamiec systemu". Utrzymujesz MANIFEST.md.\n\nPo kazdej fazie:\n1. Zbierz kluczowe wyniki\n2. Zaktualizuj MANIFEST.md\n3. Wyciagnij wnioski cross-fazowe\n4. Oznacz sprzecznosci miedzy agentami'},
+{cat:'PLANOWANIE',id:'analyst',name:'Analityk',icon:'\u269B',color:'cy',model:'sonnet',load:55,role:'Specjalista dekompozycji zlozonych problemow na niezalezne podzadania. Identyfikuje zaleznosci, szacuje zlozonosc (S/M/L/XL) i okresla priorytet.',tools:'Read, Write',prompt:'Jestes Analitykiem. Rozloz problem na NIEZALEZNE podzadania.\n\nDla kazdego:\n1. Zakres funkcjonalny\n2. Research vs implementacja\n3. Wymagania\n4. Zaleznosci\n5. Zlozonosc: S/M/L/XL'},
+{cat:'PLANOWANIE',id:'planner',name:'Planer',icon:'\u2699',color:'cy',model:'sonnet',load:40,role:'Tworzy harmonogram na podstawie dekompozycji Analityka. Okresla zadania rownolegle vs sekwencyjne, identyfikuje sciezke krytyczna.',tools:'Read, Write',prompt:'Jestes Planerem.\n\n1. Co ROWNOLEGLE\n2. Co SEKWENCYJNE\n3. Punkty synchronizacji\n4. Estymacja czasu\n5. Sciezka krytyczna'},
+{cat:'RESEARCH',id:'res_tech',name:'Researcher Tech',icon:'\uD83D\uDD0D',color:'bl',model:'haiku',load:55,role:'Prowadzi badania techniczne: porownuje frameworki, biblioteki, API i architekture. Analizuje minimum 3 opcje z pros/cons i benchmarkami.',tools:'WebSearch, WebFetch, Read',prompt:'Jestes Technical Researcher.\n\nDla kazdego zagadnienia:\n- Porownaj min. 3 opcje\n- Pros/cons\n- Rekomenduj najlepsza\n- Snippet setup\n- Znane issues'},
+{cat:'RESEARCH',id:'res_ux',name:'Researcher UX',icon:'\uD83C\uDFA8',color:'bl',model:'haiku',load:50,role:'Bada trendy UI/UX, zbiera inspiracje z Dribbble, Behance, Awwwards. Analizuje kolory, typografie, layouty i mikro-interakcje.',tools:'WebSearch, WebFetch',prompt:'Jestes UX Researcher.\n\nZbadaj:\n- Top 10 przykladow\n- Trendy UI: kolory, typo, layout\n- Mikro-interakcje\n- Accessibility (WCAG 2.1 AA)'},
+{cat:'RESEARCH',id:'res_reddit',name:'Researcher Reddit',icon:'\uD83D\uDCAC',color:'bl',model:'haiku',load:50,role:'Przeszukuje Reddit szukajac niefiltrowanych opinii i realnych doswiadczen deweloperow.',tools:'WebSearch, WebFetch',prompt:'Jestes Reddit Researcher.\n\nSubreddity: r/webdev, r/programming, r/reactjs\n\nSzukaj dyskusji, narzekaran, rekomendacji stacku.'},
+{cat:'RESEARCH',id:'res_x',name:'Researcher X',icon:'\uD835\uDD4F',color:'bl',model:'haiku',load:45,role:'Monitoruje X/Twitter szukajac trendow od influencerow technologicznych. Zbiera reakcje na launche, techniczne thready.',tools:'WebSearch, WebFetch',prompt:'Jestes X/Twitter Researcher.\n\nSzukaj trendow, launchow, threadow technicznych.'},
+{cat:'RESEARCH',id:'res_github',name:'Researcher GitHub',icon:'\uD83D\uDCBB',color:'bl',model:'haiku',load:55,role:'Przeszukuje repozytoria open-source podobne do projektu. Analizuje architekture, stack, README, Issues.',tools:'WebSearch, WebFetch',prompt:'Jestes GitHub Researcher.\n\nSzukaj repo: stars, architektura, stack, issues.'},
+{cat:'RESEARCH',id:'res_forums',name:'Researcher Forum',icon:'\uD83C\uDF10',color:'bl',model:'haiku',load:50,role:'Przeszukuje StackOverflow, Dev.to, Medium, HN szukajac tutoriali i lessons learned.',tools:'WebSearch, WebFetch',prompt:'Jestes Forum Researcher.\n\nPrzeszukaj SO, Dev.to, Medium, HN.'},
+{cat:'RESEARCH',id:'res_docs',name:'Researcher Docs',icon:'\uD83D\uDCDA',color:'bl',model:'haiku',load:40,role:'Zbiera informacje z oficjalnych dokumentacji frameworkow i narzedzi.',tools:'WebSearch, WebFetch, Read',prompt:'Jestes Docs Researcher.\n\nZbierz: getting started, best practices, security guidelines.'},
+{cat:'RESEARCH',id:'res_critic',name:'Research Critic',icon:'\uD83D\uDC41',color:'ro',model:'sonnet',load:85,role:'Waliduje wyniki Researcherow szukajac sprzecznosci, bias i luk. Ocenia wiarygodnosc zrodel. Score <6/10 = rewizja.',tools:'Read',prompt:'Jestes Research Critic. WALIDACJA:\n\nRubrika: Completeness 25%, Accuracy 25%, Relevance 20%, Freshness 20%, Actionability 10%\n\n<6/10 = REVISE.'},
+{cat:'BUILD',id:'backend',name:'Backend Dev',icon:'\uD83D\uDD27',color:'mu',model:'sonnet',load:75,role:'Implementuje warstwe serwerowa: API endpoints, schematy danych, walidacje i logike biznesowa. TDD.',tools:'Write, Edit, Bash, Read',prompt:'Jestes Backend Developer.\n\n- API-first\n- Testy (TDD)\n- Error handling\n- Dokumentacja API'},
+{cat:'BUILD',id:'frontend',name:'Frontend Dev',icon:'\uD83C\uDF10',color:'mu',model:'sonnet',load:70,role:'Implementuje warstwe kliencka mobile-first. Reuzywalne komponenty z ARIA i keyboard nav.',tools:'Write, Edit, Bash, Read',prompt:'Jestes Frontend Developer.\n\n- Mobile-first\n- Komponenty reuzywalne\n- Accessibility\n- Performance'},
+{cat:'BUILD',id:'feature',name:'Feature Dev',icon:'\uD83D\uDE80',color:'mu',model:'sonnet',load:65,role:'Implementuje specjalistyczne funkcjonalnosci: real-time, AI/ML, wizualizacje, third-party API.',tools:'Write, Edit, Bash, Read',prompt:'Jestes Feature Developer.\n\nSpecjalne: WebSocket, AI/ML, visualizations, third-party API.'},
+{cat:'BUILD',id:'designer',name:'Designer',icon:'\uD83C\uDFA8',color:'mu',model:'sonnet',load:55,role:'Tworzy warstwe wizualna od design tokenow po animacje. CSS/SCSS, layout, dark/light mode.',tools:'Write, Edit, Read',prompt:'Jestes Designerem.\n\n- Design tokens\n- Layout (grid/flexbox)\n- Animacje\n- Dark/light mode'},
+{cat:'BUILD',id:'integrator',name:'Integrator',icon:'\uD83D\uDD17',color:'mu',model:'sonnet',load:70,role:'Laczy prace workerow w spojny projekt. Weryfikuje API contracts, tworzy E2E testy.',tools:'Read, Write, Edit, Bash',prompt:'Jestes Integratorem.\n\n- API contracts\n- E2E testy\n- MANIFEST.md spelniony'},
+{cat:'BUILD',id:'writer',name:'Redaktor',icon:'\u270D',color:'mu',model:'sonnet',load:35,role:'Tworzy dokumentacje techniczna: README.md, CHANGELOG, API docs, ADR.',tools:'Read, Write',prompt:'Jestes Redaktorem.\n\n- README.md\n- CHANGELOG\n- Komentarze TYLKO dla nontrivial'},
+{cat:'QA / AUDYT',id:'qa_security',name:'QA Security',icon:'\uD83D\uDD12',color:'ro',model:'haiku',load:50,role:'Audyt bezpieczenstwa: OWASP Top 10, hardcoded secrets, CVE. NIE naprawia - raportuje.',tools:'Read, Grep, Bash',prompt:'Jestes QA Security.\n\nSzukaj OWASP Top 10, secrets, CVE.\n\nNIE naprawiasz - RAPORTUJESZ.'},
+{cat:'QA / AUDYT',id:'qa_quality',name:'QA Quality',icon:'\u2705',color:'ro',model:'haiku',load:55,role:'Sprawdza zgodnosc z wymaganiami, brakujace testy, edge cases, code smells.',tools:'Read, Grep, Bash',prompt:'Jestes QA Quality.\n\nSprawdz: wymagania, testy, edge cases, performance, smells.'},
+{cat:'QA / AUDYT',id:'qa_perf',name:'QA Performance',icon:'\u23F1',color:'ro',model:'haiku',load:45,role:'Audyt wydajnosci: response time, bundle size, memory, Core Web Vitals.',tools:'Bash, Read',prompt:'Jestes QA Performance.\n\nZmierz: response time, bundle, memory, CWV.'},
+{cat:'QA / AUDYT',id:'qa_manager',name:'Manager QA',icon:'\uD83D\uDCDD',color:'ro',model:'sonnet',load:50,role:'Zbiera raporty QA, priorytetyzuje wg severity, decyzja GO/NO-GO. Max 2 iteracje.',tools:'Read, Write',prompt:'Jestes Manager QA.\n\n1. Priorytetyzuj: CRIT>HIGH>MED>LOW\n2. GO/NO-GO\n3. Max 2 iteracje.'}
+];
+const MH={opus:'[MODEL: Claude Opus 4.6 | 1M ctx | $15/$75 per 1M tok]',sonnet:'[MODEL: Claude Sonnet 4.6 | 200K ctx | $3/$15 per 1M tok]',haiku:'[MODEL: Claude Haiku 4.5 | 200K ctx | $0.80/$4 per 1M tok]'};
+AD.forEach(d=>{d.prompt=MH[d.model]+'\n\n'+d.prompt});
+const PR={solo:[{d:'orchestrator',x:400,y:100},{d:'backend',x:400,y:260}],quick_fix:[{d:'orchestrator',x:400,y:60},{d:'backend',x:400,y:200},{d:'qa_quality',x:400,y:340}],recon:[{d:'orchestrator',x:400,y:60},{d:'res_tech',x:260,y:200},{d:'backend',x:540,y:200}],trio:[{d:'backend',x:250,y:100},{d:'frontend',x:550,y:100},{d:'qa_quality',x:400,y:270}],reflect:[{d:'res_tech',x:400,y:60},{d:'analyst',x:400,y:210},{d:'res_critic',x:400,y:360}],bug_hunt:[{d:'orchestrator',x:400,y:50},{d:'backend',x:400,y:180},{d:'qa_security',x:250,y:320},{d:'qa_quality',x:550,y:320}],content:[{d:'res_forums',x:240,y:60},{d:'res_tech',x:560,y:60},{d:'writer',x:400,y:220},{d:'qa_quality',x:400,y:370}],plan_exec:[{d:'analyst',x:400,y:40},{d:'planner',x:400,y:170},{d:'backend',x:400,y:300},{d:'qa_quality',x:400,y:430}],perf_boost:[{d:'analyst',x:400,y:50},{d:'backend',x:250,y:190},{d:'qa_perf',x:550,y:190},{d:'integrator',x:400,y:340}],startup:[{d:'orchestrator',x:400,y:40},{d:'analyst',x:400,y:150},{d:'res_tech',x:240,y:270},{d:'backend',x:560,y:270},{d:'qa_quality',x:400,y:400}],cascade:[{d:'res_tech',x:220,y:60},{d:'res_docs',x:580,y:60},{d:'backend',x:280,y:210},{d:'qa_quality',x:520,y:210},{d:'orchestrator',x:400,y:370}],test_suite:[{d:'orchestrator',x:400,y:40},{d:'qa_security',x:200,y:180},{d:'qa_quality',x:400,y:180},{d:'qa_perf',x:600,y:180},{d:'qa_manager',x:400,y:330}],a11y:[{d:'res_ux',x:400,y:40},{d:'designer',x:250,y:180},{d:'frontend',x:550,y:180},{d:'qa_quality',x:400,y:320},{d:'writer',x:400,y:450}],security:[{d:'orchestrator',x:400,y:30},{d:'backend',x:400,y:150},{d:'qa_security',x:200,y:290},{d:'qa_quality',x:400,y:290},{d:'qa_perf',x:600,y:290},{d:'qa_manager',x:400,y:430}],review:[{d:'orchestrator',x:400,y:30},{d:'analyst',x:400,y:140},{d:'backend',x:250,y:260},{d:'frontend',x:550,y:260},{d:'qa_security',x:250,y:400},{d:'qa_quality',x:550,y:400}],design_sys:[{d:'orchestrator',x:400,y:20},{d:'res_ux',x:250,y:140},{d:'res_docs',x:550,y:140},{d:'designer',x:250,y:280},{d:'frontend',x:550,y:280},{d:'writer',x:400,y:420}],api_modern:[{d:'orchestrator',x:400,y:20},{d:'analyst',x:400,y:130},{d:'res_tech',x:400,y:240},{d:'backend',x:250,y:360},{d:'integrator',x:550,y:360},{d:'qa_quality',x:400,y:490}],ui_overhaul:[{d:'orchestrator',x:400,y:10},{d:'res_ux',x:230,y:120},{d:'res_docs',x:570,y:120},{d:'analyst',x:400,y:230},{d:'designer',x:230,y:350},{d:'frontend',x:570,y:350},{d:'qa_quality',x:400,y:470}],feature_sprint:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:400,y:110},{d:'res_tech',x:230,y:220},{d:'res_ux',x:570,y:220},{d:'backend',x:230,y:350},{d:'frontend',x:570,y:350},{d:'qa_quality',x:400,y:470}],standard:[{d:'orchestrator',x:400,y:15},{d:'analyst',x:280,y:110},{d:'planner',x:520,y:110},{d:'res_tech',x:220,y:220},{d:'res_ux',x:580,y:220},{d:'backend',x:260,y:340},{d:'frontend',x:540,y:340},{d:'qa_security',x:400,y:460}],data_pipe:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:280,y:110},{d:'planner',x:520,y:110},{d:'res_tech',x:230,y:220},{d:'res_docs',x:570,y:220},{d:'backend',x:230,y:340},{d:'feature',x:570,y:340},{d:'integrator',x:400,y:460}],research:[{d:'orchestrator',x:400,y:10},{d:'res_tech',x:120,y:130},{d:'res_reddit',x:240,y:130},{d:'res_github',x:360,y:130},{d:'res_forums',x:480,y:130},{d:'res_docs',x:600,y:130},{d:'res_x',x:720,y:130},{d:'res_critic',x:400,y:280},{d:'synthesizer',x:400,y:420}],legacy:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:400,y:105},{d:'res_tech',x:230,y:200},{d:'res_github',x:570,y:200},{d:'backend',x:180,y:310},{d:'frontend',x:400,y:310},{d:'integrator',x:620,y:310},{d:'qa_security',x:300,y:430},{d:'qa_quality',x:500,y:430}],saas:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:400,y:100},{d:'res_tech',x:230,y:200},{d:'res_ux',x:570,y:200},{d:'backend',x:180,y:310},{d:'frontend',x:400,y:310},{d:'designer',x:620,y:310},{d:'integrator',x:400,y:420},{d:'qa_security',x:280,y:530},{d:'qa_quality',x:520,y:530}],microservices:[{d:'orchestrator',x:400,y:5},{d:'analyst',x:280,y:90},{d:'planner',x:520,y:90},{d:'res_tech',x:400,y:180},{d:'backend',x:160,y:280},{d:'feature',x:320,y:280},{d:'integrator',x:480,y:280},{d:'frontend',x:640,y:280},{d:'qa_security',x:230,y:400},{d:'qa_quality',x:400,y:400},{d:'qa_manager',x:570,y:400}],full:[{d:'orchestrator',x:400,y:10},{d:'analyst',x:290,y:100},{d:'planner',x:510,y:100},{d:'res_tech',x:170,y:200},{d:'res_ux',x:400,y:200},{d:'res_docs',x:630,y:200},{d:'backend',x:150,y:310},{d:'frontend',x:310,y:310},{d:'designer',x:490,y:310},{d:'integrator',x:650,y:310},{d:'qa_security',x:240,y:420},{d:'qa_quality',x:420,y:420},{d:'qa_manager',x:600,y:420}],deep:[{d:'orchestrator',x:420,y:5},{d:'analyst',x:240,y:85},{d:'planner',x:450,y:85},{d:'synthesizer',x:620,y:85},{d:'res_reddit',x:100,y:175},{d:'res_x',x:220,y:175},{d:'res_ux',x:340,y:175},{d:'res_github',x:460,y:175},{d:'res_forums',x:580,y:175},{d:'res_docs',x:700,y:175},{d:'res_critic',x:420,y:270},{d:'backend',x:190,y:365},{d:'frontend',x:370,y:365},{d:'feature',x:530,y:365},{d:'integrator',x:680,y:365},{d:'qa_security',x:260,y:460},{d:'qa_quality',x:440,y:460},{d:'qa_manager',x:610,y:460}]};
+const PC={solo:[[0,1,'two']],quick_fix:[[0,1,'one'],[1,2,'one'],[2,0,'continuous']],recon:[[0,1,'one'],[0,2,'one'],[1,2,'one']],trio:[[0,2,'one'],[1,2,'one'],[0,1,'two']],reflect:[[0,1,'one'],[1,2,'one'],[2,0,'continuous']],bug_hunt:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,0,'one'],[3,0,'one']],content:[[0,2,'one'],[1,2,'one'],[2,3,'one']],plan_exec:[[0,1,'one'],[1,2,'one'],[2,3,'one'],[3,0,'continuous']],perf_boost:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,3,'one']],startup:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[2,3,'one'],[3,4,'one']],cascade:[[0,2,'one'],[1,3,'one'],[2,4,'one'],[3,4,'one']],test_suite:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[1,4,'one'],[2,4,'one'],[3,4,'one']],a11y:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,3,'one'],[3,4,'one']],security:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[1,4,'one'],[2,5,'one'],[3,5,'one'],[4,5,'one'],[5,0,'one']],review:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,0,'one'],[5,0,'one']],design_sys:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,5,'one']],api_modern:[[0,1,'one'],[1,2,'one'],[2,3,'one'],[2,4,'one'],[3,5,'one'],[4,5,'one']],ui_overhaul:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,3,'one'],[3,4,'one'],[3,5,'one'],[4,6,'one'],[5,6,'one']],feature_sprint:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,6,'one'],[5,6,'one']],standard:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[3,5,'one'],[4,6,'one'],[5,7,'one'],[6,7,'one']],data_pipe:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,6,'one'],[5,7,'one'],[6,7,'one']],research:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[0,5,'one'],[0,6,'one'],[1,7,'one'],[2,7,'one'],[3,7,'one'],[4,7,'one'],[5,7,'one'],[6,7,'one'],[7,8,'one'],[8,0,'two']],legacy:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[4,6,'one'],[5,6,'one'],[6,7,'one'],[6,8,'one']],saas:[[0,1,'one'],[1,2,'one'],[1,3,'one'],[2,4,'one'],[3,5,'one'],[3,6,'one'],[4,7,'one'],[5,7,'one'],[6,7,'one'],[7,8,'one'],[7,9,'one']],microservices:[[0,1,'one'],[0,2,'one'],[1,3,'one'],[3,4,'one'],[3,5,'one'],[3,6,'one'],[3,7,'one'],[4,8,'one'],[5,8,'one'],[6,9,'one'],[7,9,'one'],[8,10,'one'],[9,10,'one'],[10,0,'one']],full:[[0,1,'one'],[0,2,'one'],[0,3,'one'],[0,4,'one'],[0,5,'one'],[3,6,'one'],[4,7,'one'],[5,8,'one'],[6,9,'one'],[7,9,'one'],[8,9,'one'],[9,10,'one'],[9,11,'one'],[10,12,'one'],[11,12,'one'],[12,0,'one']],deep:[[0,1,'one'],[0,2,'one'],[0,3,'two'],[1,4,'one'],[1,5,'one'],[1,6,'one'],[1,7,'one'],[1,8,'one'],[1,9,'one'],[4,10,'one'],[5,10,'one'],[6,10,'one'],[7,10,'one'],[8,10,'one'],[9,10,'one'],[10,3,'one'],[3,11,'one'],[3,12,'one'],[3,13,'one'],[11,14,'one'],[12,14,'one'],[13,14,'one'],[14,15,'one'],[14,16,'one'],[15,17,'one'],[16,17,'one'],[17,0,'one']]};
+const PM={solo:{n:'Solo + Walidator',i:'\u26A1',c:2,dsc:'Orkiestrator + worker z petla.',use:'Bugi, refactoring, skrypty.',p:['\u2713 ~40-80K tok','\u2713 Zero overhead','\u2713 <30s'],m:['\u2717 Brak QA','\u2717 Brak researchu'],t:'~40-80K',$:'$0.04-0.15',pt:'Direct Delegation'},quick_fix:{n:'Szybka Naprawa',i:'\uD83D\uDD27',c:3,dsc:'Cykl fix-test-fix z petla zwrotna.',use:'Bugfixy, hotfixy, patche.',p:['\u2713 Petla fix\u2192test','\u2713 ~80-120K','\u2713 Szybka iteracja'],m:['\u2717 1 builder','\u2717 Brak researchu'],t:'~80-120K',$:'$0.08-0.20',pt:'Fix-Test Loop'},recon:{n:'Recon Squad',i:'\uD83D\uDD0D',c:3,dsc:'Orkiestrator + researcher + builder.',use:'POC, spike, badanie wykonalnosci.',p:['\u2713 Research przed kodem','\u2713 ~80-120K'],m:['\u2717 1 zrodlo','\u2717 Brak QA'],t:'~80-120K',$:'$0.08-0.20',pt:'Hub-and-Spoke (mini)'},trio:{n:'Classic Trio',i:'\uD83D\uDD3A',c:3,dsc:'Backend + Frontend + QA.',use:'Full-stack, CRUD, REST API + UI.',p:['\u2713 Naturalny podzial BE/FE','\u2713 QA kontrola'],m:['\u2717 Brak researchu','\u2717 Brak planera'],t:'~120-180K',$:'$0.10-0.30',pt:'Triangle'},reflect:{n:'Reflective Loop',i:'\uD83D\uDD04',c:3,dsc:'Research \u2192 Analiza \u2192 Krytyka z petla.',use:'Gleboki research, due diligence.',p:['\u2713 Samokorekcja','\u2713 Eliminacja bias'],m:['\u2717 Ryzyko petli','\u2717 Brak implementacji'],t:'~100-200K',$:'$0.08-0.35',pt:'Reflective Trio'},bug_hunt:{n:'Bug Hunter',i:'\uD83D\uDC1B',c:4,dsc:'Orkiestrator + builder + 2x QA.',use:'Debugowanie, triage bugow.',p:['\u2713 2 QA rownolegle','\u2713 Security + Quality'],m:['\u2717 Brak researchu','\u2717 Tylko fixy'],t:'~120-180K',$:'$0.10-0.28',pt:'Fork QA'},content:{n:'Content Pipeline',i:'\uD83D\uDCDD',c:4,dsc:'2 researcherow \u2192 redaktor \u2192 QA.',use:'Dokumentacja, README, artykuly.',p:['\u2713 2 zrodla danych','\u2713 Specjalizacja'],m:['\u2717 Nie generuje kodu'],t:'~100-180K',$:'$0.08-0.25',pt:'Linear Pipeline'},plan_exec:{n:'Plan & Execute',i:'\uD83D\uDCCB',c:4,dsc:'Plan \u2192 harmonogram \u2192 build \u2192 walidacja.',use:'Migracje, refactoring.',p:['\u2713 83% redukcja kosztow','\u2713 Petla walidacyjna'],m:['\u2717 Brak researchu','\u2717 1 builder'],t:'~120-200K',$:'$0.10-0.30',pt:'Plan-and-Execute Loop'},perf_boost:{n:'Performance Boost',i:'\u26A1',c:4,dsc:'Analiza + backend + audyt perf + integracja.',use:'Optymalizacja API, Core Web Vitals.',p:['\u2713 Dedykowany QA Perf','\u2713 Integrator'],m:['\u2717 Brak frontendu'],t:'~100-160K',$:'$0.08-0.25',pt:'Measure-Fix Cycle'},startup:{n:'Startup MVP',i:'\uD83D\uDE80',c:5,dsc:'Orkiestrator + analityk + researcher + builder + QA.',use:'MVP, maly SaaS, prototyp.',p:['\u2713 Pelny cykl','\u2713 Zbalansowany'],m:['\u2717 1 researcher','\u2717 1 builder'],t:'~150-250K',$:'$0.15-0.40',pt:'Hub-and-Spoke'},cascade:{n:'Cascade Cost',i:'\uD83D\uDCB0',c:5,dsc:'Haiku \u2192 Sonnet \u2192 Opus.',use:'Duze volume, batch.',p:['\u2713 70-80% tanio'],m:['\u2717 Liniowy czas'],t:'~80-200K',$:'$0.06-0.30',pt:'Cascade Escalation'},test_suite:{n:'Testing Suite',i:'\uD83E\uDDEA',c:5,dsc:'Orkiestrator + 3x QA + Manager.',use:'Pre-release, regression, CI/CD gate.',p:['\u2713 3 typy QA','\u2713 Manager GO/NO-GO'],m:['\u2717 Brak builderow'],t:'~120-200K',$:'$0.10-0.30',pt:'Triple QA Gate'},a11y:{n:'Accessibility Sprint',i:'\u267F',c:5,dsc:'UX research \u2192 designer + frontend \u2192 QA \u2192 docs.',use:'WCAG audit, a11y compliance.',p:['\u2713 UX specjalista','\u2713 Dokumentacja'],m:['\u2717 Brak backendu'],t:'~130-200K',$:'$0.10-0.30',pt:'A11y Pipeline'},security:{n:'Security Hardening',i:'\uD83D\uDEE1',c:6,dsc:'Builder + 3x QA + Manager z GO/NO-GO.',use:'Audyt bezpieczenstwa, compliance.',p:['\u2713 3 warstwy audytu','\u2713 GO/NO-GO'],m:['\u2717 Glownie audyt'],t:'~150-280K',$:'$0.12-0.40',pt:'Fan-out \u2192 Aggregate'},review:{n:'Code Review',i:'\uD83D\uDC41',c:6,dsc:'Analiza \u2192 build (BE+FE) \u2192 review.',use:'Feature z review, krytyczne PR.',p:['\u2713 Build + review osobno','\u2713 Feedback loop'],m:['\u2717 Brak researchu'],t:'~180-280K',$:'$0.15-0.45',pt:'Pipeline + Fan-out'},design_sys:{n:'Design System',i:'\uD83C\uDFA8',c:6,dsc:'UX + docs \u2192 designer + frontend \u2192 docs.',use:'Design system, component library.',p:['\u2713 Research UX+docs','\u2713 Pelen docs'],m:['\u2717 Brak backendu'],t:'~150-250K',$:'$0.12-0.38',pt:'Design Pipeline'},api_modern:{n:'API Modernization',i:'\uD83D\uDD0C',c:6,dsc:'Analiza \u2192 research \u2192 backend + integrator \u2192 QA.',use:'REST\u2192GraphQL, wersjonowanie.',p:['\u2713 Analiza pierwsza','\u2713 Integrator'],m:['\u2717 Brak FE'],t:'~150-260K',$:'$0.12-0.40',pt:'API Upgrade Pipeline'},ui_overhaul:{n:'UI/UX Overhaul',i:'\u2728',c:7,dsc:'2x research \u2192 analiza \u2192 designer + frontend \u2192 QA.',use:'Redesign UI, rebranding.',p:['\u2713 2 zrodla researchu','\u2713 Designer + FE'],m:['\u2717 Brak backendu'],t:'~180-300K',$:'$0.15-0.45',pt:'UI Redesign Pipeline'},feature_sprint:{n:'Feature Sprint',i:'\uD83C\uDFC3',c:7,dsc:'Analiza \u2192 research (tech+UX) \u2192 build (BE+FE) \u2192 QA.',use:'Nowa funkcja, feature flag.',p:['\u2713 2x research','\u2713 2x build'],m:['\u2717 Brak designera'],t:'~180-300K',$:'$0.15-0.48',pt:'Sprint Pipeline'},standard:{n:'Standard Dev',i:'\u2699',c:8,dsc:'Pelny cykl: planowanie + research + build + QA.',use:'Typowe projekty web.',p:['\u2713 Pelny cykl','\u2713 Uniwersalny'],m:['\u2717 ~250-400K','\u2717 Brak designera'],t:'~250-400K',$:'$0.25-0.65',pt:'Hierarchical Pipeline'},data_pipe:{n:'Data Pipeline',i:'\uD83D\uDCCA',c:8,dsc:'Planowanie + research \u2192 backend + feature \u2192 integrator.',use:'ETL, data warehouse, analytics.',p:['\u2713 Feature Dev','\u2713 Integrator'],m:['\u2717 Brak FE','\u2717 Brak QA'],t:'~200-350K',$:'$0.20-0.55',pt:'Data Engineering'},research:{n:'Research Swarm',i:'\uD83E\uDDE0',c:9,dsc:'6 researcherow + krytyk + syntetyk.',use:'Due diligence, analiza rynku.',p:['\u2713 6 zrodel','\u2713 Critic + Syntetyk'],m:['\u2717 BRAK implementacji'],t:'~200-400K',$:'$0.20-0.60',pt:'Fan-out \u2192 Critique'},legacy:{n:'Legacy Refactor',i:'\uD83C\uDFDA',c:9,dsc:'Analiza + research \u2192 3x build \u2192 2x QA.',use:'Refaktor legacy, migracja.',p:['\u2713 3 builderow','\u2713 2 QA'],m:['\u2717 Wysoki koszt'],t:'~250-420K',$:'$0.25-0.65',pt:'Legacy Modernization'},saas:{n:'Full-Stack SaaS',i:'\uD83C\uDFD7',c:10,dsc:'Research \u2192 build (3 role) \u2192 integracja \u2192 QA.',use:'SaaS, dashboard, e-commerce.',p:['\u2713 Designer','\u2713 Integrator'],m:['\u2717 ~300-500K'],t:'~300-500K',$:'$0.35-0.80',pt:'Hierarchical Squads'},microservices:{n:'Microservices',i:'\uD83E\uDDE9',c:11,dsc:'Planowanie \u2192 research \u2192 4x build \u2192 3x QA.',use:'Service mesh, API gateway.',p:['\u2713 4 builderow','\u2713 3x QA'],m:['\u2717 ~350-600K'],t:'~350-600K',$:'$0.35-0.90',pt:'Monolith Decomposition'},full:{n:'Full Hierarchy',i:'\uD83D\uDC51',c:13,dsc:'5-poziomowa hierarchia. Gold Standard.',use:'Enterprise, mission-critical.',p:['\u2713 Zero luk','\u2713 3x QA'],m:['\u2717 ~400-700K'],t:'~400-700K',$:'$0.45-1.20',pt:'Full 5-Layer Hierarchy'},deep:{n:'Deep Research+Build',i:'\uD83C\uDF0A',c:18,dsc:'6 researcherow + krytyk + syntetyk + 4 build + 3 QA.',use:'Enterprise z gleboka analiza.',p:['\u2713 Max research','\u2713 76.9% parallel'],m:['\u2717 ~600-1200K'],t:'~600-1200K',$:'$0.70-2.00',pt:'Full Orchestra'}};
+const PCAT=[{name:'MICRO (2-3)',ids:['solo','quick_fix','recon','trio','reflect']},{name:'MALE (4-5)',ids:['bug_hunt','content','plan_exec','perf_boost','startup','cascade','test_suite','a11y']},{name:'SREDNIE (6-8)',ids:['security','review','design_sys','api_modern','ui_overhaul','feature_sprint','standard','data_pipe']},{name:'DUZE (9-12)',ids:['research','legacy','saas','microservices']},{name:'ENTERPRISE (13+)',ids:['full','deep']}];
+function getModelAnalysis(pid,mdl){const pr=PR[pid]||[];const nc=pr.length;const rates={opus:{i:15,o:75},sonnet:{i:3,o:15},haiku:{i:.8,o:4}};const r=rates[mdl];const minC=nc*((20000/1e6*r.i)+(10000/1e6*r.o));const maxC=nc*((40000/1e6*r.i)+(20000/1e6*r.o));const minT=nc*20,maxT=nc*40;const cats={};pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(d){cats[d.cat]=(cats[d.cat]||0)+1}});const nR=cats['RESEARCH']||0,nB=cats['BUILD']||0;const resHeavy=nR>nc*.35;let pros=[],cons=[];if(mdl==='opus'){pros.push('\u2713 Najwyzsza jakosc');if(cats['STRATEGIA'])pros.push('\u2713 Orkiestrator 1M ctx');if(nB)pros.push('\u2713 Przemyslany kod');cons.push('\u2717 Koszt: $'+minC.toFixed(2)+'-'+maxC.toFixed(2));if(resHeavy)cons.push('\u2717 Overkill dla researchu');if(nc>5)cons.push('\u2717 '+nc+' agentow x Opus')}else if(mdl==='sonnet'){pros.push('\u2713 Optymalny balans');if(nB)pros.push('\u2713 Idealny do kodu');pros.push('\u2713 Szybszy od Opus');cons.push('\u2717 Koszt: $'+minC.toFixed(2)+'-'+maxC.toFixed(2));if(cats['STRATEGIA'])cons.push('\u2717 Orkiestracja mniej precyzyjna')}else{pros.push('\u2713 Min. koszt: $'+minC.toFixed(2)+'-'+maxC.toFixed(2));pros.push('\u2713 Najszybsza odpowiedz');if(resHeavy)pros.push('\u2713 Idealny do researchu');if(cats['STRATEGIA'])cons.push('\u2717 Orkiestrator moze zle decydowac');if(nB)cons.push('\u2717 Nizszej jakosci kod')}return{t:'~'+minT+'-'+maxT+'K',$:'$'+minC.toFixed(2)+'-'+maxC.toFixed(2),p:pros,m:cons}}
+let nodes=[],conns=[],sel=new Set(),connMode=false,connFrom=null,idC=0,actPr=null;let scale=1,panX=0,panY=0,isPan=false,panSt={x:0,y:0,px:0,py:0};let dragGroup=null;const cvA=G('cvA'),cvT=G('cvT');const cMap={am:'c-am',cy:'c-cy',bl:'c-bl',mu:'c-mu',ro:'c-ro',vi:'c-vi'};const bMap={opus:'b-op',sonnet:'b-so',haiku:'b-ha'};
+function apTr(){cvT.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;G('zL').textContent=Math.round(scale*100)+'%';upGrid()}
+function upGrid(){const s=Math.max(20,40*scale);const g=G('cvG');g.style.backgroundImage=`linear-gradient(rgba(34,211,238,${.01*Math.min(1,scale)}) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,${.01*Math.min(1,scale)}) 1px,transparent 1px)`;g.style.backgroundSize=s+'px '+s+'px';g.style.backgroundPosition=panX%s+'px '+panY%s+'px'}
+cvA.addEventListener('wheel',e=>{e.preventDefault();const d=e.deltaY>0?.92:1.08;const ns=Math.max(.15,Math.min(3,scale*d));const r=cvA.getBoundingClientRect();const cx=e.clientX-r.left,cy=e.clientY-r.top;panX=cx-(cx-panX)*(ns/scale);panY=cy-(cy-panY)*(ns/scale);scale=ns;apTr()},{passive:false});
+cvA.addEventListener('mousedown',e=>{if(e.button===1||(e.button===0&&e.altKey)){isPan=true;panSt={x:e.clientX,y:e.clientY,px:panX,py:panY};e.preventDefault()}});
+document.addEventListener('mousemove',e=>{if(isPan){panX=panSt.px+(e.clientX-panSt.x);panY=panSt.py+(e.clientY-panSt.y);apTr();return}if(!dragGroup)return;const r=cvA.getBoundingClientRect();dragGroup.forEach(g=>{g.node.x=(e.clientX-r.left-panX)/scale-g.ox;g.node.y=(e.clientY-r.top-panY)/scale-g.oy;const el=G(g.node.id);if(el){el.style.left=g.node.x+'px';el.style.top=g.node.y+'px'}});rConn()});
+document.addEventListener('mouseup',()=>{if(isPan){isPan=false;return}if(dragGroup){dragGroup=null}});
+function zIn(){scale=Math.min(3,scale*1.2);apTr()}function zOut(){scale=Math.max(.15,scale/1.2);apTr()}function zRst(){scale=1;panX=0;panY=0;apTr()}
+function rPal(){let h='',lc='';AD.forEach(d=>{if(d.cat!==lc){h+=`<div class="pa-cat">${d.cat}</div>`;lc=d.cat}h+=`<div class="pa-item" draggable="true" ondragstart="pDS(event,'${d.id}')" onclick="showDef('${d.id}')"><div class="pa-orb">${d.icon}</div><div class="pa-txt"><div class="pa-name">${d.name}</div><div class="pa-desc">${d.role.substring(0,35)}...</div></div><span class="pa-badge ${bMap[d.model]}">${d.model.toUpperCase()}</span></div>`});G('paL').innerHTML=h}
+function fPal(){const q=G('paS').value.toLowerCase();document.querySelectorAll('.pa-item').forEach(e=>{e.style.display=(e.querySelector('.pa-name').textContent+e.querySelector('.pa-desc').textContent).toLowerCase().includes(q)?'':'none'})}
+function rPre(){let h='';PCAT.forEach(cat=>{h+=`<div class="pr-cat">${cat.name}</div>`;cat.ids.forEach(pid=>{const m=PM[pid];if(!m)return;h+=`<div class="pr-item" id="pi_${pid}" onclick="ldPr('${pid}')" oncontextmenu="event.preventDefault();shPI('${pid}')"><span class="pr-icon">${m.i}</span><span class="pr-name">${m.n}</span><span class="pr-cnt">${m.c}</span></div>`})});G('prL').innerHTML=h}
+function rSv(){const c=JSON.parse(localStorage.getItem('acV7')||'[]');if(!c.length){G('svL').innerHTML='<div class="sv-empty">Brak zapisanych.</div>';return}let h='';c.forEach((x,i)=>{const d=new Date(x.ts).toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});h+=`<div class="sv-item" onclick="ldSv(${i})"><span class="sv-name">${x.name}</span><span class="sv-date">${d}</span><span class="sv-del" onclick="event.stopPropagation();dlSv(${i})">\u2715</span></div>`});G('svL').innerHTML=h}
+function pDS(e,id){e.dataTransfer.setData('did',id)}
+cvA.addEventListener('dragover',e=>e.preventDefault());
+cvA.addEventListener('drop',e=>{e.preventDefault();const did=e.dataTransfer.getData('did');if(!did)return;const r=cvA.getBoundingClientRect();addN(did,(e.clientX-r.left-panX)/scale-36,(e.clientY-r.top-panY)/scale-30)});
+function addN(did,x,y){const d=AD.find(a=>a.id===did);if(!d)return;const id='n'+(idC++);nodes.push({id,defId:did,x,y,model:d.model,cp:d.prompt});rNd();sel.clear();sel.add(id);upSel();showND(id);upSt();upCI()}
+function rNd(){cvT.querySelectorAll('.nd').forEach(e=>e.remove());nodes.forEach(nd=>{const d=AD.find(a=>a.id===nd.defId);if(!d)return;const cc=cMap[d.color]||'c-mu';const bc=bMap[nd.model]||'b-so';const ld=d.load+(nd.model==='haiku'?10:nd.model==='opus'?-15:0);const lc=ld>=80?'var(--ro)':ld>=55?'var(--am)':'var(--em)';const el=document.createElement('div');el.className='nd '+cc+(sel.has(nd.id)?' sel':'');el.id=nd.id;el.style.left=nd.x+'px';el.style.top=nd.y+'px';el.innerHTML=`<div class="nd-anc top" data-n="${nd.id}"></div><div class="nd-body"><div class="nd-orb">${d.icon}</div><div class="nd-lbl">${d.name}</div><span class="nd-mdl ${bc}">${nd.model.toUpperCase()}</span><div class="nd-load"><div class="nd-load-bar" style="width:${Math.min(100,ld)}%;background:${lc}"></div></div></div><div class="nd-anc bot" data-n="${nd.id}"></div>`;el.addEventListener('mousedown',e=>{if(e.target.classList.contains('nd-anc')){onAnc(nd.id);return}if(connMode){onAnc(nd.id);return}const r=cvA.getBoundingClientRect();if(!sel.has(nd.id)){if(!e.shiftKey){sel.clear()}sel.add(nd.id);upSel()}dragGroup=[...sel].map(sid=>{const n=nodes.find(x=>x.id===sid);return{node:n,ox:(e.clientX-r.left-panX)/scale-n.x,oy:(e.clientY-r.top-panY)/scale-n.y}});e.preventDefault();e.stopPropagation()});el.addEventListener('click',e=>{if(!connMode){if(e.shiftKey){if(sel.has(nd.id))sel.delete(nd.id);else sel.add(nd.id);upSel()}else{sel.clear();sel.add(nd.id);upSel()}showND(nd.id)}e.stopPropagation()});cvT.appendChild(el)});rConn()}
+function upSel(){cvT.querySelectorAll('.nd').forEach(e=>e.classList.toggle('sel',sel.has(e.id)))}
+function onAnc(nid){if(!connFrom){connFrom=nid;G(nid)?.classList.add('sel')}else if(connFrom!==nid){if(!conns.some(c=>(c.fi===connFrom&&c.ti===nid)||(c.fi===nid&&c.ti===connFrom))){conns.push({id:'c'+(idC++),fi:connFrom,ti:nid,tp:'one'});rConn();upSt();upCI()}G(connFrom)?.classList.remove('sel');connFrom=null}}
+function togConn(){connMode=!connMode;connFrom=null;const b=G('cBtn');b.textContent=connMode?'\uD83D\uDD17 Kliknij 2...':'\uD83D\uDD17 Polacz';b.style.borderColor=connMode?'rgba(34,211,238,.5)':''}
+function rConn(){const svg=G('svg');svg.setAttribute('viewBox','0 0 6000 6000');svg.setAttribute('width',6000);svg.setAttribute('height',6000);let h=`<defs><marker id="a1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(34,211,238,.6)"/></marker><marker id="a2" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6" fill="rgba(16,185,129,.6)"/></marker><marker id="a3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="rgba(139,92,246,.6)"/></marker></defs>`;const cs={one:'rgba(34,211,238,.3)',two:'rgba(16,185,129,.3)',continuous:'rgba(139,92,246,.3)'};const ms={one:'url(#a1)',two:'url(#a2)',continuous:'url(#a3)'};const ds={one:'rgba(34,211,238,.6)',two:'rgba(16,185,129,.6)',continuous:'rgba(139,92,246,.6)'};conns.forEach(c=>{const f=nodes.find(n=>n.id===c.fi),t=nodes.find(n=>n.id===c.ti);if(!f||!t)return;const x1=f.x+36,y1=f.y+40,x2=t.x+36,y2=t.y+8;const dy=y2-y1;const p=`M${x1},${y1} C${x1},${y1+dy*.35} ${x2},${y2-dy*.35} ${x2},${y2}`;const cl=cs[c.tp]||cs.one;const mk=ms[c.tp]||ms.one;const dc=ds[c.tp]||ds.one;const da=c.tp==='continuous'?'':'6 4';h+=`<path d="${p}" fill="none" stroke="${cl}" stroke-width="2" stroke-dasharray="${da}" marker-end="${mk}"/>`;h+=`<circle r="3" fill="${dc}"><animateMotion dur="2.5s" repeatCount="indefinite" path="${p}"/></circle>`;h+=`<path class="hit" d="${p}" fill="none" stroke="transparent" stroke-width="14" onclick="cycC('${c.id}')"/>`;if(c.tp==='two'){h+=`<path d="M${x2},${y2} C${x2},${y2-dy*.35+40} ${x1},${y1+dy*.35-40} ${x1},${y1}" fill="none" stroke="rgba(16,185,129,.15)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#a2)"/>`}});svg.innerHTML=h}
+function cycC(cid){const c=conns.find(x=>x.id===cid);if(!c)return;const t=['one','two','continuous'];c.tp=t[(t.indexOf(c.tp)+1)%t.length];rConn();if(sel.size===1)showND([...sel][0])}
+cvA.addEventListener('click',e=>{if(e.target===cvA||e.target.classList.contains('cv-grid')||e.target.closest('.cv-container')===e.target.closest('.cv-area>*:first-child')){if(!e.target.closest('.nd')){sel.clear();upSel();if(actPr)shPI(actPr);else G('srS').innerHTML='<div class="sr-mt">Kliknij agenta lub preset.</div>'}}});
+function showND(nid){const nd=nodes.find(n=>n.id===nid);if(!nd)return;const d=AD.find(a=>a.id===nd.defId);if(!d)return;const oC=conns.filter(c=>c.fi===nid),iC=conns.filter(c=>c.ti===nid);const tl={one:'\u2192',two:'\u21C4',continuous:'\u223C'};const ld=d.load+(nd.model==='haiku'?10:nd.model==='opus'?-15:0);const lc=ld>=80?'var(--ro)':ld>=55?'var(--am)':'var(--em)';const warn=ld>=80?'<br><span style="color:var(--ro)">\u26A0 BOTTLENECK</span>':'';let h=`<div class="ds-card"><h4>${d.icon} ${d.name}</h4><p>${d.role}</p></div><div class="ds"><div class="ds-l">NARZEDZIA</div><div class="ds-v">${d.tools}</div></div><div class="ds"><div class="ds-l">MODEL</div><div class="ds-mdls"><div class="ds-m ${nd.model==='opus'?'a-op':''}" onclick="chMdl('${nid}','opus')"><div class="ds-mn" style="color:var(--am)">Opus</div><div class="ds-mc">1M/$$$</div></div><div class="ds-m ${nd.model==='sonnet'?'a-so':''}" onclick="chMdl('${nid}','sonnet')"><div class="ds-mn" style="color:var(--em)">Sonnet</div><div class="ds-mc">200K/$$</div></div><div class="ds-m ${nd.model==='haiku'?'a-ha':''}" onclick="chMdl('${nid}','haiku')"><div class="ds-mn" style="color:var(--cy)">Haiku</div><div class="ds-mc">200K/$</div></div></div></div><div class="ds"><div class="ds-l">OBCIAZENIE ${Math.min(100,ld)}%</div><div style="width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.03);margin:3px 0"><div style="width:${Math.min(100,ld)}%;height:100%;background:${lc};border-radius:3px"></div></div><div style="font-size:9px;color:var(--t4)">${iC.length} in, ${oC.length} out${warn}</div></div>`;if(oC.length){h+=`<div class="ds"><div class="ds-l">WY (${oC.length})</div>`;oC.forEach(c=>{const t=nodes.find(n=>n.id===c.ti);const td=t?AD.find(a=>a.id===t.defId):null;h+=`<div class="ds-cn"><span class="ds-cn-a">${tl[c.tp]}</span>${td?td.name:'?'}<span class="ds-cn-d" onclick="dlCn('${c.id}')">\u2715</span></div>`});h+=`</div>`}if(iC.length){h+=`<div class="ds"><div class="ds-l">WE (${iC.length})</div>`;iC.forEach(c=>{const s=nodes.find(n=>n.id===c.fi);const sd=s?AD.find(a=>a.id===s.defId):null;h+=`<div class="ds-cn"><span class="ds-cn-a">\u2190</span>${sd?sd.name:'?'}<span class="ds-cn-d" onclick="dlCn('${c.id}')">\u2715</span></div>`});h+=`</div>`}h+=`<div class="ds"><div class="ds-l">PROMPT (edytowalny)</div><textarea class="ds-ta" id="nP" oninput="svPr('${nid}')">${nd.cp||d.prompt}</textarea></div>`;h+='<button class="btn btn-learn" onclick="openLearn(\'agent\',\''+nd.defId+'\')">&#128214; Rozwin &#8212; Tryb Nauki</button>';G('srS').innerHTML=h}
+function showDef(did){const d=AD.find(a=>a.id===did);if(!d)return;G('srS').innerHTML=`<div class="ds-card"><h4>${d.icon} ${d.name}</h4><p>${d.role}</p></div><div class="ds"><div class="ds-l">NARZEDZIA</div><div class="ds-v">${d.tools}</div></div><div class="ds"><div class="ds-l">MODEL</div><div class="ds-v">${d.model.toUpperCase()}</div></div><div class="ds"><div class="ds-l">PROMPT</div><textarea class="ds-ta" readonly style="min-height:180px">${d.prompt}</textarea></div><button class="btn btn-learn" onclick="openLearn('agent','${did}')">&#128214; Rozwin &#8212; Tryb Nauki</button><div style="margin-top:8px"><button class="btn btn-p" onclick="addC('${d.id}')" style="width:100%">+ Dodaj na canvas</button></div>`}
+function addC(did){const r=cvA.getBoundingClientRect();addN(did,(r.width/2-panX)/scale-36+(Math.random()-.5)*80,(r.height/2-panY)/scale-30+(Math.random()-.5)*80)}
+function chMdl(nid,m){const nd=nodes.find(n=>n.id===nid);if(!nd)return;const re=/^\[MODEL:.*?\]\n\n/;if(nd.cp.match(re))nd.cp=nd.cp.replace(re,MH[m]+'\n\n');nd.model=m;rNd();upSt();showND(nid)}
+function chAllMdl(m){nodes.forEach(nd=>{const re=/^\[MODEL:.*?\]\n\n/;if(nd.cp.match(re))nd.cp=nd.cp.replace(re,MH[m]+'\n\n');nd.model=m});rNd();upSt();if(actPr)shPI(actPr);else if(sel.size===1)showND([...sel][0])}
+function svPr(nid){const nd=nodes.find(n=>n.id===nid);const ta=G('nP');if(nd&&ta)nd.cp=ta.value}
+function dlCn(cid){conns=conns.filter(c=>c.id!==cid);rConn();upSt();upCI();if(sel.size===1)showND([...sel][0])}
+function delSel(){if(!sel.size)return;nodes=nodes.filter(n=>!sel.has(n.id));conns=conns.filter(c=>!sel.has(c.fi)&&!sel.has(c.ti));sel.clear();rNd();upSt();upCI();G('srS').innerHTML='<div class="sr-mt">Zaznacz agenta.</div>'}
+function clrCv(){if(!confirm('Wyczysc?'))return;nodes=[];conns=[];sel.clear();connFrom=null;idC=0;actPr=null;rNd();upSt();upCI();hlPr(null);G('srS').innerHTML='<div class="sr-mt">Przeciagnij agentow.</div>'}
+function upCI(){G('cvI').textContent=nodes.length+' agentow | '+conns.length+' polaczen'}
+function ldPr(pid){nodes=[];conns=[];sel.clear();idC=0;actPr=pid;const pr=PR[pid];if(!pr)return;pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(!d)return;nodes.push({id:'n'+(idC++),defId:p.d,x:p.x,y:p.y,model:d.model,cp:d.prompt})});(PC[pid]||[]).forEach(c=>{if(nodes[c[0]]&&nodes[c[1]])conns.push({id:'c'+(idC++),fi:nodes[c[0]].id,ti:nodes[c[1]].id,tp:c[2]||'one'})});rNd();upSt();upCI();hlPr(pid);shPI(pid);if(nodes.length){const mnX=Math.min(...nodes.map(n=>n.x)),mxX=Math.max(...nodes.map(n=>n.x));const mnY=Math.min(...nodes.map(n=>n.y)),mxY=Math.max(...nodes.map(n=>n.y));const cw=cvA.clientWidth,ch=cvA.clientHeight;const nw=mxX-mnX+160,nh=mxY-mnY+160;scale=Math.min(1,Math.min(cw/nw,ch/nh)*.85);panX=(cw-nw*scale)/2-mnX*scale+40;panY=(ch-nh*scale)/2-mnY*scale+20;apTr()}}
+function hlPr(pid){document.querySelectorAll('.pr-item').forEach(e=>e.classList.remove('on'));if(pid){const el=G('pi_'+pid);if(el)el.classList.add('on')}G('sP').querySelector('.st-v').textContent=pid?PM[pid]?.n||pid:'-'}
+function shPI(pid){const m=PM[pid];if(!m)return;const pr=PR[pid]||[];const mc={opus:0,sonnet:0,haiku:0};if(nodes.length&&actPr===pid){nodes.forEach(n=>mc[n.model]++)}else{pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(d)mc[d.model]++})}let mh='';if(mc.opus)mh+=`<span style="color:var(--am)">${mc.opus}x Opus</span> `;if(mc.sonnet)mh+=`<span style="color:var(--em)">${mc.sonnet}x Sonnet</span> `;if(mc.haiku)mh+=`<span style="color:var(--cy)">${mc.haiku}x Haiku</span>`;const co={opus:{i:15,o:75},sonnet:{i:3,o:15},haiku:{i:.8,o:4}};let dynMinC=0,dynMaxC=0,dynMinT=0,dynMaxT=0;if(nodes.length&&actPr===pid){nodes.forEach(n=>{const c=co[n.model];dynMinT+=20;dynMaxT+=40;dynMinC+=(20000/1e6*c.i)+(10000/1e6*c.o);dynMaxC+=(40000/1e6*c.i)+(20000/1e6*c.o)})}const hasDyn=nodes.length&&actPr===pid;const dynT=hasDyn?`~${dynMinT}-${dynMaxT}K`:m.t;const dyn$=hasDyn?`$${dynMinC.toFixed(2)}-${dynMaxC.toFixed(2)}`:m.$;G('srS').innerHTML=`<div class="ds-card"><h4>${m.i} ${m.n} <span style="font-size:10px;color:var(--t3)">(${m.c})</span></h4><p>${m.dsc}</p></div><div class="ds"><div class="ds-l">KIEDY UZYWAC</div><div class="ds-v">${m.use}</div></div><div class="ds"><div class="ds-l">WZORZEC</div><div class="pi-badge">${m.pt}</div></div><div class="ds"><div class="ds-l">SKLAD MODELI</div><div style="font-family:var(--mn);font-size:10px;margin:3px 0">${mh}</div></div><div class="ds"><div class="ds-l">KOSZT</div><div class="pi-costs"><div><div style="font-size:8px;color:var(--t4)">TOKENY</div><div class="pi-cv" style="color:var(--em)">${dynT}</div></div><div><div style="font-size:8px;color:var(--t4)">USD</div><div class="pi-cv" style="color:var(--am)">${dyn$}</div></div></div></div><div class="ds"><div class="ds-l">ZALETY</div><ul class="pi-ul">${m.p.map(x=>`<li class="pi-pro">${x}</li>`).join('')}</ul></div><div class="ds"><div class="ds-l">WADY</div><ul class="pi-ul">${m.m.map(x=>`<li class="pi-con">${x}</li>`).join('')}</ul></div><button class="btn btn-learn" onclick="openLearn('preset','${pid}')">&#128214; Rozwin &#8212; Tryb Nauki</button>`}
+function upSt(){const mc={opus:0,sonnet:0,haiku:0};nodes.forEach(n=>mc[n.model]++);const co={opus:{i:15,o:75},sonnet:{i:3,o:15},haiku:{i:.8,o:4}};let mt=0,xt=0,mc2=0,xc=0;nodes.forEach(n=>{const c=co[n.model];mt+=20000;xt+=40000;mc2+=(20000/1e6*c.i)+(10000/1e6*c.o);xc+=(40000/1e6*c.i)+(20000/1e6*c.o)});G('sA').textContent=nodes.length;G('sC').textContent=conns.length;G('sO').textContent=mc.opus;G('sS').textContent=mc.sonnet;G('sH').textContent=mc.haiku;G('sT').textContent=nodes.length?`~${Math.round(mt/1000)}-${Math.round(xt/1000)}K`:'~0K';G('s$').textContent=nodes.length?`${mc2.toFixed(2)}-${xc.toFixed(2)}`:'0.00'}
+function autoLay(){if(!nodes.length)return;const adj={},ind={};nodes.forEach(n=>{adj[n.id]=[];ind[n.id]=0});conns.forEach(c=>{if(adj[c.fi])adj[c.fi].push(c.ti);if(ind[c.ti]!==undefined)ind[c.ti]++});const layers={};const vis=new Set();let q=[];nodes.forEach(n=>{if(ind[n.id]===0){q.push(n.id);layers[n.id]=0;vis.add(n.id)}});if(!q.length){q.push(nodes[0].id);layers[nodes[0].id]=0;vis.add(nodes[0].id)}while(q.length){const nq=[];q.forEach(id=>{(adj[id]||[]).forEach(tid=>{layers[tid]=Math.max(layers[tid]||0,(layers[id]||0)+1);if(!vis.has(tid)){vis.add(tid);nq.push(tid)}})});q=nq}nodes.forEach(n=>{if(layers[n.id]===undefined)layers[n.id]=0});const grp={};nodes.forEach(n=>{const l=layers[n.id];if(!grp[l])grp[l]=[];grp[l].push(n)});const lk=Object.keys(grp).map(Number).sort((a,b)=>a-b);const cw=cvA.clientWidth;lk.forEach((l,li)=>{const g=grp[l];const tw=g.length*120;const sx=(cw/scale-tw)/2+30;g.forEach((n,ni)=>{n.x=sx+ni*120;n.y=40+li*120})});scale=1;panX=0;panY=0;apTr();rNd();upSt();upCI()}
+function expCfg(){const d={v:'7.0',pr:actPr,nodes:nodes.map(n=>({d:n.defId,x:Math.round(n.x),y:Math.round(n.y),m:n.model,p:n.cp})),conns:conns.map(c=>({fi:nodes.findIndex(n=>n.id===c.fi),ti:nodes.findIndex(n=>n.id===c.ti),t:c.tp})),prob:G('probIn').value};G('exA').value=JSON.stringify(d,null,2);G('moE').classList.add('show')}
+function impCfg(){G('imA').value='';G('moI').classList.add('show')}
+function doImp(){try{const d=JSON.parse(G('imA').value);nodes=[];conns=[];idC=0;sel.clear();(d.nodes||[]).forEach(n=>{const def=AD.find(a=>a.id===n.d);if(!def)return;nodes.push({id:'n'+(idC++),defId:n.d,x:n.x||0,y:n.y||0,model:n.m||def.model,cp:n.p||def.prompt})});(d.conns||[]).forEach(c=>{if(nodes[c.fi]&&nodes[c.ti])conns.push({id:'c'+(idC++),fi:nodes[c.fi].id,ti:nodes[c.ti].id,tp:c.t||'one'})});if(d.prob)G('probIn').value=d.prob;actPr=d.pr||null;rNd();upSt();upCI();cMo('moI')}catch(e){alert('JSON error: '+e.message)}}
+function saveCfg(){const name=prompt('Nazwa:')||'Config '+new Date().toLocaleString('pl-PL');const d={name,nodes:JSON.parse(JSON.stringify(nodes)),conns:JSON.parse(JSON.stringify(conns)),prob:G('probIn').value,idC,ts:new Date().toISOString()};const c=JSON.parse(localStorage.getItem('acV7')||'[]');c.push(d);localStorage.setItem('acV7',JSON.stringify(c));rSv();sTab('sv',document.querySelectorAll('.sl-tab')[2])}
+function ldSv(i){const c=JSON.parse(localStorage.getItem('acV7')||'[]');const d=c[i];if(!d)return;nodes=JSON.parse(JSON.stringify(d.nodes));conns=JSON.parse(JSON.stringify(d.conns));idC=d.idC||0;sel.clear();G('probIn').value=d.prob||'';actPr=null;rNd();upSt();upCI();hlPr(null)}
+function dlSv(i){if(!confirm('Usunac?'))return;const c=JSON.parse(localStorage.getItem('acV7')||'[]');c.splice(i,1);localStorage.setItem('acV7',JSON.stringify(c));rSv()}
+function genPrompt(){if(!nodes.length){alert('Dodaj agentow!');return}const prob=G('probIn').value.trim();let p=`Jestes Master Orkiestratorem zespolu ${nodes.length} agentow AI.\n\n## ZADANIE\n${prob||'[WPISZ OPIS]'}\n\n`;if(actPr&&PM[actPr]){const m=PM[actPr];p+=`## KONFIGURACJA: ${m.n} (${m.pt})\nZuzycie: ${m.t} | ~${m.$}\n\n`}p+=`## ZESPOL (${nodes.length})\n\n`;[...nodes].sort((a,b)=>a.y-b.y).forEach((nd,i)=>{const d=AD.find(a=>a.id===nd.defId);if(!d)return;const oC=conns.filter(c=>c.fi===nd.id).map(c=>{const t=nodes.find(n=>n.id===c.ti);return t?AD.find(a=>a.id===t.defId)?.name:'?'});const iC=conns.filter(c=>c.ti===nd.id).map(c=>{const s=nodes.find(n=>n.id===c.fi);return s?AD.find(a=>a.id===s.defId)?.name:'?'});p+=`### Agent ${i+1}: ${d.name} [${nd.model.toUpperCase()}]\nRola: ${d.role}\n`;if(iC.length)p+=`Odbiera od: ${iC.join(', ')}\n`;if(oC.length)p+=`Wysyla do: ${oC.join(', ')}\n`;p+=`\nPrompt:\n"""\n${nd.cp}\n"""\n\n`});p+=`## ZASADY\n- Waski kontekst per agent\n- MANIFEST.md scratchpad\n- Gate'y miedzy fazami\n- Max 10 krokow sekwencyjnych\n`;G('fpA').value=p;G('moP').classList.add('show')}
+function cpFP(e){navigator.clipboard.writeText(G('fpA').value).then(()=>{const b=e&&e.target||document.querySelector('#moP .btn-p');b.textContent='\u2705 OK!';setTimeout(()=>b.textContent='\uD83D\uDCCB Kopiuj',1500)})}
+function sTab(id,el){document.querySelectorAll('.sl-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.querySelectorAll('.sl-pan').forEach(p=>p.classList.remove('on'));G('pan'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('on')}
+function cMo(id){G(id).classList.remove('show')}
+function showKB(){G('moK').classList.add('show')}
+
+// ================================================================
+// v7 WIZARD ENGINE — ENHANCED WITH UX RESEARCH FINDINGS
+// ================================================================
+let wizOpen=false, wizCur=0, wizSteps=[], wizType='', wizId='';
+
+function openLearn(type,id){
+  wizType=type;wizId=id;wizCur=0;wizOpen=true;
+  if(type==='agent') wizSteps=buildAgentSteps(id);
+  else wizSteps=buildPresetSteps(id);
+  renderWizard();
+  G('wizOverlay').classList.add('show');
+  requestAnimationFrame(()=>{triggerStaggerAnim(0)});
+}
+function closeWizard(){wizOpen=false;G('wizOverlay').classList.remove('show');stopConfetti()}
+
+function renderWizard(){
+  const total=wizSteps.length;
+  const estMin=Math.max(2,Math.round(total*0.4));
+  G('wizProgress').style.width=((wizCur+1)/total*100)+'%';
+  G('wizCounter').textContent=`Krok ${wizCur+1} z ${total}`;
+  G('wizEstTime').innerHTML=`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~${estMin} min`;
+  // Linear stepper
+  let stepperHTML='';
+  wizSteps.forEach((_,i)=>{
+    const state=i<wizCur?'done':(i===wizCur?'active':'upcoming');
+    const lineState=i<wizCur?'done':(i===wizCur?'active':'upcoming');
+    if(i>0) stepperHTML+=`<div class="wiz-stepper-line ${lineState}"></div>`;
+    stepperHTML+=`<div class="wiz-stepper-circle ${state}" onclick="wizGo(${i})" title="${wizSteps[i].title}">`;
+    if(state==='done') stepperHTML+=`<span class="check-icon">\u2713</span>`;
+    else stepperHTML+=`${i+1}`;
+    stepperHTML+=`</div>`;
+  });
+  G('wizStepper').innerHTML=stepperHTML;
+  let slidesHTML='';
+  wizSteps.forEach((_,i)=>{slidesHTML+=`<div class="wiz-slide" id="wizSlide${i}"><div class="wiz-slide-inner">${wizSteps[i].html}</div></div>`});
+  G('wizSlides').innerHTML=slidesHTML;
+  G('wizSlides').style.transform=`translateX(-${wizCur*100}%)`;
+  G('wizNavCenter').textContent=`Krok ${wizCur+1} z ${total}`;
+  G('wizPrev').disabled=wizCur===0;
+  G('wizPrev').style.visibility=wizCur===0?'hidden':'visible';
+  if(wizCur===total-1){G('wizNext').textContent='Zakoncz';G('wizNext').className='wiz-nav-btn wiz-nav-next finish'}
+  else{G('wizNext').innerHTML='Dalej \u2192';G('wizNext').className='wiz-nav-btn wiz-nav-next'}
+  if(wizCur===total-1) startConfetti(); else stopConfetti();
+}
+
+function triggerStaggerAnim(idx){const slide=document.getElementById('wizSlide'+idx);if(!slide)return;slide.classList.remove('animating');void slide.offsetWidth;slide.classList.add('animating')}
+
+function wizNextFn(){if(wizCur>=wizSteps.length-1){closeWizard();return}wizCur++;G('wizSlides').style.transform=`translateX(-${wizCur*100}%)`;updateWizUI();triggerStaggerAnim(wizCur)}
+function wizPrevFn(){if(wizCur<=0)return;wizCur--;G('wizSlides').style.transform=`translateX(-${wizCur*100}%)`;updateWizUI();triggerStaggerAnim(wizCur)}
+function wizGo(i){wizCur=i;G('wizSlides').style.transform=`translateX(-${wizCur*100}%)`;updateWizUI();triggerStaggerAnim(wizCur)}
+
+function updateWizUI(){
+  const total=wizSteps.length;
+  G('wizProgress').style.width=((wizCur+1)/total*100)+'%';
+  G('wizCounter').textContent=`Krok ${wizCur+1} z ${total}`;
+  G('wizNavCenter').textContent=`Krok ${wizCur+1} z ${total}`;
+  document.querySelectorAll('.wiz-stepper-circle').forEach((c,i)=>{c.className='wiz-stepper-circle '+(i<wizCur?'done':(i===wizCur?'active':'upcoming'));if(i<wizCur)c.innerHTML='<span class="check-icon">\u2713</span>';else c.textContent=i+1});
+  document.querySelectorAll('.wiz-stepper-line').forEach((l,i)=>{l.className='wiz-stepper-line '+(i<wizCur?'done':(i===wizCur?'active':'upcoming'))});
+  G('wizPrev').disabled=wizCur===0;G('wizPrev').style.visibility=wizCur===0?'hidden':'visible';
+  if(wizCur===total-1){G('wizNext').textContent='Zakoncz';G('wizNext').className='wiz-nav-btn wiz-nav-next finish';startConfetti()}
+  else{G('wizNext').innerHTML='Dalej \u2192';G('wizNext').className='wiz-nav-btn wiz-nav-next';stopConfetti()}
+}
+
+// ================================================================
+// AGENT WIZARD STEPS BUILDER
+// ================================================================
+function buildAgentSteps(aid){
+  const d=AD.find(a=>a.id===aid);if(!d)return[];const steps=[];
+  const rt={opus:{i:15,o:75,ctx:'1M'},sonnet:{i:3,o:15,ctx:'200K'},haiku:{i:.8,o:4,ctx:'200K'}};const r=rt[d.model];
+  const costMin=((20000/1e6*r.i)+(10000/1e6*r.o)).toFixed(3);const costMax=((40000/1e6*r.i)+(20000/1e6*r.o)).toFixed(3);
+  const catColors={STRATEGIA:'amber',PLANOWANIE:'blue',RESEARCH:'violet',BUILD:'green','QA / AUDYT':'red'};const cc=catColors[d.cat]||'blue';
+  const catDescs={STRATEGIA:'Warstwa strategiczna decyduje o kierunku calego projektu.',PLANOWANIE:'Warstwa planowania rozbija problem na czesci i uklada harmonogram.',RESEARCH:'Warstwa badawcza zbiera dane z roznych zrodel.',BUILD:'Warstwa budowy tworzy faktyczny produkt.',  'QA / AUDYT':'Warstwa walidacji szuka bledow i ryzyk ZANIM trafi do produkcji.'};
+  const tierFacts={STRATEGIA:'Orkiestrator i Syntetyk stanowia "mozg" systemu. W 73% przypadkow blad na tym poziomie propaguje sie do WSZYSTKICH nizszych warstw.',PLANOWANIE:'Badania pokazuja ze 83% oszczednosci w projektach AI pochodzi z dobrze wykonanej fazy planowania.',RESEARCH:'6 specjalistycznych researcherow produkuje lepsze wyniki niz 1 generalny pracujacy 6x dluzej.',BUILD:'Sonnet generuje ~40% wiecej poprawnego kodu niz Haiku przy 3x wyzszym koszcie.','QA / AUDYT':'Trojstopniowy audyt wylapuje 92% wiecej bledow niz pojedynczy QA agent.'};
+  const modelNames={opus:'Opus 4.6',sonnet:'Sonnet 4.6',haiku:'Haiku 4.5'};
+  const modelFacts={opus:'Opus ma okno kontekstowe 1M tokenow \u2014 to rownowaznosc ~15 pelnych ksiazek.',sonnet:'Sonnet to "zloty srodek" \u2014 5x tanszy od Opus ale utrzymuje ~90% jakosci kodu.',haiku:'Haiku odpowiada nawet 3x szybciej niz Sonnet. Szybkosc jest wazniejsza niz glebokosc.'};
+  const toolIcons={'Agent':'\uD83E\uDD16','Read':'\uD83D\uDCD6','Write':'\u270D\uFE0F','Read/Write':'\uD83D\uDCD6\u270D','Edit':'\u2702','Bash':'\uD83D\uDDA5','WebSearch':'\uD83D\uDD0D','WebFetch':'\uD83C\uDF10','Grep':'\uD83D\uDD0E','TaskCreate':'\uD83D\uDCCB','Read/Write (MANIFEST.md)':'\uD83D\uDCD6\u270D'};
+  const catHier=['STRATEGIA','PLANOWANIE','RESEARCH','BUILD','QA / AUDYT'];
+  const roleDetails={orchestrator:'Orkiestrator to "dyrektor generalny" zespolu AI. NIGDY nie generuje tresci sam \u2014 tylko ZARZADZA.',synthesizer:'Syntetyk to "pamiec dlugoterminowa" systemu. Utrzymuje MANIFEST.md.',analyst:'Analityk to "strateg rozbioru" \u2014 bierze zlozony problem i dzieli na niezalezne podzadania.',planner:'Planer przeksztalca dekompozycje Analityka w harmonogram.',res_tech:'Researcher Tech przeszukuje dokumentacje, blogi i benchmarki szukajac optymalnych rozwiazan.',res_ux:'Researcher UX zbiera inspiracje z Dribbble, Behance, Awwwards.',res_reddit:'Reddit Researcher szuka NIEFILTROWANYCH opinii. Reddit jest unikalny: anonimowe opinie = szczere.',res_x:'Researcher X monitoruje Twittera szukajac trendow od influencerow.',res_github:'GitHub Researcher szuka realnego kodu, nie teorii.',res_forums:'Forum Researcher zbiera "wisdom of practitioners" ze StackOverflow, Dev.to, Medium, HN.',res_docs:'Docs Researcher to "arbiter prawdy". Oficjalna dokumentacja jest JEDYNYM zrodlem gwarantowanym.',res_critic:'Research Critic to "adwokat diabla". NIE zbiera danych \u2014 WALIDUJE.',backend:'Backend Dev to "inzynier serwerowy" \u2014 API endpoints, schematy danych, TDD.',frontend:'Frontend Dev buduje to co widzi uzytkownik. Mobile-first, reuzywalne komponenty.',feature:'Feature Dev to specjalista od niestandardowych rzeczy: WebSocket, AI/ML, wizualizacje.',designer:'Designer tworzy SYSTEM wizualny \u2014 tokeny, layout, animacje.',integrator:'Integrator laczy prace 3-4 builderow w spojny produkt.',writer:'Redaktor dokumentuje DLACZEGO, nie CO.',qa_security:'QA Security szuka WYLACZNIE podatnosci: OWASP Top 10, hardcoded secrets, CVE.',qa_quality:'QA Quality sprawdza zgodnosc z wymaganiami, brakujace testy, edge cases.',qa_perf:'QA Performance mierzy LICZBAMI: LCP <2.5s, INP <200ms, CLS <0.1.',qa_manager:'Manager QA zbiera raporty, priorytetyzuje i decyduje GO/NO-GO. Max 2 iteracje.'};
+  const antiPatterns={orchestrator:'Orkiestrator ktory sam generuje kod \u2014 to "micromanager anti-pattern".',synthesizer:'Syntetyk ktory podejmuje decyzje sam \u2014 powinien TYLKO raportowac.',analyst:'Estymowanie CZASU zamiast ZLOZONOSCI. Czas zalezy od modelu, zlozonosc jest stala.',planner:'Planowanie sekwencyjne "bo latwiej" \u2014 marnuje 40-60% potencjalu.',res_tech:'Rekomendowanie PIERWSZEJ znalezionej opcji bez porownania.',res_ux:'Kopiowanie jednego designu zamiast syntezy trendow.',res_reddit:'Traktowanie jednego komentarza jako prawdy.',res_x:'Podazanie za hype bez walidacji.',res_github:'Kopiowanie kodu z GitHub bez zrozumienia kontekstu.',res_forums:'Kopiowanie kodu z StackOverflow bez zrozumienia.',res_docs:'Ignorowanie Docs na rzecz tutoriali.',res_critic:'Critic ktory akceptuje wszystko \u2014 "rubber stamp".',backend:'Pisanie kodu bez testow.',frontend:'Pixel-perfect bez error handling.',feature:'Budowanie od zera zamiast uzywania sprawdzonych bibliotek.',designer:'Inline styles zamiast tokenow.',integrator:'Przepisywanie kodu builderow.',writer:'Opisywanie CO kod robi zamiast DLACZEGO.',qa_security:'Naprawianie kodu sam.',qa_quality:'Sprawdzanie TYLKO happy path.',qa_perf:'Optymalizacja bez pomiaru.',qa_manager:'Przepuszczanie CRITICAL bo "deadline".'};
+  const quizzes={orchestrator:{q:'Co NIE powinien robic Orkiestrator?',opts:['Dekompozycja zadan','Pisac kod samodzielnie','Kontrola bramek GO/NO-GO','Synteza wynikow'],correct:1,fb:'Orkiestrator NIGDY nie pisze kodu \u2014 to "micromanager anti-pattern".'},synthesizer:{q:'Jaki jest glowny output Syntetyka?',opts:['Kod aplikacji','MANIFEST.md','Raport z testow','Harmonogram'],correct:1,fb:'MANIFEST.md to Single Source of Truth.'},analyst:{q:'Co robi Analityk inaczej niz Planer?',opts:['Oba robia to samo','Analityk = CO, Planer = KIEDY','Analityk koduje, Planer testuje','Analityk bada, Planer pisze'],correct:1,fb:'Analityk definiuje ZAKRES, Planer uklada HARMONOGRAM.'},backend:{q:'Jaka metodologie stosuje Backend Dev?',opts:['Waterfall','Agile Scrum','TDD (Test-Driven Development)','YOLO Deploy'],correct:2,fb:'TDD: Red \u2192 Green \u2192 Refactor. Test PRZED implementacja.'},res_critic:{q:'Co robi Research Critic gdy score < 6/10?',opts:['Akceptuje','Odsyla do rewizji','Naprawia sam','Eskaluje'],correct:1,fb:'Score <6/10 = rewizja. Nigdy nie akceptuje slabych wynikow.'},frontend:{q:'Jakie podejscie do responsywnosci?',opts:['Desktop-first','Mobile-first','Tylko desktop','Random'],correct:1,fb:'Mobile-first: base styles dla najmniejszego ekranu.'},designer:{q:'Co to sa Design Tokens?',opts:['Kryptowaluta','Zmienne CSS jako single source of truth','Nazwy plikow','Uprawnienia'],correct:1,fb:'Design Tokens to zmienne CSS propagujace sie do WSZYSTKICH komponentow.'},integrator:{q:'Co testuje Integrator?',opts:['Jednostkowe funkcje','Zgodnosc API contracts i E2E','Tylko frontend','Tylko backend'],correct:1,fb:'Integrator weryfikuje SPOJNOSC produktu.'},qa_security:{q:'Co robi QA Security gdy znajdzie buga?',opts:['Naprawia sam','Raportuje z severity','Ignoruje','Restartuje system'],correct:1,fb:'NIE naprawia \u2014 RAPORTUJE z severity i remediacja.'},qa_manager:{q:'Ile max iteracji naprawczych?',opts:['1','2','5','Bez limitu'],correct:1,fb:'Max 2 iteracje. Potem eskalacja do uzytkownika.'}};
+
+  // Step 1: explanation
+  steps.push({title:'Poznaj Agenta',html:`<div class="wiz-type-badge tb-explanation">Wprowadzenie</div><div class="wiz-icon ic-${cc}">${d.icon}</div><div class="wiz-step-title">${d.name}</div><div class="wiz-step-sub">${d.role}</div><div class="wiz-tags"><span class="wiz-tag tg-${cc}">${d.cat}</span><span class="wiz-tag tg-gray">${d.model.toUpperCase()}</span><span class="wiz-tag tg-gray">${d.tools.split(',')[0].trim()}</span></div><div class="wiz-fact"><div class="wiz-fact-icon">\uD83D\uDCA1</div><div><div class="wiz-fact-label">Czy wiesz, ze...?</div><div class="wiz-fact-text">${tierFacts[d.cat]||'Agenci AI w zespolach sa bardziej efektywni niz pojedynczy agent.'}</div></div></div>`});
+  // Step 2: fact
+  steps.push({title:'Rola Szczegolowo',html:`<div class="wiz-type-badge tb-fact">Szczegoly roli</div><div class="wiz-icon ic-blue">\uD83C\uDFAF</div><div class="wiz-step-title">Co robi ${d.name}?</div><div class="wiz-step-sub">${roleDetails[d.id]||d.role}</div><div class="wiz-metric"><div class="wiz-metric-val v-${cc==='amber'?'amber':cc==='green'?'green':cc==='red'?'red':cc==='violet'?'violet':'blue'}">${d.load}%</div><div class="wiz-metric-label"><strong>Obciazenie</strong> \u2014 ${d.load>=70?'Wysokie. Ryzyko bottleneck.':d.load>=50?'Srednie. Optymalny balans.':'Niskie. Szybki throughput.'}</div></div>`});
+  // Step 3: comparison
+  steps.push({title:'Model i Koszt',html:`<div class="wiz-type-badge tb-comparison">Porownanie modeli</div><div class="wiz-icon ic-amber">\uD83D\uDCB0</div><div class="wiz-step-title">${modelNames[d.model]}</div><div class="wiz-step-sub">Agent ${d.name} domyslnie uzywa ${d.model.toUpperCase()} \u2014 oto dlaczego.</div><table class="wiz-table"><tr><th>Model</th><th>Kontekst</th><th>Koszt/1M in</th><th>Koszt/1M out</th></tr><tr ${d.model==='opus'?'style="background:#fffbeb"':''}><td class="hl-amber">Opus 4.6</td><td>1M tok</td><td>$15</td><td>$75</td></tr><tr ${d.model==='sonnet'?'style="background:#ecfdf5"':''}><td class="hl-green">Sonnet 4.6</td><td>200K tok</td><td>$3</td><td>$15</td></tr><tr ${d.model==='haiku'?'style="background:#ecfeff"':''}><td class="hl-blue">Haiku 4.5</td><td>200K tok</td><td>$0.80</td><td>$4</td></tr></table><div class="wiz-fact"><div class="wiz-fact-icon">\uD83D\uDCA1</div><div><div class="wiz-fact-label">Czy wiesz, ze...?</div><div class="wiz-fact-text">${modelFacts[d.model]}</div></div></div>`});
+  // Step 4: diagram
+  const toolsList=d.tools.split(',').map(t=>t.trim());
+  steps.push({title:'Narzedzia',html:`<div class="wiz-type-badge tb-diagram">Diagram narzedzi</div><div class="wiz-icon ic-cyan">\uD83D\uDD27</div><div class="wiz-step-title">Narzedzia agenta</div><div class="wiz-step-sub">Kazdy agent ma dokladnie te narzedzia, ktore potrzebuje \u2014 zasada "Narrow Context".</div><div class="wiz-tags" style="margin-bottom:24px">${toolsList.map(t=>`<span class="wiz-tag tg-blue">${toolIcons[t]||'\uD83D\uDD27'} ${t}</span>`).join('')}</div><div class="wiz-card"><div class="wiz-card-title">Dlaczego wlasnie te?</div><div style="font-size:14px;color:#334155;line-height:1.7">${d.cat==='STRATEGIA'?'Agent strategiczny potrzebuje narzedzi do delegowania (Agent) i zarzadzania dokumentami (Read/Write). NIE potrzebuje WebSearch.':d.cat==='RESEARCH'?'Researcher potrzebuje WebSearch i WebFetch do zbierania danych. NIE modyfikuje kodu.':d.cat.includes('QA')?'Agent QA potrzebuje Read i Grep do analizy kodu. NIE naprawia, tylko RAPORTUJE.':d.cat==='PLANOWANIE'?'Agent planowania potrzebuje Read i Write. NIE uruchamia kodu, planuje go.':'Builder potrzebuje Write/Edit, Bash i Read. Pelny zestaw implementacyjny.'}</div></div>`});
+  // Step 5: explanation
+  steps.push({title:'Pozycja w Hierarchii',html:`<div class="wiz-type-badge tb-explanation">Hierarchia</div><div class="wiz-icon ic-violet">\uD83D\uDCCD</div><div class="wiz-step-title">Gdzie w hierarchii?</div><div class="wiz-step-sub">${d.name} nalezy do warstwy <strong>${d.cat}</strong> \u2014 ${catDescs[d.cat]||''}</div><div class="wiz-flow">${catHier.map((c,i)=>{const isMe=c===d.cat;const cls=isMe?(cc==='amber'?'fn-amber':cc==='green'?'fn-green':cc==='red'?'fn-red':cc==='violet'?'fn-violet':'fn-blue'):'fn-gray';const icons={STRATEGIA:'\u2734',PLANOWANIE:'\u2699',RESEARCH:'\uD83D\uDD0D',BUILD:'\uD83D\uDD27','QA / AUDYT':'\u2705'};return(i>0?'<div class="wiz-flow-arrow">\u2192</div>':'')+`<div class="wiz-flow-node ${cls}" ${isMe?'style="box-shadow:0 4px 12px rgba(0,0,0,.15);transform:scale(1.08)"':''}><div class="wiz-flow-emoji">${icons[c]||'\u2699'}</div><div class="wiz-flow-name">${c}</div>${isMe?'<div class="wiz-flow-role" style="color:#2563eb;font-weight:700">TU JESTEM</div>':''}</div>`}).join('')}</div><div class="wiz-tip"><div class="wiz-tip-icon">\u2705</div><div class="wiz-tip-text">Dane plyna z gory na dol: Strategia \u2192 Planowanie \u2192 Research \u2192 Build \u2192 QA.</div></div>`});
+  // Step 6: quiz
+  const quiz=quizzes[d.id]||{q:`Jaki model jest rekomendowany dla ${d.cat}?`,opts:['Opus','Sonnet','Haiku','Nie ma znaczenia'],correct:d.cat==='STRATEGIA'?0:d.cat==='BUILD'||d.cat==='PLANOWANIE'?1:2,fb:d.cat==='STRATEGIA'?'Strategia wymaga Opus z 1M kontekstu.':d.cat==='BUILD'||d.cat==='PLANOWANIE'?'Sonnet daje optymalny balans.':'Haiku jest szybki i tani dla researchu/QA.'};
+  const qid='quiz_'+aid+'_'+Date.now();
+  steps.push({title:'Sprawdz Wiedze',html:`<div class="wiz-type-badge tb-quiz">Mini-quiz</div><div class="wiz-icon ic-violet">\uD83E\uDDE0</div><div class="wiz-step-title">Mini-wyzwanie</div><div class="wiz-step-sub">Sprawdz, czy dobrze rozumiesz role tego agenta.</div><div class="wiz-challenge"><div class="wiz-challenge-q">${quiz.q}</div><div class="wiz-challenge-opts" id="${qid}">${quiz.opts.map((o,i)=>`<div class="wiz-challenge-opt" onclick="checkAnswer(this,${i},${quiz.correct},'${qid}')">${o}</div>`).join('')}</div><div class="wiz-challenge-feedback" id="${qid}_fb">${quiz.fb}</div></div>`});
+  // Step 7: diagram (checkpoint)
+  steps.push({title:'Checkpoint',html:`<div class="wiz-type-badge tb-diagram">Podsumowanie</div><div class="wiz-icon ic-green">\uD83C\uDFC1</div><div class="wiz-step-title">Checkpoint!</div><div class="wiz-step-sub">Podsumujmy czego sie nauczylismy o ${d.name}.</div><div class="wiz-checkpoint"><div class="wiz-checkpoint-title">Juz wiesz:</div><div class="wiz-checkpoint-items"><div class="wiz-checkpoint-item"><span class="wiz-checkpoint-check">\u2713</span>Rola: ${d.role.substring(0,55)}...</div><div class="wiz-checkpoint-item"><span class="wiz-checkpoint-check">\u2713</span>Model: ${d.model.toUpperCase()} ($${costMin}-${costMax}/wywolanie)</div><div class="wiz-checkpoint-item"><span class="wiz-checkpoint-check">\u2713</span>Narzedzia: ${d.tools}</div><div class="wiz-checkpoint-item"><span class="wiz-checkpoint-check">\u2713</span>Warstwa: ${d.cat}</div></div></div>`});
+  // Step 8: fact (anti-pattern)
+  steps.push({title:'Anti-Pattern',html:`<div class="wiz-type-badge tb-fact">Ostrzezenie</div><div class="wiz-icon ic-red">\u26A0\uFE0F</div><div class="wiz-step-title">Czego unikac</div><div class="wiz-step-sub">Kazdy agent ma swoj "anti-pattern" \u2014 najczestszy blad w konfiguracji.</div><div class="wiz-warn"><div class="wiz-warn-icon">\u26A0\uFE0F</div><div class="wiz-warn-text"><strong>Anti-pattern:</strong> ${antiPatterns[d.id]||'Uzywanie agenta poza specjalizacja.'}</div></div><div class="wiz-tip"><div class="wiz-tip-icon">\u2705</div><div class="wiz-tip-text"><strong>Najlepsza praktyka:</strong> ${d.cat==='STRATEGIA'?'ZARZADZAJ, nie implementuj.':d.cat==='RESEARCH'?'Porownaj min. 3 opcje z URL zrodel.':d.cat.includes('QA')?'RAPORTUJ z severity. NIE naprawiaj.':d.cat==='PLANOWANIE'?'Maksymalizuj rownoleglosc.':'TDD. Walidacja inputu na kazdym endpoincie.'}</div></div>`});
+  // Step 9: diagram (interactions)
+  steps.push({title:'Interakcje',html:`<div class="wiz-type-badge tb-diagram">Diagram interakcji</div><div class="wiz-icon ic-blue">\uD83D\uDD17</div><div class="wiz-step-title">Z kim wspolpracuje?</div><div class="wiz-step-sub">${d.name} nie dziala w izolacji \u2014 jest czescia systemu.</div><div class="wiz-card"><div class="wiz-card-title">Typowe polaczenia</div><div style="font-size:14px;color:#334155;line-height:1.8">${d.cat==='STRATEGIA'?'<strong>Odbiera od:</strong> Uzytkownik<br><strong>Wysyla do:</strong> Wszystkie warstwy nizej<br><strong>Klucz:</strong> Komunikacja przez MANIFEST.md':d.cat==='PLANOWANIE'?'<strong>Odbiera od:</strong> Orkiestrator, Analityk<br><strong>Wysyla do:</strong> Builderow, QA<br><strong>Klucz:</strong> Output Analityka = INPUT Planera':d.cat==='RESEARCH'?'<strong>Odbiera od:</strong> Orkiestrator<br><strong>Wysyla do:</strong> Critic lub Builderow<br><strong>Klucz:</strong> Researcherzy pracuja ROWNOLEGLE':d.cat==='BUILD'?'<strong>Odbiera od:</strong> Analityk, Research, Designer<br><strong>Wysyla do:</strong> Integrator, QA<br><strong>Klucz:</strong> API contracts PRZED implementacja':'<strong>Odbiera od:</strong> Builderow, Integrator<br><strong>Wysyla do:</strong> Manager QA, Orkiestrator<br><strong>Klucz:</strong> NIE naprawiaj \u2014 RAPORTUJ'}</div></div><div class="wiz-fact"><div class="wiz-fact-icon">\uD83D\uDCA1</div><div><div class="wiz-fact-label">Czy wiesz, ze...?</div><div class="wiz-fact-text">Komunikacja miedzy agentami rosnie O(n^1.724). 5 agentow = ~14 interakcji, 13 = ~55.</div></div></div>`});
+  // Step 10: completion
+  steps.push({title:'Gratulacje!',html:`<div class="wiz-complete"><div class="wiz-complete-emoji">\uD83C\uDF89</div><div class="wiz-complete-title">Swietna robota!</div><div class="wiz-achievement">\uD83C\uDFC6 Ekspert: ${d.name}</div><div class="wiz-complete-sub">Ukonczyles przewodnik po agencie <strong>${d.name}</strong>.<br>Teraz wiesz jak go uzywac, kiedy dodac i czego unikac.</div><div class="wiz-complete-stats"><div class="wiz-complete-stat"><div class="wiz-complete-stat-val">9</div><div class="wiz-complete-stat-label">krokow ukonczonych</div></div><div class="wiz-complete-stat"><div class="wiz-complete-stat-val">${d.model.toUpperCase()}</div><div class="wiz-complete-stat-label">rekomendowany model</div></div><div class="wiz-complete-stat"><div class="wiz-complete-stat-val">$${costMin}</div><div class="wiz-complete-stat-label">min. koszt/wywolanie</div></div></div><div class="wiz-tip" style="text-align:left"><div class="wiz-tip-icon">\uD83D\uDE80</div><div class="wiz-tip-text">Nastepny krok: przeciagnij ${d.name} na canvas i polacz z innymi agentami.</div></div></div>`});
+  return steps;
+}
+
+// ================================================================
+// PRESET WIZARD STEPS BUILDER
+// ================================================================
+function buildPresetSteps(pid){
+  const m=PM[pid];if(!m)return[];const pr=PR[pid]||[];const pc=PC[pid]||[];const steps=[];
+  const cats={};pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(d){cats[d.cat]=(cats[d.cat]||0)+1}});
+  const mc={opus:0,sonnet:0,haiku:0};pr.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(d)mc[d.model]++});
+  const maO=getModelAnalysis(pid,'opus'),maS=getModelAnalysis(pid,'sonnet'),maH=getModelAnalysis(pid,'haiku');
+  const sizeColor=m.c<=3?'blue':m.c<=5?'green':m.c<=8?'amber':m.c<=12?'violet':'red';
+  const catColors2={STRATEGIA:'fn-amber',PLANOWANIE:'fn-blue',RESEARCH:'fn-violet',BUILD:'fn-green','QA / AUDYT':'fn-red'};
+  const patternDescs={'Direct Delegation':'Najprostsza forma \u2014 jeden agent deleguje do drugiego.','Fix-Test Loop':'Petla naprawcza z ciaglym feedbackiem.','Hub-and-Spoke (mini)':'Centralny agent koordynuje kilku specjalistow.','Hub-and-Spoke':'Orkiestrator w centrum, specjalisci dookola.','Triangle':'Trzy rownorzedne role peer-to-peer.','Reflective Trio':'Petla samokorekcji eliminujaca confirmation bias.','Fork QA':'Rownolegle sciezki walidacji.','Linear Pipeline':'Dane plyna przez kolejne etapy.','Plan-and-Execute Loop':'Planowanie przed budowa z petla walidacyjna.','Measure-Fix Cycle':'Zmierz \u2192 napraw \u2192 zmierz ponownie.','Cascade Escalation':'Od tanich modeli do drogich.','Triple QA Gate':'Trzy specjalizowane QA + manager GO/NO-GO.','A11y Pipeline':'Pipeline dostepnosci.','Fan-out \u2192 Aggregate':'Rozdziel na specjalistow, zbierz wyniki.','Fan-out \u2192 Critique':'Wielu researcherow + krytyk.','Pipeline + Fan-out':'Sekwencyjne fazy z rownoleglymi etapami.','Design Pipeline':'Od researchu przez design do implementacji.','API Upgrade Pipeline':'Analiza \u2192 research \u2192 refaktor.','UI Redesign Pipeline':'Podwojny research \u2192 rownolegle design + dev.','Sprint Pipeline':'Analiza \u2192 rownolegle research \u2192 rownolegle build.','Hierarchical Pipeline':'Warstwy: orkiestracja \u2192 planowanie \u2192 build \u2192 QA.','Data Engineering':'Pipeline danych: ETL, transformacje.','Legacy Modernization':'Analiza legacy \u2192 stopniowy refaktor.','Hierarchical Squads':'Male autonomiczne zespoly.','Monolith Decomposition':'Planowanie granic \u2192 rownolegle build \u2192 QA.','Full 5-Layer Hierarchy':'5 warstw. Gold Standard.','Full Orchestra':'Maksymalny zespol.'};
+
+  // 1 explanation
+  steps.push({title:'Poznaj Preset',html:`<div class="wiz-type-badge tb-explanation">Wprowadzenie</div><div class="wiz-icon ic-${sizeColor}">${m.i}</div><div class="wiz-step-title">${m.n}</div><div class="wiz-step-sub">${m.dsc}</div><div class="wiz-tags"><span class="wiz-tag tg-${sizeColor}">${m.c} agentow</span><span class="wiz-tag tg-gray">${m.pt}</span><span class="wiz-tag tg-amber">${m.$}</span></div><div class="wiz-fact"><div class="wiz-fact-icon">\uD83D\uDCA1</div><div><div class="wiz-fact-label">Czy wiesz, ze...?</div><div class="wiz-fact-text">${m.c<=3?'45% zadan mozna zrealizowac 2-3 agentami.':m.c<=5?'4-5 agentow to "minimum viable team".':m.c<=8?'6-8 agentow: ~60% rownoleglosci.':m.c<=12?'Przy '+m.c+' agentach: ~'+Math.round(Math.pow(m.c,1.724))+' interakcji.':'13+ agentow to "Full Orchestra".'}</div></div></div>`});
+  // 2 fact
+  steps.push({title:'Wzorzec',html:`<div class="wiz-type-badge tb-fact">Wzorzec</div><div class="wiz-icon ic-violet">\uD83C\uDFD7\uFE0F</div><div class="wiz-step-title">${m.pt}</div><div class="wiz-step-sub">${patternDescs[m.pt]||'Wzorzec definiujacy wspolprace agentow.'}</div><div class="wiz-metric"><div class="wiz-metric-val v-violet">${pc.length}</div><div class="wiz-metric-label"><strong>polaczen</strong> miedzy ${m.c} agentami.</div></div><div class="wiz-fact"><div class="wiz-fact-icon">\uD83D\uDCA1</div><div><div class="wiz-fact-label">Czy wiesz, ze...?</div><div class="wiz-fact-text">Zly wzorzec z dobrymi agentami daje gorsze wyniki niz dobry wzorzec z przecietnymi agentami.</div></div></div>`});
+  // 3 diagram
+  steps.push({title:'Sklad Zespolu',html:`<div class="wiz-type-badge tb-diagram">Diagram zespolu</div><div class="wiz-icon ic-blue">\uD83D\uDC65</div><div class="wiz-step-title">${m.c} agentow w zespole</div><div class="wiz-step-sub">Kazdy agent ma swoja specjalizacje.</div><div class="wiz-flow" style="flex-wrap:wrap;gap:8px;justify-content:center">${pr.map(p=>{const d=AD.find(a=>a.id===p.d);if(!d)return'';return`<div class="wiz-flow-node ${catColors2[d.cat]||'fn-gray'}"><div class="wiz-flow-emoji">${d.icon}</div><div class="wiz-flow-name">${d.name}</div><div class="wiz-flow-role">${d.model.toUpperCase()}</div></div>`}).join('')}</div><div class="wiz-tags" style="margin-top:16px;justify-content:center">${Object.entries(cats).map(([c,n])=>{const tc=c==='STRATEGIA'?'tg-amber':c==='PLANOWANIE'?'tg-blue':c==='RESEARCH'?'tg-violet':c.includes('QA')?'tg-red':'tg-green';return`<span class="wiz-tag ${tc}">${c}: ${n}</span>`}).join('')}</div>`});
+  // 4 explanation (flow)
+  const ys=[...new Set(pr.map(p=>p.y))].sort((a,b)=>a-b);let flowHTML='';ys.forEach((y,li)=>{const layer=pr.filter(p=>p.y===y).sort((a,b)=>a.x-b.x);if(li>0)flowHTML+='<div style="display:flex;justify-content:center;margin:4px 0"><div class="wiz-flow-arrow arr-down">\u2193</div></div>';flowHTML+='<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">';layer.forEach(p=>{const d=AD.find(a=>a.id===p.d);if(!d)return;flowHTML+=`<div class="wiz-flow-node ${catColors2[d.cat]||'fn-gray'}"><div class="wiz-flow-emoji">${d.icon}</div><div class="wiz-flow-name">${d.name}</div></div>`});flowHTML+='</div>'});
+  steps.push({title:'Przeplyw Pracy',html:`<div class="wiz-type-badge tb-explanation">Architektura</div><div class="wiz-icon ic-green">\uD83D\uDCC8</div><div class="wiz-step-title">Przeplyw pracy</div><div class="wiz-step-sub">Dane plyna z gory na dol.</div><div class="wiz-card" style="padding:24px;overflow-x:auto">${flowHTML}</div><div class="wiz-tip"><div class="wiz-tip-icon">\u2705</div><div class="wiz-tip-text">Agenci na tym samym poziomie pracuja ROWNOLEGLE.</div></div>`});
+  // 5 comparison
+  steps.push({title:'Analiza Kosztow',html:`<div class="wiz-type-badge tb-comparison">Porownanie kosztow</div><div class="wiz-icon ic-amber">\uD83D\uDCB0</div><div class="wiz-step-title">Ile to kosztuje?</div><div class="wiz-step-sub">Porownanie przy roznych modelach AI.</div><table class="wiz-table"><tr><th>Model</th><th>Tokeny</th><th>Koszt USD</th></tr><tr><td class="hl-amber">Caly na Opus</td><td>${maO.t}</td><td class="hl-amber">${maO.$}</td></tr><tr><td class="hl-green">Caly na Sonnet</td><td>${maS.t}</td><td class="hl-green">${maS.$}</td></tr><tr><td class="hl-blue">Caly na Haiku</td><td>${maH.t}</td><td class="hl-blue">${maH.$}</td></tr><tr style="background:#f8fafc"><td><strong>Rekomendowany mix</strong></td><td>${m.t}</td><td><strong>${m.$}</strong></td></tr></table><div class="wiz-metric"><div class="wiz-metric-val v-green">${m.$}</div><div class="wiz-metric-label"><strong>Rekomendowany koszt</strong> przy optymalnym doborze modeli.</div></div>`});
+  // 6 fact
+  steps.push({title:'Kiedy Uzywac',html:`<div class="wiz-type-badge tb-fact">Zastosowania</div><div class="wiz-icon ic-green">\uD83C\uDFAF</div><div class="wiz-step-title">Idealne zastosowania</div><div class="wiz-step-sub">Ten preset sprawdza sie najlepiej w:</div><div class="wiz-tags" style="margin-bottom:24px;gap:8px">${m.use.split(',').map((u,i)=>`<span class="wiz-tag tg-${['blue','green','amber','violet','red'][i%5]}" style="font-size:12px;padding:8px 16px">${u.trim()}</span>`).join('')}</div><div class="wiz-card"><div class="wiz-card-title">Zalety</div><div style="display:flex;flex-direction:column;gap:8px">${m.p.map(p=>`<div style="font-size:13px;color:#065f46;padding:8px 12px;background:#ecfdf5;border-radius:8px;border:1px solid #a7f3d0">${p}</div>`).join('')}</div></div><div class="wiz-card"><div class="wiz-card-title">Ograniczenia</div><div style="display:flex;flex-direction:column;gap:8px">${m.m.map(c=>`<div style="font-size:13px;color:#991b1b;padding:8px 12px;background:#fef2f2;border-radius:8px;border:1px solid #fecaca">${c}</div>`).join('')}</div></div>`});
+  // 7 quiz
+  const presetQuizzes={solo:{q:'Jaki % zadan mozna zrealizowac 2 agentami?',opts:['10%','25%','45%','80%'],correct:2,fb:'45% zadan NIE wymaga wiecej niz 2 agentow.'},startup:{q:'Ile agentow to "minimum viable team"?',opts:['2','3','5','8'],correct:2,fb:'5 = Orkiestrator + Analityk + Researcher + Builder + QA.'},research:{q:'Ile researcherow rownolegle?',opts:['2','4','6','8'],correct:2,fb:'6 specjalistycznych researcherow.'},full:{q:'Ile warstw ma Full Hierarchy?',opts:['3','4','5','7'],correct:2,fb:'5 warstw: Strategia, Planowanie, Research, Build, QA.'},deep:{q:'Jaki % agentow rownolegle?',opts:['30%','50%','76.9%','100%'],correct:2,fb:'76.9% agentow rownolegle.'}};
+  const pquiz=presetQuizzes[pid]||{q:`Ile agentow liczy ${m.n}?`,opts:[`${m.c-2}`,`${m.c}`,`${m.c+3}`,`${m.c+7}`],correct:1,fb:`${m.n} liczy ${m.c} agentow.`};const pqid='pquiz_'+pid+'_'+Date.now();
+  steps.push({title:'Sprawdz Wiedze',html:`<div class="wiz-type-badge tb-quiz">Mini-quiz</div><div class="wiz-icon ic-violet">\uD83E\uDDE0</div><div class="wiz-step-title">Mini-wyzwanie</div><div class="wiz-step-sub">Sprawdz, czy dobrze rozumiesz ten preset.</div><div class="wiz-challenge"><div class="wiz-challenge-q">${pquiz.q}</div><div class="wiz-challenge-opts" id="${pqid}">${pquiz.opts.map((o,i)=>`<div class="wiz-challenge-opt" onclick="checkAnswer(this,${i},${pquiz.correct},'${pqid}')">${o}</div>`).join('')}</div><div class="wiz-challenge-feedback" id="${pqid}_fb">${pquiz.fb}</div></div>`});
+  // 8 comparison
+  const sameSize=Object.keys(PM).filter(k=>k!==pid&&Math.abs(PM[k].c-m.c)<=2).slice(0,3);let compRows='';sameSize.forEach(k=>{const sm=PM[k];compRows+=`<tr><td>${sm.i} ${sm.n}</td><td>${sm.c}</td><td>${sm.pt}</td><td>${sm.$}</td></tr>`});
+  steps.push({title:'Porownanie',html:`<div class="wiz-type-badge tb-comparison">Porownanie</div><div class="wiz-icon ic-blue">\u2696\uFE0F</div><div class="wiz-step-title">Porownanie z podobnymi</div><div class="wiz-step-sub">Jak ${m.n} wypada na tle podobnych presetow?</div><table class="wiz-table"><tr><th>Preset</th><th>Agentow</th><th>Wzorzec</th><th>Koszt</th></tr><tr style="background:#eff6ff"><td><strong>${m.i} ${m.n}</strong></td><td><strong>${m.c}</strong></td><td><strong>${m.pt}</strong></td><td class="hl-blue"><strong>${m.$}</strong></td></tr>${compRows}</table><div class="wiz-tip"><div class="wiz-tip-icon">\uD83D\uDCA1</div><div class="wiz-tip-text">Wybor presetu zalezy od TYPU zadania. ${m.n} jest pod: ${m.use}.</div></div>`});
+  // 9 completion
+  steps.push({title:'Gratulacje!',html:`<div class="wiz-complete"><div class="wiz-complete-emoji">\uD83C\uDF89</div><div class="wiz-complete-title">Swietna robota!</div><div class="wiz-achievement">\uD83C\uDFC6 Ekspert: ${m.n}</div><div class="wiz-complete-sub">Ukonczyles przewodnik po presecie <strong>${m.n}</strong>.<br>Teraz wiesz jak go uzywac i kiedy wybrac.</div><div class="wiz-complete-stats"><div class="wiz-complete-stat"><div class="wiz-complete-stat-val">${m.c}</div><div class="wiz-complete-stat-label">agentow w zespole</div></div><div class="wiz-complete-stat"><div class="wiz-complete-stat-val">${m.$}</div><div class="wiz-complete-stat-label">szacowany koszt</div></div><div class="wiz-complete-stat"><div class="wiz-complete-stat-val">${m.t}</div><div class="wiz-complete-stat-label">tokenow</div></div></div><div class="wiz-tip" style="text-align:left"><div class="wiz-tip-icon">\uD83D\uDE80</div><div class="wiz-tip-text">Nastepny krok: kliknij "${m.n}" na liscie presetow zeby zaladowac na canvas.</div></div></div>`});
+  return steps;
+}
+
+function checkAnswer(el,idx,correct,qid){const container=G(qid);const opts=container.querySelectorAll('.wiz-challenge-opt');opts.forEach((o,i)=>{o.classList.add('disabled');if(i===correct)o.classList.add('correct');if(i===idx&&idx!==correct)o.classList.add('wrong')});const fb=G(qid+'_fb');fb.classList.add('show');fb.classList.add(idx===correct?'fb-ok':'fb-bad')}
+
+let confettiAnim=null;
+function startConfetti(){const canvas=G('confettiCanvas');const ctx=canvas.getContext('2d');const parent=canvas.parentElement;canvas.width=parent.clientWidth;canvas.height=parent.clientHeight;const pieces=[];const colors=['#2563eb','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899'];const cx=canvas.width/2,cy=canvas.height*0.3;for(let i=0;i<100;i++){const angle=Math.random()*Math.PI*2;const speed=Math.random()*8+3;pieces.push({x:cx,y:cy,w:Math.random()*8+4,h:Math.random()*4+2,color:colors[Math.floor(Math.random()*colors.length)],vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-3,gravity:0.12,rot:Math.random()*360,rv:Math.random()*8-4,alpha:1})}let frame=0;function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);frame++;pieces.forEach(p=>{p.vy+=p.gravity;p.y+=p.vy;p.x+=p.vx;p.rot+=p.rv;if(frame>60)p.alpha=Math.max(0,p.alpha-0.008);if(p.alpha<=0)return;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.color;ctx.globalAlpha=p.alpha;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});if(frame<250&&pieces.some(p=>p.alpha>0)){confettiAnim=requestAnimationFrame(draw)}else{ctx.clearRect(0,0,canvas.width,canvas.height)}}draw()}
+function stopConfetti(){if(confettiAnim){cancelAnimationFrame(confettiAnim);confettiAnim=null}const canvas=G('confettiCanvas');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height)}
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  const k=e.key.toLowerCase();
+  if(k==='escape'){if(wizOpen){closeWizard();return}if(document.querySelector('.mo.show')){document.querySelectorAll('.mo.show').forEach(m=>m.classList.remove('show'));return}if(connMode){togConn();return}sel.clear();upSel()}
+  else if(wizOpen){if(k==='arrowright'||k==='arrowdown'){wizNextFn();e.preventDefault()}else if(k==='arrowleft'||k==='arrowup'){wizPrevFn();e.preventDefault()}return}
+  else if(k==='delete'||k==='backspace'){delSel();e.preventDefault()}
+  else if(k==='c'&&!e.ctrlKey)togConn();
+  else if(k==='l')autoLay();
+  else if(k==='e'&&!e.ctrlKey)expCfg();
+  else if(k==='?'||k==='/')showKB();
+  else if(k==='='||k==='+'){zIn();e.preventDefault()}
+  else if(k==='-'){zOut();e.preventDefault()}
+  else if(k==='0'){zRst();e.preventDefault()}
+  else if(e.ctrlKey&&k==='a'){e.preventDefault();nodes.forEach(n=>sel.add(n.id));upSel()}
+});
+
+rPal();rPre();rSv();upGrid();ldPr('startup');
+</script>
+</body>
+</html>
