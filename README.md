@@ -2,9 +2,8 @@
 
 > Visual multi-agent system designer for Claude Code
 
-<!-- Hero GIF - will be replaced with an actual recording -->
 <p align="center">
-  <em>[hero.gif placeholder - 15s recording: load preset - Live Simulation - agents talking - HITL gate]</em>
+  <img src="docs/Animation.gif" alt="Agent Architecture Designer - Live Simulation demo" width="800">
 </p>
 
 <p align="center">
@@ -148,15 +147,13 @@ Skills are invoked as slash commands inside Claude Code (e.g., `/five-minds`, `/
 
 ## Screenshots
 
-<!-- Screenshots will be added before first release -->
+| Dark Theme | Light Theme |
+|:---:|:---:|
+| <img src="docs/screenshots/dark.png" alt="Dark theme - canvas with agents" width="400"> | <img src="docs/screenshots/light.png" alt="Light theme - canvas with agents" width="400"> |
 
-| Canvas with Deep Five Minds preset | Live Simulation running | Agent Encyclopedia |
-|-------------------------------------|------------------------|-------------------|
-| *[screenshot placeholder]* | *[screenshot placeholder]* | *[screenshot placeholder]* |
-
-| Mission Control dashboard | HITL Decision Gate | Dark / Light theme |
-|--------------------------|-------------------|-------------------|
-| *[screenshot placeholder]* | *[screenshot placeholder]* | *[screenshot placeholder]* |
+| Live Simulation | Agent Encyclopedia |
+|:---:|:---:|
+| <img src="docs/screenshots/simulation.png" alt="Live Simulation with speech bubbles" width="400"> | <img src="docs/screenshots/encyclopedia.png" alt="Agent Encyclopedia - knowledge cards" width="400"> |
 
 ## Technical Details
 
