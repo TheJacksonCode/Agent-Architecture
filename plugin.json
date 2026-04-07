@@ -1,0 +1,32 @@
+{
+  "name": "agent-architecture-designer",
+  "display_name": "Agent Architecture Designer",
+  "description": "Visual multi-agent system designer for Claude Code. Drag & drop 28 specialized agents onto a canvas, connect them, select models (Opus/Sonnet/Haiku), and generate a complete system prompt for your agent team. Features Five Minds Protocol debate, HITL Decision Gates, Live Simulation, and an Agent Encyclopedia.",
+  "version": "0.1.0",
+  "author": "TheJacksonCode",
+  "homepage": "https://github.com/TheJacksonCode/Agent-Architecture",
+  "keywords": [
+    "multi-agent",
+    "claude-code",
+    "five-minds",
+    "hitl",
+    "visual-designer",
+    "orchestration",
+    "agent-teams"
+  ],
+  "skills": [
+    {
+      "name": "five-minds",
+      "path": ".claude/skills/five-minds/SKILL.md"
+    },
+    {
+      "name": "hitl-pipeline",
+      "path": ".claude/skills/hitl-pipeline/SKILL.md"
+    }
+  ],
+  "app": {
+    "path": "index.html",
+    "type": "html"
+  },
+  "latest": "v30"
+}

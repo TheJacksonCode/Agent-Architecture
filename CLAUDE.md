@@ -37,7 +37,13 @@
 
   - `AGENT_TEAMS_CONFIGURATOR_v27.html` - v27.0 (Unified Sidebars — spojny layout agentow i presetow: pr-orb 30x30px identyczny z pa-orb, pr-txt/pr-desc identyczne z pa-txt/pa-desc, pr-cat z separatorem jak pa-cat, preset detail sidebar z ds-avatar-orb 32px ikona i ds-avatar-info jak agent detail, premium model buttons Opus/Sonnet/Haiku z cenami i ctx w preset detail, localStorage acV27)
 
+  - `AGENT_TEAMS_CONFIGURATOR_v28.html` - v28.0 (Research-Backed Prompts — wszystkie 28 promptow agentow przepisane wg research-backed struktury: ROLA/INPUT/OUTPUT/OBOWIAZKI/ZASADY/CZEGO NIE ROBISZ/FORMAT RAPORTU, usunieto system prefiksu MH z cenami/kontekstem modeli, kazdy prompt samowystarczalny dla izolowanego subagenta, izolacja researcherow prevent groupthink, oznaczanie pewnosci [PEWNE/PRAWDOPODOBNE/SPEKULACJA], structured handoff formats, localStorage acV28)
+
+  - `v30/AGENT_TEAMS_CONFIGURATOR_v30.html` - v30.0 (International Edition — przelacznik jezyka PL/EN w topbarze, pelne tlumaczenie EN ~150 stringow, AGENT_KNOWLEDGE/PRESET_KNOWLEDGE/AGENT_SPEECH/prompty/UI w dwoch jezykach, domyslny jezyk EN, localStorage acV30/acV30_lang/acV30_theme)
+
+  - `v31/AGENT_TEAMS_CONFIGURATOR_v31.html` - v31.0 (Audit Edition — security fixes: escHtml() for save names XSS, textarea breakout fix, safeParseLS/safeSaveLS z try/catch i QuotaExceededError, export version bug fix '25.0'->'31.0'. Accessibility WCAG 2.2: skip link, SR announcer aria-live, SVG aria-hidden="true", focus-visible indicators, html lang dynamic update, keyboard-accessible palette/presets tabindex+role+Enter/Space, contrast --t2 lightened. Code quality: structuredClone(), announce() helper, localStorage acV31)
+
 ## Lokalizacja
-- Pliki HTML: `analizy-html/`
+- Pliki HTML: `analizy-html/` (v1-v28), `v30/` (v30), `v31/` (v31)
 - Pliki MD: `analizy-md/`
-- Jezyk interfejsu: polski
+- Jezyk interfejsu: polski i angielski (od v30)

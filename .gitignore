@@ -1,12 +1,27 @@
-# Node
-node_modules/
+# Personal research files (not for public repo)
+analizy-html/
+analizy-md/
+live-monitor-research/
+ikony/
+podcast/
+v12/
+# v30/ and v31/ - NOT ignored, these are the current versions
+v30/AGENT_TEAMS_CONFIGURATOR_v30_backup.html
 
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
+# Personal/local documents
+TRAINING_CURRICULUM_AI_ENGINEER.md
 
-# Generated scripts (not needed in repo, icons are already embedded in HTML)
+# Claude Code local settings (may contain API keys)
+.claude/settings.local.json
+
+# Agent architect working files
+agent-architect/
+
+# Vercel deploy experiments
+vercel-deploy/
+
+# Generated scripts (icons already embedded in HTML)
+generate_skills.js
 ikony/generate_all.js
 ikony/regenerate_fix.js
 ikony/generate_presets.js
@@ -16,9 +31,17 @@ ikony/agent_img_block.txt
 ikony/preset_img_block.txt
 ikony/dp_entry.txt
 
-# Resized intermediary files (originals in generated/)
-ikony/generated/resized/
-ikony/generated/presets_resized/
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Embedded git repo
-analizy-html/GIt
+# Node
+node_modules/
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
