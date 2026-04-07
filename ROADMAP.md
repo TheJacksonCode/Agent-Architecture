@@ -60,8 +60,8 @@ git remote add origin https://github.com/TheJacksonCode/agent-architecture-desig
 **Target structure:**
 ```
 agent-architecture-designer/
-├── index.html                     <- symlink or copy of v28
-├── AGENT_TEAMS_CONFIGURATOR_v28.html  <- main application
+├── index.html                     <- copy of v31 (main entry point)
+├── v31/AGENT_TEAMS_CONFIGURATOR_v31.html  <- current version
 ├── plugin.json                    <- Claude Code plugin descriptor
 ├── README.md                      <- English README with GIF
 ├── LICENSE                        <- MIT
@@ -112,11 +112,11 @@ node_modules/
 
 ---
 
-### F0-03: Security Audit v28 -- XSS Check
+### F0-03: Security Audit -- XSS Check
 
-**What:** Review v28 code for XSS before public exposure.
+**What:** Review code for XSS before public exposure. (Completed in v31: escHtml, safeParseLS, textarea escaping.)
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 
 **What to check:**
 1. Every use of `innerHTML` -- is the data from localStorage/user input or from constants?
@@ -127,9 +127,9 @@ node_modules/
 
 **How to check:**
 ```bash
-grep -n "innerHTML" AGENT_TEAMS_CONFIGURATOR_v28.html | grep -v "//.*innerHTML"
-grep -n "eval(" AGENT_TEAMS_CONFIGURATOR_v28.html
-grep -n "document.write" AGENT_TEAMS_CONFIGURATOR_v28.html
+grep -n "innerHTML" AGENT_TEAMS_CONFIGURATOR_v31.html | grep -v "//.*innerHTML"
+grep -n "eval(" AGENT_TEAMS_CONFIGURATOR_v31.html
+grep -n "document.write" AGENT_TEAMS_CONFIGURATOR_v31.html
 ```
 
 **Fix if a problem is found:**
@@ -177,7 +177,7 @@ grep -n "document.write" AGENT_TEAMS_CONFIGURATOR_v28.html
     }
   ],
   "app": {
-    "path": "AGENT_TEAMS_CONFIGURATOR_v28.html",
+    "path": "AGENT_TEAMS_CONFIGURATOR_v31.html",
     "type": "html"
   }
 }
@@ -316,7 +316,7 @@ Duration: 15 seconds. Size: max 8MB (GitHub limit). Resolution: 1280x720.
 5. Wait ~2 minutes
 6. URL: `https://thejacksoncode.github.io/agent-architecture-designer/`
 
-**Verification:** Open the URL, check if v28 loads.
+**Verification:** Open the URL, check if v31 loads.
 
 **LOC:** 0 (UI configuration)
 **Dependencies:** F0-02, first commit
@@ -389,7 +389,7 @@ Happy to discuss the Five Minds Protocol design or the agent prompt structure.
 |------|------|-----|------|
 | F0-01 | Git init + remote | 0 | 10 min |
 | F0-02 | File structure + .gitignore | 20 | 20 min |
-| F0-03 | XSS audit v28 | 0-30 | 30 min |
+| F0-03 | XSS audit (done in v31) | 0-30 | 30 min |
 | F0-04 | plugin.json | 30 | 20 min |
 | F0-05 | LICENSE | 21 | 5 min |
 | F0-06 | README.md + hero GIF | 100 + GIF | 2-3 h |
@@ -414,7 +414,7 @@ Happy to discuss the Five Minds Protocol design or the agent prompt structure.
 
 **What:** Show estimated token cost per agent, per phase, and total during simulation.
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 - Function: new `calcTokenCost()` + modification of `simStep()`
 - UI: extension of existing topbar (already has metrics) + new `#cost-hud` element
 - Modification: `showND()` (agent sidebar) -- add cost estimate per run
@@ -469,7 +469,7 @@ function calcTotalCost(agents) {
 
 **What:** User can create a custom agent (beyond the 28 predefined ones) and add it to the canvas.
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 - New button: `[+ New Agent]` in the left panel (below the agent list)
 - New function: `openAgentCreator()` -> modal with form
 - New function: `saveCustomAgent(data)` -> saves to localStorage + adds to AD
@@ -521,7 +521,7 @@ const CUSTOM_AGENT_SCHEMA = {
 
 **What:** Generate Mermaid flowchart code from the current canvas state. User copies the code to clipboard.
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 - New button: `[Export Mermaid]` in the topbar (or File menu)
 - New function: `generateMermaidCode()` -> returns a string
 - New function: `showMermaidModal(code)` -> modal with textarea + copy button
@@ -578,7 +578,7 @@ function generateMermaidCode() {
 
 **What:** User can export the entire canvas state to JSON and load it later (or on a different device).
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 - New button: `[Export]` and `[Import]` in the topbar
 - New function: `exportConfig()` -> downloads JSON via Blob URL
 - New function: `importConfig(file)` -> loads from `<input type="file">`
@@ -636,7 +636,7 @@ function importConfig(jsonString) {
 | F1-04 | Export/Import JSON | 150 | 0.5 day |
 | **TOTAL** | | ~800 LOC | ~4-5 days |
 
-**SIZE ALERT:** v28 (~3500) + 800 = ~4300 LOC. Within the 5000 limit. OK.
+**SIZE ALERT:** v31 (~4600) + additions must stay within the 5000 limit.
 
 **Commit strategy:** One commit per feature (F1-01, F1-02, F1-03, F1-04 separately).
 **Tag:** `v0.2.0` after completing Phase 1.
@@ -657,7 +657,7 @@ function importConfig(jsonString) {
 
 **What:** User designs an agent pipeline, and the application generates a ready-to-use `settings.json` fragment with hooks for Claude Code.
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 - New panel/tab: "Hooks" in the right sidebar or a new modal
 - New function: `generateHooksConfig()` -> JSON string
 
@@ -713,7 +713,7 @@ function importConfig(jsonString) {
 
 **What:** After actually running agents in Claude Code, the user can load an `EXECUTION_REPORT.json` into the application, which shows what happened.
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 - New button: `[Load Report]` in the Live Simulation section
 - New function: `importExecutionReport(json)` -> animates the canvas state based on the report
 - Modification: Dialog Timeline -- shows ACTUAL messages from the report
@@ -816,7 +816,7 @@ or plan agent orchestration:
 
 **What:** Interactive onboarding -- 5 short guides on "how to use the application for X". Each scenario is a sequence of steps with highlighted elements and descriptions.
 
-**Where:** `AGENT_TEAMS_CONFIGURATOR_v28.html`
+**Where:** `AGENT_TEAMS_CONFIGURATOR_v31.html`
 - New button: `[Guides]` or `[Try This]` in the topbar
 - New function: `startScenario(id)` -> animated step-by-step tour
 - Builds on the existing Encyclopedia mode -- same mechanism

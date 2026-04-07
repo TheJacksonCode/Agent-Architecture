@@ -39,11 +39,10 @@
 
   - `AGENT_TEAMS_CONFIGURATOR_v28.html` - v28.0 (Research-Backed Prompts - all 28 agent prompts rewritten following research-backed structure: ROLE/INPUT/OUTPUT/RESPONSIBILITIES/RULES/WHAT YOU DO NOT DO/REPORT FORMAT, removed MH prefix system with model pricing/context, each prompt self-contained for isolated subagent, researcher isolation to prevent groupthink, confidence labeling [CERTAIN/PROBABLE/SPECULATION], structured handoff formats, localStorage acV28)
 
-  - `v30/AGENT_TEAMS_CONFIGURATOR_v30.html` - v30.0 (International Edition - PL/EN language toggle in topbar, full EN translation of ~150 strings, AGENT_KNOWLEDGE/PRESET_KNOWLEDGE/AGENT_SPEECH/prompts/UI in two languages, default language EN, localStorage acV30/acV30_lang/acV30_theme)
-
-  - `v31/AGENT_TEAMS_CONFIGURATOR_v31.html` - v31.0 (Audit Edition - security fixes: escHtml() for save names XSS, textarea breakout fix, safeParseLS/safeSaveLS with try/catch and QuotaExceededError, export version bug fix '25.0'->'31.0'. Accessibility WCAG 2.2: skip link, SR announcer aria-live, SVG aria-hidden="true", focus-visible indicators, html lang dynamic update, keyboard-accessible palette/presets tabindex+role+Enter/Space, contrast --t2 lightened. Code quality: structuredClone(), announce() helper, localStorage acV31)
+  - `v31/AGENT_TEAMS_CONFIGURATOR_v31.html` (also `index.html`) - v31.0 (Audit Edition - incorporates v30 International Edition: full PL/EN bilingual UI with ~150 translated strings, language toggle, I18N_EN overlay system. Security fixes: escHtml() for save names XSS, textarea breakout fix, safeParseLS/safeSaveLS with try/catch and QuotaExceededError, export version bug fix '25.0'->'31.0'. Accessibility WCAG 2.2: skip link, SR announcer aria-live, SVG aria-hidden="true", focus-visible indicators, html lang dynamic update, keyboard-accessible palette/presets tabindex+role+Enter/Space, contrast --t2 lightened. Bilingual fixes: complete preset use/pros/cons translations, aktStatHTML() for ~40 static UI elements, dynamic keyboard shortcuts, getAgentPrompt fix. Code quality: structuredClone(), announce() helper, localStorage acV31)
 
 ## File locations
-- HTML files: `analizy-html/` (v1-v28), `v30/` (v30), `v31/` (v31)
+- Current version: `v31/AGENT_TEAMS_CONFIGURATOR_v31.html` (identical copy as `index.html` for GitHub Pages)
+- Historical versions: `analizy-html/` (v1-v28, gitignored)
 - MD files: `analizy-md/`
-- Interface language: Polish and English (since v30)
+- Interface language: Polish and English (since v30, fully fixed in v31)

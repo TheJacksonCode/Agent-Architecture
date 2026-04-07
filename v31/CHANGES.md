@@ -29,6 +29,15 @@
 - **`announce()` helper** - centralized screen reader announcements via `#srAnnounce`
 - **`escHtml()` reusable** - HTML escaping utility for any user-provided string
 
+### Bilingual Translation Fixes
+- **getPrompt -> getAgentPrompt** - 5 calls to undefined `getPrompt()` function caused all agent clicks to fail with silent ReferenceError
+- **Preset use/pros/cons in English** - added `presetUse`, `presetPros`, `presetCons` to I18N_EN + `getPresetUse()`/`getPresetPros()`/`getPresetCons()` getters
+- **aktStatHTML() rewrite** - comprehensive function updating ~40 static UI elements on language switch (tabs, buttons, modals, status bar, HITL overlay, keyboard shortcuts)
+- **Dynamic keyboard shortcuts** - replaced 12 hardcoded Polish rows with bilingual array-driven generation
+- **~30 new I18N_EN.ui entries** - zoom controls, connection mode, simulation messages, HITL labels, modal buttons
+- **Locale-aware dates** - save list and prompt use `en-US`/`pl-PL` based on current language
+- **switchLang() simplified** - delegates all static updates to aktStatHTML(), then re-renders dynamic UI
+
 ### localStorage
 - Key changed from `acV30` to `acV31`
 - Theme: `acV31_theme`

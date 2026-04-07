@@ -1,9 +1,9 @@
 # MANIFEST.md -- Agent Architecture Designer
-## Single Source of Truth | v28.0 -> v0.1.0 GitHub Publication
+## Single Source of Truth | v31 -> v0.1.0 GitHub Publication
 
 **Author:** Synthesizer [OPUS] | Role: System Memory
 **Date:** 2026-04-07
-**Product version:** v28.0 (current) | v0.1.0 (publication target)
+**Product version:** v31 (current) | v0.1.0 (publication target)
 **Sources:** 7 research reports (Tech, UX, GitHub, Reddit, Forum, X, Critic) + Five Minds validations + ALPHA/OMEGA Final Verdict
 **Purpose:** Implementable GitHub publication specification + product roadmap
 
@@ -14,10 +14,10 @@
 **Name:** Agent Architecture Designer (Agent Teams Configurator)
 **Repository:** github.com/TheJacksonCode/agent-architecture-designer (target)
 **Format:** Single-file HTML, zero dependencies, zero build step
-**Current size:** ~3500 lines (v28.0)
+**Current size:** ~4600 lines (v31)
 **Stack:** Vanilla JS + SVG inline + CSS transitions + Canvas 2D + localStorage
 **Owner:** TheJacksonCode (GitHub)
-**UI Language:** Polish (interface) | English (README, public documentation)
+**UI Language:** Bilingual Polish/English (since v30, fully fixed in v31) | Documentation: English
 
 **What it is:**
 A visual configurator for multi-agent Claude Code systems. The designer drags agents onto a canvas, connects them with links, selects models (Opus/Sonnet/Haiku), and then generates a ready-to-use system prompt for the entire team. Includes 28 agents, 29 presets, Live Simulation, Five Minds Protocol, HITL Decision Gates, and Agent Encyclopedia.
@@ -64,12 +64,12 @@ No build step. Instead: `<!-- SECTION: AGENT_KNOWLEDGE -->` comments as markers 
 ### 1.3 State Management
 
 ```
-Model: localStorage(acV28) -> JS Object AD[] -> Canvas SVG DOM
+Model: localStorage(acV31) -> JS Object AD[] -> Canvas SVG DOM
 Flow:  preset.load() -> AD = [...] -> render() -> minimap update
 Sim:   simStep() -> dispatch CustomEvent -> addDTLMsg() -> DOM update
 ```
 
-**localStorage keys:** `acV28` (canvas state), `acV28_theme` (dark/light), `acV28_iconMode` (SVG/PNG)
+**localStorage keys:** `acV31` (canvas state), `acV31_theme` (dark/light), `acV31_lang` (pl/en)
 
 **AD_MAP:** O(1) lookup object (replaced 36x AD.find() in v21) - maintain on every agent addition.
 
@@ -94,7 +94,7 @@ If the file reaches 5000 lines, steps in order:
 
 ## 2. Technology Stack
 
-### 2.1 Current (v28.0)
+### 2.1 Current (v31)
 
 ```
 HTML5 / CSS3 / ES2022 (const/let, template literals, optional chaining)
@@ -160,15 +160,15 @@ React Flow (34k+ stars) is a framework, not an application. No tool exists that 
 
 **Status:** CONFIRMED (Reddit #1 request, X, Forum, Researcher B)
 
-Token cost = #1 request among developers using multi-agent systems (Reddit research). Current estimates in v28 are educational. The community wants: per-agent, per-phase, cumulative. Sonnet preferred (59% among developers) due to price/quality ratio.
+Token cost = #1 request among developers using multi-agent systems (Reddit research). Current estimates in v31 are educational. The community wants: per-agent, per-phase, cumulative. Sonnet preferred (59% among developers) due to price/quality ratio.
 
-**Implication:** Token cost HUD in v0.2.0, no later. Model + pricing visibility already in v28 (good).
+**Implication:** Token cost HUD in v0.2.0, no later. Model + pricing visibility already in v31 (good).
 
 ### C5: GitHub Pages as Deployment
 
 **Status:** CONFIRMED (GitHub, Tech, Forum)
 
-Zero cost. Zero configuration (single HTML file). Works immediately after push. Each version = separate path (v28/, v27/ etc.).
+Zero cost. Zero configuration (single HTML file). Works immediately after push. index.html at root = current version (v31).
 
 **Implication:** Repository structure: root = latest version, /versions/ = archive.
 
@@ -186,7 +186,7 @@ Human-in-the-Loop 120s standard (Forum). HITL = the heart of educational value (
 
 ### R1: File Size - HIGH
 
-**Description:** v28 = ~3500 lines. Each new version adds ~100-300 lines. At the current pace: 5000 lines = 3-4 versions away.
+**Description:** v31 = ~4600 lines. Each new version adds ~100-300 lines. At the current pace: 5000 lines = 3-4 versions away.
 **Impact:** LLM cannot fit the entire file in context, harder code review, long rendering time on GitHub.
 **Mitigation:** Hard limit 5000 LOC. Before each new feature: audit -50 LOC. Fallback plan: lazy init + feature flags.
 **Owner:** Coder (v21 cleanup was exemplary - replicate methodology)
@@ -256,7 +256,7 @@ Human-in-the-Loop 120s standard (Forum). HITL = the heart of educational value (
 
 ---
 
-## 6. Agent Architecture (v28.0 state)
+## 6. Agent Architecture (v31 state)
 
 ### 6.1 Agents (28)
 
@@ -319,7 +319,7 @@ Flagship: **Deep Five Minds Ultimate** (29 agents, 5 HITL checkpoints, two Five 
 
 ---
 
-## 8. Design System Tokens (current in v28.0)
+## 8. Design System Tokens (current in v31)
 
 ### 8.1 Colors - Dark Theme (default)
 
@@ -371,7 +371,9 @@ Full overrides in CSS Custom Properties. Introduced in v23.
 | v25 | HITL Decision Gates - 3 gates, 120s timer, auto-decide |
 | v26 | Cosmic Icons - 57 PNG Imagen 4 |
 | v27 | Unified Sidebars |
-| **v28** | **Research-Backed Prompts - 28 agents rewritten** |
+| v28 | Research-Backed Prompts - 28 agents rewritten |
+| v30 | International Edition - full PL/EN bilingual UI |
+| **v31** | **Audit Edition - Security, WCAG 2.2, bilingual fixes (current)** |
 
 ---
 
@@ -381,7 +383,7 @@ All items below must be checked before pushing to the public repo:
 
 - [ ] README.md in English with hero GIF
 - [ ] Security audit (XSS check - R2)
-- [ ] AGENT_TEAMS_CONFIGURATOR_v28.html as the main file (index.html or link)
+- [x] index.html as the main file (copy of v31)
 - [ ] plugin.json at root (format verification)
 - [ ] LICENSE (MIT)
 - [ ] .gitignore (exclude node_modules, .DS_Store, Thumbs.db)

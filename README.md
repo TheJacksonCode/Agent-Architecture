@@ -160,7 +160,7 @@ Skills are invoked as slash commands inside Claude Code (e.g., `/five-minds`, `/
 
 ## Technical Details
 
-- **Format:** Single HTML file (~4500 lines, including full i18n for PL/EN)
+- **Format:** Single HTML file (~4600 lines, including full i18n for PL/EN)
 - **Dependencies:** Zero. No npm, no CDN, no build step.
 - **Stack:** Vanilla JS (ES2022) + inline SVG + CSS transitions + Canvas 2D + Web Animations API
 - **State:** localStorage persistence (canvas, theme, icon mode, language preference)
@@ -172,9 +172,9 @@ Skills are invoked as slash commands inside Claude Code (e.g., `/five-minds`, `/
 
 ## Development
 
-Each new version of the application is saved as a **separate file** with an incremented version number (`AGENT_TEAMS_CONFIGURATOR_v29.html`, `v30.html`, etc.). Previous versions remain untouched.
+Each new version of the application is saved as a **separate file** with an incremented version number (e.g., `AGENT_TEAMS_CONFIGURATOR_v28.html`, `AGENT_TEAMS_CONFIGURATOR_v31.html`). Previous versions remain untouched.
 
-See [CLAUDE.md](CLAUDE.md) for the full versioning policy and changelog of all 28 versions.
+See [CLAUDE.md](CLAUDE.md) for the full versioning policy and changelog of all 31 versions.
 
 ### Version highlights
 
@@ -194,7 +194,8 @@ See [CLAUDE.md](CLAUDE.md) for the full versioning policy and changelog of all 2
 | v25 | HITL Decision Gates - 3 gates, 120s timer |
 | v26-v27 | Cosmic PNG icons (Imagen 4), unified sidebars |
 | v28 | Research-backed prompts for all 28 agents |
-| **v30** | **International Edition - full PL/EN bilingual UI, ~150 translated strings** |
+| v30 | International Edition - full PL/EN bilingual UI, ~150 translated strings |
+| **v31** | **Audit Edition - Security fixes (XSS), WCAG 2.2 accessibility, bilingual translation fixes** |
 
 ## License
 
