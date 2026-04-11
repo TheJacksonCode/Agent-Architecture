@@ -1,0 +1,17 @@
+<div id="moZoom" class="mo-zoom" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="mzCap">
+  <div class="mz-back" tabindex="-1">
+    <div class="mz-top">
+      <div class="mz-cap" id="mzCap"></div>
+      <div class="mz-toolbar" role="toolbar" aria-label="Sterowanie powiekszeniem">
+        <button type="button" class="mz-btn mz-out" aria-label="Pomniejsz" title="Pomniejsz (-)">-</button>
+        <button type="button" class="mz-btn mz-reset" aria-label="Dopasuj do ekranu" title="Dopasuj (0)">1:1</button>
+        <button type="button" class="mz-btn mz-in" aria-label="Powieksz" title="Powieksz (+)">+</button>
+        <button type="button" class="mz-btn mz-close" aria-label="Zamknij powiekszenie" title="Zamknij (Esc)">X</button>
+      </div>
+    </div>
+    <div class="mz-stage" id="mzStage">
+      <img id="mzImg" class="mz-img" alt="" draggable="false">
+    </div>
+    <div class="mz-hint" id="mzHint">Przewijaj kolko aby powiekszyc, przeciagnij aby przesunac. Klawisze: + - 0 strzalki Esc. Podwojne klikniecie przelacza 1x / 2x.</div>
+  </div>
+</div>

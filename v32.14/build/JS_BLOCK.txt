@@ -1,0 +1,538 @@
+/* ===== v32.14 Encyclopedia helpers + renderer + zoom lightbox ===== */
+// List of pilot agents that use the new renderer
+const ENC_V14_PILOTS = ['res_reddit','res_x','res_github','res_forums'];
+
+function encEsc(s){return String(s==null?'':s).replace(/[<>&"']/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]})}
+function encKicker(num,label){return '<div class="enc-section-kicker"><span class="enc-section-kicker-num">'+num+'</span>'+label+'</div>'}
+function encKickerInline(num,label){return '<span class="enc-section-kicker" style="margin-right:12px"><span class="enc-section-kicker-num">'+num+'</span>'+label+'</span>'}
+
+// Top 15 glossary terms (first occurrence per render)
+const ENC_GLOSSARY_V14 = {
+  'subagent':'Wyspecjalizowany podAgent uruchamiany przez Orchestratora do wykonania jednego zadania.',
+  'orchestrator':'Glowny agent koordynujacy prace innych subagentow, nie robi pracy merytorycznej sam.',
+  'Opus':'Najsilniejszy model Claude - 1M kontekst, $15/$75 za 1M tokenow, do strategii i debat.',
+  'Sonnet':'Model srodkowy Claude - 1M kontekst, $3/$15 za 1M tokenow, workhorse do buildu.',
+  'Haiku':'Najlzejszy model Claude - 200K kontekst, $0.80/$4 za 1M tokenow, do researchu i QA.',
+  'HITL':'Human-in-the-loop - punkt gdzie system zatrzymuje sie i czeka na decyzje czlowieka.',
+  'prompt':'Instrukcja tekstowa dla modelu - definiuje role, input, output i zasady dzialania agenta.',
+  'kontekst':'Pamiec krotkotrwala modelu - wszystko co widzi w danym momencie, liczone w tokenach.',
+  'RAG':'Retrieval-Augmented Generation - technika wzbogacania promptu o wyszukane dokumenty.',
+  'embedding':'Wektorowa reprezentacja tekstu uzywana do wyszukiwania semantycznego i RAG.',
+  'few-shot':'Technika promptingu - w prompt wrzucamy 2-5 przykladow zanim damy wlasciwe zadanie.',
+  'scratchpad':'Przestrzen do notatek modelu - widoczna w debug, pomaga rozbic rozumowanie na kroki.',
+  'tool use':'Zdolnosc modelu do wywolywania funkcji zewnetrznych (search, bash, WebFetch).',
+  'MCP':'Model Context Protocol - standard Anthropic do podlaczania narzedzi i danych do Claude.',
+  'upvote':'Glos poparcia na forum - filtr jakosci, ale nie dowod prawdy.'
+};
+
+function encInjectGlossary(s){
+  if(!s || typeof s !== 'string') return s;
+  const terms = Object.keys(ENC_GLOSSARY_V14).sort((a,b)=>b.length-a.length);
+  const seen = new Set();
+  let out = s;
+  terms.forEach(function(term){
+    if(seen.has(term)) return;
+    const idx = out.indexOf(term);
+    if(idx < 0) return;
+    seen.add(term);
+    const def = ENC_GLOSSARY_V14[term].replace(/"/g,'&quot;');
+    out = out.slice(0,idx) + '<span class="enc-term" tabindex="0" title="'+def+'" data-tip="'+def+'">'+term+'</span>' + out.slice(idx+term.length);
+  });
+  return out;
+}
+
+function wireBentoReveal(){
+  const tiles = document.querySelectorAll('#loBody .enc-tile');
+  tiles.forEach(function(t,i){t.style.setProperty('--i', i)});
+  if(!('IntersectionObserver' in window)){
+    tiles.forEach(function(t){t.classList.add('is-visible')});
+    return;
+  }
+  const obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('is-visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.1, rootMargin:'0px 0px -40px 0px', root:document.getElementById('loBody')});
+  tiles.forEach(function(t){obs.observe(t)});
+}
+
+function wireEncProgress(){
+  const bar = document.querySelector('#loBody .enc-progress');
+  const scroll = document.getElementById('loBody');
+  if(!bar || !scroll) return;
+  if(CSS && CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
+  scroll.addEventListener('scroll', function(){
+    const p = scroll.scrollTop / Math.max(1, scroll.scrollHeight - scroll.clientHeight);
+    bar.style.transform = 'scaleX(' + Math.min(1, Math.max(0, p)) + ')';
+  }, {passive:true});
+}
+
+/* ----- Zoom lightbox (R4 drop-in, adapted) ----- */
+let mzState = null;
+const MZ_MAX_SCALE = 4;
+const MZ_FIT_TO_MAX_RATIO = 4;
+const MZ_WHEEL_STEP = 0.0018;
+const MZ_BTN_STEP = 1.25;
+const MZ_DBLCLICK_SCALE = 2;
+const mzPointers = new Map();
+let mzPinchPrevDist = 0;
+let mzPinchPrevMid = null;
+let mzDragPrev = null;
+let mzRaf = 0;
+let mzPendingApply = false;
+
+function otworzZoom(src, caption){
+  if(!src) return;
+  const mo = document.getElementById('moZoom');
+  const img = document.getElementById('mzImg');
+  const cap = document.getElementById('mzCap');
+  const stage = document.getElementById('mzStage');
+  if(!mo || !img || !cap || !stage) return;
+  mzState = {scale:1,tx:0,ty:0,minScale:1,maxScale:MZ_MAX_SCALE,natW:0,natH:0,prevFocus:document.activeElement,capText:caption||'',altText:caption||'Infografika'};
+  cap.textContent = mzState.capText;
+  img.alt = mzState.altText;
+  mo.hidden = false;
+  mo.setAttribute('aria-hidden','false');
+  if(typeof announce === 'function'){try{announce('Widok powiekszenia: '+mzState.altText+'. Przewijaj kolko aby powiekszyc, Escape aby zamknac.')}catch(e){}}
+  img.onload = function(){mzState.natW=img.naturalWidth;mzState.natH=img.naturalHeight;mzFit()};
+  if(img.complete && img.naturalWidth && img.src === src){
+    mzState.natW = img.naturalWidth;
+    mzState.natH = img.naturalHeight;
+    img.style.transform = 'translate(0,0) scale(1)';
+    mzFit();
+  } else {
+    img.src = src;
+  }
+  document.addEventListener('keydown', mzKey, true);
+  stage.addEventListener('wheel', mzWheel, {passive:false});
+  stage.addEventListener('pointerdown', mzPointerDown);
+  stage.addEventListener('pointermove', mzPointerMove);
+  stage.addEventListener('pointerup', mzPointerUp);
+  stage.addEventListener('pointercancel', mzPointerUp);
+  stage.addEventListener('pointerleave', mzPointerUp);
+  stage.addEventListener('dblclick', mzDblClick);
+  requestAnimationFrame(function(){const firstBtn = mo.querySelector('.mz-btn');if(firstBtn)firstBtn.focus()});
+}
+
+function zamknijZoom(){
+  const mo = document.getElementById('moZoom');
+  const stage = document.getElementById('mzStage');
+  if(!mo || mo.hidden) return;
+  mo.hidden = true;
+  mo.setAttribute('aria-hidden','true');
+  document.removeEventListener('keydown', mzKey, true);
+  if(stage){
+    stage.removeEventListener('wheel', mzWheel);
+    stage.removeEventListener('pointerdown', mzPointerDown);
+    stage.removeEventListener('pointermove', mzPointerMove);
+    stage.removeEventListener('pointerup', mzPointerUp);
+    stage.removeEventListener('pointercancel', mzPointerUp);
+    stage.removeEventListener('pointerleave', mzPointerUp);
+    stage.removeEventListener('dblclick', mzDblClick);
+  }
+  mzPointers.clear();
+  mzPinchPrevDist = 0;
+  mzPinchPrevMid = null;
+  mzDragPrev = null;
+  const prev = mzState && mzState.prevFocus;
+  mzState = null;
+  if(prev && typeof prev.focus === 'function'){try{prev.focus()}catch(e){}}
+}
+
+function mzFit(){
+  if(!mzState || !mzState.natW || !mzState.natH) return;
+  const stage = document.getElementById('mzStage');
+  const r = stage.getBoundingClientRect();
+  if(r.width < 10 || r.height < 10) return;
+  const fit = Math.min(r.width / mzState.natW, r.height / mzState.natH);
+  mzState.minScale = fit;
+  mzState.maxScale = Math.max(fit * MZ_FIT_TO_MAX_RATIO, fit + 1);
+  mzState.scale = fit;
+  mzState.tx = (r.width  - mzState.natW * fit) / 2;
+  mzState.ty = (r.height - mzState.natH * fit) / 2;
+  mzApply(true);
+}
+
+function mzApply(animate){
+  if(!mzState) return;
+  const img = document.getElementById('mzImg');
+  if(!img) return;
+  mzClamp();
+  if(animate){
+    img.style.transform = 'translate('+mzState.tx.toFixed(1)+'px,'+mzState.ty.toFixed(1)+'px) scale('+mzState.scale.toFixed(4)+')';
+  } else {
+    if(!mzPendingApply){
+      mzPendingApply = true;
+      mzRaf = requestAnimationFrame(function(){
+        mzPendingApply = false;
+        img.style.transform = 'translate('+mzState.tx.toFixed(1)+'px,'+mzState.ty.toFixed(1)+'px) scale('+mzState.scale.toFixed(4)+')';
+      });
+    }
+  }
+}
+
+function mzClamp(){
+  const stage = document.getElementById('mzStage');
+  if(!stage || !mzState) return;
+  const r = stage.getBoundingClientRect();
+  const sw = mzState.natW * mzState.scale;
+  const sh = mzState.natH * mzState.scale;
+  if(sw <= r.width){mzState.tx = (r.width - sw) / 2}
+  else {
+    const minTx = r.width - sw;
+    const maxTx = 0;
+    if(mzState.tx < minTx) mzState.tx = minTx;
+    if(mzState.tx > maxTx) mzState.tx = maxTx;
+  }
+  if(sh <= r.height){mzState.ty = (r.height - sh) / 2}
+  else {
+    const minTy = r.height - sh;
+    const maxTy = 0;
+    if(mzState.ty < minTy) mzState.ty = minTy;
+    if(mzState.ty > maxTy) mzState.ty = maxTy;
+  }
+  if(mzState.scale < mzState.minScale) mzState.scale = mzState.minScale;
+  if(mzState.scale > mzState.maxScale) mzState.scale = mzState.maxScale;
+}
+
+function mzZoomTo(newScale, fx, fy){
+  if(!mzState) return;
+  if(newScale < mzState.minScale) newScale = mzState.minScale;
+  if(newScale > mzState.maxScale) newScale = mzState.maxScale;
+  const k = newScale / mzState.scale;
+  mzState.tx = fx - (fx - mzState.tx) * k;
+  mzState.ty = fy - (fy - mzState.ty) * k;
+  mzState.scale = newScale;
+  mzApply(false);
+}
+
+function mzZoomIn(){
+  if(!mzState) return;
+  const stage = document.getElementById('mzStage');
+  const r = stage.getBoundingClientRect();
+  mzZoomTo(mzState.scale * MZ_BTN_STEP, r.width/2, r.height/2);
+}
+function mzZoomOut(){
+  if(!mzState) return;
+  const stage = document.getElementById('mzStage');
+  const r = stage.getBoundingClientRect();
+  mzZoomTo(mzState.scale / MZ_BTN_STEP, r.width/2, r.height/2);
+}
+function mzReset(){if(!mzState) return; mzFit()}
+
+function mzWheel(e){
+  if(!mzState) return;
+  e.preventDefault();
+  let dy = e.deltaY;
+  if(e.deltaMode === 1) dy *= 16;
+  else if(e.deltaMode === 2) dy *= (window.innerHeight || 800);
+  if(dy > 100) dy = 100;
+  if(dy < -100) dy = -100;
+  const k = Math.exp(-dy * MZ_WHEEL_STEP);
+  const stage = document.getElementById('mzStage');
+  const r = stage.getBoundingClientRect();
+  const fx = e.clientX - r.left;
+  const fy = e.clientY - r.top;
+  mzZoomTo(mzState.scale * k, fx, fy);
+}
+
+function mzPointerDown(e){
+  if(!mzState) return;
+  const stage = document.getElementById('mzStage');
+  if(stage.setPointerCapture){try{stage.setPointerCapture(e.pointerId)}catch(_){}}
+  mzPointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if(mzPointers.size === 1){
+    mzDragPrev = {x:e.clientX, y:e.clientY};
+    stage.classList.add('mz-dragging');
+  } else if(mzPointers.size === 2){
+    stage.classList.remove('mz-dragging');
+    stage.classList.add('mz-zooming');
+    const pts = [...mzPointers.values()];
+    mzPinchPrevDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    mzPinchPrevMid  = {x:(pts[0].x + pts[1].x)/2, y:(pts[0].y + pts[1].y)/2};
+    mzDragPrev = null;
+  }
+}
+function mzPointerMove(e){
+  if(!mzState) return;
+  if(!mzPointers.has(e.pointerId)) return;
+  mzPointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  const stage = document.getElementById('mzStage');
+  const r = stage.getBoundingClientRect();
+  if(mzPointers.size === 1 && mzDragPrev){
+    const dx = e.clientX - mzDragPrev.x;
+    const dy = e.clientY - mzDragPrev.y;
+    mzState.tx += dx;
+    mzState.ty += dy;
+    mzDragPrev = {x:e.clientX, y:e.clientY};
+    mzApply(false);
+  } else if(mzPointers.size === 2){
+    const pts = [...mzPointers.values()];
+    const curDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    const curMid  = {x:(pts[0].x + pts[1].x)/2, y:(pts[0].y + pts[1].y)/2};
+    if(mzPinchPrevDist > 0){
+      const ratio = curDist / mzPinchPrevDist;
+      const fx = curMid.x - r.left;
+      const fy = curMid.y - r.top;
+      mzZoomTo(mzState.scale * ratio, fx, fy);
+      if(mzPinchPrevMid){
+        mzState.tx += (curMid.x - mzPinchPrevMid.x);
+        mzState.ty += (curMid.y - mzPinchPrevMid.y);
+        mzApply(false);
+      }
+    }
+    mzPinchPrevDist = curDist;
+    mzPinchPrevMid = curMid;
+  }
+}
+function mzPointerUp(e){
+  if(!mzState) return;
+  const stage = document.getElementById('mzStage');
+  if(mzPointers.has(e.pointerId)) mzPointers.delete(e.pointerId);
+  try{stage.releasePointerCapture && stage.releasePointerCapture(e.pointerId)}catch(_){}
+  if(mzPointers.size < 2){
+    mzPinchPrevDist = 0;
+    mzPinchPrevMid = null;
+    stage.classList.remove('mz-zooming');
+  }
+  if(mzPointers.size === 0){
+    stage.classList.remove('mz-dragging');
+    mzDragPrev = null;
+  } else if(mzPointers.size === 1){
+    const only = [...mzPointers.values()][0];
+    mzDragPrev = {x:only.x, y:only.y};
+    stage.classList.add('mz-dragging');
+  }
+}
+function mzDblClick(e){
+  if(!mzState) return;
+  const stage = document.getElementById('mzStage');
+  const r = stage.getBoundingClientRect();
+  const fx = e.clientX - r.left;
+  const fy = e.clientY - r.top;
+  const atFit = Math.abs(mzState.scale - mzState.minScale) < 1e-3;
+  if(atFit){mzZoomTo(mzState.minScale * MZ_DBLCLICK_SCALE, fx, fy)}
+  else {mzFit()}
+}
+function mzKey(e){
+  if(!mzState) return;
+  const mo = document.getElementById('moZoom');
+  if(!mo || mo.hidden) return;
+  if(e.key === 'Tab'){
+    const focusables = mo.querySelectorAll('.mz-btn');
+    if(!focusables.length) return;
+    const first = focusables[0];
+    const last  = focusables[focusables.length - 1];
+    if(e.shiftKey && document.activeElement === first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey && document.activeElement === last){e.preventDefault();first.focus()}
+    return;
+  }
+  const panStep = 40;
+  switch(e.key){
+    case 'Escape': e.preventDefault(); e.stopPropagation(); zamknijZoom(); break;
+    case '+': case '=': e.preventDefault(); mzZoomIn(); break;
+    case '-': case '_': e.preventDefault(); mzZoomOut(); break;
+    case '0': e.preventDefault(); mzReset(); break;
+    case 'ArrowLeft': e.preventDefault(); mzState.tx += panStep; mzApply(true); break;
+    case 'ArrowRight': e.preventDefault(); mzState.tx -= panStep; mzApply(true); break;
+    case 'ArrowUp': e.preventDefault(); mzState.ty += panStep; mzApply(true); break;
+    case 'ArrowDown': e.preventDefault(); mzState.ty -= panStep; mzApply(true); break;
+  }
+}
+(function mzInit(){
+  const ready = function(){
+    const mo = document.getElementById('moZoom');
+    if(!mo) return;
+    const bIn = mo.querySelector('.mz-in');
+    const bOut = mo.querySelector('.mz-out');
+    const bRst = mo.querySelector('.mz-reset');
+    const bCls = mo.querySelector('.mz-close');
+    if(bIn) bIn.addEventListener('click', mzZoomIn);
+    if(bOut) bOut.addEventListener('click', mzZoomOut);
+    if(bRst) bRst.addEventListener('click', mzReset);
+    if(bCls) bCls.addEventListener('click', zamknijZoom);
+    const back = mo.querySelector('.mz-back');
+    if(back) back.addEventListener('click', function(e){if(e.target.classList.contains('mz-back')) zamknijZoom()});
+    window.addEventListener('resize', function(){
+      if(!mo.hidden && mzState && mzState.natW){
+        const wasFit = Math.abs(mzState.scale - mzState.minScale) < 1e-3;
+        if(wasFit) mzFit();
+        else {mzClamp(); mzApply(true)}
+      }
+    });
+  };
+  if(document.readyState === 'loading'){document.addEventListener('DOMContentLoaded', ready)}
+  else {ready()}
+})();
+
+/* ----- v32.14 new renderer for pilot agents ----- */
+function rysujBentoAgentaV14(aid){
+  const d = AD_MAP.get(aid);
+  const edu = (typeof AGENT_EDU_PL !== 'undefined') ? AGENT_EDU_PL[aid] : null;
+  if(!d || !edu){return rysujBentoAgentaLegacy(aid)}
+  const media = (typeof AGENT_MEDIA !== 'undefined' && AGENT_MEDIA[aid]) ? AGENT_MEDIA[aid] : {};
+  const ctx = calcAgentCtx(aid, d.model);
+  const cost = calcAgentCost(aid, d.model);
+  const kn = (typeof AGENT_KNOWLEDGE !== 'undefined' && AGENT_KNOWLEDGE[aid]) ? AGENT_KNOWLEDGE[aid] : {};
+
+  // HERO (section 1)
+  let heroHtml = '<div class="bento-card bento-4x1 enc-tile enc-hero" style="--i:0;grid-row:span 2">';
+  heroHtml += '<div class="enc-hero-main">';
+  heroHtml += '<div class="enc-hero-top"><div class="enc-hero-icon">'+svgAgenta(aid,56)+'</div>';
+  heroHtml += '<div><div class="enc-hero-tagline">'+encEsc(edu.tagline||'')+'</div>';
+  heroHtml += '<div class="enc-hero-name">'+encEsc(getAgentName(aid))+'</div></div></div>';
+  heroHtml += '<p class="enc-hero-mission">'+encInjectGlossary(encEsc(edu.missionShort||''))+'</p>';
+  heroHtml += '<blockquote class="enc-hero-quote">&bdquo;'+encEsc(edu.analogy||'')+'&rdquo;</blockquote>';
+  heroHtml += '</div>';
+  if(media.infographic){
+    heroHtml += '<button type="button" class="enc-hero-preview" onclick="otworzZoom(AGENT_MEDIA[\''+aid+'\'].infographic,\'Infografika: '+encEsc(getAgentName(aid))+'\')" aria-label="Powieksz infografike">';
+    heroHtml += '<img src="'+media.infographic+'" alt="Infografika podglad"></button>';
+  }
+  heroHtml += '</div>';
+
+  // WHY (section 2)
+  const benefits = (edu.bestFor || []).slice(0,3);
+  let whyHtml = '<div class="bento-card bento-4x1 enc-tile" style="--i:1">';
+  whyHtml += encKicker('2','DLACZEGO JA');
+  whyHtml += '<h3 class="enc-section-title">'+encEsc(edu.whoIs ? edu.whoIs.split('.')[0]+'.' : getAgentName(aid))+'</h3>';
+  whyHtml += '<p class="enc-section-lead">'+encInjectGlossary(encEsc(edu.whoIs||''))+'</p>';
+  if(benefits.length){
+    whyHtml += '<ul class="enc-benefit-list">';
+    benefits.forEach(function(b,i){
+      whyHtml += '<li class="enc-benefit-item"><div class="enc-benefit-icon">'+(i+1)+'</div><div class="enc-benefit-text">'+encEsc(b)+'</div></li>';
+    });
+    whyHtml += '</ul>';
+  }
+  whyHtml += '</div>';
+
+  // HOW (section 3)
+  const steps = (edu.howItWorks || []).slice(0,4);
+  let howHtml = '<div class="bento-card bento-2x1 enc-tile" style="--i:2">';
+  howHtml += encKicker('3','JAK PRACUJE');
+  howHtml += '<div class="enc-flow">';
+  steps.forEach(function(s,i){
+    const lab = (typeof s === 'string') ? s : (s.label||'');
+    const dsc = (typeof s === 'string') ? '' : (s.desc||'');
+    howHtml += '<div class="enc-flow-step"><div class="enc-flow-num">'+(i+1)+'</div><div>';
+    howHtml += '<div class="enc-flow-label">'+encEsc(lab)+'</div>';
+    if(dsc) howHtml += '<div class="enc-flow-desc">'+encEsc(dsc)+'</div>';
+    howHtml += '</div></div>';
+  });
+  howHtml += '</div></div>';
+
+  // META (section 4)
+  const phLabel = getCatLabel(d.cat);
+  const mdLabel = d.model.charAt(0).toUpperCase()+d.model.slice(1)+' 4.6';
+  let metaHtml = '<div class="bento-card bento-2x1 enc-tile" style="--i:3">';
+  metaHtml += encKicker('4','META');
+  metaHtml += '<div class="enc-meta-grid">';
+  metaHtml += '<div class="enc-meta-row"><span class="enc-meta-label">Model</span><span class="enc-meta-pill">'+encEsc(mdLabel)+'</span></div>';
+  metaHtml += '<div class="enc-meta-row"><span class="enc-meta-label">Faza</span><span class="enc-meta-value">'+encEsc(phLabel)+'</span></div>';
+  metaHtml += '<div class="enc-meta-row"><span class="enc-meta-label">Koszt</span><span class="enc-meta-value">'+fmtCost(cost)+'</span></div>';
+  metaHtml += '<div class="enc-meta-row"><span class="enc-meta-label">Kontekst</span><span class="enc-meta-value">'+Math.round(ctx.pct*100)+'%</span></div>';
+  metaHtml += '<div class="enc-meta-row"><span class="enc-meta-label">Obciazenie</span><span class="enc-meta-value">'+d.load+'%</span></div>';
+  metaHtml += '<div class="enc-meta-row"><span class="enc-meta-label">Narzedzia</span><span class="enc-meta-value">'+d.tools.split(',').length+'</span></div>';
+  (edu.stats||[]).slice(0,2).forEach(function(st){
+    metaHtml += '<div class="enc-meta-row"><span class="enc-meta-label">'+encEsc(st.label||'')+'</span><span class="enc-meta-value">'+encEsc(st.value||'')+'</span></div>';
+  });
+  metaHtml += '</div></div>';
+
+  // DO (section 5)
+  const doArr = (edu.does || []).slice(0,8);
+  let doHtml = '<div class="bento-card bento-1x1 enc-tile accent-green" style="--i:4">';
+  doHtml += encKicker('5','CO UMIEM');
+  doHtml += '<ul class="bento-do-list">'+doArr.map(function(x){return '<li>'+encEsc(x)+'</li>'}).join('')+'</ul>';
+  doHtml += '</div>';
+
+  // DONT (section 6)
+  const dontArr = (edu.doesNotDo || []).slice(0,8);
+  let dontHtml = '<div class="bento-card bento-1x1 enc-tile accent-red" style="--i:5">';
+  dontHtml += encKicker('6','CZEGO NIE');
+  dontHtml += '<ul class="bento-dont-list">'+dontArr.map(function(x){return '<li>'+encEsc(x)+'</li>'}).join('')+'</ul>';
+  dontHtml += '</div>';
+
+  // EXAMPLE (section 7)
+  let exHtml = '<div class="bento-card bento-2x1 enc-tile" style="--i:6">';
+  exHtml += encKicker('7','PRZYKLAD Z ZYCIA');
+  exHtml += '<div class="enc-example"><div class="enc-example-label">Scenariusz</div>';
+  exHtml += '<p class="enc-example-body">'+encEsc(edu.realExample||'')+'</p></div>';
+  exHtml += '</div>';
+
+  // ANTI (section 8)
+  const antiArr = (edu.antiPatterns || []).slice(0,5);
+  let antiHtml = '<div class="bento-card bento-2x1 enc-tile accent-amber" style="--i:7">';
+  antiHtml += encKicker('8','KIEDY ZAWODZE');
+  antiHtml += '<ul class="bento-anti-list">'+antiArr.map(function(x){return '<li>'+encEsc(x)+'</li>'}).join('')+'</ul>';
+  antiHtml += '</div>';
+
+  // FACTS (section 9)
+  const factsArr = (kn.facts || []).slice(0,5);
+  let factsHtml = '<div class="bento-card bento-2x1 enc-tile accent-violet" style="--i:8">';
+  factsHtml += encKicker('9','CIEKAWOSTKI');
+  if(factsArr.length){factsHtml += '<ul class="bento-facts-list">'+factsArr.map(function(x){return '<li>'+encEsc(x)+'</li>'}).join('')+'</ul>'}
+  if(edu.learningQuote){factsHtml += '<blockquote class="enc-hero-quote" style="margin-top:12px">&bdquo;'+encEsc(edu.learningQuote)+'&rdquo;</blockquote>'}
+  factsHtml += '</div>';
+
+  // DEEP DIVE (section 10)
+  const agName = encEsc(getAgentName(aid));
+  let deepHtml = '<details class="bento-card bento-4x1 enc-tile enc-deep" style="--i:9">';
+  deepHtml += '<summary>'+encKickerInline('10','ZANURKUJ')+'Techniczne szczegoly</summary>';
+  deepHtml += '<div class="enc-deep-body">';
+  if(media.infographic){
+    deepHtml += '<button type="button" class="enc-infographic-thumb" onclick="otworzZoom(AGENT_MEDIA[\''+aid+'\'].infographic,\'Infografika: '+agName+'\')" aria-label="Powieksz infografike">';
+    deepHtml += '<img src="'+media.infographic+'" alt="Infografika: '+agName+'">';
+    deepHtml += '<span class="enc-zoom-hint">Kliknij aby powiekszyc</span></button>';
+  }
+  if(media.presentationPath){
+    deepHtml += '<button type="button" class="enc-dl-btn" onclick="window.open(\''+media.presentationPath+'\',\'_blank\',\'noopener\')">Otworz prezentacje PDF (nowe okno)</button>';
+  }
+  deepHtml += '<div><h4>System prompt</h4><pre class="enc-prompt">'+encEsc(getAgentPrompt(aid))+'</pre></div>';
+  deepHtml += '<div><h4>Miejsce w architekturze</h4>'+kartaHierarchii(d.cat)+'</div>';
+  deepHtml += '<div><h4>Porownanie modeli dla tej roli</h4>';
+  deepHtml += '<table class="bento-table"><tr><th></th><th style="color:var(--mc-opus)">Opus 4.6</th><th style="color:var(--mc-sonnet)">Sonnet 4.6</th><th style="color:var(--mc-haiku)">Haiku 4.5</th></tr>';
+  deepHtml += '<tr><td>Kontekst</td><td>1M tok</td><td>1M tok</td><td>200K tok</td></tr>';
+  deepHtml += '<tr><td>Koszt/1M in</td><td style="color:var(--mc-opus)">$5</td><td style="color:var(--mc-sonnet)">$3</td><td style="color:var(--mc-haiku)">$0.80</td></tr>';
+  deepHtml += '<tr><td>Koszt/1M out</td><td style="color:var(--mc-opus)">$25</td><td style="color:var(--mc-sonnet)">$15</td><td style="color:var(--mc-haiku)">$4</td></tr>';
+  const recO = (d.cat==='STRATEGIA'||d.cat==='FIVE MINDS')?'\u2713 Idealny':'Overkill';
+  const recS = (d.cat==='BUILD'||d.cat==='PLANOWANIE')?'\u2713 Idealny':'Dobry';
+  const recH = (d.cat==='RESEARCH'||d.cat.indexOf('QA')>=0)?'\u2713 Idealny':'Ryzykowny';
+  deepHtml += '<tr><td>Rekomendacja</td><td>'+recO+'</td><td>'+recS+'</td><td>'+recH+'</td></tr></table></div>';
+  deepHtml += '</div></details>';
+
+  // NASTEPNY AGENT
+  const idx = ENC_V14_PILOTS.indexOf(aid);
+  const nextAid = idx >= 0 ? ENC_V14_PILOTS[(idx+1) % ENC_V14_PILOTS.length] : ENC_V14_PILOTS[0];
+  let nextHtml = '<button type="button" class="enc-next" onclick="otworzEncykl(\'agent\',\''+nextAid+'\')" aria-label="Nastepny agent">';
+  nextHtml += '<div style="width:44px;height:44px;display:grid;place-items:center;background:rgba(var(--ph-build-rgb,52,211,153),0.15);border-radius:12px">'+svgAgenta(nextAid,28)+'</div>';
+  nextHtml += '<div><div class="enc-next-kicker">NASTEPNY AGENT</div><div class="enc-next-name">'+encEsc(getAgentName(nextAid))+'</div></div>';
+  nextHtml += '<div class="enc-next-arrow">&rarr;</div>';
+  nextHtml += '</button>';
+
+  // Banner (kept from legacy) + new grid
+  let h = '<div class="enc-progress"></div>';
+  h += '<div class="bento-banner"><div class="bento-banner-icon">'+svgAgenta(aid,36)+'</div>';
+  h += '<div class="bento-banner-text"><h2>'+encEsc(getAgentName(aid))+'</h2>';
+  h += '<p>'+encEsc(getCatLabel(d.cat))+' | v32.14 Encyklopedia Premium</p></div>';
+  h += '<div class="bento-banner-badge">'+d.model.toUpperCase()+'</div></div>';
+  h += '<div class="bento-grid bento-grid-v14">';
+  h += heroHtml + whyHtml + howHtml + metaHtml + doHtml + dontHtml + exHtml + antiHtml + factsHtml + deepHtml;
+  h += '</div>';
+  h += nextHtml;
+
+  G('loBody').innerHTML = h;
+  G('loBody').scrollTop = 0;
+  wireBentoReveal();
+  wireEncProgress();
+  return h;
+}
+
+// Feature-gate wrapper
+function rysujBentoAgenta(aid){
+  if(typeof AGENT_EDU_PL !== 'undefined' && AGENT_EDU_PL[aid]){
+    return rysujBentoAgentaV14(aid);
+  }
+  return rysujBentoAgentaLegacy(aid);
+}

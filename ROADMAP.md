@@ -1,9 +1,44 @@
 # ROADMAP.md -- Agent Architecture Designer
 ## Concrete implementation plan v0.1.0 -> v0.4.0+
 
-**Author:** Synthesizer [OPUS] | Date: 2026-04-07
+**Author:** Synthesizer [OPUS] | Date: 2026-04-07 | Last state update: 2026-04-11
 **Sources:** 6 research reports + Five Minds Critica validations + ALPHA/OMEGA Verdict
 **Format:** Each step has: What / Where / LOC estimate / Dependencies / Priority
+
+---
+
+## CURRENT STATE (2026-04-11)
+
+**Shipped public version:** v32.16 "Universal Bilingual" (tagged as plugin version 0.32.16)
+**Live at:** https://thejacksoncode.github.io/Agent-Architecture/
+**File:** `v32.16/AGENT_TEAMS_CONFIGURATOR_v32_16.html` (~27500 lines, 5.7 MB) mirrored to `index.html`
+
+**Phase 0 ("Go Public") status:** SHIPPED. The original Phase 0 target was v0.1.0 from v31; we shipped through v31 -> v32 -> v32.1..v32.16 instead. The file grew past the original 5000-line hard cap because the educational mission (encyclopedia for all 35 agents + 42 presets in PL and EN + inline base64 infographics) required substantially more content than the original plan anticipated. The "5000 LOC hard cap" is formally retired - v32.14+ showed that container-query-based bento rendering + lazy sections keep perceived responsiveness acceptable even at ~27k lines.
+
+**What changed vs the original roadmap:**
+- Agents: 28 -> 35 (added 7 blueprint-derived agents: db_architect, observability_engineer, gtm_strategist, statistician, eda_analyst, control_mapper, telemetry_surfer)
+- Presets: 29 -> 42 (added 13 blueprint-based "new tier" presets with ~250-word Polish detailed descriptions citing source papers)
+- Token cost visibility: shipped as **Cost Command Center** (v32.4) - dual-layer HUD + 4-tab modal with Overview / Breakdown / What-if / Export + Context tab in v32.6
+- Context budget: shipped as MODEL_CTX + CTX_BASELINE_TOTAL + walidujPremiumCtx (v32.6)
+- Custom agent creator: shipped as **Custom Agent Creator Pro** with 7 features (v32.1-v32.2)
+- Icon library: expanded to 159 icons (v32.2) with 10 thematic categories
+- Theme: color consistency pass (v32.5), Sonnet violet correction (v32.7), Premium Visual Overhaul (v32.8)
+- Encyclopedia: v32.13 sidebar polish -> v32.14 Agent Encyclopedia Premium (4 pilot agents) -> v32.15 Encyclopedia Universal (all 35+42) -> **v32.16 Universal Bilingual** (full EN parity for ~1694 encyclopedia fields)
+- Security: escHtml() sweep across 14 innerHTML sinks, escCsv() with formula injection guard, sanitizeMermaidLabel(), escMd() (v32.8 hotfix I-A)
+- Performance: starfield + data-stream rAF loops gated by prefers-reduced-motion + visibilitychange (v32.8)
+- Accessibility: APCA two-tier ink tokens, Okabe-Ito CVD-safe phase palette, SC 2.4.11 focus-not-obscured, SC 2.5.8 target-size (v32.8)
+
+**Still not done from original roadmap:**
+- localStorage migration UX (user-facing JSON export/import exists; auto-migration across version keys exists via backward chain; a polished "upgrade banner" UI does not)
+- Full unit/integration test suite (still zero tests - intentional per MANIFEST R5 mitigation: manual QA checklist per version)
+- Claude Code plugin marketplace submission (plugin.json exists at 0.32.16 but formal submission to Anthropic marketplace is pending verification of current plugin.json schema)
+- BroadcastChannel multi-tab sync in Live Monitor
+- File System Access API for importing EXECUTION_REPORT.json
+
+**Next phase focus (post v32.16):**
+- Community feedback ingestion (GitHub Issues / Discussions). Primary open questions: do EN users want inline infographics parity with PL? Which agents benefit most from the encyclopedia format? Any missing agent archetypes?
+- Inline infographic parity for EN (infographics currently ship only in the PL encyclopedia)
+- Formal Claude Code plugin marketplace submission
 
 ---
 

@@ -1,0 +1,1093 @@
+// Batch: preset premium (13 v32.6 entries)
+  deep_research_swarm_pro: {
+    tagline: 'Siedmiu specjalistow rownolegle - kazdy w swoim zrodle, nikt nie wchodzi w cudzy obszar',
+    missionShort: 'Deep Research Swarm Pro to zespol 10 agentow oparty na wzorcu Anthropic Lead Researcher. Lead dzieli pytanie badawcze na siedem rozlacznych obszarow, siedmiu researcherow pracuje rownolegle kazdy w swoim zrodle, krytyk lapie sprzecznosci, a syntetyk sklada jeden uporzadkowany raport. Dla decyzji ktore wymagaja porownania wielu zrodel.',
+    whoIs: 'To preset dla zespolow ktore musza porownac 5-10 opcji przed strategiczna decyzja (baza danych, framework, dostawca). Gdy jeden czlowiek gubi sie w nawale informacji i zaczyna zgadywac, rozwiazaniem jest podzial pracy na specjalistow z EXPLICIT boundaries. Nie dla pilnych decyzji ani dla zespolow ktore juz maja jasna odpowiedz.',
+    analogy: 'Ten preset to jak sztab wywiadu z siedmioma oficerami obszarowymi, gdzie kazdy odpowiada za wlasna dzialke a dowodca sklada ich raporty w jeden wniosek.',
+    howItWorks: [
+      {label: 'Faza 1 - Dekompozycja', desc: 'Lead researcher rozbija pytanie na 7 rozlacznych podpytan i przydziela kazde innemu specjalisce z explicit boundaries (nikt nie wchodzi na cudzy teren).'},
+      {label: 'Faza 2 - Parallel research', desc: 'Siedmiu researcherow pracuje rownolegle w swoich zrodlach: dokumentacja, GitHub, Reddit, X, fora, UX, tech. Kazdy zwraca JSON z findingsami, cytatami i confidence scores.'},
+      {label: 'Faza 3 - Krytyka', desc: 'Critic porownuje raporty szukajac sprzecznosci, luk i stronniczosci. Oznacza ktore tezy maja wiele niezaleznych potwierdzen, a ktore stoja na jednym zrodle.'},
+      {label: 'Faza 4 - Synteza', desc: 'Synthesizer sklada 7 raportow w jeden dokument z krotkim podsumowaniem, porownaniem opcji, lista sprzecznosci i rekomendacja.'}
+    ],
+    inputs: [
+      'Pytanie badawcze lub decyzja do podjecia (np. ktory vector DB wybrac)',
+      'Lista opcji do porownania (jesli znasz) lub obszar do zbadania',
+      'Kryteria sukcesu (cena, wydajnosc, wsparcie spolecznosci)',
+      'Opcjonalnie wczesniejsze raporty lub dokumenty do uwzglednienia'
+    ],
+    outputs: [
+      'Uporzadkowany raport z siedmiu perspektyw z linkami do zrodel',
+      'Krotkie podsumowanie (executive summary) na pierwszej stronie',
+      'Tabela porownawcza opcji z plusami i minusami',
+      'Lista sprzecznosci miedzy zrodlami z komentarzem krytyka',
+      'Confidence scores dla kazdej tezy i rekomendacja finalna'
+    ],
+    does: [
+      'Dekomponuje zlozone pytanie na 7 rozlacznych czesci z explicit boundaries',
+      'Uruchamia siedmiu researcherow rownolegle redukujac czas do najwolniejszego',
+      'Zbiera dane z wielu zrodel (docs, GitHub, Reddit, X, fora, UX, tech)',
+      'Lapie sprzecznosci miedzy zrodlami dzieki dedykowanemu krytykowi',
+      'Izoluje researcherow zeby nie zarazali sie nawzajem bledami (antigroupthink)',
+      'Sklada wyniki w jeden spojny raport z rekomendacja',
+      'Oznacza pewnosc kazdej tezy i zrodlo dowodow',
+      'Skaluje research do poziomu enterprise bez utraty jakosci'
+    ],
+    doesNotDo: [
+      'Nie pisze kodu (brak builderow w zespole)',
+      'Nie podejmuje decyzji - tylko rekomenduje (decyzja nalezy do czlowieka)',
+      'Nie aktualizuje danych na zywo (to jednorazowa migawka)',
+      'Nie zastapi eksperta domeny w waskich tematach (reguluje, medycyna)',
+      'Nie pracuje dobrze gdy masz tylko jedno zrodlo (to przerost formy)',
+      'Nie zamyka sie w 5 minut (7 rownoleglych researcherow + krytyk to czas)',
+      'Nie debatuje (to rola Five Minds, nie Research Swarm)'
+    ],
+    antiPatterns: [
+      'Single Source Bias - researcher ignoruje swoje granice i siega do cudzego zrodla',
+      'Consensus Theater - synthesizer chowa sprzecznosci zamiast je pokazac',
+      'Paper Avalanche - zbieranie 200 linkow bez priorytetyzacji ani confidence',
+      'Echo Chamber - siedmiu researcherow czyta te same blogi zamiast roznych zrodel',
+      'Unanswered Question - lead przydziela 7 roznych podpytan ale zadne nie odpowiada na glowne'
+    ],
+    keyConcepts: [
+      {term: 'Lead Researcher Pattern', def: 'Wzorzec Anthropic gdzie orchestrator dekomponuje pytanie i koordynuje rownoleglych podagentow z explicit scope.'},
+      {term: 'Explicit Boundaries', def: 'Kazdy researcher dostaje jasno okreslony obszar zrodel i nie wchodzi na cudzy teren - redukuje duplikacje.'},
+      {term: 'Parallel Subagents', def: 'Rownolegle wywolania wielu researcherow tnie czas do czasu najwolniejszego zamiast sumy wszystkich.'},
+      {term: 'Critic Loop', def: 'Dedykowany agent krytykujacy raporty przed synteza - lapie sprzecznosci i stronniczosci.'},
+      {term: 'BM25 Re-ranking', def: 'Technika rankingu wynikow wyszukiwania wedlug istotnosci tokenow - pomaga priorytetyzowac cytaty.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '10'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.40-3.50'},
+      {label: 'Czas', value: '20-35 min'}
+    ],
+    bestFor: [
+      'Gdy wybierasz technologie lub dostawce za duze pieniadze i potrzebujesz porownania wielu zrodel',
+      'Gdy robisz analize konkurencji albo przeglad publikacji naukowych',
+      'Gdy strategiczna decyzja wymaga dowodow z wielu niezaleznych perspektyw'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz kodu (ten preset nie buduje niczego)',
+      'Gdy masz tylko jedno zrodlo informacji (za ciezki przerost formy)',
+      'Gdy decyzja musi zapasc w 5 minut (research wymaga czasu)'
+    ],
+    relatedPresets: ['research', 'deep', 'five_minds_strategic'],
+    glossary: [
+      {term: 'lead researcher', definition: 'Orchestrator ktory dzieli pytanie na podpytania i koordynuje rownoleglych podagentow.'},
+      {term: 'explicit boundaries', definition: 'Jasne granice zrodel dla kazdego researchera zeby nie duplikowali pracy.'},
+      {term: 'critic', definition: 'Agent porownujacy raporty i lapiacy sprzecznosci przed synteza.'},
+      {term: 'synthesizer', definition: 'Agent skladajacy wszystkie raporty w jeden spojny dokument z rekomendacja.'},
+      {term: 'confidence score', definition: 'Ocena pewnosci 0-1 pokazujaca jak mocno dowody wspieraja dana teze.'}
+    ],
+    learningQuote: 'Siedmiu specjalistow w swoich obszarach widzi wiecej niz jeden ekspert probujacy ogarnac wszystko - pod warunkiem ze nikt nie wchodzi w cudzy teren.',
+    realExample: 'Wyobraz sobie ze wybierasz vector DB dla produkcyjnego RAG i masz na stole Pinecone, Weaviate, Qdrant, Milvus, Chroma, pgvector i Elasticsearch. Lead rozbija pytanie na 7 obszarow (docs, GitHub issues, Reddit, X signals, fora, UX case studies, benchmarki). Siedmiu researcherow pracuje rownolegle w swoich zrodlach, krytyk lapie ze Qdrant i Pinecone maja konflikt co do latency p99, syntetyk sklada raport z rekomendacja Qdrant dla self-hosted + Pinecone dla managed.'
+  },
+  migration_crew: {
+    tagline: 'Remont domu ktory ciagle musi byc zamieszkany - trzech specjalistow z rozlacznymi obszarami',
+    missionShort: 'Migration Crew to zespol 10 agentow do bezpiecznej migracji starego systemu. Trzech parallel explorers czyta rozlaczne obszary kodu (auth, dane, route), planner proponuje strategie (big-bang vs strangler), brama HITL decyduje, a zespol buduje pod okiem testerow. Minimalizuje ryzyko i daje czlowiekowi kontrole nad nieodwracalnymi decyzjami.',
+    whoIs: 'To preset dla zespolow ktore musza przeprowadzic migracje platformy ktora dziala na produkcji i nie moze byc wylaczona. Idealny dla Java 8 do 21, Angulara do Reacta, Pythona 2 do 3, REST do GraphQL lub rozbicia monolita. Nie dla greenfield ani pelnego rewrite od zera.',
+    analogy: 'Ten preset to jak renowacja zabytku przez trzy zespoly konserwatorow, gdzie jeden zajmuje sie fundamentem, drugi instalacjami a trzeci elewacja i zaden nie wchodzi na cudzy teren.',
+    howItWorks: [
+      {label: 'Faza 1 - Inwentaryzacja', desc: 'Analyst robi mape starego systemu: zaleznosci, hot paths, obszary ryzyka. Planner dzieli kod na 3 rozlaczne obszary dla eksploratorow.'},
+      {label: 'Faza 2 - Parallel exploration', desc: 'Trzech specjalistow czyta rownolegle swoje obszary (np. auth, dane, routing). Kazdy zwraca raport z liczba plikow, glebokoscia zaleznosci i propozycja strategii.'},
+      {label: 'Faza 3 - HITL decision gate', desc: 'Decision presenter agreguje 3 raporty i prezentuje czlowiekowi wybor: big-bang vs strangler fig vs dual-write. Czlowiek podpisuje plan.'},
+      {label: 'Faza 4 - Migracja i weryfikacja', desc: 'Trzech builderow wykonuje migracje w swoich obszarach z shadow traffic. QA weryfikuje kompatybilnosc wsteczna i sprawdza ze stare klienty dalej dzialaja.'}
+    ],
+    inputs: [
+      'Dostep do starego kodu z historia gita',
+      'Cel migracji (docelowa wersja jezyka, frameworka, protokolu)',
+      'Lista krytycznych zaleznosci i integracji zewnetrznych',
+      'Okno utrzymaniowe (czy mozna zrobic przerwe czy nie)'
+    ],
+    outputs: [
+      'Mapa zaleznosci starego systemu z hot paths',
+      'Trzy raporty z parallel exploration (jeden per obszar)',
+      'Plan migracji z porownaniem opcji (big-bang vs strangler vs dual-write)',
+      'Nowe wersje najwazniejszych czesci z kompatybilnoscia wsteczna',
+      'Testy regresji i raport z weryfikacji kompatybilnosci'
+    ],
+    does: [
+      'Dzieli stary kod na trzy rozlaczne obszary z explicit scope',
+      'Eksploruje kod rownolegle redukujac czas o 60%',
+      'Zatrzymuje sie przed nieodwracalnymi decyzjami dla podpisu czlowieka',
+      'Proponuje strategie strangler fig zamiast big-bang rewrite',
+      'Zachowuje kompatybilnosc wsteczna przez shadow traffic i dual-write',
+      'Migruje kawalek po kawalku z mozliwoscia rollbacku kazdego kroku',
+      'Testuje regresje dla starych klientow',
+      'Dokumentuje kazda decyzje migracyjna z uzasadnieniem'
+    ],
+    doesNotDo: [
+      'Nie dotyczy projektow greenfield (nie ma czego migrowac)',
+      'Nie robi pelnego rewrite od zera (to inny zakres)',
+      'Nie pracuje bez dostepu do starego kodu',
+      'Nie decyduje za czlowieka o big-bang vs strangler (to HITL gate)',
+      'Nie migruje danych runtime (tylko kod i schemat)',
+      'Nie gwarantuje zero downtime bez odpowiedniej infrastruktury',
+      'Nie zastapi testow integracyjnych calego systemu'
+    ],
+    antiPatterns: [
+      'Big Bang Overnight - proba migracji calego systemu w jednym deploymencie bez feature flag',
+      'Silent Incompatibility - nowa wersja API lamie stare klienty bez ostrzezenia',
+      'Shared Scope - dwaj eksploratorzy czytaja ten sam plik i daja sprzeczne propozycje',
+      'Missing Rollback - plan nie ma mechanizmu cofniecia jesli cos idzie zle',
+      'Skipped HITL - zespol przeskoczy brame decyzyjna i wybierze strategie za czlowieka'
+    ],
+    keyConcepts: [
+      {term: 'Strangler Fig Pattern', def: 'Stopniowa migracja gdzie nowy system opakowuje stary i zastepuje go kawalek po kawalku jak figa oplotajacy drzewo.'},
+      {term: 'Dual-Write', def: 'Technika zapisywania danych rownoczesnie do starego i nowego systemu dla okresu przejsciowego.'},
+      {term: 'Shadow Traffic', def: 'Kopia produkcyjnego ruchu kierowana rownolegle do nowego systemu bez wplywu na uzytkownikow.'},
+      {term: 'Exploration Phase', def: 'Czytanie kodu bez zmian w celu zrozumienia zaleznosci przed proponowaniem strategii.'},
+      {term: 'HITL Gate', def: 'Punkt w pipeline gdzie czlowiek musi podpisac decyzje przed dalszym krokiem.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '10'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.10-2.80'},
+      {label: 'Czas', value: '25-45 min'}
+    ],
+    bestFor: [
+      'Gdy migrujesz dzialajacy system na nowa wersje jezyka lub frameworka',
+      'Gdy dzielisz monorepo na mniejsze serwisy albo rozbijasz monolit',
+      'Gdy przechodzisz z REST na GraphQL albo z jednej bazy na inna'
+    ],
+    worstFor: [
+      'Gdy zaczynasz projekt od zera (nie ma czego migrowac)',
+      'Gdy planujesz pelne przepisanie od zera (to inny zakres)',
+      'Gdy nie masz dostepu do starego kodu ani jego historii'
+    ],
+    relatedPresets: ['legacy', 'api_modern', 'plan_exec'],
+    glossary: [
+      {term: 'strangler fig', definition: 'Wzorzec stopniowej migracji gdzie nowy system otacza stary i zastepuje go kawalek po kawalku.'},
+      {term: 'big-bang migration', definition: 'Jednorazowa migracja calego systemu w jednym deploymencie - wysokie ryzyko.'},
+      {term: 'dual-write', definition: 'Zapis do starego i nowego systemu rownoczesnie dla okresu przejsciowego.'},
+      {term: 'shadow traffic', definition: 'Rownolegle kopiowanie produkcyjnego ruchu do nowego systemu bez wplywu na uzytkownikow.'},
+      {term: 'HITL gate', definition: 'Brama decyzyjna gdzie czlowiek podpisuje plan przed dalsza akcja.'}
+    ],
+    learningQuote: 'Nie zawsze trzeba przepisac wszystko od zera - czasem najbezpieczniejsza droga to zamiana silnika w samolocie podczas lotu, kawalek po kawalku.',
+    realExample: 'Wyobraz sobie ze masz monolit Ruby on Rails z 2014 roku ktory dziala na produkcji i obsluguje 50 tysiecy klientow. Chcesz przejsc na Node.js + GraphQL ale nie mozesz wylaczyc serwisu. Migration Crew robi inwentaryzacje (250 modeli, 80 kontrolerow), 3 eksploratorow rownolegle mapuje auth/dane/routing, planner proponuje strangler fig z 6-miesiecznym okresem dual-write. Czlowiek podpisuje strategie, zespol migruje kawalek po kawalku zaczynajac od najprostszych endpointow, a shadow traffic weryfikuje kompatybilnosc.'
+  },
+  fullstack_premium: {
+    tagline: 'Funkcja gotowa na prawdziwych klientow - z dbA, monitoringiem i audytem w jednym pipelinie',
+    missionShort: 'Full-Stack Premium to zespol 12 agentow oparty na wshobson fullstack baseline plus trzech specjalistow ktorych zwykle brakuje: database architect, observability engineer i UX researcher. Backend i frontend pracuja na disjoint file globs, a audyt bezpieczenstwa i konfiguracja monitoringu domyka kazda funkcja. Dla funkcji ktore MUSZA dzialac niezawodnie.',
+    whoIs: 'To preset dla zespolow ktore buduja funkcje widoczne dla klientow i nie moga sobie pozwolic na bledy w produkcji. Idealny dla SaaS dashboardow, systemow platnosci, logowania uzytkownikow i wszystkiego co dotyka realnych pieniedzy. Nie dla prototypow, MVP ani malych wewnetrznych narzedzi.',
+    analogy: 'Ten preset to jak studio architektoniczne z dedykowanym urbanista i meteorologiem, gdzie zaden projekt nie rusza bez planu sieci wodno-kanalizacyjnej i bez monitoringu pogody.',
+    howItWorks: [
+      {label: 'Faza 1 - Research i planowanie', desc: 'Orchestrator koordynuje, planisci robia plan, dwoch researcherow rownolegle (UX z wywiadow i docs z dokumentacji) zbiera kontekst. Db_architect projektuje schemat i indeksy.'},
+      {label: 'Faza 2 - Parallel build', desc: 'Czterech rownolegle na disjoint file globs: designer robi UI, backend implementuje API, frontend laczy z UI, integrator spina calosc. Kazdy ma swoj zakres plikow i nie wchodzi w cudzy.'},
+      {label: 'Faza 3 - Observability setup', desc: 'Observability engineer konfiguruje trzy filary: metryki (SLI/SLO), logi strukturalne i traces. Definiuje dashboard i alerty przed wdrozeniem na produkcje.'},
+      {label: 'Faza 4 - Security audit i QA', desc: 'Qa_security robi audyt (OWASP, sekrety, auth), qa_quality testuje funkcje end-to-end, manager podpisuje ready-for-production z podsumowaniem ryzyk.'}
+    ],
+    inputs: [
+      'Opis funkcji z perspektywy klienta (user story lub JTBD)',
+      'Istniejacy stack technologiczny i constraint systemu',
+      'SLO (np. latency p99 < 200ms, uptime > 99.9%)',
+      'Dostep do produkcyjnej bazy danych i obserwowalnosci'
+    ],
+    outputs: [
+      'Gotowa funkcja z zaprojektowana baza danych i indeksami',
+      'Dashboard observability (metryki, logi, traces) z alertami',
+      'Raport audytu bezpieczenstwa (OWASP Top 10, sekrety, auth)',
+      'Interfejs uzytkownika oparty na wywiadach UX',
+      'Dokumentacja techniczna i runbook na incident'
+    ],
+    does: [
+      'Projektuje schemat bazy danych z indeksami i migracjami zero-downtime',
+      'Konfiguruje obserwowalnosc (three pillars: metrics, logs, traces)',
+      'Robi UX research przed mockupami - unika zgadywania potrzeb',
+      'Buduje backend i frontend rownolegle na disjoint file globs',
+      'Audytuje bezpieczenstwo przed kazdym wdrozeniem',
+      'Definiuje SLI i SLO zamiast vanity metrics',
+      'Pisze runbook na incident dla dyzurnego',
+      'Integruje wszystkie czesci w spojna gotowa funkcje'
+    ],
+    doesNotDo: [
+      'Nie dla prototypow na hackathon (zbyt ciezki)',
+      'Nie dla malych wewnetrznych narzedzi (przerost formy)',
+      'Nie dziala bez istniejacego stacku technologicznego',
+      'Nie zastepuje wlasciwego procesu CI/CD (tylko generuje kod)',
+      'Nie wdraza sam na produkcje (potrzebuje pipeline)',
+      'Nie rozwiazuje problemow organizacyjnych (na tle kultury)',
+      'Nie pisze fine-tuned ML modeli (to inny zakres)'
+    ],
+    antiPatterns: [
+      'Dashboard Theater - metryki bez alertow ktore nikt nie patrzy',
+      'Schema After Build - db_architect wchodzi po kodzie zamiast przed',
+      'Vanity SLO - SLO na poziomie 100% bez budget erroru',
+      'UX Skipped - designer robi mockup bez wywiadu z klientem',
+      'Security At End - audyt bezpieczenstwa jako ostatni krok zamiast ciaglej praktyki'
+    ],
+    keyConcepts: [
+      {term: 'Three Pillars Observability', def: 'Metryki + logi + traces jako trzy filary obserwowalnosci systemu produkcyjnego.'},
+      {term: 'SLI/SLO', def: 'Service Level Indicator to mierzalna metryka, Objective to cel wyrazony w procentach przez okno czasu.'},
+      {term: 'Zero-Downtime Migration', def: 'Migracja schematu bazy bez przestoju dla klientow - wymaga rozlacznych krokow add-backfill-swap-drop.'},
+      {term: 'Disjoint File Globs', def: 'Backend i frontend maja zdefiniowane rozlaczne zakresy plikow zeby nie kolidowali w commitach.'},
+      {term: 'Error Budget', def: 'Dozwolony procent bledow przed SLO - kompromis miedzy stabilnoscia a velocity deployowania.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '12'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.55-3.85'},
+      {label: 'Czas', value: '30-60 min'}
+    ],
+    bestFor: [
+      'Gdy budujesz funkcje widoczna dla klientow placacych (logowanie, platnosci, dashboard)',
+      'Gdy produkt ma SLO i musisz monitorowac wydajnosc na produkcji',
+      'Gdy nieprzewidziany bug kosztowalby wiecej niz caly zespol'
+    ],
+    worstFor: [
+      'Gdy robisz prototyp na hackathon albo MVP na demo',
+      'Gdy budujesz male wewnetrzne narzedzie dla 5 osob',
+      'Gdy nie masz jeszcze zadnego dzialajacego stacku'
+    ],
+    relatedPresets: ['saas', 'full', 'standard'],
+    glossary: [
+      {term: 'observability', definition: 'Zdolnosc do rozumienia wewnetrznego stanu systemu na podstawie metryk, logow i traces.'},
+      {term: 'SLI', definition: 'Service Level Indicator - mierzalna metryka jak latency albo error rate.'},
+      {term: 'SLO', definition: 'Service Level Objective - cel dla SLI wyrazony w procentach przez okno czasu.'},
+      {term: 'db_architect', definition: 'Dedykowany agent do projektowania schematu bazy, indeksow i migracji zero-downtime.'},
+      {term: 'disjoint file globs', definition: 'Rozlaczne zakresy plikow dla backendu i frontendu zeby uniknac kolizji w repo.'}
+    ],
+    learningQuote: 'Funkcja ktora dziala na laptopie programisty i funkcja gotowa na klientow to dwie rozne rzeczy - db design, observability i audyt bezpieczenstwa zmieniaja jedno w drugie.',
+    realExample: 'Wyobraz sobie ze budujesz nowy dashboard analityczny dla klientow SaaS z wykresami live i exportem CSV. Standardowy zespol zrobi to w tydzien ale na produkcji okaze sie ze query dusza baze, nie ma alertow gdy endpoint pada, a export wyciage dane innych tenantow. Full-Stack Premium dodaje db_architect ktory projektuje indeksy pod hot queries, observability engineer konfiguruje dashboard z SLO latency p99 < 300ms, UX researcher potwierdza co klienci naprawde chca eksportowac, a qa_security lapie multi-tenant leak.'
+  },
+  security_multi_vector: {
+    tagline: 'Piec niezaleznych skanerow rownolegle - kazdy w innym wektorze ataku',
+    missionShort: 'Multi-Vector Security to zespol 9 agentow ktory rownolegle skanuje piec rozlacznych wektorow ataku (kod, zaleznosci, infrastruktura, sekrety, auth) po uprzednim modelu zagrozen STRIDE. Qa_manager agreguje wyniki w matryce severity, a HITL gate daje czlowiekowi decyzje GO/NO-GO przed release. Zgodny ze SOC2 i OWASP ASVS.',
+    whoIs: 'To preset dla zespolow ktore musza przeprowadzic audyt bezpieczenstwa przed premiera albo po incydencie. Idealny dla customer-facing aplikacji, przygotowania do SOC2, odpowiedzi na ocene ryzyka korporacyjnego klienta. Nie dla ciaglego skanowania w tle (uzyj automatyzacji) ani dla malych wewnetrznych apek.',
+    analogy: 'Ten preset to jak grupa antyterrorystyczna sprawdzajaca budynek, gdzie kazdy agent ma swoj pion (parter, piwnica, dach, instalacje, perimeter) i po koncu wszyscy raportuja dowodcy ktory daje GO/NO-GO.',
+    howItWorks: [
+      {label: 'Faza 1 - Threat modeling STRIDE', desc: 'Analyst tworzy model zagrozen STRIDE (Spoofing, Tampering, Repudiation, Info Disclosure, Denial, Elevation). Dzieli powierzchnie ataku na 5 rozlacznych wektorow.'},
+      {label: 'Faza 2 - 5 parallel scanners', desc: 'Piec skanerow pracuje rownolegle: qa_security na kodzie (SAST), scanner na zaleznosciach (SBOM, CVE), infra (IaC misconfig), sekrety (TruffleHog patterns), auth (OWASP ASVS).'},
+      {label: 'Faza 3 - Agregacja i severity', desc: 'Qa_manager zbiera wyniki, dedupuje findings, mapuje na severity CVSS, tworzy release-blocking matrix z priorytetami P0/P1/P2.'},
+      {label: 'Faza 4 - Release HITL gate', desc: 'Decision presenter prezentuje czlowiekowi liste P0/P1 findings, propozycje naprawy i ryzyka. Czlowiek podpisuje GO/NO-GO przed release.'}
+    ],
+    inputs: [
+      'Dostep do repo z kodem i historia gita',
+      'Manifest zaleznosci (package.json, requirements.txt, go.mod)',
+      'Definicja infrastruktury (Terraform, Kubernetes, Docker)',
+      'Kontekst biznesowy (czym jest aplikacja, kto uzytkownicy)'
+    ],
+    outputs: [
+      'Model zagrozen STRIDE z powierzchnia ataku',
+      'Pelny audyt z piatki rozlacznych obszarow',
+      'Lista findings uszeregowana od P0 do P3 z CVSS',
+      'SBOM z lista znanych CVE w zaleznosciach',
+      'Decyzja GO/NO-GO z uzasadnieniem i planem naprawczym'
+    ],
+    does: [
+      'Modeluje zagrozenia wedlug STRIDE przed skanem',
+      'Uruchamia 5 niezaleznych skanerow rownolegle (SAST, SBOM, IaC, secrets, auth)',
+      'Agreguje wyniki dedupujac duplikaty miedzy skanerami',
+      'Mapuje findings na CVSS i tworzy release-blocking matrix',
+      'Sprawdza zgodnosc z OWASP ASVS dla auth/session',
+      'Generuje SBOM z lista CVE w zaleznosciach',
+      'Daje czlowiekowi decyzje GO/NO-GO z pelnym kontekstem',
+      'Przygotowuje raport zgodny z SOC2 i ISO27001'
+    ],
+    doesNotDo: [
+      'Nie zastepuje ciaglego skanowania w tle (uzyj Snyk, Dependabot)',
+      'Nie naprawia bledow samodzielnie (to rola developera)',
+      'Nie jest pentestem (tylko audyt kodu i konfiguracji)',
+      'Nie zastepuje audytora zewnetrznego dla SOC2',
+      'Nie testuje runtime anomalies (to rola WAF i SIEM)',
+      'Nie sprawdza biznes logic flaws (to wymaga eksperta domeny)',
+      'Nie dziala bez kontekstu biznesowego aplikacji'
+    ],
+    antiPatterns: [
+      'CVE Tsunami - raport 500 findings bez priorytetyzacji ani severity',
+      'Missing Threat Model - skan bez STRIDE gubi kontekst biznesowy',
+      'Shared Vector - dwaj skanerzy sprawdzaja to samo zamiast rozlacznych obszarow',
+      'Silent GO - release idzie bez HITL decyzji czlowieka',
+      'Severity Theater - wszystkie findings oznaczone Critical zeby wymusic fix'
+    ],
+    keyConcepts: [
+      {term: 'STRIDE', def: 'Model zagrozen Microsoft obejmujacy Spoofing, Tampering, Repudiation, Info Disclosure, Denial, Elevation.'},
+      {term: 'SAST', def: 'Static Application Security Testing - analiza kodu statycznego bez uruchamiania programu.'},
+      {term: 'DAST', def: 'Dynamic Application Security Testing - testowanie aplikacji uruchomionej w srodowisku testowym.'},
+      {term: 'SBOM', def: 'Software Bill of Materials - lista wszystkich zaleznosci z wersjami dla audytu CVE.'},
+      {term: 'OWASP ASVS', def: 'Application Security Verification Standard - checklisty bezpieczenstwa dla auth, session i danych.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '9'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.20-3.00'},
+      {label: 'Czas', value: '25-50 min'}
+    ],
+    bestFor: [
+      'Gdy przygotowujesz sie do premiery funkcji customer-facing',
+      'Gdy odpowiadasz na ocene ryzyka korporacyjnego klienta lub audyt SOC2',
+      'Gdy masz incydent i potrzebujesz pelnej weryfikacji przed ponownym odpaleniem'
+    ],
+    worstFor: [
+      'Gdy szukasz ciaglego skanowania w tle (uzyj narzedzi automatycznych)',
+      'Gdy nie masz jeszcze modelu zagrozen ani kontekstu biznesowego',
+      'Gdy robisz male wewnetrzne narzedzie dla 5 osob (przerost formy)'
+    ],
+    relatedPresets: ['security', 'soc2_sweep', 'test_suite'],
+    glossary: [
+      {term: 'STRIDE', definition: 'Model zagrozen dzielacy ryzyka na Spoofing, Tampering, Repudiation, Info Disclosure, Denial, Elevation.'},
+      {term: 'SAST', definition: 'Static Application Security Testing - skanowanie kodu bez uruchamiania.'},
+      {term: 'SBOM', definition: 'Software Bill of Materials - lista zaleznosci dla audytu CVE.'},
+      {term: 'CVSS', definition: 'Common Vulnerability Scoring System - skala 0-10 dla wagi podatnosci.'},
+      {term: 'OWASP ASVS', definition: 'Application Security Verification Standard - standard bezpieczenstwa aplikacji.'}
+    ],
+    learningQuote: 'Jeden skaner zawsze cos przegapi - tylko piec rownoleglych skanerow z rozlacznymi obszarami i czlowiek na koncu daje naprawde pokrycie.',
+    realExample: 'Wyobraz sobie ze twoja platforma SaaS ma premiere za tydzien i enterprise klient pyta o raport bezpieczenstwa przed podpisaniem kontraktu za 500k. Multi-Vector Security robi STRIDE (spoofing w OAuth? tampering w webhookach?), piec skanerow rownolegle lapie 3 high severity (SQL injection w search, eksponowany AWS key w .env.example, brakujacy CSP header), qa_manager agreguje na release-blocking matrix, decision presenter prezentuje czlowiekowi ktory podejmuje NO-GO z planem fixow na 48h przed premiera.'
+  },
+  perf_squad: {
+    tagline: 'Trzy hipotezy zamiast jednej - Adwokat Diabla podwaza kazda, pomiar daje dowod',
+    missionShort: 'Performance Squad to zespol 8 agentow do root-cause analysis regresji wydajnosciowych. Trzech specjalistow warstwowych (db, backend, frontend) stawia niezalezne hipotezy, Five Minds Devil atakuje kazda szukajac bledow logicznych, a qa_perf benchmarkuje finalne fixy. Wynik: RCA doc z pomiarami przed i po oraz konkretne miejsca do poprawy ulozone od najwiekszego efektu.',
+    whoIs: 'To preset dla zespolow ktore zauwazyly regresje wydajnosci po ostatnim wdrozeniu i nie wiedza gdzie jest przyczyna. Idealny dla prod regression triage, wzrostu latency p99, wyciekow pamieci i optymalizacji kosztow. Nie dla mikro-optymalizacji ani problemow spoza aplikacji (siec, dostawca).',
+    analogy: 'Ten preset to jak sztab medyczny z trzema specjalistami i prokuratorem, gdzie kardiolog, neurolog i internista stawiaja diagnozy, prokurator podwaza kazda a lab testuje finalna terapie stoperem.',
+    howItWorks: [
+      {label: 'Faza 1 - Profiling i baseline', desc: 'Analyst zbiera profile, traces i metryki. Ustala baseline (co bylo przed regresja) i delta (co sie pogorszylo). Dzieli problem na 3 warstwy.'},
+      {label: 'Faza 2 - Parallel hypothesizing', desc: 'Trzech specjalistow warstwowych (db_architect, backend, frontend) stawia niezalezne hipotezy. Kazdy proponuje root cause i fix. Pracuja rownolegle bez wymiany pomyslow.'},
+      {label: 'Faza 3 - Devil adversarial', desc: 'Five Minds Devil atakuje kazda hipoteze szukajac dziur logicznych: czy to na pewno to, co jesli benchmark jest w zlym srodowisku, co jesli fix przesuwa problem a nie rozwiazuje.'},
+      {label: 'Faza 4 - Benchmark i RCA doc', desc: 'Qa_perf uruchamia benchmarki na najlepszych kandydatach (przed i po fix), pisze RCA doc z pomiarami, timeline regresji i planem rollout dla fix.'}
+    ],
+    inputs: [
+      'Baseline metryki (latency/memory/cost przed regresja)',
+      'Dostep do profili i traces z produkcji',
+      'Lista ostatnich deployow i zmian konfiguracji',
+      'Okno czasowe regresji (od kiedy do kiedy)'
+    ],
+    outputs: [
+      'RCA doc z trzema hipotezami i kontrhipotezami',
+      'Konkretne miejsca do poprawy ulozone od najwiekszego efektu',
+      'Pomiary benchmark przed i po (latency, memory, throughput)',
+      'Timeline regresji z korelacja ze zmianami w kodzie',
+      'Plan rollout dla fix z mozliwoscia rollbacku'
+    ],
+    does: [
+      'Profiluje system i ustala baseline vs aktualne metryki',
+      'Dzieli analize na trzy warstwy (db, backend, frontend)',
+      'Generuje trzy niezalezne hipotezy zamiast jednego przypuszczenia',
+      'Uzywa Devil do podwazania kazdej hipotezy (anti-groupthink)',
+      'Mierzy wplyw fix przed commitem (benchmark przed i po)',
+      'Dokumentuje golden path i bottleneck na flame graphie',
+      'Oblicza wartosc fix w uzyteczncych jednostkach (ms, $, MB)',
+      'Daje plan rollout z mozliwoscia rollbacku'
+    ],
+    doesNotDo: [
+      'Nie dla mikro-optymalizacji prematury',
+      'Nie dla problemow poza aplikacja (siec, dostawca, CDN)',
+      'Nie dziala bez profili i baseline metryk',
+      'Nie przewiduje przyszlych regresji (tylko analiza obecnej)',
+      'Nie zastepuje ciaglego monitoringu produkcji',
+      'Nie robi capacity planning (to inny zakres)',
+      'Nie optymalizuje UX (tylko techniczne metryki)'
+    ],
+    antiPatterns: [
+      'Single Hypothesis - jeden specjalista obstawia jedna teze bez alternatyw',
+      'Missing Baseline - brak pomiaru przed regresja uniemozliwia porownanie',
+      'Fix Without Benchmark - deploy fix bez potwierdzenia ze faktycznie pomoglo',
+      'Skipped Devil - zespol pomija adversarial challenge i leci z pierwsza hipoteza',
+      'Environment Mismatch - benchmark w srodowisku ktore nie odwzorowuje produkcji'
+    ],
+    keyConcepts: [
+      {term: 'Root Cause Analysis', def: 'Metoda znajdowania pierwotnej przyczyny problemu zamiast leczenia objawow.'},
+      {term: 'Flame Graph', def: 'Wizualizacja profilu CPU pokazujaca ktore funkcje zabieraja najwiecej czasu.'},
+      {term: 'Golden Path', def: 'Najwazniejsza sciezka uzytkownika ktora musi dzialac szybko bez wzgledu na reszte.'},
+      {term: 'Baseline vs Optimized', def: 'Pomiar stanu przed optymalizacja i po, umozliwiajacy obliczenie delty.'},
+      {term: 'Devil Advocacy', def: 'Formalne podwazanie kazdej hipotezy w celu znalezienia slabosci rozumowania.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '8'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$0.95-2.40'},
+      {label: 'Czas', value: '20-40 min'}
+    ],
+    bestFor: [
+      'Gdy aplikacja zaczela dzialac wolniej po ostatnim wdrozeniu i nie wiesz dlaczego',
+      'Gdy latency p99 nagle podskoczylo albo memory leak zjada zasoby',
+      'Gdy chcesz obnizyc koszty serwerow ale nie wiesz gdzie sa bottlenecki'
+    ],
+    worstFor: [
+      'Gdy nie masz zadnych pomiarow ani profili (najpierw wlacz monitoring)',
+      'Gdy problem jest w sieci, u dostawcy lub w CDN (to inne warstwy)',
+      'Gdy chcesz zoptymalizowac cos na wyrost bez zmierzonego problemu'
+    ],
+    relatedPresets: ['perf_boost', 'bug_hunt', 'incident_war_room'],
+    glossary: [
+      {term: 'RCA', definition: 'Root Cause Analysis - metoda znajdowania pierwotnej przyczyny zamiast leczenia objawow.'},
+      {term: 'flame graph', definition: 'Wizualizacja profilu CPU pokazujaca koszty funkcji w formie plomyki.'},
+      {term: 'baseline', definition: 'Pomiar stanu przed zmiana umozliwiajacy porownanie.'},
+      {term: 'p99 latency', definition: 'Czas odpowiedzi 99 percentyla - gorne ogony rozkladu.'},
+      {term: 'Devil Advocacy', definition: 'Formalne podwazanie kazdej hipotezy w celu znalezienia slabosci.'}
+    ],
+    learningQuote: 'Bez pomiaru kazda optymalizacja to zgadywanie - Performance Squad wymusza trzy hipotezy, podwazanie ich i pomiary przed i po.',
+    realExample: 'Wyobraz sobie ze po deploy w piatek latency p99 API skoczylo z 150ms do 900ms i klienci zaczeli narzekac. Trzech specjalistow rownolegle stawia hipotezy: db_architect obstawia brakujacy indeks na nowym query, backend obstawia N+1 w ORM, frontend obstawia blocking fetch w middleware. Devil atakuje kazda: "co jesli to warm-up po deployu", "co jesli Redis padl", "co jesli to tylko jeden endpoint". Qa_perf benchmarkuje kazda z hipotez w staging i potwierdza ze to N+1 query - fix deploy obniza p99 do 180ms.'
+  },
+  prd_to_launch: {
+    tagline: 'Z rozmowy z klientem do gotowego pakietu launch - PRD plus tickety plus makiety plus GTM',
+    missionShort: 'PRD to Launch to zespol 11 agentow ktory z nieformalnego inputu (idea, nagranie, transkrypt) produkuje pelen pakiet do wypuszczenia produktu. Analyst ekstraktuje JTBD, writer pisze PRD, a rownolegly build generuje tickety z RICE, makiety ekranow, teksty marketingowe i plan GTM. PM sign-off zamyka pipeline.',
+    whoIs: 'To preset dla product managerow ktorzy maja pomysl albo transkrypt rozmowy z klientem i musza z tego zrobic pelen pakiet dla zespolu. Idealny gdy synchronizujesz dzialy przed launchem albo planujesz duza nowa funkcje przed kwartalem. Nie dla implementacji kodu ani decyzji czysto technicznych.',
+    analogy: 'Ten preset to jak studio filmowe od scenariusza do premiery, gdzie scenarzysta wyciaga temat, rezyser pisze PRD, a zespoly produkcyjne pracuja rownolegle nad kostiumami, dekoracjami, kamera i marketingiem.',
+    howItWorks: [
+      {label: 'Faza 1 - JTBD extraction', desc: 'Analyst sluchaje transkryptu lub czyta idee i wyciaga Jobs-to-be-Done: co klient probuje osiagnac, co go frustruje, jakie sa aktualne obejscia. Formuluje problem statement.'},
+      {label: 'Faza 2 - PRD writing', desc: 'Writer tworzy structured PRD: problem, propozycje, metryki sukcesu, zakres, non-goals, ryzyka, zaleznosci. Dokument gotowy do przegladu przez zespol.'},
+      {label: 'Faza 3 - Parallel build', desc: 'Planner generuje tickety z RICE scoring i harmonogramem. Designer mockuje kluczowe ekrany. Writer pisze copy marketingowe. Gtm_strategist robi plan launch z ICP i pricingiem.'},
+      {label: 'Faza 4 - PM sign-off', desc: 'Decision presenter agreguje wszystkie deliverables (PRD, tickety, makiety, copy, GTM), prezentuje PM do zatwierdzenia. PM podpisuje launch readiness.'}
+    ],
+    inputs: [
+      'Transkrypt rozmowy z klientem albo surowa idea',
+      'Istniejacy kontekst produktu (persony, stack, roadmapa)',
+      'Budzet i timeline na launch',
+      'Lista stakeholderow do zaangazowania'
+    ],
+    outputs: [
+      'PRD ze strukturami problem/propozycja/metryki/ryzyka',
+      'Lista ticketow dla zespolu z RICE i harmonogramem',
+      'Makiety ekranow dla kluczowych przeplywow uzytkownika',
+      'Teksty marketingowe (landing, emaile, social, release notes)',
+      'Plan GTM z ICP, pricing, kanalami i metrykami sukcesu'
+    ],
+    does: [
+      'Ekstrahuje Jobs-to-be-Done z nieformalnego inputu',
+      'Pisze PRD zgodny z best practices produktowymi',
+      'Generuje tickety z RICE scoring (Reach, Impact, Confidence, Effort)',
+      'Mockuje kluczowe ekrany przed implementacja',
+      'Pisze copy marketingowe dopasowane do persony',
+      'Buduje plan GTM z ICP, pricing i kanalami',
+      'Synchronizuje wszystkie deliverables w jeden pakiet',
+      'Wymusza PM sign-off przed launchem'
+    ],
+    doesNotDo: [
+      'Nie pisze kodu (to jest inny preset jak saas albo fullstack_premium)',
+      'Nie podejmuje decyzji technologicznych (brak researcherow tech)',
+      'Nie dziala bez kontaktu z klientami (brak voice of customer)',
+      'Nie jest substytutem dla Product Managera - wspomaga go',
+      'Nie robi user research (to jest design_sys albo ui_overhaul)',
+      'Nie wdraza kampanii marketingowych (tylko je projektuje)',
+      'Nie definiuje strategii firmy (to five_minds_strategic)'
+    ],
+    antiPatterns: [
+      'Solution First - piszesz PRD bez JTBD i tworzysz rozwiazanie dla nieistniejacego problemu',
+      'Ticket Dump - planner generuje 200 ticketow bez priorytetyzacji RICE',
+      'Copy Before Message - writer pisze copy bez zatwierdzonego positioningu',
+      'GTM Without ICP - gtm_strategist planuje kanaly bez zdefiniowanego klienta idealnego',
+      'Skipped Sign-off - zespol startuje build bez PM sign-off i lata bez kierowcy'
+    ],
+    keyConcepts: [
+      {term: 'JTBD', def: 'Jobs-to-be-Done - framework formuluje problem od strony "klient probuje osiagnac X".'},
+      {term: 'RICE', def: 'Priorytyzacja ticketow wg Reach x Impact x Confidence / Effort - pomaga wybrac najcenniejsze.'},
+      {term: 'PRD', def: 'Product Requirements Document - dokument opisujacy co i dlaczego budujemy.'},
+      {term: 'GTM', def: 'Go-to-Market - plan wprowadzenia produktu na rynek z ICP, pricing i kanalami.'},
+      {term: 'ICP', def: 'Ideal Customer Profile - precyzyjny opis najcenniejszego typu klienta do targetowania.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '11'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.30-3.30'},
+      {label: 'Czas', value: '30-50 min'}
+    ],
+    bestFor: [
+      'Gdy masz nagranie rozmowy z klientem ale nie wiesz od czego zaczac',
+      'Gdy planujesz duza nowa funkcje przed kwartalnym planowaniem',
+      'Gdy musisz zsynchronizowac dzial produktu, inzynierii i marketingu przed launchem'
+    ],
+    worstFor: [
+      'Gdy chcesz napisac kod (to nie ten preset)',
+      'Gdy decydujesz o czysto technicznym wyborze (framework, baza)',
+      'Gdy nie masz zadnego kontaktu z klientami (brak voice of customer)'
+    ],
+    relatedPresets: ['startup', 'feature_sprint', 'content'],
+    glossary: [
+      {term: 'JTBD', definition: 'Jobs-to-be-Done - framework formulujacy problem od strony celu klienta.'},
+      {term: 'PRD', definition: 'Product Requirements Document - dokument opisujacy co i dlaczego budujemy.'},
+      {term: 'RICE', definition: 'Priorytyzacja Reach x Impact x Confidence / Effort.'},
+      {term: 'GTM', definition: 'Go-to-Market - plan wprowadzenia produktu na rynek.'},
+      {term: 'ICP', definition: 'Ideal Customer Profile - opis najcenniejszego klienta do targetowania.'}
+    ],
+    learningQuote: 'Pomysl bez PRD i makiet to tylko pobozne zyczenie - PRD to Launch zamienia surowa idee w pakiet gotowy do wykonania w jednym przebiegu.',
+    realExample: 'Wyobraz sobie ze masz godzine transkryptu rozmowy z klientem enterprise ktory skarzy sie ze nie widzi co dzieje sie w jego subskrypcji. Analyst ekstraktuje JTBD (klient chce przewidywac koszty przed fakturoa), writer pisze PRD dla Usage Forecast Dashboard, planner generuje 12 ticketow z RICE, designer mockuje 3 ekrany, writer robi copy email anonsujacy funkcje, gtm_strategist planuje launch dla 50 najwiekszych kont z webinarem. PM podpisuje pakiet i zespol ma wszystko na kwartalne planowanie.'
+  },
+  ab_test_lab: {
+    tagline: 'Uczciwy test A/B zamiast naciaganej statystyki - power calc plus Devil plus stat sign-off',
+    missionShort: 'A/B Test Lab to zespol 7 agentow do rygorystycznego projektowania testow A/B. Statistician oblicza sample size i power, designer mockuje warianty, Devil red-teamuje p-hacking ryzyka (SRM, peeking, Simpson paradox), a decision presenter wymusza stat sign-off przed startem. Chroni firme przed falszywymi wnioskami ze zlych testow.',
+    whoIs: 'To preset dla zespolow ktore planuja wazny test A/B (cena, onboarding, checkout, landing) i nie moga sobie pozwolic na podejmowanie decyzji na podstawie naciaganej statystyki. Idealny gdy decyzja zalezy od wyniku testu. Nie dla drobnych zmian kosmetycznych ani projektow z malym ruchem.',
+    analogy: 'Ten preset to jak laboratorium farmaceutyczne projektujace clinical trial, gdzie biostatystyk wylicza moc, klinicysta projektuje ramiona, prokurator szuka biasow a IRB zatwierdza plan przed startem.',
+    howItWorks: [
+      {label: 'Faza 1 - Problem framing', desc: 'Analyst ustala hipoteze biznesowa, primary metric i minimum detectable effect (MDE). Sprawdza czy test jest etyczny i ma jasny kierunek decyzji.'},
+      {label: 'Faza 2 - Statistical design', desc: 'Statistician wylicza sample size na podstawie MDE, baseline conversion, power (0.8), alpha (0.05). Proponuje czas trwania testu i strategie alokacji.'},
+      {label: 'Faza 3 - Variants i p-hacking audit', desc: 'Designer mockuje warianty (A baseline, B, opcjonalnie C). Devil red-teamuje plan: SRM risk, peeking problem, Simpson paradox, novelty effect, carryover. Flaguje all potential biases.'},
+      {label: 'Faza 4 - Stat sign-off', desc: 'Decision presenter agreguje design, sample size i Devil findings. Prezentuje plan stakeholderom, ktorzy podpisuja stat sign-off przed uruchomieniem testu.'}
+    ],
+    inputs: [
+      'Hipoteza biznesowa i propozycja zmiany',
+      'Baseline metryki (conversion rate, revenue, churn)',
+      'Oczekiwany minimum detectable effect (MDE)',
+      'Dostep do traffic logs i platformy experymentow'
+    ],
+    outputs: [
+      'Plan testu z obliczonym sample size i czasem trwania',
+      'Dwa lub wiecej wariantow gotowych do pokazania',
+      'Lista pulapek p-hacking do unikniecia (SRM, peeking, Simpson)',
+      'Sukces kryteria i decision tree z wyprzedzeniem',
+      'Podpisany dokument stat sign-off przed startem testu'
+    ],
+    does: [
+      'Wylicza sample size na podstawie power analysis',
+      'Projektuje warianty z jasnymi roznicami',
+      'Audytuje plan pod katem p-hacking (SRM, peeking, Simpson)',
+      'Wymusza ustalenie success criteria przed startem',
+      'Chroni przed novelty effect i carryover bias',
+      'Sprawdza czy baseline jest wystarczajacy (>1000 conversions)',
+      'Tworzy decision tree (co robimy dla kazdego wyniku)',
+      'Dokumentuje wszystko dla stat sign-off'
+    ],
+    doesNotDo: [
+      'Nie uruchamia samego testu (to platform experimentation)',
+      'Nie analizuje wynikow post-hoc (to inny workflow)',
+      'Nie dziala bez baseline metryk',
+      'Nie nadaje sie dla niewielkiego ruchu (<1000 konwersji)',
+      'Nie testuje zmian etycznie problematycznych bez review',
+      'Nie zastepuje data engineer (tylko projektuje test)',
+      'Nie jest substytutem dla product analytics'
+    ],
+    antiPatterns: [
+      'Peeking - sprawdzanie wynikow codziennie i zatrzymywanie testu jak widzisz "znaczace"',
+      'Underpowered Test - sample size za maly, wynik jest losowy a wnioski fiktykcjine',
+      'SRM Ignored - sample ratio mismatch ignorowany bo "mala roznica"',
+      'Simpson Trap - agregacja wynikow pomija segment gdzie efekt jest odwrotny',
+      'Post-hoc Hypothesis - zmiana primary metric po zobaczeniu wynikow'
+    ],
+    keyConcepts: [
+      {term: 'Power Analysis', def: 'Obliczenie prawdopodobienstwa wykrycia rzeczywistego efektu danego rozmiaru przy danym sample size.'},
+      {term: 'MDE', def: 'Minimum Detectable Effect - najmniejszy efekt jaki test jest w stanie wykryc statystycznie.'},
+      {term: 'SRM', def: 'Sample Ratio Mismatch - niezamierzony dysbalans grup A/B ktory psuje wyniki.'},
+      {term: 'Sequential Testing', def: 'Metoda pozwalajaca zagladac w wyniki bez inflacji bledu alpha.'},
+      {term: 'Novelty Effect', def: 'Krotkoterminowy wzrost metryki spowodowany nowiosa wariantu a nie jego wartoscia.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '7'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$0.80-2.00'},
+      {label: 'Czas', value: '15-30 min'}
+    ],
+    bestFor: [
+      'Gdy planujesz test nowego pricingu albo zmianie flow checkoutu',
+      'Gdy testujesz landing page dla duzej kampanii marketingowej',
+      'Gdy musisz bronic wynikow testu przed zarzadem lub analitykami'
+    ],
+    worstFor: [
+      'Gdy masz za malo uzytkownikow (test bedzie trwal miesiace)',
+      'Gdy to jest drobna zmiana kosmetyczna bez biznesowych konsekwencji',
+      'Gdy nie wiesz jeszcze co chcesz mierzyc'
+    ],
+    relatedPresets: ['data_analysis_pipe', 'perf_squad', 'startup'],
+    glossary: [
+      {term: 'power', definition: 'Prawdopodobienstwo wykrycia efektu w tescie gdy efekt rzeczywiscie istnieje.'},
+      {term: 'MDE', definition: 'Minimum Detectable Effect - najmniejszy efekt wykrywalny statystycznie.'},
+      {term: 'SRM', definition: 'Sample Ratio Mismatch - niezamierzony dysbalans grup.'},
+      {term: 'p-hacking', definition: 'Manipulowanie analiza zeby uzyskac znaczacy wynik (cherry picking, peeking).'},
+      {term: 'alpha', definition: 'Prag bledu typu I - prawdopodobienstwo falszywie pozytywnego wyniku (zwykle 0.05).'}
+    ],
+    learningQuote: 'Zly test daje falszywe wnioski a decyzje oparte na zlych testach kosztuja wiecej niz cala infrastruktura - A/B Test Lab chroni przed tym jednym podpisem.',
+    realExample: 'Wyobraz sobie ze CEO chce podniesc ceny o 20% i dyrektor produktu proponuje test A/B. Analyst formuluje hipoteze (efekt netto na revenue), statistician wylicza ze przy baseline 3% conversion i MDE +5% revenue potrzeba 28000 uzytkownikow per wariant, test musi trwac 14 dni. Devil flaguje trzy ryzyka: SRM bo cache pamieta uzytkownika, peeking bo CEO bedzie zagladal codziennie, Simpson bo mobile vs desktop maja rozny effect. Decision presenter prezentuje plan z zabezpieczeniami (sequential testing, no peeking, segmentacja), CEO podpisuje stat sign-off.'
+  },
+  kb_constructor: {
+    tagline: 'Cztery agentow rownolegle sprzataja Slack wiki PDFy i GitHub do jednej bazy wiedzy',
+    missionShort: 'KB Constructor to zespol 10 agentow do budowy bazy wiedzy z rozproszonych zrodel. Cztery ingesters rownolegle normalizuja Slack, wiki, PDFy i GitHub do wspolnego formatu chunkow, deduplikator usuwa powtorzenia, writer pisze artykuly, critic sprawdza fakty a integrator publikuje. Dla firm ktore utopily wiedze w silosach.',
+    whoIs: 'To preset dla zespolow ktore maja wiedze rozproszona w wielu zrodlach i chca je polaczyc w jedna baze wiedzy. Idealny dla onboardingu nowych pracownikow, migracji wiki z Confluence do Notion, bazy wsparcia klienta. Nie dla pojedynczego zrodla ani dla bazy wymagajacej ciaglych aktualizacji real-time.',
+    analogy: 'Ten preset to jak biblioteka cyfrowa zatrudniajaca czterech archiwistow, gdzie kazdy specjalizuje sie w innym formacie (czasopisma, manuskrypty, mikrofilmy, ksiazki) a potem redaktor pisze hasla i drukarnia publikuje.',
+    howItWorks: [
+      {label: 'Faza 1 - Parallel ingest', desc: 'Cztery ingesters pracuje rownolegle kazdy na swoim zrodle: Slack (kanal + wiadomosci), wiki (strony + metadane), PDFy (ekstrakcja tekstu + struktury), GitHub (README + docs). Kazdy zwraca chunki w jednolitym formacie.'},
+      {label: 'Faza 2 - Dedup i structuring', desc: 'Deduplicator uzywa embeddingow i fuzzy matching do usuwania duplikatow (gdy dwa zrodla mowia to samo). Grupuje powiazane chunki w tematy i proponuje strukture kategorii.'},
+      {label: 'Faza 3 - Writing i fact-check', desc: 'Writer drafts artykuly z najlepszych chunkow, zachowujac linki do oryginalow. Critic sprawdza ze kazda informacja ma zrodlo i flaguje sprzecznosci.'},
+      {label: 'Faza 4 - Publish i reranking', desc: 'Integrator publikuje do docelowego systemu (Notion, Confluence, custom). Konfiguruje reranker dla wyszukiwania i testuje recall na probce zapytan.'}
+    ],
+    inputs: [
+      'Lista zrodel z dostepami (Slack token, wiki creds, PDFy, repo)',
+      'Docelowy system (Notion, Confluence, custom)',
+      'Struktura kategorii (opcjonalnie - system moze zaproponowac)',
+      'Lista krytycznych pytan do testowania recall'
+    ],
+    outputs: [
+      'Strukture bazy wiedzy (kategorie i tagi)',
+      'Artykuly uporzadkowane po tematach z linkami do zrodel',
+      'Chunki bez duplikatow gotowe do embeddingu',
+      'Raport z fact-checkingu z listed sprzecznosci',
+      'Gotowy import do docelowego systemu'
+    ],
+    does: [
+      'Normalizuje dane z czterech roznych zrodel do wspolnego formatu',
+      'Dedupuje chunki za pomoca embeddingow i fuzzy matching',
+      'Generuje strukture kategorii na podstawie tematow',
+      'Pisze artykuly zachowujac linki do oryginalnych zrodel',
+      'Fact-checkuje kazda teze przed publikacja',
+      'Konfiguruje reranker dla jakosci wyszukiwania',
+      'Testuje recall na zdefiniowanych zapytaniach',
+      'Publikuje do systemu docelowego'
+    ],
+    doesNotDo: [
+      'Nie dziala z jednym zrodlem (to przerost formy)',
+      'Nie aktualizuje bazy w czasie rzeczywistym (operacja jednorazowa)',
+      'Nie jest substytutem dla wektor DB (tylko przygotowuje dane)',
+      'Nie tworzy polityk dostepu (to rola administratora)',
+      'Nie zastapi eksperta domeny dla danych krytycznych',
+      'Nie buduje semantycznego wyszukiwania (tylko strukture)',
+      'Nie tlumaczy dokumentow (to inny pipeline)'
+    ],
+    antiPatterns: [
+      'Dump and Dupe - zaladowanie wszystkiego bez dedupu robi baze z 50% smieci',
+      'Lost Sources - artykuly bez linkow do zrodel zatrzymuja mozliwosc weryfikacji',
+      'Unfactchecked - publikacja bez fact-check wypuszcza sprzecznosci do uzytkownikow',
+      'Rigid Structure - predefiniowana struktura nie pasuje do danych i wymusi przepychanie',
+      'Missing Reranker - wyszukiwanie bez rerankera daje niezwiazane wyniki'
+    ],
+    keyConcepts: [
+      {term: 'Chunking', def: 'Dzielenie dokumentow na mniejsze kawalki o stalym rozmiarze dla embedding i retrievalu.'},
+      {term: 'Dedup', def: 'Usuwanie duplikatow chunkow za pomoca embedding similarity i fuzzy matching.'},
+      {term: 'Embedding', def: 'Konwersja tekstu na wektor liczb reprezentujacy znaczenie dla semantic search.'},
+      {term: 'Reranker', def: 'Drugi etap wyszukiwania ktory rekapowuje top wyniki lepszym modelem pod katem istotnosci.'},
+      {term: 'RAG', def: 'Retrieval Augmented Generation - LLM odpowiada na pytania siegajac do bazy wiedzy.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '10'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$0.85-2.15'},
+      {label: 'Czas', value: '30-60 min'}
+    ],
+    bestFor: [
+      'Gdy migrujesz wewnetrzne wiki z Confluence do Notion lub odwrotnie',
+      'Gdy budujesz baze wiedzy dla nowych pracownikow albo obslugi klienta',
+      'Gdy firma ma wiedze rozproszona w Slacku, wiki, PDFach i GitHubie'
+    ],
+    worstFor: [
+      'Gdy masz tylko jedno zrodlo informacji (za ciezki preset)',
+      'Gdy potrzebujesz ciaglych aktualizacji real-time (to jednorazowa operacja)',
+      'Gdy juz masz dobry system semantic search'
+    ],
+    relatedPresets: ['content', 'research', 'tech_writing_pipe'],
+    glossary: [
+      {term: 'chunking', definition: 'Dzielenie dokumentu na kawalki o stalym rozmiarze dla embedding.'},
+      {term: 'dedup', definition: 'Usuwanie duplikatow chunkow za pomoca similarity.'},
+      {term: 'embedding', definition: 'Wektor reprezentujacy znaczenie tekstu dla semantic search.'},
+      {term: 'reranker', definition: 'Drugi etap wyszukiwania rekapowujacy wyniki lepszym modelem.'},
+      {term: 'RAG', definition: 'Retrieval Augmented Generation - LLM siega do bazy wiedzy.'}
+    ],
+    learningQuote: 'Wiedza rozproszona po piec zrodlach jest gorsza niz zero wiedzy - nowy pracownik traci tygodnie na szukanie a odpowiedzi sa sprzeczne.',
+    realExample: 'Wyobraz sobie ze twoja firma ma 300 pracownikow a wiedza jest rozrzucona w Slacku (3 lata kanal engineering), Confluence wiki (400 stron), folderze Drive z PDFami onboardingowymi i README w 40 repozytoriach. KB Constructor uruchamia 4 ingesters rownolegle, deduplicator znajduje ze 60% wpisow na Confluence to kopia wiadomosci ze Slacka, writer pisze 80 artykulow z kategoriami, critic lapie 7 sprzecznosci miedzy zrodlami a integrator publikuje do Notiona z rerankerem ktory odpowiada poprawnie na 85% testowych zapytan.'
+  },
+  tech_writing_pipe: {
+    tagline: 'Plan plus research plus pisanie plus diagramy plus SEO plus fact-check w jednym pipelinie',
+    missionShort: 'Tech Writing Pipeline to zespol 8 agentow do dluzszych tekstow technicznych. Analyst robi outline, dwoch researcherow rownolegle zbiera fakty (docs + GitHub), writer pisze, designer rysuje diagramy, SEO optymalizuje headery i meta, a critic sprawdza fakty i ton. Dla blogow technicznych, whitepaperow i prezentacji konferencyjnych.',
+    whoIs: 'To preset dla zespolow marketingu technicznego, devrel albo pracownikow ktorzy pisza dluzsze materialy techniczne. Idealny dla blogow technicznych, whitepaperow, slajdow konferencyjnych i deep-dive case studies. Nie dla krotkich postow, tweetow, social media ani wewnetrznych notatek.',
+    analogy: 'Ten preset to jak magazyn naukowo-techniczny z redakcja, gdzie research department zbiera fakty, redaktor pisze tekst, grafik tworzy ilustracje, SEO optymalizuje a fact-checker weryfikuje przed drukiem.',
+    howItWorks: [
+      {label: 'Faza 1 - Outline i audience', desc: 'Analyst definiuje dla kogo jest tekst (audience, knowledge level), formuluje main angle i tworzy outline z sekcjami. Ustala success criteria (czego czytelnik sie nauczy).'},
+      {label: 'Faza 2 - Parallel research', desc: 'Dwoch researcherow rownolegle zbiera material: res_docs czyta oficjalna dokumentacje dla faktow technicznych, res_github szuka przykladow kodu i benchmarkow. Kazdy zwraca uporzadkowane znaleziska.'},
+      {label: 'Faza 3 - Writing i enrichment', desc: 'Writer drafts tekst bazujac tylko na znaleziskach researcherow (nie zmysla). Designer rysuje diagramy dla zlozonych konceptow. SEO optimizer dobiera slowa kluczowe, headery H1-H3 i meta description.'},
+      {label: 'Faza 4 - Fact-check i tone polish', desc: 'Critic sprawdza kazdy fakt przeciw zrodlom, flaguje sprzecznosci i weryfikuje ton (matching audience). Generuje checkliste przed publikacja.'}
+    ],
+    inputs: [
+      'Temat i cel tekstu (blog, whitepaper, talk)',
+      'Audience (beginners, advanced, decision-makers)',
+      'Angle lub teza glowna (co chcesz przekazac)',
+      'Opcjonalny rough outline lub bullet points'
+    ],
+    outputs: [
+      'Dlugi artykul lub whitepaper z przykladami kodu',
+      'Diagramy architektury i flow dla zlozonych konceptow',
+      'Tytuly i opisy zoptymalizowane pod wyszukiwarki',
+      'Lista cytowan z linkami do zrodel',
+      'Checklista gotowosci do publikacji'
+    ],
+    does: [
+      'Rozpoczyna od outline zamiast od razu pisac',
+      'Uzywa dwoch researcherow dla faktow (docs + github)',
+      'Izoluje writera od zmyslania - pisze tylko na bazie researchu',
+      'Dodaje diagramy dla zlozonych konceptow',
+      'Optymalizuje pod SEO bez keyword stuffingu',
+      'Fact-checkuje kazdy stwierdzenie przed publikacja',
+      'Dostosowuje ton do audience',
+      'Generuje checkliste gotowosci'
+    ],
+    doesNotDo: [
+      'Nie pisze krotkich postow na social media (przerost formy)',
+      'Nie tworzy tweetow ani threadow',
+      'Nie wykonuje kodu (designer rysuje, nie uruchamia)',
+      'Nie publikuje samodzielnie (tylko przygotowuje gotowy tekst)',
+      'Nie tlumaczy na inne jezyki (to inny pipeline)',
+      'Nie zastepuje human editora dla stylu marki',
+      'Nie gwarantuje pozycji w Google (tylko optymalizuje)'
+    ],
+    antiPatterns: [
+      'Writer First - pisanie bez researchu daje hallucynacje',
+      'SEO Stuffing - wpychanie keywordow do tekstu niszczy ton i czytelnosc',
+      'No Fact-check - publikacja bez weryfikacji flaguje bledy u czytelnikow',
+      'Generic Audience - tekst dla wszystkich jest dla nikogo',
+      'Diagram Theater - diagramy ktore nic nie wyjasniaja tylko dodaja szum'
+    ],
+    keyConcepts: [
+      {term: 'Outline-First', def: 'Zaczynanie od planu sekcji przed pisaniem - redukuje chaos i zmyslenia.'},
+      {term: 'E-E-A-T', def: 'Experience, Expertise, Authoritativeness, Trust - sygnaly jakosci Google dla tresci.'},
+      {term: 'Structured Data', def: 'Markup schema.org dla artykulu ktory pozwala Google lepiej zrozumiec tresc.'},
+      {term: 'Audience Calibration', def: 'Dopasowanie slownictwa, zalozen i glebokosci do poziomu czytelnika.'},
+      {term: 'Fact-check Loop', def: 'Dedykowany krok weryfikacji kazdej tezy przeciw zrodlom przed publikacja.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '8'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$0.75-1.85'},
+      {label: 'Czas', value: '20-40 min'}
+    ],
+    bestFor: [
+      'Gdy piszesz glebokie wpisy na blog firmowy albo whitepaper dla klientow',
+      'Gdy przygotowujesz prezentacje na konferencje lub deep-dive case study',
+      'Gdy potrzebujesz dlugiego tekstu technicznego zweryfikowanego pod katem faktow'
+    ],
+    worstFor: [
+      'Gdy piszesz krotki post na Twittera lub LinkedIna',
+      'Gdy robisz wewnetrzna notatke dla zespolu',
+      'Gdy masz 10 minut na tresc i nie chcesz pelnego pipeline'
+    ],
+    relatedPresets: ['content', 'research', 'kb_constructor'],
+    glossary: [
+      {term: 'outline', definition: 'Plan sekcji tekstu przed pisaniem - redukuje chaos.'},
+      {term: 'E-E-A-T', definition: 'Experience Expertise Authoritativeness Trust - sygnaly jakosci Google.'},
+      {term: 'SEO', definition: 'Search Engine Optimization - optymalizacja tresci pod wyszukiwarki.'},
+      {term: 'audience', definition: 'Docelowy czytelnik okreslajacy slownictwo i glebokosc.'},
+      {term: 'fact-check', definition: 'Weryfikacja kazdej tezy przeciw zrodlom przed publikacja.'}
+    ],
+    learningQuote: 'Bez outlinu i researchu writer zmysla a fact-checker musi to potem lapac - Tech Writing Pipeline wymusza kolejnosc: plan, fakty, pisanie, weryfikacja.',
+    realExample: 'Wyobraz sobie ze twoj dev rel pisze deep-dive o Kubernetesie dla blogu firmowego i szef mowi "na jutro". Bez preset to przepis na hallucynacje. Tech Writing Pipeline: analyst robi outline dla audience senior platform engineers, res_docs czyta oficjalny k8s docs v1.32, res_github szuka real-world examples w kubernetes/examples repo, writer tworzy 2500 slow bazujac tylko na researchu, designer rysuje diagram reconciliation loop, SEO optymalizuje pod "kubernetes operator pattern", critic lapie jeden bledny fakt o leader election i tekst jest gotowy do publikacji.'
+  },
+  five_minds_strategic: {
+    tagline: 'Najpierw twarde dane, potem debata - piec ekspertow z liczbami w reku zamiast wojna opinii',
+    missionShort: 'Five Minds Strategic to zespol 13 agentow dla high-stakes decyzji strategicznych. Czterech researcherow rownolegle zbiera twarde dane (rynek, finanse, technologia, prawo), analyst frameuje pytanie, piec ekspertow + Devil debatuje trzy rundy, synthesizer pisze Gold Solution a PM sign-off zamyka. Dla pivotow, akwizycji i nieodwracalnych wyborow strategicznych.',
+    whoIs: 'To preset dla zarzadow i senior leadership zespolow podejmujacych decyzje strategiczne na 3+ lat. Idealny dla decyzji o pivot firmy, oceny akwizycji, wyboru platformy na kolejne 5 lat. Nie dla decyzji taktycznych na dzisiaj, pilnych spraw ani gdy odpowiedz jest oczywista.',
+    analogy: 'Ten preset to jak rada wojenna z dossier wywiadowczym, gdzie zwiadowcy najpierw zbieraja informacje, potem generalowie debatuja przez trzy rundy z prokuratorem a ostateczny plan idzie do prezydenta.',
+    howItWorks: [
+      {label: 'Faza 1 - Parallel intelligence', desc: 'Czterech researcherow rownolegle zbiera dane: market intel (rynek, konkurencja, trendy), financial (finanse, ROI, koszty), technical (wykonalnosc, ryzyka, stacki), legal (regulacje, compliance). Kazdy zwraca twarde liczby.'},
+      {label: 'Faza 2 - Framing opcji', desc: 'Analyst syntezuje 4 raporty w sformalizowane opcje decyzyjne (2-5) z plusami, minusami i niepewnosciami. Prezentuje kazda opcje w tej samej strukturze.'},
+      {label: 'Faza 3 - Three-round debate', desc: 'Piec ekspertow (innowator, analityk, pragmatyk, user, wizjoner) + Devil debatuje trzy rundy: opinia -> kontrargumenty -> synteza. Devil atakuje najsilniejsza propozycje szukajac slabosci.'},
+      {label: 'Faza 4 - Gold Solution i HITL', desc: 'Synthesizer pisze Gold Solution lepsze od kazdej pojedynczej opcji (prawdziwa synteza a nie kompromis). PM podpisuje decyzje z uzasadnieniem i lista dissenting opinions.'}
+    ],
+    inputs: [
+      'Pytanie strategiczne z definicja stakes (inwestycja, okres)',
+      'Lista opcji do rozwazenia (lub obszar do zbadania)',
+      'Kontekst firmy (etap, kultura, constraints)',
+      'Deadline na decyzje (minimum dni na debate)'
+    ],
+    outputs: [
+      'Cztery raporty z twardymi danymi (market, finanse, tech, legal)',
+      'Log trzech rund debaty ekspertow z argumentami',
+      'Gold Solution z analiza plusow i minusow',
+      'Lista dissenting opinions dla zapamietania',
+      'Podpisana decyzja PM z planem wdrozenia'
+    ],
+    does: [
+      'Zbiera twarde dane przed debata (nie wojna opinii)',
+      'Uzywa 4 wyspecjalizowanych researcherow w obszarach kluczowych',
+      'Formalizuje debate w trzy rundy z explicit structure',
+      'Uzywa Devil do adversarial challenge najsilniejszej propozycji',
+      'Synthesizer pisze Gold Solution lepsze od wszystkich opcji',
+      'Zapisuje dissenting opinions dla historical record',
+      'Wymusza PM sign-off z uzasadnieniem',
+      'Dokumentuje wszystko dla audytu decyzji'
+    ],
+    doesNotDo: [
+      'Nie dla decyzji taktycznych na dzisiaj (za ciezkie)',
+      'Nie dla pilnych spraw (trzy rundy debaty to czas)',
+      'Nie pracuje bez czasu na research',
+      'Nie zastepuje eksperta domeny w waskich obszarach',
+      'Nie robi implementacji (tylko decyzja)',
+      'Nie gwarantuje ze decyzja bedzie prawidlowa (tylko proces)',
+      'Nie dziala gdy odpowiedz jest oczywista dla wszystkich'
+    ],
+    antiPatterns: [
+      'Opinion War - debata bez danych zamienia sie w kto wiecej krzyczy',
+      'Skipped Devil - zespol pomija adversarial challenge i leci z pierwsza propozycja',
+      'Gold Compromise - synthesizer robi kompromis zamiast prawdziwej syntezy',
+      'Silent Dissent - zgubienie odmiennych zdan pozbawia firmy nauki',
+      'Rushed Rounds - skrocenie 3 rund do 1 gubi adversarial value'
+    ],
+    keyConcepts: [
+      {term: 'Adversarial Collaboration', def: 'Wspolpraca gdzie rozni eksperci formalnie atakuja nawzajem swoje pozycje zeby znajdowac slabosci.'},
+      {term: 'Pre-mortem', def: 'Technika wyobrazania sobie ze decyzja byla porazka i proba ustalenia dlaczego.'},
+      {term: 'Steel Man', def: 'Odtworzenie najlepszej wersji argumentu przeciwnika zamiast atakowania slabej wersji.'},
+      {term: 'Gold Solution', def: 'Synteza wszystkich rund debaty lepsza od pojedynczych propozycji, nie kompromis.'},
+      {term: 'Dissenting Opinion', def: 'Formalny zapis odmiennego zdania dla historical record i nauki.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '13'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.65-4.10'},
+      {label: 'Czas', value: '45-90 min'}
+    ],
+    bestFor: [
+      'Gdy decydujesz o pivot firmy albo akwizycji innej firmy',
+      'Gdy wybierasz stack technologiczny lub dostawce na 5 lat',
+      'Gdy stawka jest nieodwracalna i wymaga twardych danych plus debaty'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz decyzji tacktycznej dzisiaj',
+      'Gdy masz pilna sprawe bez czasu na three-round debate',
+      'Gdy odpowiedz jest oczywista dla kazdego i debata to strata czasu'
+    ],
+    relatedPresets: ['five_minds', 'deep_five_minds', 'deep_research_swarm_pro'],
+    glossary: [
+      {term: 'pivot', definition: 'Zmiana kierunku firmy lub strategii produktowej.'},
+      {term: 'Gold Solution', definition: 'Synteza lepsza od pojedynczych opcji, nie kompromis.'},
+      {term: 'pre-mortem', definition: 'Wyobrazenie sobie porazki decyzji i analiza dlaczego.'},
+      {term: 'steel man', definition: 'Odtworzenie najlepszej wersji argumentu przeciwnika.'},
+      {term: 'dissenting opinion', definition: 'Formalny zapis odmiennego zdania dla historical record.'}
+    ],
+    learningQuote: 'Debata bez twardych danych to wojna opinii - Five Minds Strategic wymusza research, debate i sign-off w jednym przebiegu.',
+    realExample: 'Wyobraz sobie ze zarzad rozwaza akwizycje konkurenta za 50 milionow dolarow. Czterech researcherow rownolegle zbiera: market intel (udzial, trendy), financial (ROI, koszty, dlug), technical (stack compatibility, tech debt), legal (antitrust, pracownicy). Analyst formuluje trzy opcje (kupic caly, kupic tylko technologie, nie kupowac). Piec ekspertow debatuje trzy rundy, Devil atakuje opcje 1 znajdujac ryzyko overpay i culture clash. Synthesizer pisze Gold Solution: kupic tylko technologie i zatrudnic kluczowych inzynierow. PM podpisuje z listing dissenting opinion ze czlonek rady chcial pelnej akwizycji.'
+  },
+  soc2_sweep: {
+    tagline: 'Przygotowanie do SOC2 Type II przez pelen zespol - mapowanie kontroli plus evidence plus gap',
+    missionShort: 'SOC2 Sweep to zespol 9 agentow do przygotowania audytu SOC2 Type II. Policy reader czyta polityki firmy, control mapper przyporzadkowuje je do CC1-CC9, evidence collector zbiera dowody, gap analyzer flaguje braki, qa_security weryfikuje techniczne kontrole a CISO podpisuje gotowosc. Zgodny z Trust Services Criteria.',
+    whoIs: 'To preset dla zespolow bezpieczenstwa i compliance przygotowujacych sie do audytu SOC2. Idealny dla startupow wchodzacych na rynek enterprise, kwartalnych przegladow i odpowiedzi na vendor risk assessment. Nie dla firm bez zadnych polityk, dla ciaglej zgodnosci (uzyj Vanta/Drata) ani drobnych poprawek.',
+    analogy: 'Ten preset to jak audyt finansowy banku, gdzie jeden audytor czyta polityki, drugi mapuje na regulacje, trzeci zbiera dowody a czwarty wskazuje luki i dyrektor finansowy zatwierdza raport dla regulatora.',
+    howItWorks: [
+      {label: 'Faza 1 - Policy reading', desc: 'Policy reader czyta wszystkie SOPs, security policies, vendor agreements, incident runbooks firmy. Tworzy mape polityk z metadanymi (data, wlascicieli).'},
+      {label: 'Faza 2 - Control mapping', desc: 'Control mapper przyporzadkowuje polityki do Trust Services Criteria CC1-CC9 (Control Environment, Communication, Risk Assessment, Monitoring, Control Activities, Logical Access, System Ops, Change Mgmt, Risk Mitigation).'},
+      {label: 'Faza 3 - Evidence collection', desc: 'Evidence collector zbiera dowody dla kazdej kontroli: screenshots, configs, logs, audit trails, personnel records. Qa_security sprawdza techniczne kontrole (encryption, MFA, backup, access reviews).'},
+      {label: 'Faza 4 - Gap analysis i CISO sign-off', desc: 'Gap analyzer flaguje braki w pokryciu kontroli, proponuje remediacje, szacuje priorytety. CISO przeglada raport gotowosci i podpisuje audit readiness z planem naprawczym.'}
+    ],
+    inputs: [
+      'Zbior polityk firmy i SOPs',
+      'Dostep do systemow produkcyjnych dla evidence',
+      'Lista aktualnych pracownikow i ich rol',
+      'Scope audytu (ktore produkty, ktore regiony)'
+    ],
+    outputs: [
+      'Tabela zgodnosci z kazdym wymaganiem i dowodem',
+      'Folder evidence (screenshots, configs, logs)',
+      'Lista luk uporzadkowana od najwazniejszej',
+      'Propozycje remediacji dla kazdej luki',
+      'Podpisany raport audit readiness od CISO'
+    ],
+    does: [
+      'Czyta wszystkie polityki firmy i mapuje na CC1-CC9',
+      'Zbiera evidence automatycznie dla technicznych kontroli',
+      'Sprawdza enkrypcje, MFA, backup, access reviews',
+      'Flaguje luki w pokryciu Trust Services Criteria',
+      'Proponuje remediacje z priorytetami P0-P3',
+      'Generuje folder dla zewnetrznego audytora',
+      'Wymusza CISO sign-off przed audytem',
+      'Dokumentuje wszystko dla historical record'
+    ],
+    doesNotDo: [
+      'Nie zastapi zewnetrznego audytora (tylko przygotowanie)',
+      'Nie dziala bez istniejacych polityk (najpierw je napisz)',
+      'Nie jest ciagla zgodnoscia (uzyj Vanta/Drata)',
+      'Nie naprawia luk samodzielnie (tylko identyfikuje)',
+      'Nie jest pentestem ani audytem bezpieczenstwa',
+      'Nie pokrywa ISO27001 automatycznie (inny standard)',
+      'Nie zastepuje HR dla personnel records'
+    ],
+    antiPatterns: [
+      'Policy Theater - polityki istnieja na papierze ale nikt ich nie przestrzega',
+      'Evidence Vacuum - dowody dla kontroli zebrane rok temu i juz nieaktualne',
+      'Ignored Gaps - gap analyzer flaguje luki ktore potem nikt nie naprawia',
+      'Missing CISO - sign-off bez zaangazowania CISO nie ma wartosci',
+      'Scope Creep - probowanie pokryc wszystko zamiast wybranych produktow'
+    ],
+    keyConcepts: [
+      {term: 'Trust Services Criteria', def: 'AICPA framework z 5 kategoriami: Security, Availability, Processing Integrity, Confidentiality, Privacy.'},
+      {term: 'CC1-CC9', def: 'Dziewiec Common Criteria w SOC2: Control Environment, Communication, Risk, Monitoring, Control, Access, Ops, Change, Risk Mitigation.'},
+      {term: 'Control Evidence', def: 'Dowody ze kontrola dziala w praktyce: screenshots, configs, logs, audit trails.'},
+      {term: 'Gap Remediation', def: 'Plan naprawczy dla luk w pokryciu kontroli z priorytetami i timelinem.'},
+      {term: 'SOC2 Type II', def: 'Audyt SOC2 obejmujacy okres minimum 6 miesiecy zamiast pojedynczego punktu w czasie.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '9'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.10-2.75'},
+      {label: 'Czas', value: '30-60 min'}
+    ],
+    bestFor: [
+      'Gdy przygotowujesz sie do audytu SOC2 Type II dla klientow enterprise',
+      'Gdy odpowiadasz na vendor risk assessment od duzego klienta',
+      'Gdy robisz kwartalny przeglad compliance lub przygotowanie do ISO27001'
+    ],
+    worstFor: [
+      'Gdy nie masz zadnych polityk firmy (najpierw je napisz)',
+      'Gdy chcesz ciagla zgodnosc (uzyj Vanta lub Drata)',
+      'Gdy potrzebujesz drobnych poprawek bezpieczenstwa'
+    ],
+    relatedPresets: ['security_multi_vector', 'security', 'test_suite'],
+    glossary: [
+      {term: 'SOC2', definition: 'Standard audytu bezpieczenstwa od AICPA dla vendorow chmurowych.'},
+      {term: 'Trust Services Criteria', definition: 'Framework 5 kategorii: Security, Availability, Processing Integrity, Confidentiality, Privacy.'},
+      {term: 'CC1-CC9', definition: 'Dziewiec Common Criteria w SOC2.'},
+      {term: 'evidence', definition: 'Dowody ze kontrola dziala w praktyce.'},
+      {term: 'Type II', definition: 'Audyt obejmujacy okres 6-12 miesiecy, nie pojedynczy punkt.'}
+    ],
+    learningQuote: 'SOC2 to nie dokumentacja na polce - to dowody ze kontrole dzialaja kazdego dnia, a ten preset automatyzuje zbieranie tych dowodow.',
+    realExample: 'Wyobraz sobie ze twoj startup SaaS ma umowe z duzym korporacyjnym klientem warta 2 miliony rocznie ale klient wymaga SOC2 Type II w ciagu 6 miesiecy. Policy reader czyta 28 polityk, control mapper przyporzadkowuje na CC1-CC9, evidence collector zbiera konfiguracje AWS, logi access review i screenshots z Okta, gap analyzer flaguje 7 luk (brak formalnego vendor risk assessment, brak rocznego penetration testu, brak sformalizowanego incident response plan). CISO podpisuje raport z plan naprawczym na 3 miesiace przed audytem.'
+  },
+  data_analysis_pipe: {
+    tagline: 'Dziewieciu agentow po kolei - zbior plus czyszczenie plus EDA plus model plus raport',
+    missionShort: 'Data Analysis Pipeline to zespol 9 agentow do przeksztalcania surowych danych w stakeholder-ready raport. Data collector profiluje dataset, cleaner normalizuje, EDA analyst i SQL specialist rownolegle szukaja wzorcow, statistician sprawdza sensownosc, model builder opcjonalnie buduje prediction, writer pisze raport a designer robi wykresy. Oparty na arxiv 2510.04023.',
+    whoIs: 'To preset dla analitykow danych i zespolow business intelligence ktorzy musza z surowego arkusza zrobic raport dla zarzadu. Idealny dla ad-hoc business questions, analiz churnu, pricing i A/B test post-mortem. Nie dla danych real-time streaming, ML production deployment ani bez dostepu do surowych danych.',
+    analogy: 'Ten preset to jak zespol data science consulting firm, gdzie engineer ingestuje dane, analyst sprzata, scientist robi EDA, modeler trenuje a narrator pisze raport dla zarzadu z peer reviewem statystyki.',
+    howItWorks: [
+      {label: 'Faza 1 - Profiling i cleaning', desc: 'Data collector profiluje arkusz (schemat, statystyki, samples ~5k zamiast raw). Data cleaner normalizuje (brakujace wartosci, outliers, formaty dat, encoding).'},
+      {label: 'Faza 2 - Parallel EDA', desc: 'EDA analyst szuka wzorcow (distributions, correlations, segments). SQL specialist pisze zapytania dla konkretnych hypotez biznesowych. Pracuja rownolegle.'},
+      {label: 'Faza 3 - Stats sanity i modeling', desc: 'Statistician sprawdza czy wnioski sa statystycznie istotne, flaguje leakage, assumptions, multiple comparison problems. Opcjonalnie model builder tworzy prosty prediction model.'},
+      {label: 'Faza 4 - Report i charts', desc: 'Writer pisze raport gotowy dla zarzadu z executive summary, kluczowymi insightami i rekomendacjami. Designer robi wykresy. Critic weryfikuje stats sanity.'}
+    ],
+    inputs: [
+      'Dostep do surowych danych (CSV, DB, warehouse)',
+      'Pytanie biznesowe (dlaczego sprzedaz spadla)',
+      'Kontekst biznesowy (produkty, segmenty, okres)',
+      'Audience raportu (zarzad, operacje, marketing)'
+    ],
+    outputs: [
+      'Raport gotowy dla zarzadu z kluczowymi wnioskami',
+      'Wykresy z narrative dla kazdego insightu',
+      'Confidence dla kazdej tezy i limitations',
+      'Opcjonalnie prosty model prediction',
+      'Rekomendacje z konkretnymi akcjami'
+    ],
+    does: [
+      'Profiluje dataset bez czytania calosci (samples + stats)',
+      'Czysci dane (missing values, outliers, formats)',
+      'Rownolegle uruchamia EDA i SQL dla roznych hipotez',
+      'Sprawdza statystyczna sensownosc (leakage, assumptions)',
+      'Opcjonalnie buduje prosty prediction model',
+      'Generuje wykresy z narrative',
+      'Pisze raport dla konkretnego audience',
+      'Weryfikuje kazda teze przez critic'
+    ],
+    doesNotDo: [
+      'Nie dla danych real-time streaming (inna architektura)',
+      'Nie wdraza modeli na produkcje (to ML engineering)',
+      'Nie dziala bez dostepu do surowych danych',
+      'Nie zastepuje data engineera dla ETL',
+      'Nie robi causal inference na observational data',
+      'Nie tworzy dashboardow live (to BI tooling)',
+      'Nie dostarcza insights spoza danych w arkuszu'
+    ],
+    antiPatterns: [
+      'Full Data Dump - writer dostaje raw data i zmysla statystyki',
+      'P-hacked Insight - EDA znajduje cos przypadkowego i raportuje jako finding',
+      'Missing Baseline - brak porownania do poprzedniego okresu nie pokazuje zmiany',
+      'Leakage Blind - model uzywa future features jako predyktory',
+      'No Stats Check - raport publikowany bez statystycznego sanity check'
+    ],
+    keyConcepts: [
+      {term: 'EDA', def: 'Exploratory Data Analysis - wizualizacja i statystyka pierwsza zeby zrozumiec dane.'},
+      {term: 'Missingness', def: 'Wzorzec brakujacych wartosci ktory moze byc MCAR, MAR lub MNAR.'},
+      {term: 'Leakage', def: 'Model uzywa informacji ktorej nie powinien miec w czasie predykcji (future features).'},
+      {term: 'Model Card', def: 'Dokumentacja modelu z opisem celu, danych, metryk, limitations i zalecen uzycia.'},
+      {term: 'Multiple Comparisons', def: 'Problem gdzie testowanie wielu hipotez inflacjonuje bledy typu I - wymaga korekty.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '9'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.10-2.75'},
+      {label: 'Czas', value: '25-50 min'}
+    ],
+    bestFor: [
+      'Gdy zarzad pyta dlaczego sprzedaz spadla w marcu i potrzebujesz data-driven odpowiedzi',
+      'Gdy analizujesz churn klientow lub pricing experiment',
+      'Gdy robisz post-mortem A/B testu lub analize produktu'
+    ],
+    worstFor: [
+      'Gdy masz dane strumieniowe na zywo (inna architektura)',
+      'Gdy chcesz wdrozyc model na produkcje (to ML engineering)',
+      'Gdy nie masz dostepu do surowych danych'
+    ],
+    relatedPresets: ['ab_test_lab', 'research', 'data_pipe'],
+    glossary: [
+      {term: 'EDA', definition: 'Exploratory Data Analysis - wstepna eksploracja i wizualizacja.'},
+      {term: 'leakage', definition: 'Uzycie informacji future jako feature do predykcji.'},
+      {term: 'model card', definition: 'Dokumentacja modelu z celem, danymi, metrykami i limitations.'},
+      {term: 'missingness', definition: 'Wzorzec brakujacych wartosci: MCAR, MAR lub MNAR.'},
+      {term: 'correlation', definition: 'Miara wspolwystepowania dwoch zmiennych, niekoniecznie przyczynowa.'}
+    ],
+    learningQuote: 'Bez stats sanity check latwo znalezc wzorce ktorych nie ma - Data Analysis Pipeline wymusza dyscypline od profilowania do raportu.',
+    realExample: 'Wyobraz sobie ze CFO pyta dlaczego revenue Q3 spadl o 8% i ma na biurku CSV z 2 milionami transakcji. Data collector profiluje (14 kolumn, 12 dat, 4 numeric, 2 text), cleaner lapie 3% missing values w region field, EDA analyst widzi ze spadek jest skoncentrowany w dwoch regionach, SQL specialist izoluje konkretne produkty, statistician sprawdza ze to nie seasonality i to nie one-off anomaly. Writer pisze raport dla CFO z trzema rekomendacjami i wykresami, critic weryfikuje stats sanity.'
+  },
+  incident_war_room: {
+    tagline: 'Trzech specjalistow rownolegle szuka przyczyny - Devil podwaza hipoteze a czlowiek decyduje o rollback',
+    missionShort: 'Incident War Room to zespol 10 agentow dla triazu awarii produkcyjnych. Trzech investigators rownolegle (telemetry, logs, diff) szuka przyczyny, dwoch testerow (perf, security) rule-outuje swoje obszary, Devil atakuje wiodaca hipoteze, czlowiek decyduje o rollback a writer pisze postmortem z 5 whys. Oparty na Microsoft Magentic-One.',
+    whoIs: 'To preset dla zespolow on-call i SRE podczas awarii produkcyjnych P0/P1. Idealny dla live triage, customer-impact regressions i postmortem generation. Nie dla planowanych prac konserwacyjnych, dlugofalowego sprzatania kodu ani ogolnych podejrzen "system wydaje sie wolny".',
+    analogy: 'Ten preset to jak pokoj wojenny incident commandera, gdzie trzech zwiadowcow rownolegle (radar, satelita, agent terenowy) zbiera dane, prokurator atakuje teorie dowodcy a prezydent decyduje o rollback.',
+    howItWorks: [
+      {label: 'Faza 1 - Parallel investigation', desc: 'Trzech investigators rownolegle: telemetry surfer czyta metryki i traces z reproducible queries, log analyst szuka error patterns w logach, diff investigator analizuje ostatnie deploye i PR.'},
+      {label: 'Faza 2 - Specialist rule-out', desc: 'Qa_perf analizuje czy to nie regression wydajnosci, qa_security czy to nie incident bezpieczenstwa. Kazdy wyklucza albo potwierdza swoj obszar.'},
+      {label: 'Faza 3 - Devil adversarial', desc: 'Devil atakuje wiodaca hipoteze incident commandera: co jesli to nie deploy, co jesli to downstream service, co jesli to coincidence. Wymusza alternative hypotheses.'},
+      {label: 'Faza 4 - Rollback HITL i postmortem', desc: 'Decision presenter prezentuje czlowiekowi dowody i opcje (rollback vs hotfix vs monitor). Czlowiek podpisuje decyzje. Comms officer pisze status page update, writer pisze postmortem z 5 whys.'}
+    ],
+    inputs: [
+      'Dostep do metryk, logow i traces produkcji',
+      'Lista ostatnich deployow i PR',
+      'Alerty lub zgloszenia klientow',
+      'Runbook i lista on-call contact'
+    ],
+    outputs: [
+      'Harmonogram sledztwa (kto kiedy co zrobil)',
+      'Glowna teoria z kontrargumentami od Devil',
+      'Decyzja o rollback z uzasadnieniem',
+      'Komunikat na status page dla klientow',
+      'Postmortem z 5 whys i action items'
+    ],
+    does: [
+      'Uruchamia 3 investigators rownolegle tnac time-to-RCA',
+      'Uzywa reproducible PromQL/LogQL queries',
+      'Wyklucza albo potwierdza perf i security jako domenny',
+      'Wymusza alternative hypotheses przez Devil',
+      'Daje czlowiekowi decyzje rollback (high stakes)',
+      'Pisze status page update dla klientow',
+      'Generuje postmortem z 5 whys',
+      'Tworzy action items zapobiegajace powtorzeniu'
+    ],
+    doesNotDo: [
+      'Nie dziala bez dostepu do prod observability',
+      'Nie dla planowanych prac konserwacyjnych',
+      'Nie robi dlugofalowego sprzatania kodu',
+      'Nie jest substytutem dla wlasciwego incident commandera',
+      'Nie naprawia awarii samodzielnie (tylko diagnoza)',
+      'Nie komunikuje z prasa ani social media (tylko status page)',
+      'Nie jest proaktywnym monitoringiem (reactive only)'
+    ],
+    antiPatterns: [
+      'First Hypothesis Lock-in - zespol lata z pierwsza teoria bez alternatyw',
+      'Rollback Without Evidence - rollback decision bez dowodow ze ostatni deploy jest winowajca',
+      'Silent Status Page - awaria trwa a klienci nic nie wiedza',
+      'Missing Postmortem - awaria skonczona bez nauki dla zespolu',
+      'Shallow 5 Whys - zatrzymanie sie na wwierzchniej przyczynie zamiast root cause'
+    ],
+    keyConcepts: [
+      {term: 'MTTR', def: 'Mean Time To Recovery - sredni czas od detekcji do odzyskania dzialania.'},
+      {term: 'Rollback Window', def: 'Okno czasowe w ktorym mozna bezpiecznie cofnac ostatni deploy bez utraty danych.'},
+      {term: 'War Room Roles', def: 'Formalne role podczas incydentu: commander, investigator, comms, scribe, executor.'},
+      {term: '5 Whys', def: 'Technika znajdowania root cause przez pytanie "dlaczego" piec razy od symptomu do przyczyny.'},
+      {term: 'Magentic-One Pattern', def: 'Microsoft framework dual-ledger (task ledger + progress ledger) dla incident response.'}
+    ],
+    stats: [
+      {label: 'Agenci', value: '10'},
+      {label: 'Fazy', value: '4'},
+      {label: 'Koszt est.', value: '$1.30-3.30'},
+      {label: 'Czas', value: '15-40 min'}
+    ],
+    bestFor: [
+      'Gdy masz powazna awarie P0/P1 na produkcji i kazda minuta kosztuje',
+      'Gdy regresja dotyka klientow i musisz zdecydowac o rollback',
+      'Gdy awaria zakonczona i musisz napisac postmortem dla zarzadu'
+    ],
+    worstFor: [
+      'Gdy nie masz dostepu do metryk ani obserwowalnosci',
+      'Gdy to planowana praca konserwacyjna a nie awaria',
+      'Gdy potrzebujesz dlugofalowego refaktoru zamiast szybkiej naprawy'
+    ],
+    relatedPresets: ['perf_squad', 'bug_hunt', 'security_multi_vector'],
+    glossary: [
+      {term: 'MTTR', definition: 'Mean Time To Recovery - sredni czas od detekcji do naprawy.'},
+      {term: 'rollback', definition: 'Cofniecie ostatniego deployu do poprzedniej stabilnej wersji.'},
+      {term: '5 whys', definition: 'Technika root cause analysis pytajaca dlaczego piec razy.'},
+      {term: 'postmortem', definition: 'Raport po awarii z timeline, root cause i action items.'},
+      {term: 'war room', definition: 'Tymczasowy zespol ludzi i systemow zaangazowanych w triaze awarii.'}
+    ],
+    learningQuote: 'Kazda minuta awarii to pieniadze, a osoba pod presja obstawia zla hipoteze - Incident War Room wymusza trzy rownolegle sledztwa i adversarial challenge przed rollbackiem.',
+    realExample: 'Wyobraz sobie ze o 14:30 zaczynaja leciec alerty p99 latency > 5 sekund i dashboard support pokazuje 40 ticketow. Telemetry surfer widzi spike na database connection pool, log analyst lapie 500s w logach auth service, diff investigator znajduje deploy z 14:15 wprowadzajacy nowy middleware. Qa_perf potwierdza ze to nie pamiec ani CPU, qa_security wyklucza atak. Devil atakuje hipoteze: "co jesli to nie middleware a downstream cache invalidation". Decision presenter prezentuje czlowiekowi dowody, human wybiera rollback. O 14:45 serwis stabilny, writer pisze postmortem z 5 whys i action itemami.'
+  },

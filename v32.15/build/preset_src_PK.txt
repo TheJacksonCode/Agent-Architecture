@@ -1,0 +1,297 @@
+const PRESET_KNOWLEDGE = {
+  solo: {
+    who: "Najprostsza konfiguracja | orkiestrator deleguje zadanie bezposrednio do jednego workera. Wzorzec Direct Delegation | zero overhead koordynacji, minimum komunikacji. Regula 45%: prawie polowa wszystkich zadan programistycznych jest rozwiazywalna przez 2 agentow.",
+    analogy: "Mistrz i czeladnik w warsztacie | mistrz (Orkiestrator) otrzymuje zamowienie, instruuje czeladnika (Backend Dev), ten wykonuje. Mistrz weryfikuje jakosc i albo akceptuje, albo daje feedback.",
+    whenToUse: ["Proste bugfixy ze znanym rozwiazaniem","Refactoring i czyszczenie kodu","Skrypty automatyzujace i narzedzia CLI","Prosta implementacja CRUD","Zadania gdzie podejscie jest oczywiste"],
+    whenNotToUse: ["Zadania wymagajace wielu perspektyw (frontend + backend)","Kod krytyczny dla bezpieczenstwa (brak QA Security)","Zadania wymagajace researchu (brak Researchera)"],
+    keyFeatures: ["Zero overhead koordynacji | 1 kanal komunikacji","Regula 45% | prawie polowa zadan miesci sie w tym formacie","Najszybszy i najtanszy preset w calym systemie"]
+  },
+  quick_fix: {
+    who: "Cykl naprawczy Fix-Test-Loop | Backend Dev naprawia kod, niezalezny QA Quality testuje, cykl sie powtarza az do PASS. Orkiestrator nadzoruje process. Kluczowa roznica vs Solo: ciagle petla zwrotna zamiast jednorazowej walidacji.",
+    analogy: "Serwis samochodowy | mechanik naprawia usterke, kontroler jakosci jezdzi testowo, raportuje. Cykl powtarza sie az kontroler powie 'PASS'. Max 3-4 iteracje przed eskalacja.",
+    whenToUse: ["Bugfixy wymagajace ciagiej walidacji","Hotfixy i patche z niezalezna weryfikacja","Regression testing podczas napraw","Security patches z quality assurance","Issues z wieloma edge cases wymagajacymi iteracji"],
+    whenNotToUse: ["Budowanie nowych funkcji (to jest preset do NAPRAW)","Zadania wymagajace fazy researchu","Proste jednorazowe bugfixy bez potrzeby testowania"],
+    keyFeatures: ["Fix-Test Loop | iteracyjna walidacja az do PASS","60-80% mniej defektow vs jednoprzebiegowe wykonanie","Smart Model Routing: Opus(strategia) \u2192 Sonnet(kod) \u2192 Haiku(testy)"]
+  },
+  recon: {
+    who: "Research-first team | Researcher Tech bada opcje technologiczne, Backend Dev tworzy POC na podstawie wynikow, Orkiestrator koordynuje sekwencyjne fazy. Diagnoza PRZED leczeniem. Output to POC, nie produkcyjny kod.",
+    analogy: "Lekarz diagnozujacy przed leczeniem | zlecenie badan (Research), analiza wynikow (Build POC), koordynacja leczenia (Orkiestrator). Zla diagnoza = nieudane leczenie.",
+    whenToUse: ["Ewaluacja technologii | nieznane frameworki/architektury","Badanie wykonalnosci | niepewne wymagania","Porownanie 3+ opcji z benchmarkami","POC/spike do walidacji podejscia"],
+    whenNotToUse: ["Implementacja produkcyjna (output to POC, nie production-ready)","Zadania ze znanym rozwiazaniem (nie potrzeba researchu)","Szybkie bugfixy (uzyj Quick Fix)"],
+    keyFeatures: ["Hub-and-Spoke mini | 3 agentow, 2 spoke'y","Research THEN Build (nigdy rownolegle)","1 godzina researchu oszczedza ~10 godzin refaktoringu"]
+  },
+  trio: {
+    who: "Klasyczny trojkat Backend-Frontend-QA | naturalny podzial pelnego stacku. Trzy niezalezne role wspolpracujace nad jednym zadaniem. Brak orkiestratora | agenci koordynuja sie bezposrednio.",
+    analogy: "Trojka rzemieslnikow | hydraulik (backend), elektryk (frontend), inspektor (QA). Kazdy robi swoja czesc, ale musza koordynowac sie nawzajem.",
+    whenToUse: ["Full-stack CRUD","REST API + UI","Proste feature z BE i FE"],
+    whenNotToUse: ["Zadania wymagajace researchu","Projekty wymagajace planowania"],
+    keyFeatures: ["Naturalny podzial BE/FE/QA","Zero overhead orkiestratora","Triangle pattern"]
+  },
+  reflect: {
+    who: "Elastyczny wzorzec refleksyjny Research\u2192Analiza\u2192Krytyka | samokorekcyjny cykl gdzie Research Critic waliduje wyniki i odsyla do poprawy. Gleboki research z wbudowanym quality gate.",
+    analogy: "Naukowiec z recenzentem | badacz (Research) prowadzi badania, analityk syntetyzuje, recenzent (Critic) ocenia i odsyla do poprawy az spelni standardy.",
+    whenToUse: ["Gleboki research wymagajacy samowalidacji","Due diligence","Analiza z feedback loop"],
+    whenNotToUse: ["Implementacja (brak builderow)","Proste wyszukiwanie informacji"],
+    keyFeatures: ["Samokorekcja | Critic odsyla slabe raporty do Researchera","Reflective Loop pattern","Zero implementacji | czysta analiza"]
+  },
+  bug_hunt: {
+    who: "Polowanie na bugi z dwoma rownoleglymi QA | Security i Quality testuja jednoczesnie ten sam artefakt z roznych perspektyw. Fork QA pattern zapobiega groupthink.",
+    analogy: "Dwoch detektywow badajacych te sama scene zbrodni niezaleznie | jeden szuka sladow wlamania (Security), drugi sladow zbrodni (Quality). Ich raporty sie uzupelniaja.",
+    whenToUse: ["Debugowanie z dual-perspektywa","Triage bugow z security context","Pre-release bug sweep"],
+    whenNotToUse: ["Budowanie nowych funkcji","Research-heavy zadania"],
+    keyFeatures: ["2 QA rownolegle | niezalezne raporty","Fork QA pattern | brak groupthink","4 agentow w optymalnym sweet spot"]
+  },
+  content: {
+    who: "Pipeline redakcyjny | 2 researcherow dostarcza dane, Redaktor tworzy content, QA waliduje jakosc. Nie generuje kodu | tworzy dokumentacje, README, raporty techniczne.",
+    analogy: "Redakcja magazynu | dwoch dziennikarzy (researcherzy) zbiera informacje, redaktor pisze artykul, korekta sprawdza jakosc.",
+    whenToUse: ["Dokumentacja techniczna","README i changelogi","Raporty i analizy pisemne"],
+    whenNotToUse: ["Generowanie kodu","Implementacja funkcji"],
+    keyFeatures: ["2 zrodla danych | cross-reference","Linear Pipeline pattern","Specjalizacja w tresci, nie kodzie"]
+  },
+  plan_exec: {
+    who: "Wzorzec Plan-and-Execute | Analityk dekomponuje, Planer tworzy harmonogram, Builder implementuje, QA waliduje. Kazda faza buduje na wynikach poprzedniej. 83% redukcja kosztow vs ad-hoc.",
+    analogy: "Inzynier budowlany | architekt (Analityk) rysuje plany, kierownik (Planer) ustala harmonogram, robotnik (Builder) buduje, inspektor (QA) odbiera.",
+    whenToUse: ["Migracje z planowaniem","Refactoring ze strukturyzowana dekompozycja","Zadania wymagajace estymacji zlozonosci"],
+    whenNotToUse: ["Proste bugfixy (za duzo overheadu)","Pilne hotfixy"],
+    keyFeatures: ["83% oszczednosci kosztowych vs ad-hoc","Plan-and-Execute pattern","Dekompozycja \u2192 Harmonogram \u2192 Implementacja \u2192 Walidacja"]
+  },
+  perf_boost: {
+    who: "Cykl optymalizacji wydajnosci Measure-Fix | Analityk identyfikuje bottleneck, Backend naprawia, QA Performance mierzy. Dedykowany QA do Core Web Vitals i response time.",
+    analogy: "Tuning silnika | diagnosta (Analityk) mierzy, mechanik (Backend) naprawia, dynamometr (QA Perf) weryfikuje poprawe.",
+    whenToUse: ["Optymalizacja API response time","Core Web Vitals improvement","Bundle size reduction"],
+    whenNotToUse: ["Brak problemow wydajnosci","Zadania z frontendem (brak FE Dev)"],
+    keyFeatures: ["Dedykowany QA Performance","Measure-Fix Cycle pattern","Specjalizacja w metrykach wydajnosci"]
+  },
+  startup: {
+    who: "Minimalny pelny zespol do MVP | Orkiestrator + Analityk + 1 Researcher + 1 Builder + QA. Pelny cykl zycia od analizy przez research, build po walidacje w 5 agentach.",
+    analogy: "Startup na etapie garazu | CEO (Orkiestrator), analityk biznesowy, jeden researcher, jeden developer, tester. Kazdy jest niezbedny, zero redundancji.",
+    whenToUse: ["MVP od zera","Maly SaaS","Prototyp z walidacja","Pierwszy release"],
+    whenNotToUse: ["Duze projekty enterprise","Multi-domain features"],
+    keyFeatures: ["Pelny cykl w minimalnym zespole","Hub-and-Spoke pattern","92% efektywnosci 14-agentowego systemu przy 35% kosztu"]
+  },
+  cascade: {
+    who: "Kaskadowa eskalacja kosztowa | Haiku\u2192Sonnet\u2192Opus. 70-80% zadan konczy sie na najtanszym modelu. Tylko trudne eskaluja wyzej. Optymalizacja kosztow bez utraty jakosci.",
+    analogy: "System triazu w szpitalu | pielegniarka (Haiku) obsluguje 70% przypadkow, lekarz ogolny (Sonnet) 20%, specjalista (Opus) 10%. Tylko naprawde trudne trafiaja na gore.",
+    whenToUse: ["Duze wolumeny zadan","Batch processing","Ograniczony budzet","Powtarzalne taski"],
+    whenNotToUse: ["Zadania wymagajace Opus od poczatku","Mission-critical bez kompromisow"],
+    keyFeatures: ["70-80% oszczednosci tokenowych","Cascade Escalation pattern","Smart Model Routing w czystej formie"]
+  },
+  test_suite: {
+    who: "Pelny zestaw testowy | 3 typy QA (Security + Quality + Performance) + Manager syntezujacy raporty w GO/NO-GO. Brak builderow | czysto walidacyjny preset.",
+    analogy: "Komisja egzaminacyjna | trzech egzaminatorow (Security, Quality, Perf) ocenia niezaleznie, dziekan (Manager) syntetyzuje i wydaje decyzje: zdal/nie zdal.",
+    whenToUse: ["Pre-release validation","CI/CD quality gate","Audyt przed wdrozeniem"],
+    whenNotToUse: ["Budowanie kodu (brak builderow)","Naprawa bugow"],
+    keyFeatures: ["Triple QA Gate pattern","3 niezalezne perspektywy audytu","GO/NO-GO decision point"]
+  },
+  a11y: {
+    who: "Sprint dostepnosci WCAG | UX Research\u2192Designer+Frontend\u2192QA\u2192Docs. Pipeline wyspecjalizowany w accessibility: kontrast, keyboard nav, screen readers, ARIA.",
+    analogy: "Remont budynku pod normy dostepnosci | audytor bada bariery (UX), architekt projektuje rampy (Designer), budowlancy implementuja (Frontend), inspektor odbiera, dokumentacja dla uzytkownikow.",
+    whenToUse: ["WCAG 2.1 AA compliance","Audyt dostepnosci","A11y redesign"],
+    whenNotToUse: ["Backend changes","Logika biznesowa"],
+    keyFeatures: ["UX specjalista od dostepnosci","A11y Pipeline pattern","WCAG 2.1 AA focus"]
+  },
+  security: {
+    who: "Trojstopniowy audyt bezpieczenstwa | Builder + 3x QA (Security, Quality, Performance) + Manager z decyzja GO/NO-GO. Fan-out\u2192Aggregate pattern z niezaleznymi audytorami.",
+    analogy: "Inspekcja mostu przed otwarciem | inzynier konstrukcji, ekspert sejsmiczny, inspektor bezpieczenstwa | kazdy waliduje niezaleznie. Bez zgody WSZYSTKICH trzech most nie otwiera sie.",
+    whenToUse: ["Pre-release security audit","Compliance verification (PCI DSS, HIPAA)","Production deployment gate"],
+    whenNotToUse: ["Zastepowanie profesjonalnych pentestow","Proste bugfixy"],
+    keyFeatures: ["Triple-stage audit z 3 niezaleznymi QA","Fan-out \u2192 Aggregate pattern","70-85% wykrywalnosc podatnosci przed deployment"]
+  },
+  review: {
+    who: "Pipeline code review | Analiza\u2192Build\u2192Review. Osobna faza review po budowaniu, nie w trakcie. Dual QA (Security + Quality) ocenia gotowy artefakt.",
+    analogy: "Publikacja naukowa | autor pisze (Build), recenzenci oceniaja (QA Security + Quality), redaktor decyduje (Orkiestrator).",
+    whenToUse: ["Feature z obowiazkowym review","Krytyczne PR","Code audit"],
+    whenNotToUse: ["Proste zmiany bez potrzeby review","Zadania bez kodu"],
+    keyFeatures: ["Build + Review osobno (nie jednoczesnie)","Pipeline + Fan-out pattern","Niezalezna recenzja po implementacji"]
+  },
+  design_sys: {
+    who: "Pipeline do tworzenia design systemu | UX+Docs Research\u2192Designer+Frontend\u2192Writer. 100% frontend-oriented, zero backendu. Buduje spojny system wizualny: tokeny, paleta, typografia, komponenty.",
+    analogy: "Tworzenie brand booka firmy | badacze trendow (UX+Docs), designer tworzy system wizualny, developer implementuje komponenty, copywriter dokumentuje guidelines.",
+    whenToUse: ["Tworzenie design systemu od zera","Component library","Style guide i brand book"],
+    whenNotToUse: ["Backend API","Logika biznesowa","Feature z funkcjonalnoscia"],
+    keyFeatures: ["Design Pipeline pattern | sekwencyjny research\u2192design\u2192implementacja","100% frontend-oriented","Lustrzane odbicie API Modernization (outside-in vs inside-out)"]
+  },
+  api_modern: {
+    who: "Pipeline modernizacji API | Analiza\u2192Research\u2192Backend+Integrator\u2192QA. 100% backend-oriented. Ewolucja systemow wewnetrznych z wersjonowaniem kontraktow i backward compatibility.",
+    analogy: "Modernizacja instalacji budynku | wymiana rur i kabli (API) bez zmiany elewacji. Uzytkownicy widza to samo; system dziala 10x lepiej wewnatrz.",
+    whenToUse: ["Legacy API modernization","REST\u2192GraphQL migration","Contract versioning","Backward-compatible upgrades"],
+    whenNotToUse: ["Zmiany wizualne/UX","Frontend modifications"],
+    keyFeatures: ["API Upgrade Pipeline pattern","Inside-out approach (niewidoczne dla uzytkownikow)","Lustrzane odbicie Design System"]
+  },
+  ui_overhaul: {
+    who: "Pelny redesign UI/UX | 2x Research (UX+Docs)\u2192Analiza\u2192Designer+Frontend\u2192QA. 7 agentow z dual research dla pelnego pokrycia trendow i ograniczen technicznych.",
+    analogy: "Generalny remont mieszkania | zmiana wygladu pokojow bez budowania nowych (zachowanie backendu). Architekt wnetrz bada trendy, sprawdza ograniczenia, projektuje, ekipa remontowa implementuje.",
+    whenToUse: ["Kompletny redesign interfejsu","Migracja na glassmorphism/dark mode","Mikro-animacje i modernizacja CSS"],
+    whenNotToUse: ["Backend changes","Dodawanie nowej funkcjonalnosci"],
+    keyFeatures: ["Dual research streams (UX + Docs) rownolegle","UI Redesign Pipeline","100% zachowanie backendu"]
+  },
+  feature_sprint: {
+    who: "Sprint nowej funkcji end-to-end | Analiza\u21922x Research (Tech+UX)\u2192Backend+Frontend\u2192QA. Pelny cykl od badania przez implementacje po walidacje.",
+    analogy: "Budowa nowego pokoju w domu | zbadaj wykonalnosc, zaprojektuj, zainstaluj systemy (BE), wykoncz wnetrze (FE), odbior techniczny (QA).",
+    whenToUse: ["Nowa funkcja z BE i FE","CRUD z UI i API","Feature request z planowaniem"],
+    whenNotToUse: ["Pure design overhaul","Bugfixy","Refactoring bez nowej funkcjonalnosci"],
+    keyFeatures: ["Sprint Pipeline pattern","2x research parallel (Tech + UX)","Full-stack scope BE + FE jednoczesnie"]
+  },
+  standard: {
+    who: "Uniwersalny zespol deweloperski 8 agentow | DEFAULT preset dla wiekszosci projektow. Hierarchical Pipeline z 4 warstwami: Strategia, Planowanie, Research, Build+QA. Statystyczny sweet spot: ~70% zadan produkcyjnych.",
+    analogy: "Biuro architektoniczne budujace biurowiec | dyrektor, analityk, planer, badacze materialow, ekipa budowlana (BE+FE), inspektor bezpieczenstwa.",
+    whenToUse: ["Domyslny preset gdy nie wiesz ktory wybrac","Full-stack features ze zlozonoscia","Projekty wymagajace planowania","Typowe aplikacje webowe"],
+    whenNotToUse: ["Proste bugfixy (za duzo overheadu)","Specjalistyczne zadania (uzyj dedykowanego presetu)","Czysto badawcze zadania"],
+    keyFeatures: ["DEFAULT recommendation | domyslny wybor","Hierarchical Pipeline z 4 warstwami","8 agentow = statystyczny sweet spot (70% zadan)"]
+  },
+  data_pipe: {
+    who: "Zespol do pipeline'ow danych | ETL, analytics, data warehouse. Data Engineering Pipeline z wyspecjalizowanymi operatorami transformacji. Backend+Feature Dev zamiast Frontend.",
+    analogy: "Rafineria ropy | analiza surowca\u2192destylacja\u2192transformacja\u2192blending\u2192kontrola jakosci. Sekwencyjne procesy z roznymi specjalistami na kazdym etapie.",
+    whenToUse: ["ETL pipeline development","Analytics infrastructure","Data warehouse design","Data migration"],
+    whenNotToUse: ["Ogolny web development","UI/UX praca","Proste zapytania DB"],
+    keyFeatures: ["Data Engineering Pipeline pattern","Feature Dev zamiast Frontend (specjalistyczne biblioteki)","Integracja jako ostatni krok (nie QA!)"]
+  },
+  research: {
+    who: "Swarm researchowy z 6 specjalistami | maksymalna glebokosc badawcza. 6 rownoleglych researcherow + Critic walidujacy + Syntetyk tworzacy MANIFEST.md. Zero implementacji | output to wiedza.",
+    analogy: "Sledztwo kryminalne z 6 detektywami | kazdy bada inna perspektywe (swiadkowie, video, finanse, telefony, forum, dokumenty). Prokurator (Critic) waliduje, sedzia (Syntetyk) syntetyzuje.",
+    whenToUse: ["Gleboki research technologiczny","Multi-source due diligence","Ewaluacja technologii z 6+ perspektyw","Comprehensive risk assessment"],
+    whenNotToUse: ["Implementacja (BRAK builderow!)","Szybkie odpowiedzi (za ciezki)","Jednorodlowe badania"],
+    keyFeatures: ["6 rownoleglych strumieni badawczych","Research Critic walidujacy metodyke i wnioski","90.2% lepsze wyniki niz pojedynczy agent (Anthropic benchmark)"]
+  },
+  legacy: {
+    who: "Modernizacja legacy codebase | zamiana silnika samolotu w locie. Analiza+GitHub Research\u21923x Build (BE+FE+Integrator)\u2192Dual QA. Backward compatibility i zero-downtime critical.",
+    analogy: "Wymiana silnika samolotu w trakcie lotu | trzeba leciec dalej (production uptime) podczas wymiany kluczowych czesci. Analiza\u2192budowa nowych czesci\u2192integracja\u2192inspekcja.",
+    whenToUse: ["Modernizacja legacy systemu","Migracja stacku (Rails\u2192modern, jQuery\u2192React)","Ewolucja schematu bazy danych","Redukcja dlugu technicznego"],
+    whenNotToUse: ["Nowe greenfield projekty","Proste feature additions","Bugfixy w legacy (uzyj Quick Fix)"],
+    keyFeatures: ["Strangler Fig pattern | stopniowa podmiana","GitHub Research dla wzorcow migracji","42% czasu programisty idzie na legacy code (Stripe 2023)"]
+  },
+  saas: {
+    who: "Pelny zespol SaaS | 10 agentow od koncepcji do deployment. Research\u2192Build Squad (BE+FE+Designer)\u2192Integrator\u2192Dual QA. Jedyny preset z Designerem + pelnym zespolem build.",
+    analogy: "Budowa domu od fundamentow | architekt, analitycy, badacze materialow, 4 ekipy specjalistyczne (fundament, elektryka, hydraulika, wykonczenie), integracja, inspekcja.",
+    whenToUse: ["Kompletny produkt SaaS od zera","MVP z design system","Nowa platforma","Produkty wymagajace BE+FE+Design+QA"],
+    whenNotToUse: ["Czesciowy development","Backend-only lub frontend-only"],
+    keyFeatures: ["Hierarchical Squads | 4 rownolegle builderzy","Designer role included","73% wyzsza adopcja uzytkownikow z dedykowanym designerem (Standish Group)"]
+  },
+  microservices: {
+    who: "Dekompozycja monolitu na mikroserwisy | 11 agentow z 4 rownoleglymi builderami (jeden na serwis). Triple QA gate. Service Dependency DAG z topologicznym sortowaniem deployment order.",
+    analogy: "Planowanie urbanistyczne | przebudowa centrum handlowego na niezalezne sklepy z laczaca infrastruktura. Analiza struktury\u2192plan ekstrakcji\u2192budowa serwisow\u2192inspekcja polaczen.",
+    whenToUse: ["Monolith \u2192 microservices migration","Service decomposition","Bounded context extraction (DDD)","API gateway implementation"],
+    whenNotToUse: ["Pozostanie przy monolicie","Greenfield projekty","Prosta dodanie serwisu"],
+    keyFeatures: ["4 rownolegle builderzy (jeden per service family)","Service Dependency DAG","77% enterprise migruje do microservices (62% fail na 1. probie)"]
+  },
+  full: {
+    who: "Gold Standard | pelna 5-poziomowa hierarchia referencyjne. 13 agentow w 5 warstwach: Core\u2192Planning\u2192Research\u2192Build\u2192QA. Archetyp wobec ktorego mierzy sie wszystkie inne presety.",
+    analogy: "Produkcja filmowa | rezyser (Orkiestrator), scenarzysta+producent (Planning), 3 zespoly badawcze (Research), 4 ekipy (Build), 3 inspektorow (QA). Kazda rola niezbedna, zero redundancji.",
+    whenToUse: ["Mission-critical projekty","Enterprise architecture","Formalne audyty i compliance","Projekty gdzie koszt bledu >> koszt analizy"],
+    whenNotToUse: ["Proste feature (massive overkill)","Prototypowanie","Pilne delivery","Ograniczony budzet"],
+    keyFeatures: ["5-Layer Hierarchy | referencyjny archetyp","Hub-and-Spoke + Pipeline + Parallel Fan","13 agentow = reference point dla calego systemu"]
+  },
+  deep: {
+    who: "Deep Research+Build | 18 agentow, pelna orkiestra. 6 rownoleglych researcherow + Critic + Syntetyk + 4 builderow + Integrator + Triple QA. Maksymalny preset non-ultimate.",
+    analogy: "Misja NASA | 6 zespolow analizuje propulsje/nawigacje/komunikacje/zycie/ladowanie/powrot (research), centrum kontroli waliduje (Critic), dyrektor misji (Syntetyk) tworzy plan, 4 zespoly inzynierskie buduja, potrojne GO FOR LAUNCH.",
+    whenToUse: ["Enterprise platform creation","Multi-vendor evaluation $500K+","Regulated industry (fintech, healthtech)","Platforma migracja"],
+    whenNotToUse: ["Standard feature development","Prototypowanie","Ograniczony budzet"],
+    keyFeatures: ["76.9% parallelization efficiency","6-stream research + full build + triple QA","Najwiekszy preset non-ultimate (18 agentow)"]
+  },
+  five_minds: {
+    who: "Strukturalna debata 4 ekspertow + Devil's Advocate | JEDYNY preset z mechanizmem adversarial debate. Kontrolowany konflikt produkuje Gold Solution | synteze przekraczajaca oryginalne pozycje. Nie konsensus, lecz dialektyka.",
+    analogy: "Debata oksfordzka z formatem parlamentarnym | 4 strony bronia swoich pozycji, piaty (Cien) atakuje NAJSILNIEJSZA pozycje. Z produktywnego konfliktu rodzi sie rozwiazanie lepsze niz propozycja ktorejkolwiek strony.",
+    whenToUse: ["Strategiczne decyzje technologiczne","Architektura z konkurujacymi wymaganiami","High-stakes design decisions","Resolving conflicting requirements"],
+    whenNotToUse: ["Prosta implementacja","Decyzje z oczywistym zwyciezca","Pilne delivery"],
+    keyFeatures: ["JEDYNY preset z adversarial debate","Gold Solution | synteza transcendujaca oryginalny konflikt","90.2% lepsze wyniki niz konsensus (Multi-Agent Debate research)"]
+  },
+  deep_five_minds: {
+    who: "ULTIMATE PRESET | 27 agentow w 6 fazach + 3 bramy HITL z DWUKROTNA debata ekspertow. Deep Research (6 strumieni + Critic) + Five Minds #1 (przed buildem) + Build (5 agentow) + Five Minds #2 (po buildzie) + Triple QA. 3 bramy Human-in-the-Loop miedzy fazami. Jedyny preset w Tier 5.",
+    analogy: "Budowa wiezowca z podwojna inspekcja i punktami kontrolnymi | 6 zespolow bada geologie/strukture/sejsmike, INWESTOR zatwierdza kierunek (brama HITL), 5 architektow debatuje, INWESTOR zatwierdza plan budowy, ekipy buduja, INWESTOR zatwierdza zakres testow, 3 inspektorow podpisuje.",
+    whenToUse: ["Decyzje inwestycyjne $500K+","Mission-critical architecture","Regulated industry (finanse, healthcare, aerospace)","Decyzje wplywajace na organizacje przez 5+ lat"],
+    whenNotToUse: ["Cokolwiek ponizej $50K stakow","Standard feature development","Prototypowanie","Pilne delivery"],
+    keyFeatures: ["JEDYNY preset w Tier 5 ULTIMATE","3 bramy Human-in-the-Loop | Strategia\u2192Research, Debata\u2192Build, Build\u2192QA","Podwojna debata | Five Minds #1 (przed build) + #2 (po build)","Timer 120s na kazda decyzje z auto-fallback","27 agentow | 79.2% paralelizacja"]
+  },
+  // V32.6: 13 premium presets - encyclopedia entries
+  deep_research_swarm_pro: {
+    who: "Anthropic Multi-Agent Research blueprint | Lead researcher (orchestrator) decomposes pytanie i deleguje do 7 wyspecjalizowanych researcherow z EXPLICIT boundaries. Critic waliduje, synthesizer pisze raport.",
+    analogy: "Sztab wywiadu z 7 oficerami obszarowymi | kazdy oficer odpowiada za wlasna dzialke (frameworki, papiery, code, voice of community), nikt nie zachodzi sobie w drogi. Lead syntetyzuje 7 raportow w jeden wniosek.",
+    whenToUse: ["Multi-source market intel","Competitive landscape research","Scientific lit review","Stack/framework selection wymagajaca wielu zrodel"],
+    whenNotToUse: ["Pojedyncze pytanie z jednego zrodla","Implementacja kodu (brak builderow)","Decyzje time-sensitive"],
+    keyFeatures: ["7 researcherow z EXPLICIT boundaries","Lead synthesizer pattern","Critic guard przed sprzecznosciami","Anthropic-validated blueprint"]
+  },
+  migration_crew: {
+    who: "Codebase migration ze strangler fig pattern | 3 parallel explorers kazdy z EXPLICIT scope (auth/data/routes), planner decyduje strategie, HITL gate przed kazdym kodem.",
+    analogy: "Renowacja zabytku przez 3 zespoly konserwatorow | jeden zajmuje sie fundamentem, drugi instalacjami, trzeci elewacja. Zaden nie wchodzi na cudzy teren. Glowny architekt synchronizuje.",
+    whenToUse: ["Java 8\u219221 / Python 2\u21923","Angular\u2192React, Vue 2\u21923","REST\u2192GraphQL/gRPC","Monorepo splitting"],
+    whenNotToUse: ["Greenfield projekty","Rewrite from scratch","Brak istniejacego MANIFEST.md"],
+    keyFeatures: ["3 parallel explorers z disjoint scope","HITL big-bang vs strangler","Decision presenter sign-off"]
+  },
+  fullstack_premium: {
+    who: "Premium production-ready feature crew | wshobson 7-agent fullstack baseline + db_architect + observability_engineer + UX research. Backend i frontend pracuja na disjoint file globs.",
+    analogy: "Studio architektoniczne z dedykowanym urbanist (db_architect) i meterologiem (observability) | zaden zespol projektowy nie pracuje bez planu sieci wod-kan i bez monitoringu pogody.",
+    whenToUse: ["Production feature end-to-end","SaaS dashboard z metrics","Customer-facing critical features","Wymagane observability + db design"],
+    whenNotToUse: ["MVP/prototyp","Brak istniejacego stacku","Maly internal tool"],
+    keyFeatures: ["12 agentow z db i obs","UX research upfront","Disjoint file globs BE/FE"]
+  },
+  security_multi_vector: {
+    who: "Wielowektorowy security audit | 5 parallel scanners pracuje na disjoint vectors (code/deps/infra/secrets/auth) + STRIDE threat model + qa_manager severity matrix + release HITL.",
+    analogy: "Grupa antyterrorystyczna sprawdzajaca budynek | kazdy agent ma swoj pion (parter, piwnica, dach, instalacje, perimeter). Po koncu wszyscy raportuja dowodcy ktory daje GO/NO-GO.",
+    whenToUse: ["Pre-release security sweep","SOC2 audit prep","Customer compliance request","Post-incident hardening"],
+    whenNotToUse: ["Continuous CI scanning (uzyj automatyzacji)","Bez Threat Model context","Maly internal tool"],
+    keyFeatures: ["5 parallel scanners disjoint","STRIDE pierwsza","Release HITL gate","SOC2-aligned"]
+  },
+  perf_squad: {
+    who: "Performance investigation z Five Minds adversarial | 3 layer specialists (db/frontend/backend) hypothesize parallel, Devil atakuje kazda hipoteze, qa_perf benchmarkuje finalne fixes.",
+    analogy: "Sztab medyczny z 3 specjalistami i prokuratorem | kardiolog/neurolog/internista stawiaja diagnozy, prokurator (Devil) podwaza kazda, lab (qa_perf) testuje finalna terapie.",
+    whenToUse: ["Prod regression triage","Latency p99 wzrosl","Memory leak hunting","Cost optimization spike"],
+    whenNotToUse: ["Bez profili/traces","Mikro-optymalizacje","Premature optimization"],
+    keyFeatures: ["3 layer specialists","Devil red team","Benchmark verification"]
+  },
+  prd_to_launch: {
+    who: "Product pipeline od idei do launch package | analyst extractuje JTBD, writer tworzy structured PRD, parallel build (planner/designer/feature/gtm) produkuje tickets+mockupy+copy+GTM, PM sign-off.",
+    analogy: "Studio filmowe od scenariusza do premiery | scenarzysta (analyst), rezyser (writer-PRD), zespoly produkcyjne rownolegle (kostiumy, dekoracje, kamera, marketing), producent (PM) zatwierdza.",
+    whenToUse: ["Idea\u2192PRD conversion","Customer interview transcripts \u2192 launch","Feature scoping","Cross-functional alignment"],
+    whenNotToUse: ["Implementacja kodu","Decyzje technologiczne","Bez customer voice"],
+    keyFeatures: ["JTBD framework","GTM strategist","PM HITL gate"]
+  },
+  ab_test_lab: {
+    who: "Rygorystyczny A/B test design lab | statistician oblicza power i sample size, designer mockuje warianty, expert_devil red-teamuje p-hacking ryzyka (SRM, peeking, Simpson), decision_presenter zbiera stat sign-off.",
+    analogy: "Laboratorium farmaceutyczne projektujace clinical trial | biostatystyk wylicza moc, klinicysta projektuje ramiona, prokurator szuka biasow, IRB zatwierdza.",
+    whenToUse: ["High-stakes UI experiment","Pricing test","Onboarding flow change","Ad creative test"],
+    whenNotToUse: ["Bez baseline metryk","Maly traffic (<1000 conversions)","Test wymagajacy etycznego review"],
+    keyFeatures: ["Power calc upfront","Devil p-hacking guard","Stat sign-off gate"]
+  },
+  kb_constructor: {
+    who: "Knowledge base constructor z scattered sources | 4 parallel ingesters normalizuja Slack/wiki/PDF/GitHub do common chunk format, deduplicator usuwa duplikaty, writer drafts, critic fact-checks, integrator publishes.",
+    analogy: "Biblioteka cyfrowa zatrudniajaca 4 archiwistow | kazdy specjalizuje sie w innym formacie (czasopisma, manuskrypty, mikrofilmy, ksiazki). Redaktor pisze hasla, fact-checker weryfikuje, drukarnia publikuje.",
+    whenToUse: ["Internal wiki migration","Onboarding KB construction","Customer support KB","Multi-source documentation"],
+    whenNotToUse: ["Pojedyncze zrodlo","Real-time updates","Wymagana semantic search infra"],
+    keyFeatures: ["4 source ingesters","Dedup pipeline","Fact-check critic"]
+  },
+  tech_writing_pipe: {
+    who: "Long-form technical writing pipeline | analyst tworzy outline z audience, res_docs+res_github gather material, writer drafts (jedyny holding draft ~20k), designer diagrams, seo_optimizer headers/meta, critic sprawdza facts+tone.",
+    analogy: "Magazyn naukowo-techniczny z redakcja | research department zbiera fakty, redaktor naczelny pisze tekst, grafik tworzy ilustracje, SEO optymalizuje pod search, fact-checker weryfikuje przed drukiem.",
+    whenToUse: ["Deep-dive blog post","Whitepaper/eBook","Conference talk z slides","Documentation site rewrite"],
+    whenNotToUse: ["Short marketing copy","Tweets/threads","Internal memo"],
+    keyFeatures: ["Outline pierwszy","Code examples","SEO optimization","Fact+tone check"]
+  },
+  five_minds_strategic: {
+    who: "Five Minds debate ugruntowana w prawdziwym researchu | 4 parallel researchers gather context, analyst frame'uje pytanie, 5 ekspertow + Devil debatuje 3 rundy, synthesizer Gold Solution, PM sign-off.",
+    analogy: "Rada wojenna z dossier wywiadowczym | zwiadowcy zbieraja info, sztabowiec framuje opcje, generalowie debatuja przez 3 rundy z prokuratorem, ostateczny plan idzie do prezydenta.",
+    whenToUse: ["Pivot decisions","Akwizycja/M&A","Stack/framework strategic choice","High-stakes architectural decisions"],
+    whenNotToUse: ["Decyzje tactical","Pilne","Brak time na 3 rundy debaty"],
+    keyFeatures: ["Research-grounded debate","5 personas + Devil","Gold Solution synthesis","PM HITL"]
+  },
+  soc2_sweep: {
+    who: "SOC2 Type II audit prep sweep | policy_reader czyta SOPs, control_mapper mapuje wymagania na CC1-CC9 controls, evidence_collector zbiera logs/screenshots/configs, gap_analyzer flaguje braki, qa_security weryfikuje technical controls, CISO HITL.",
+    analogy: "Audyt finansowy banku | jeden audytor czyta polityki, drugi mapuje na regulacje, trzeci zbiera dowody, czwarty wskazuje luki, dyrektor finansowy zatwierdza raport dla regulatora.",
+    whenToUse: ["SOC2 Type II prep","Vendor risk assessment","Compliance gap analysis","CISO quarterly review"],
+    whenNotToUse: ["Bez polityk firmy","Continuous compliance (uzyj automation)","Tactical security fixes"],
+    keyFeatures: ["CC1-CC9 mapping","Evidence collection","Gap analysis","CISO sign-off"]
+  },
+  data_analysis_pipe: {
+    who: "LLM Data Science Agents pipeline | data_collector profiluje (schema+stats+samples ~5k zamiast raw), data_cleaner normalizuje, eda_analyst+sql_specialist parallel insights, model_builder buduje, writer+designer raport, critic stats sanity (assumptions, leakage).",
+    analogy: "Zespol data science consulting firm | engineer ingestuje dane, analyst sprzata, scientist robi EDA, modeler trenuje, narrator pisze raport dla zarzadu, peer review sprawdza statystyke.",
+    whenToUse: ["Raw dataset \u2192 stakeholder report","Ad-hoc business question","Customer churn analysis","Pricing analysis"],
+    whenNotToUse: ["Real-time streaming","Wymagany ML production deployment","Bez dostepu do raw data"],
+    keyFeatures: ["EDA analyst","Model builder","Stats sanity check","Charts narrative"]
+  },
+  incident_war_room: {
+    who: "Magentic-One dual-ledger incident response | telemetry_surfer czyta metryki, log_analyst grep error logs, diff_investigator szuka recent deploys (parallel) \u2192 perf+security rule-out \u2192 Devil challenges leading hypothesis \u2192 rollback HITL \u2192 comms_officer status page + writer postmortem.",
+    analogy: "Pokoj wojenny incident commandera | trzech zwiadowcow rownolegle (radar, satelita, agent terenowy), dwoch analityki sprawdza opcje, prokurator atakuje teorie dowodcy, prezydent dolacza decyzje rollback, rzecznik komunikuje.",
+    whenToUse: ["Live prod incident triage","P0/P1 outages","Customer-impact regressions","Postmortem generation"],
+    whenNotToUse: ["Bez prod observability access","Planowe utrzymanie","Long-term refactoring"],
+    keyFeatures: ["3 parallel investigators","Devil challenges","Rollback HITL","Comms+postmortem"]
+  }
+}

@@ -34,6 +34,10 @@ agent-architect/
 # Vercel deploy experiments
 vercel-deploy/
 
+# Local working folders (raw screenshots, NotebookLM research materials)
+GIF i screens/
+notebookLM/
+
 # Generated scripts (icons already embedded in HTML)
 generate_skills.js
 ikony/generate_all.js

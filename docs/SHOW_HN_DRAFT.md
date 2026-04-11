@@ -1,22 +1,55 @@
-# Show HN Draft
+# Show HN - Gotowy post
 
-## Title
-Show HN: Agent Architecture Designer - visual multi-agent builder in a single HTML file
+## Gdzie: https://news.ycombinator.com/submit
 
-## Post Body
-I built a visual designer for multi-agent Claude Code systems. You drag agents onto a canvas, connect them, assign models (Opus/Sonnet/Haiku), and it generates a complete orchestration prompt. Zero dependencies, zero build step - one HTML file you can download and open.
+## Title (wklej w pole "title")
+```
+Show HN: Agent Architecture Designer - visual multi-agent builder, single HTML file
+```
 
-28 agents across 6 phases (strategy, research, debate, build, QA, human-in-the-loop). 29 preset configurations from "Solo + Validator" up to a 27-node "Deep Five Minds Ultimate."
+## URL (wklej w pole "url")
+```
+https://thejacksoncode.github.io/Agent-Architecture/
+```
 
-Technically interesting bits:
+## Text - zostaw PUSTE (bo dajesz URL)
 
-- **Five Minds Protocol** - structured adversarial debate: 4 domain experts + Devil's Advocate argue in rounds, then a Synthesizer produces a "Gold Solution." No direct equivalent in existing MAS frameworks that I could find.
-- **HITL Decision Gates** - simulation pauses at 3 checkpoints with a 120s countdown timer. The user decides the next path, not the AI.
-- **Live Simulation** - agents exchange animated speech bubbles and data packets along SVG connections. A Mission Control dashboard shows real-time phase progression.
-- **Rendering stack** - Canvas 2D for particles, inline SVG for connections, WAAPI for agent state animations, CSS transitions for UI. All in ~4600 lines of vanilla JS.
-- **i18n** - full Polish/English UI toggle with ~150 translated strings, stored in localStorage.
+---
 
-Live demo: https://thejacksoncode.github.io/Agent-Architecture/
+## Pierwszy komentarz (wklej natychmiast po opublikowaniu)
+
+```
+I built this to solve a problem I kept running into: designing multi-agent Claude Code teams by hand. Writing orchestration prompts for 10+ agents, keeping track of which model goes where, making sure the workflow actually makes sense - it was tedious and error-prone.
+
+So I made a visual designer. You drag agents onto a canvas, connect them, assign models (Opus/Sonnet/Haiku), and it generates a complete system prompt. 28 agents across 6 phases, 29 preset configurations from a 2-agent setup to a 27-node architecture.
+
+Things I think are technically interesting:
+
+*Five Minds Protocol* - structured adversarial debate: 4 domain experts + Devil's Advocate argue in rounds, then a Synthesizer produces a "Gold Solution." I haven't found an equivalent in existing multi-agent frameworks.
+
+*HITL Decision Gates* - simulation pauses at 3 checkpoints with a 120s countdown. The human decides the next path, not the AI.
+
+*Single HTML file, zero dependencies* - ~4600 lines of vanilla JS. Canvas 2D for particles, inline SVG for connections, Web Animations API for agent states. No npm, no build step, works offline.
+
+*31 iterations* - this is v31. Each version is a separate file. I never overwrite previous versions.
+
 Source: https://github.com/TheJacksonCode/Agent-Architecture
 
-Happy to discuss the Five Minds Protocol design, single-file architecture trade-offs, or HITL patterns in agent systems.
+Happy to discuss the Five Minds design, single-file architecture trade-offs, or HITL patterns. What multi-agent workflows do you use?
+```
+
+---
+
+## Instrukcja krok po kroku
+
+1. Wejdz na https://news.ycombinator.com
+2. Kliknij "login" (prawy gorny rog) -> "create account" jesli nie masz konta
+3. Kliknij "submit" w gornym pasku
+4. Wklej Title i URL z powyzszego (pole Text zostaw puste)
+5. Kliknij Submit
+6. NATYCHMIAST dodaj pierwszy komentarz (skopiuj tekst powyzej)
+7. Przez 2-3 godziny odpowiadaj na kazdy komentarz
+
+## Kiedy publikowac
+- Wtorek-Czwartek, 15:00-18:00 czasu polskiego (9 AM-12 PM EST)
+- To jest peak traffic na Hacker News

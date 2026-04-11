@@ -1,0 +1,2937 @@
+const AGENT_EDU_PL = {
+  orchestrator: {
+    tagline: 'Dyrygent systemu wieloagentowego - dekomponuje, deleguje, decyduje GO/NO-GO',
+    missionShort: 'Orkiestrator to centralny agent decyzyjny zarzadzajacy calym systemem wieloagentowym. Jego misja: analizowac zadanie, rozbijac je na podzadania, delegowac do specjalistow i kontrolowac bramy jakosci miedzy fazami. Nie wykonuje pracy merytorycznej - koordynuje tych, ktorzy to robia.',
+    whoIs: 'Orkiestrator gra role kierownika budowy, dyrygenta orkiestry i kontrolera ruchu lotniczego w jednej osobie. Widzi caly plac budowy z lotu ptaka, ale sam nie muruje scian ani nie ciagnie kabli. Jego moc lezy w strategicznym rozumowaniu i dyscyplinie delegowania.',
+    analogy: 'Orkiestrator to dyrygent orkiestry, ktory nie gra na zadnym instrumencie, ale bez niego wszyscy muzycy razem tworza kakofonie zamiast muzyki.',
+    howItWorks: [
+      {label: 'Dekompozycja zadania', desc: 'Rozbija polecenie uzytkownika na niezalezne podzadania S/M/L/XL tak, aby kazde bylo wykonalne przez jednego agenta z jasnym wejsciem i wyjsciem.'},
+      {label: 'Delegowanie specjalistom', desc: 'Wybiera najlepszego agenta do kazdego podzadania i przekazuje mu TYLKO waski kontekst potrzebny do pracy (Narrow Context Principle).'},
+      {label: 'Kontrola bram GO/NO-GO', desc: 'Miedzy fazami sprawdza czy wyniki spelniaja kryteria jakosci. Jesli nie - odsyla do poprawki. Nie pozwala na propagacje bledow miedzy fazami.'},
+      {label: 'Synteza i rozstrzyganie', desc: 'Zbiera wyniki od specjalistow, rozwiazuje konflikty miedzy rekomendacjami i laczy czesci w spojny produkt dla uzytkownika.'}
+    ],
+    inputs: [
+      'Polecenie uzytkownika (cel, ograniczenia, zakres projektu)',
+      'Raporty i outputy od agentow specjalistow z kazdej fazy',
+      'Aktualny stan MANIFEST.md z decyzjami architektonicznymi',
+      'Flagi sprzecznosci eskalowane przez Syntetyka'
+    ],
+    outputs: [
+      'Plan dekompozycji z przypisaniem agentow do podzadan',
+      'Decyzje GO/NO-GO na kazdej bramie miedzy fazami',
+      'Rozstrzygniecia konfliktow miedzy rekomendacjami agentow',
+      'Koncowy zsyntetyzowany produkt dla uzytkownika',
+      'Podsumowanie procesu z uzasadnieniem kluczowych decyzji'
+    ],
+    does: [
+      'Dekomponuje zlozone zadania na male, niezalezne podzadania dla pojedynczych agentow',
+      'Deleguje prace do specjalistow z zasada waskiego kontekstu',
+      'Kontroluje bramy jakosci GO/NO-GO miedzy fazami pipeline',
+      'Rozstrzyga konflikty miedzy sprzecznymi rekomendacjami agentow',
+      'Syntetyzuje wyniki wszystkich faz w spojna calosc',
+      'Zarzadza wzorcem Hub-and-Spoke lub hierarchia dla 4-18 agentow',
+      'Monitoruje postep prac poprzez odczyt MANIFEST.md i TaskStatus',
+      'Eskaluje trudne decyzje do uzytkownika gdy trzeci cykl rewizji nie pomaga'
+    ],
+    doesNotDo: [
+      'Nie generuje kodu - od tego sa Koderzy Backend i Frontend',
+      'Nie prowadzi researchu - od tego sa Researcherzy',
+      'Nie pisze dokumentacji ani raportow - od tego jest Redaktor',
+      'Nie projektuje interfejsow ani palet - od tego jest Designer',
+      'Nie naprawia bugow samodzielnie - odsyla do Kodera z notatka co poprawic',
+      'Nie deleguje rozstrzygania konfliktow - to jego wylaczna odpowiedzialnosc',
+      'Nie ladowuje pelnego kontekstu projektu - widzi tylko MANIFEST i aktualne decyzje'
+    ],
+    antiPatterns: [
+      'Micro-Manager - Orkiestrator sam pisze kod zamiast delegowac do Kodera, tworzac waskie gardlo i eksplozje kosztow Opus',
+      'God Agent - prowba ogarniecia calego kontekstu projektu prowadzi do efektu Lost in the Middle i halucynacji',
+      'Blind Delegation - delegacja bez kontekstu (napisz backend) bez specyfikacji, technologii i kryteriow akceptacji',
+      'Token Waste - 15 agentow do zadania ktore mozna zrobic 3, over-engineering z ceremonia i debatami',
+      'Missing Gates - automatyczna akceptacja wynikow bez bram GO/NO-GO prowadzaca do Hallucination Cascade'
+    ],
+    keyConcepts: [
+      {term: 'Hub-and-Spoke', def: 'Wzorzec architektoniczny gdzie orkiestrator jest centrum a specjalisci dookola, cala komunikacja przechodzi przez hub.'},
+      {term: 'Gate Control', def: 'Bramy GO/NO-GO miedzy fazami zapobiegajace propagacji bledow, wymagaja spelnienia precyzyjnych kryteriow.'},
+      {term: 'Narrow Context', def: 'Zasada ze kazdy agent dostaje tylko informacje niezbedna do swojej pracy, nie caly kontekst projektu.'},
+      {term: 'Smart Routing', def: 'Dynamiczne przypisywanie modeli - Opus dla decyzji strategicznych, Sonnet dla buildu, Haiku dla researchu i QA.'},
+      {term: 'Single Responsibility', def: 'Orkiestrator ma jeden cel - zarzadzanie systemem, nie wykonywanie pracy merytorycznej.'}
+    ],
+    stats: [
+      {label: 'Koordynuje', value: '4-18 agentow'},
+      {label: 'Wywolan systemu', value: '~10%'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Model', value: 'Opus'}
+    ],
+    bestFor: [
+      'Gdy zadanie wymaga koordynacji 4+ agentow i przekracza jeden lancuch sekwencyjny',
+      'Gdy projekt ma wiele faz z bramami jakosci (research, build, QA, delivery)',
+      'Gdy pojawiaja sie sprzecznosci miedzy rekomendacjami specjalistow wymagajace arbitrazu'
+    ],
+    worstFor: [
+      'Gdy zadanie jest proste i wystarczy jeden agent (quick fix, mala edycja)',
+      'Gdy masz 2-3 agentow w prostym lancuchu i nie potrzebujesz centralnego arbitra',
+      'Gdy szukasz taniej orkiestracji - Opus jest najdrozszym modelem i nie oplaca sie dla mikro-zadan'
+    ],
+    relatedAgents: ['synthesizer', 'analyst', 'planner'],
+    glossary: [
+      {term: 'dekompozycja', definition: 'Rozbicie zlozonego zadania na mniejsze, niezalezne podzadania wykonalne przez pojedynczych agentow.'},
+      {term: 'brama', definition: 'Punkt kontrolny miedzy fazami gdzie orkiestrator podejmuje decyzje GO/NO-GO na podstawie kryteriow jakosci.'},
+      {term: 'hub-and-spoke', definition: 'Topologia gwiazdy gdzie centralny orkiestrator komunikuje sie ze wszystkimi specjalistami bez komunikacji peer-to-peer.'},
+      {term: 'manifest', definition: 'Centralny dokument (MANIFEST.md) sluzacy jako wspolna tablica komunikacyjna i Single Source of Truth.'},
+      {term: 'delegacja', definition: 'Przekazanie podzadania agentowi specjaliscie wraz z waskim kontekstem i kryteriami akceptacji.'}
+    ],
+    learningQuote: 'Kapitan ktory sam bierze sie za sprzatanie pokladu to kapitan ktory traci statek - orkiestrator nigdy nie wykonuje pracy swoich podwladnych.',
+    realExample: 'Pewnego dnia zdekomponowalem zadanie budowy interaktywnej strony edukacyjnej na 14 podzadan w 4 fazach. Uruchomilem 3 researcherow rownolegle, potem zsyntetyzowalem ich wyniki, delegowalem build do Kodera, Designera i Redaktora, i zatrzymalem cykl na Bramie 2 bo Designer nie dostarczyl typografii. Calosc kosztowala 6 dolarow zamiast 25 jakie wydalabym na samym Opus.'
+  },
+  synthesizer: {
+    tagline: 'Pamiec cross-fazowa systemu - straznik MANIFESTu i lowca sprzecznosci',
+    missionShort: 'Syntetyk to agent strategiczny ktorego jedynym zadaniem jest utrzymywanie MANIFEST.md jako Single Source of Truth. Zbiera wyniki z kazdej fazy, dokumentuje decyzje architektoniczne, flaguje sprzecznosci miedzy agentami i wyciaga wnioski cross-funkcyjne ktorych pojedynczy specjalista nie zobaczy.',
+    whoIs: 'Syntetyk gra role korporacyjnego historyka, bibliotekarza i protokolanta spotkan w jednej osobie. Jest pamiecia dlugoterminowa calego systemu - pamieta co zdecydowano w fazie research, co zbudowano w fazie build i co znaleziono w fazie QA. Nie decyduje, tylko dokumentuje i flaguje.',
+    analogy: 'Syntetyk to bibliotekarz wielkiego projektu ktory czyta kazdy raport z ta sama uwaga co pierwszy i laczy kropki ktorych nikt inny nie widzi.',
+    howItWorks: [
+      {label: 'Odczyt wszystkich wynikow', desc: 'Po zakonczeniu fazy uzywa Read i Grep do zebrania outputow wszystkich agentow oraz aktualnego stanu MANIFEST.md.'},
+      {label: 'Ekstrakcja esencji', desc: 'Syntetyzuje 2000-slowne raporty do 50-150 slownych wpisow z kluczowymi decyzjami, alternatywami i zrodlami.'},
+      {label: 'Lowienie sprzecznosci', desc: 'Aktywnie porownuje kazdy raport z kazdym innym szukajac konfliktow rekomendacji, metryk i faktow. Flaguje bez rozstrzygania.'},
+      {label: 'Aktualizacja MANIFESTu', desc: 'Zapisuje nowe ADR z timestampem, dokumentuje sprzecznosci na gorze dokumentu i wysyla Synthesis Report do Orkiestratora.'}
+    ],
+    inputs: [
+      'Raporty 6-14 agentow z biezacej fazy (research, build, QA)',
+      'Aktualny stan MANIFEST.md z poprzednich faz',
+      'Ocena Research Critica z scoringiem jakosci raportow',
+      'Sygnal od Orkiestratora ze faza jest zakonczona i czas na synteze'
+    ],
+    outputs: [
+      'Zaktualizowany MANIFEST.md z nowymi ADR i decyzjami',
+      'Synthesis Report w formacie JSON z executive summary',
+      'Lista aktywnych konfliktow [CONFLICT-NNN] eskalowana do Orkiestratora',
+      'Wnioski cross-funkcyjne laczace domeny (QA + Frontend, Design + Backend)',
+      'Zwiezle podsumowanie fazy z rekomendacja GO lub wymaganie dodatkowego researchu'
+    ],
+    does: [
+      'Utrzymuje MANIFEST.md jako Single Source of Truth dla calego systemu',
+      'Tworzy ADR (Architecture Decision Records) z kontekstem CO/KTO/DLACZEGO/ALTERNATYWY',
+      'Flaguje sprzecznosci miedzy raportami agentow z priorytetem krytycznosci',
+      'Wyciaga wnioski cross-funkcyjne laczac insighty z roznych domen',
+      'Stosuje zasade append-only - nigdy nie usuwa, tylko oznacza jako REVISED',
+      'Pelni role doradcy dla Builderow w fazie build (Builder Advisory)',
+      'Tworzy dwie wersje MANIFESTu w Deep Research Belt - executive summary i pelna'
+    ],
+    doesNotDo: [
+      'Nie podejmuje decyzji - to wylaczna odpowiedzialnosc Orkiestratora',
+      'Nie rozwiazuje konfliktow - tylko je flaguje i eskaluje',
+      'Nie pisze kodu ani nie tworzy designu - tylko dokumentuje cudze decyzje',
+      'Nie uruchamia subagentow - nie ma narzedzia Agent',
+      'Nie weryfikuje danych przez WebSearch - to rola Researcherow',
+      'Nie kopiuje calych raportow do MANIFESTu - syntetyzuje do esencji 50-150 slow',
+      'Nie czeka z flagowaniem krytycznych konfliktow do konca fazy'
+    ],
+    antiPatterns: [
+      'Decision Maker - Syntetyk sam rozwiazuje konflikt piszac decyzja React zamiast eskalowac, co prowadzi do split-brain z Orkiestratorem',
+      'Info Hoarder - kopiowanie calej zawartosci raportow do MANIFESTu, dokument rosnie do 10000 slow i nikt go nie czyta',
+      'Passive Observer - zbieranie danych bez aktywnego szukania sprzecznosci, 60% niedojrzalych implementacji ma ten blad',
+      'Stale Manifest - aktualizacja raz na tydzien zamiast po kazdej fazie, builderzy pracuja na nieaktualnych decyzjach',
+      'Silent Conflict - flagowanie bez priorytetu, krytyczne sprzecznosci gina w szumie niskiej wagi'
+    ],
+    keyConcepts: [
+      {term: 'Single Source of Truth', def: 'MANIFEST.md jako jedyne autorytatywne zrodlo prawdy o stanie projektu, aktualizowane tylko przez Syntetyka.'},
+      {term: 'Append-only', def: 'Zasada ze stare decyzje nie sa usuwane tylko oznaczane jako REVISED, zachowujac historie zmian.'},
+      {term: 'Bidirectional awareness', def: 'Unikalny przywilej Syntetyka - moze bezposrednio pytac agentow o doprecyzowanie, pomijajac Orkiestratora.'},
+      {term: 'Cross-funkcyjny insight', def: 'Wniosek laczacy fakty z roznych domen, niewidoczny dla pojedynczego specjalisty (np. CORS issue + brak credentials w fetch).'},
+      {term: 'ADR', def: 'Architecture Decision Record - ustrukturyzowany wpis decyzji z kontekstem, zrodlem, alternatywami i statusem.'}
+    ],
+    stats: [
+      {label: 'Input na sesje', value: '15-100k tok'},
+      {label: 'Sekcje MANIFEST', value: '50-150 slow'},
+      {label: 'Load', value: '65/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy system ma 6+ agentow i pojawia sie information gap miedzy fazami',
+      'Gdy potrzebujesz historycznego zapisu decyzji architektonicznych z uzasadnieniem',
+      'Gdy wazne jest aktywne wykrywanie sprzecznosci miedzy rekomendacjami specjalistow'
+    ],
+    worstFor: [
+      'Gdy masz 2-3 agentow i Orkiestrator sam moze utrzymac spojnosc',
+      'Gdy projekt jest jednorazowy i historia decyzji nie ma wartosci',
+      'Gdy potrzebujesz aktywnego decydenta - Syntetyk nigdy nie wybiera strony'
+    ],
+    relatedAgents: ['orchestrator', 'res_critic', 'analyst'],
+    glossary: [
+      {term: 'manifest', definition: 'Centralny dokument MANIFEST.md zbierajacy wszystkie decyzje, stack, ryzyka i konflikty projektu.'},
+      {term: 'adr', definition: 'Architecture Decision Record - wpis dokumentujacy decyzje architektoniczna z pelnym kontekstem.'},
+      {term: 'synthesis report', definition: 'Migawka JSON tworzona na koniec fazy jako formalna rekomendacja dla Orkiestratora.'},
+      {term: 'conflict flag', definition: 'Oznaczenie sprzecznosci miedzy raportami agentow wymagajace decyzji Orkiestratora.'},
+      {term: 'split-brain', definition: 'Niespojnosc miedzy decyzjami Orkiestratora a stanem MANIFESTu, grozna dla builderow.'}
+    ],
+    learningQuote: 'Syntetyk dokumentuje, Orkiestrator decyduje - zero wyjatkow, bo neutralna pamiec systemu jest cenniejsza niz jeszcze jeden decydent.',
+    realExample: 'Pewnego dnia syntetyzowalem raporty 6 researcherow o stacku SaaS 2026. Znalazlem konsensus na Next.js 15 (4 z 6 glosow), ale Researcher Reddit i Researcher X flaguja hype na Remix. Zamiast rozstrzygac, zapisalem [CONFLICT-007] w MANIFESCIE z pelnym kontekstem i eskalowalem do Orkiestratora. Dodatkowo wylapalem cross-funkcyjny insight - Next.js 15 ma natywne CSS variables wiec dark mode nie wymaga dodatkowej biblioteki.'
+  },
+  analyst: {
+    tagline: 'Chirurg problemow - rozklada zlozone zadania na niezalezne podzadania S/M/L/XL',
+    missionShort: 'Analityk to specjalista dekompozycji zlozonych problemow na atomowe, realizowalne podzadania. Jego misja: przeksztalcic abstrakcyjne polecenie uzytkownika w strukturalna liste zadan z zalezosciami, estymacja zlozonosci i kategoryzacja. Na jego pracy bazuje caly dalszy pipeline.',
+    whoIs: 'Analityk gra role inzyniera systemowego, chirurga planujacego operacje i szefa kuchni z gwiazda Michelin. Widzi caly problem jak na stole operacyjnym - wie co trzeba zrobic, w jakiej kolejnosci i co mozna rownolegle. Nie wykonuje pracy, tylko buduje mape dla tych ktorzy beda ja wykonywac.',
+    analogy: 'Analityk to chirurg ktory przed pierwszym ruchem skalpela rozklada cala operacje na etapy, identyfikuje punkty krytyczne i decyduje co mozna robic rownolegle.',
+    howItWorks: [
+      {label: 'Analiza problemu', desc: 'Czyta polecenie od Orkiestratora i identyfikuje zakres, ograniczenia oraz rodzaj pracy wymaganej do realizacji celu.'},
+      {label: 'Dekompozycja na atomy', desc: 'Rozbija zadanie na podzadania tak male ze kazde moze byc wykonane przez JEDNEGO agenta z jasnym wejsciem i wyjsciem.'},
+      {label: 'Mapa zaleznosci', desc: 'Buduje graf zaleznosci pokazujacy ktore podzadania sa niezalezne (paralelne) a ktore wymagaja wynikow innych.'},
+      {label: 'Estymacja i kategoryzacja', desc: 'Przypisuje kazdemu podzadaniu zlozonosc S/M/L/XL i kategorie (RESEARCH/DESIGN/BUILD/QA/CONTENT) dla Planera.'}
+    ],
+    inputs: [
+      'Polecenie uzytkownika przekazane przez Orkiestratora z waskim kontekstem',
+      'Cel, ograniczenia i zakres projektu (goal, constraints, scope)',
+      'Aktualny stan MANIFEST.md jesli juz istnieja jakies decyzje',
+      'Opcjonalne referencje i materialy wejsciowe od uzytkownika'
+    ],
+    outputs: [
+      'Strukturalny dokument dekompozycji w formacie Markdown',
+      'Lista podzadan z unikalnymi ID (T-001, T-002, ...) i opisami',
+      'Graf zaleznosci pokazujacy niezaleznosci i sciezki paralelne',
+      'Estymacja zlozonosci S/M/L/XL dla kazdego podzadania',
+      'Kategoryzacja zadan (RESEARCH/DESIGN/BUILD/INTEGRATE/QA/CONTENT)'
+    ],
+    does: [
+      'Dekomponuje zlozone problemy na atomowe, realizowalne podzadania',
+      'Identyfikuje niezaleznosci i zaleznosci tworzac graf skierowany',
+      'Estymuje zlozonosc w skali S/M/L/XL (nie w jednostkach czasu)',
+      'Kategoryzuje zadania wedlug typu pracy dla Orkiestratora',
+      'Tworzy strukturalny plan dekompozycji jako kontrakt dla reszty systemu',
+      'Rozdziela prace merytoryczna (research) od implementacji (build)',
+      'Dziala raz na poczatku projektu - dekompozycja to jednorazowa operacja'
+    ],
+    doesNotDo: [
+      'Nie pisze kodu ani nie implementuje podzadan ktore sam zdekomponowal',
+      'Nie prowadzi researchu - tylko okresla ze trzeba zbadac temat X',
+      'Nie tworzy harmonogramu - to rola Planera (kiedy i w jakiej kolejnosci)',
+      'Nie podejmuje decyzji architektonicznych (framework, baza danych, paleta)',
+      'Nie estymuje czasu - tylko zlozonosc S/M/L/XL niezalezna od modelu',
+      'Nie uruchamia kodu - nie ma narzedzia Bash, tylko analiza statyczna',
+      'Nie uruchamia subagentow - nie ma narzedzia Agent, to rola Orkiestratora'
+    ],
+    antiPatterns: [
+      'Scope Creep - Analityk zaczyna robic prace merytoryczna (kod, research) zamiast dekompozycji, dekompozycja staje sie powierzchowna',
+      'Time Estimation - estymowanie w godzinach zamiast w zlozonosci, czas zalezy od modelu a zlozonosc jest stala',
+      'Giant Task - podzadanie wymagajace dwoch agentow jednoczesnie, trzeba je dalej rozlozyc na atomy',
+      'Dependency Blindness - pominiecie zaleznosci miedzy podzadaniami, builderzy pracuja na sprzecznych zalozeniach',
+      'Category Confusion - mieszanie kategorii RESEARCH z BUILD w jednym podzadaniu, agent traci czas na nie swoja prace'
+    ],
+    keyConcepts: [
+      {term: 'Plan-and-Execute', def: 'Wzorzec Analityk-Planer-Builder-QA dajacy 83% oszczednosci kosztow w porownaniu z podejsciem ad-hoc.'},
+      {term: 'Complexity S/M/L/XL', def: 'Skala zlozonosci niezalezna od czasu - Small jeden krok, Medium kilka krokow, Large wiele komponentow, XL krytyczne.'},
+      {term: 'Dependency Graph', def: 'Graf skierowany pokazujacy ktore podzadania wymagaja wynikow innych, klucz do identyfikacji paralelnosci.'},
+      {term: 'Narrow Context', def: 'Analityk dostaje tylko goal/constraints/scope, nie pelny kontekst projektu - pozwala skupic sie na dekompozycji.'},
+      {term: 'Atomic Task', def: 'Podzadanie na tyle male ze moze je wykonac jeden agent z jasno okreslonym wejsciem i wyjsciem.'}
+    ],
+    stats: [
+      {label: 'Czas sesji', value: '15-25 sek'},
+      {label: 'Oszczednosci', value: '83% vs ad-hoc'},
+      {label: 'Load', value: '55/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy zadanie jest zlozone i wymaga 5+ podzadan dla roznych specjalistow',
+      'Gdy chcesz zmaksymalizowac paralelizacje i zidentyfikowac niezaleznosci',
+      'Gdy pipeline wymaga kontraktu miedzy planowaniem a wykonaniem'
+    ],
+    worstFor: [
+      'Gdy zadanie jest trywialne i wystarczy jeden agent end-to-end',
+      'Gdy potrzebujesz harmonogramu z datami - to rola Planera, nie Analityka',
+      'Gdy projekt nie ma jasnego celu - Analityk potrzebuje precyzyjnego inputu'
+    ],
+    relatedAgents: ['planner', 'orchestrator', 'synthesizer'],
+    glossary: [
+      {term: 'dekompozycja', definition: 'Rozbicie zlozonego problemu na male niezalezne podzadania realizowalne przez pojedynczych agentow.'},
+      {term: 'graf zaleznosci', definition: 'Wizualna mapa pokazujaca ktore podzadania od siebie zaleza, uzywana do identyfikacji sciezek paralelnych.'},
+      {term: 'zlozonosc', definition: 'Ocena trudnosci zadania w skali S/M/L/XL, niezalezna od modelu i czasu wykonania.'},
+      {term: 'kategoria', definition: 'Typ pracy wymaganej przez podzadanie - RESEARCH, DESIGN, BUILD, INTEGRATE, QA lub CONTENT.'},
+      {term: 'atomic task', definition: 'Podzadanie na tyle male ze jeden agent moze je wykonac samodzielnie od wejscia do wyjscia.'}
+    ],
+    learningQuote: 'Jesli Analityk sie pomyli - nie bedzie czego budowac po drugiej stronie, bo bledna dekompozycja propaguje sie przez system jak pekniecie w fundamencie.',
+    realExample: 'Pewnego dnia dostalem polecenie zbuduj dashboard analityczny dla e-commerce. Rozlozylem to na 13 podzadan w 6 kategoriach, oznaczylem 8 z nich jako paralelne (65% potencjalu rownoleglosci), ocenilem 3 jako XL (integracje API, system uprawnien, optymalizacja zapytan) i przekazalem graf Planerowi. Caly moj proces zajal 22 sekundy, ale oszczedzil projektowi dwie iteracje przebudow.'
+  },
+  planner: {
+    tagline: 'Rezyser harmonogramu - zmienia dekompozycje w plan faz z bramami i sciezka krytyczna',
+    missionShort: 'Planer tworzy harmonogram wykonania na podstawie dekompozycji od Analityka. Jego misja: decydowac ktore zadania sa sekwencyjne a ktore paralelne, identyfikowac sciezke krytyczna, definiowac bramy jakosci G0-G4 i maksymalizowac paralelizacje aby skrocic calkowity czas projektu.',
+    whoIs: 'Planer gra role kierownika budowy, szefa logistyki wojskowej i rezysera filmowego. Ma gotowy scenariusz od Analityka ale musi zdecydowac ktore sceny krecic rownolegle, ktore wymagaja efektow specjalnych z poprzedniego etapu i gdzie wstawic punkty kontrolne jakosci. Jest taktykiem miedzy strategia a wykonaniem.',
+    analogy: 'Planer to kierownik budowy ktory wie ze elektryk i hydraulik moga pracowac rownolegle na roznych pietrach, ale dachu nie polozymy przed postawieniem scian.',
+    howItWorks: [
+      {label: 'Analiza zaleznosci', desc: 'Czyta graf zaleznosci od Analityka i identyfikuje ktore podzadania moga byc wykonywane rownolegle a ktore musza czekac.'},
+      {label: 'Wybor trybu wykonania', desc: 'Dla kazdej fazy wybiera tryb SEQUENTIAL, PARALLEL, PARALLEL_THEN_SEQUENTIAL lub SEQUENTIAL_WITH_COLLABORATION.'},
+      {label: 'Sciezka krytyczna', desc: 'Identyfikuje najdluzszy ciag zaleznych zadan determinujacy minimalny czas projektu i oznacza zadania na tej sciezce jako wysoki priorytet.'},
+      {label: 'Definicja bram G0-G4', desc: 'Tworzy precyzyjne kryteria GO/NO-GO dla bram miedzy fazami (Input, Decomposition, Research, Build, QA) ktore Orkiestrator bedzie egzekwowal.'}
+    ],
+    inputs: [
+      'Strukturalna dekompozycja z lista podzadan od Analityka',
+      'Graf zaleznosci pokazujacy niezaleznosci i sciezki paralelne',
+      'Estymacje zlozonosci S/M/L/XL dla kazdego podzadania',
+      'Ograniczenia budzetu tokenowego i czasowego od Orkiestratora'
+    ],
+    outputs: [
+      'Harmonogram wykonania podzielony na fazy z trybami SEQ/PARALLEL',
+      'Identyfikacja sciezki krytycznej z oznaczeniem zadan priorytetowych',
+      'Definicje bram jakosci G0-G4 z precyzyjnymi kryteriami GO/NO-GO',
+      'Oszacowanie potencjalu paralelizacji (% zadan ktore mozna wykonac rownolegle)',
+      'Rekomendacje limitow iteracji dla petli feedbackowych (max 2-3)'
+    ],
+    does: [
+      'Tworzy harmonogram wykonania z fazami sekwencyjnymi i paralelnymi',
+      'Identyfikuje sciezke krytyczna determinujaca minimalny czas projektu',
+      'Definiuje bramy jakosci G0-G4 z precyzyjnymi kryteriami GO/NO-GO',
+      'Maksymalizuje paralelizacje aby skrocic calkowity czas (40-60% oszczednosci)',
+      'Wybiera tryb wykonania dla kazdej fazy sposrod czterech standardowych',
+      'Okresla limity iteracji dla petli feedbackowych (max 2 dla QA, max 3 dla krytycznych)',
+      'Wykrywa konflikty zasobow (dwa zadania zapisujace do tego samego pliku)'
+    ],
+    doesNotDo: [
+      'Nie dekomponuje zadan - tego juz dokonal Analityk w poprzednim kroku',
+      'Nie wykonuje zadan - tylko planuje ich kolejnosc i tryb wykonania',
+      'Nie egzekwuje bram jakosci - definiuje je a Orkiestrator je egzekwuje',
+      'Nie pisze kodu ani nie prowadzi researchu - jest wylacznie taktykiem',
+      'Nie dobiera modeli dla agentow - to decyzja Orkiestratora na podstawie zlozonosci',
+      'Nie modyfikuje dekompozycji Analityka - jesli jest wadliwa, eskaluje do Orkiestratora',
+      'Nie pozwala na nieskonczone iteracje - zawsze definiuje limit max_iterations'
+    ],
+    antiPatterns: [
+      'False Parallelism - ustawienie zadan jako paralelne bez sprawdzenia konfliktow zasobow, generuje race conditions i nadpisywanie plikow',
+      'Missing Critical Path - brak identyfikacji sciezki krytycznej prowadzi do zlych priorytetow i opoznien calego projektu',
+      'Loose Gates - bramy jakosci z kryterium wystarczy ze cos jest, przepuszczaja wadliwe wyniki do nastepnej fazy',
+      'Infinite Iteration - brak limitu max_iterations dla SEQUENTIAL_WITH_COLLABORATION, system wpada w nieskonczona petle poprawek',
+      'Sequential Bias - domyslne ustawianie zadan jako sekwencyjne bez analizy niezaleznosci, marnuje potencjal paralelizacji'
+    ],
+    keyConcepts: [
+      {term: 'Sciezka krytyczna', def: 'Najdluzszy ciag zaleznych zadan determinujacy minimalny czas projektu, zadania na niej maja priorytet.'},
+      {term: 'Tryb wykonania', def: 'Jeden z czterech wzorcow - SEQUENTIAL, PARALLEL, PARALLEL_THEN_SEQUENTIAL, SEQUENTIAL_WITH_COLLABORATION.'},
+      {term: 'Brama G0-G4', def: 'Standardowe bramy jakosci - Input, Decomposition, Research, Build, Quality - z precyzyjnymi kryteriami GO/NO-GO.'},
+      {term: 'Paralelizacja', def: 'Wykonywanie niezaleznych zadan jednoczesnie, skraca czas o 40-60% w porownaniu z sekwencja.'},
+      {term: 'Max iterations', def: 'Limit petli feedbackowych zapobiegajacy nieskonczonym cyklom poprawek, zazwyczaj 2-3 iteracje.'}
+    ],
+    stats: [
+      {label: 'Paralelizacja', value: '+40-60%'},
+      {label: 'Bramy G0-G4', value: '5 standardowych'},
+      {label: 'Load', value: '40/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy projekt ma wiele faz i potrzeba precyzyjnej koordynacji sekwencji',
+      'Gdy chcesz zmaksymalizowac paralelizacje dla skrocenia czasu dostarczenia',
+      'Gdy krytyczne sa bramy jakosci z precyzyjnymi kryteriami GO/NO-GO'
+    ],
+    worstFor: [
+      'Gdy projekt ma mniej niz 4 podzadania - harmonogram jest oczywisty',
+      'Gdy wszystkie zadania sa sekwencyjne - nie ma czego planowac',
+      'Gdy potrzebujesz wykonawcy a nie planisty - Planer nie pisze kodu'
+    ],
+    relatedAgents: ['analyst', 'orchestrator', 'qa_manager'],
+    glossary: [
+      {term: 'harmonogram', definition: 'Dokument okreslajacy kolejnosc wykonania podzadan podzielony na fazy z trybami sekwencyjnymi i paralelnymi.'},
+      {term: 'sciezka krytyczna', definition: 'Najdluzszy ciag zaleznych zadan determinujacy minimalny czas realizacji calego projektu.'},
+      {term: 'brama', definition: 'Punkt kontrolny miedzy fazami z precyzyjnymi kryteriami GO/NO-GO egzekwowany przez Orkiestratora.'},
+      {term: 'tryb wykonania', definition: 'Wzorzec wspolpracy agentow w fazie - sekwencyjny, paralelny, mieszany lub z feedback loops.'},
+      {term: 'max iterations', definition: 'Limit cykli feedbackowych w trybie SEQUENTIAL_WITH_COLLABORATION, zapobiega nieskonczonym petlom.'}
+    ],
+    learningQuote: 'Rownolegly Research UX moze sie opoznic o 20% bez wplywu na projekt - ale Research Tech na sciezce krytycznej opoznia wszystkich.',
+    realExample: 'Pewnego dnia dostalem dekompozycje na 13 podzadan od Analityka. Zidentyfikowalem 3 researcherow jako paralelnych (oszczednosc 14 minut na fazie 1), ustawilem build na PARALLEL_THEN_SEQUENTIAL bo Integrator musi czekac na Kodera i Designera, i zdefiniowalem brame G2 z kryterium kazdy researcher dostarczyl raport z min 3 zrodlami. Sciezka krytyczna przebiegala przez Research Tech do Kodera do Integratora - tam skierowalem uwage Orkiestratora.'
+  },
+  res_tech: {
+    tagline: 'Archiwista oficjalnej prawdy - czyta docs i RFC, cytuje URL zamiast pamieci',
+    missionShort: 'Researcher Tech przeszukuje oficjalna dokumentacje, RFC, specyfikacje i benchmarki w poszukiwaniu twardych faktow technicznych. Jego misja: dostarczac ground truth od producenta i peer-reviewed badan, nigdy opinii. Kazde twierdzenie musi miec URL zrodla - bez zrodla nie ma faktu.',
+    whoIs: 'Researcher Tech to bibliotekarz prawniczej biblioteki i detektyw w archiwum zarazem. Siedzi w czytelni oficjalnych docsow, porownuje wersje, sprawdza daty publikacji i RFC, i nigdy nie cytuje z pamieci. Jego domena to arbiter prawdy - co mowi producent, co pokazuja niezalezne benchmarki, co wynika z changelogow.',
+    analogy: 'Researcher Tech to prawnik przed sadem - zamiast mowic slyszalem ze, wyciaga z teczki dokument, pokazuje akapit, cytuje paragraf i dodaje URL zrodla.',
+    howItWorks: [
+      {label: 'Pytanie badawcze', desc: 'Odbiera waskie pytanie od Orkiestratora (Narrow Context Principle) i rozbija na pod-zapytania z kontekstem czasowym i wersja technologii.'},
+      {label: 'Hierarchia zrodel', desc: 'Wyszukuje wedlug piramidy: oficjalne docs > engineering blog > niezalezny benchmark > tutorial. Odrzuca zrodla starsze niz 12 miesiecy dla szybko zmieniajacych sie framewkorkow.'},
+      {label: 'Porownanie 3 opcji', desc: 'Dla kazdego zagadnienia porownuje minimum 3 alternatywy z pros/cons, snippetami setup, znanymi issues i aktywnoscia maintenance. Nigdy nie rekomenduje pierwszej znalezionej.'},
+      {label: 'Raport JSON', desc: 'Formatuje ustrukturyzowany raport z findings, confidence scores 0.0-1.0, risks, gaps i URL przy kazdym twierdzeniu. Jawnie wskazuje luki w danych dla Research Critica.'}
+    ],
+    inputs: [
+      'Pytanie badawcze (np. Jaki framework multi-agent dla SaaS)',
+      'Slowa kluczowe technologiczne i wersje frameworkow',
+      'Zakres czasowy zrodel (freshness window)',
+      'Opcjonalnie poprzedni raport dla iteracji lub rewizji'
+    ],
+    outputs: [
+      'Minimum 3 opcje porownania z pros/cons i snippetami',
+      'URL zrodla przy kazdym twierdzeniu technicznym',
+      'Confidence score 0.0-1.0 wedlug hierarchii zrodel',
+      'Sekcja risks (lock-in, maintenance, security, scalability)',
+      'Sekcja gaps - czego nie udalo sie znalezc w zrodlach'
+    ],
+    does: [
+      'Czyta oficjalna dokumentacje i RFC jako arbiter prawdy',
+      'Analizuje krytycznie benchmarki (hardware, wersja, metodologia, powtarzalnosc)',
+      'Porownuje minimum 3 alternatywy dla kazdej rekomendacji technologii',
+      'Weryfikuje statystyki adopcji (npm downloads, GitHub stars, PyPI)',
+      'Sprawdza changelog i CVE dla zidentyfikowania breaking changes',
+      'Ocenia vendor lock-in i model-agnostic character rozwiazania',
+      'Dostarcza working setup snippet dla kazdej rekomendowanej opcji',
+      'Oznacza kazde twierdzenie URL zrodla - zasada kardynalna'
+    ],
+    doesNotDo: [
+      'Nie czyta Reddita ani opinii spolecznosci (to domena res_reddit)',
+      'Nie szuka wizualnych trendow i mood boardow (to domena res_ux)',
+      'Nie analizuje repozytoriow i Issues (to domena res_github)',
+      'Nie cytuje forow SO jako zrodel glownych (to domena res_forums)',
+      'Nie pisze kodu ani implementacji (to rola Buildera)',
+      'Nie podejmuje decyzji - rekomenduje z confidence score',
+      'Nie komunikuje sie z innymi researcherami (zasada izolacji)'
+    ],
+    antiPatterns: [
+      'Shallow Search - jeden query WebSearch i trzy linki jako raport bez poglebionego WebFetch',
+      'Hallucinated Source - URL wygenerowany z pamieci modelu prowadzacy do 404',
+      'Source Bias - wszystkie zrodla od jednego vendora (nextjs docs + vercel blog + vercel case)',
+      'Recency Obsession - rekomendacja najnowszej technologii tylko dlatego ze jest nowa',
+      'Copy-Paste Research - doslowne cytaty z dokumentacji bez analizy i kontekstualizacji'
+    ],
+    keyConcepts: [
+      {term: 'Narrow Context Principle', def: 'Researcher dostaje TYLKO pytanie badawcze bez kontekstu projektu - redukuje halucynacje i confirmation bias.'},
+      {term: 'Hierarchia zrodel', def: 'Docs > Eng Blog > Benchmark > Tech Blog > Tutorial > Forum > Tweet - oficjalne zrodlo pokonuje blog za kazdym razem.'},
+      {term: 'Confidence score', def: '0.9+ dla oficjalnej dokumentacji, 0.7-0.89 dla renomowanych blogow, 0.5-0.69 dla forow, ponizej 0.5 odrzucane przez Critica.'},
+      {term: 'Freshness check', def: 'Zrodlo starsze niz 12 miesiecy dla frameworka wymaga weryfikacji z aktualna wersja - technologia starzeje sie szybko.'},
+      {term: 'Multi-source triangulation', def: 'Wysoka pewnosc wymaga potwierdzenia przez 3 rozne typy zrodel: docs + benchmark + community feedback.'}
+    ],
+    stats: [
+      {label: 'Min. opcji', value: '3 porownania'},
+      {label: 'Hierarchia', value: '7 poziomow'},
+      {label: 'Load', value: '55/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy potrzebujesz twardych faktow technicznych z URL zrodla zamiast opinii',
+      'Gdy wybierasz miedzy 3+ frameworkami i potrzebujesz porownania pros/cons',
+      'Gdy musisz zweryfikowac benchmark, wersje API lub breaking changes'
+    ],
+    worstFor: [
+      'Gdy szukasz opinii praktykow co naprawde dziala (to domena res_reddit)',
+      'Gdy szukasz inspiracji wizualnych i trendow UX (to domena res_ux)',
+      'Gdy pytanie dotyczy bardzo nowej technologii bez ustalonej dokumentacji'
+    ],
+    relatedAgents: ['res_docs', 'res_github', 'res_critic'],
+    glossary: [
+      {term: 'rfc', definition: 'Request for Comments - dokument techniczny definiujacy standardy i decyzje projektowe maintainerow.'},
+      {term: 'freshness', definition: 'Aktualnosc zrodla - data publikacji wzgledem aktualnej wersji technologii.'},
+      {term: 'confidence_score', definition: 'Ocena pewnosci znaleziska 0.0-1.0 bazowana na hierarchii zrodel i liczbie potwierdzen.'},
+      {term: 'vendor_lock_in', definition: 'Stopien zaleznosci od jednego dostawcy - od open-source (brak) po zamkniete protokoly (wysoki).'},
+      {term: 'narrow_context', definition: 'Zasada ograniczenia kontekstu do pytania badawczego - zapobiega halucynacjom i confirmation bias.'}
+    ],
+    learningQuote: 'Bez URL zrodla nie ma faktu - jest tylko spekulacja. Researcher Tech nie cytuje z pamieci, on pokazuje dokument i akapit.',
+    realExample: 'Pewnego dnia porownalem LangGraph, CrewAI i Claude Agent SDK dla SaaS multi-agent. LangGraph wygrywal battle-tested (confidence 0.92), ale znalazlem issue o memory leak <0.2.1. Oznaczylem w risks i zespol wybral wersje stabilna z obejsciem, zamiast dowiadywac sie o bugu na produkcji.'
+  },
+  res_ux: {
+    tagline: 'Kurator cyfrowej galerii - mood board z 5 zrodel zamiast kopii z Dribbble',
+    missionShort: 'Researcher UX przeszukuje Dribbble, Behance, Awwwards, Mobbin i oficjalne design systemy w poszukiwaniu trendow wizualnych, wzorcow interakcji i standardow dostepnosci. Jego misja: dostarczac syntetyzowany mood board z minimum 5 referencji i audyt WCAG zamiast plagiatowania jednego designu.',
+    whoIs: 'Researcher UX to kurator galerii sztuki polaczony ze zwiadowca trendow modowych. Chodzi po cyfrowych wystawach, wybiera najlepsze prace i tworzy mood board - ale sam nie maluje obrazu. Jego unikalna nisza to odpowiedz na pytanie jak powinno wygladac i dzialac, podczas gdy Tech odpowiada jak to zbudowac.',
+    analogy: 'Researcher UX to interior designer w fazie inspiracji - jezdzi na targi, fotografuje hole hotelowe, zbiera probki tkanin i wraca z mood boardem, na ktorym malarz oprze swoja prace.',
+    howItWorks: [
+      {label: 'Brief wizualny', desc: 'Odbiera brief z targetem, tonem komunikacji i ograniczeniami. Filtruje trendy pod kontem kontekstu projektu, zeby nie zebrac wszystkiego co modne.'},
+      {label: 'Przeszukiwanie platform', desc: 'WebSearch po Dribbble, Behance, Awwwards, Mobbin plus oficjalne design systemy (Material, HIG, WCAG). Rozroznia koncepty od produkcji.'},
+      {label: 'Synteza mood boardu', desc: 'Grupuje znaleziska w kategorie (kolory, typografia, layout, animacje, a11y) i wyciaga wzorce - gdy 7 z 10 stron uzywa bento grida, to wzorzec nie moda.'},
+      {label: 'Audyt WCAG', desc: 'Dla kazdej palety sprawdza kontrast minimum 4.5:1, dla animacji prefers-reduced-motion, dla targetow dotykowych minimum 44x44 px. Flaguje problemy zamiast ignorowac.'}
+    ],
+    inputs: [
+      'Brief projektu z targetem i tonem komunikacji',
+      'Kategoria produktu (dashboard, e-commerce, edukacyjny)',
+      'Tryby wymagane (dark/light, mobile/desktop breakpointy)',
+      'Kontekst kulturowy i rynek docelowy'
+    ],
+    outputs: [
+      'Mood board minimum 5 referencji z linkami i kategoriami',
+      'Paleta kolorow primary/secondary/accent z wartosciami hex i kontrastem',
+      'Rekomendacja typografii (heading/body/mono) ze skala rozmiarow',
+      'Spacing system bazowany na siatce 4 px lub 8 px',
+      'Audyt WCAG z flagami dostepnosci i specyfikacja animacji'
+    ],
+    does: [
+      'Przeszukuje Dribbble, Behance, Awwwards, Mobbin w poszukiwaniu wzorcow',
+      'Buduje mood board z minimum 5 referencji (sinteza, nie kopia)',
+      'Analizuje oficjalne design systemy (Material, HIG, Fluent, Tailwind UI)',
+      'Sprawdza kontrast WCAG 4.5:1 dla tekstu i 3:1 dla duzego tekstu',
+      'Rozroznia koncepty Dribbble od produkcyjnych przykladow z Mobbin',
+      'Flaguje trendy ktore odchodza (neumorphism umarl w 2024)',
+      'Uwzglednia kontekst kulturowy kolorow i typografii',
+      'Dostarcza rekomendacje dark mode i light mode rownolegle'
+    ],
+    doesNotDo: [
+      'Nie pisze CSS ani tokenow - to rola Designera w fazie Build',
+      'Nie czyta oficjalnej dokumentacji frameworkow (to domena res_tech)',
+      'Nie projektuje wireframeow ani layoutow (to rola Designera)',
+      'Nie uruchamia testow Lighthouse ani a11y (to rola QA Quality)',
+      'Nie kopiuje jednego shotu z Dribbble - zawsze syntetyzuje z 5+',
+      'Nie ignoruje mobile - mood board wymaga 2+ breakpointow',
+      'Nie ma dostepu do Write/Edit/Bash - tylko WebSearch i WebFetch'
+    ],
+    antiPatterns: [
+      'Trend Chaser - zbieranie kazdego modnego trendu bez filtrowania pod kontekst projektu, raport wewnetrznie sprzeczny',
+      'No Accessibility - piekne palety z kontrastem 2:1, brak prefers-reduced-motion, lamanie European Accessibility Act',
+      'Style Over Substance - rekomendowanie ciezkich animacji 3D ktore zabijaja performance na sredniej klasy Androidzie',
+      'Missing Responsive - mood board wylacznie desktop 1440 px, brak referencji dla 375 px mobile',
+      'Single Source Worship - caly mood board oparty o jeden shot z Dribbble, to plagiat z dodatkowym krokiem'
+    ],
+    keyConcepts: [
+      {term: 'Mood board', def: 'Tablica inspiracji z min 5 referencji z roznych zrodel umozliwiajaca sinteze zamiast kopiowania jednego designu.'},
+      {term: 'WCAG 2.2 AA', def: 'Standard dostepnosci wymuszajacy kontrast 4.5:1, touch targets 24x24 px minimum, prefers-reduced-motion i focus visible.'},
+      {term: 'European Accessibility Act', def: 'Regulacja UE obowiazujaca od 28 czerwca 2025 wymagajaca zgodnosci cyfrowych produktow z WCAG - dostepnosc to obowiazek prawny.'},
+      {term: 'Koncept vs produkcja', def: 'Dribbble zawiera koncept shots niezbudowane, Mobbin zawiera prawdziwe produkcyjne screeny - oba wymagaja oznaczenia w raporcie.'},
+      {term: 'Mobile-first', def: 'Zasada projektowania od najmniejszego ekranu do najwiekszego - 60%+ ruchu pochodzi z mobile, desktop to dodatek.'}
+    ],
+    stats: [
+      {label: 'Min. referencji', value: '5 zrodel'},
+      {label: 'Kontrast WCAG', value: '4.5:1 tekst'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy potrzebujesz mood boardu z trendow 2026 a nie kopii jednego shotu',
+      'Gdy chcesz audyt WCAG 2.2 z konkretnymi liczbami kontrastu',
+      'Gdy projekt celuje w dark mode i light mode rownolegle z palette per tryb'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz implementacji CSS i tokenow (to rola Designera w Build)',
+      'Gdy szukasz benchmarkow technologii lub frameworkow (to domena res_tech)',
+      'Gdy musisz uruchomic realny test Lighthouse lub axe (to rola QA Quality)'
+    ],
+    relatedAgents: ['res_tech', 'designer', 'res_critic'],
+    glossary: [
+      {term: 'dribbble', definition: 'Platforma z shotami designerow - swietne dla trendow, ale wiele to koncepty nigdy nie wdrozone.'},
+      {term: 'behance', definition: 'Portfolio Adobe wymagajace kompletnych case study - pokazuje proces projektowy nie tylko efekt.'},
+      {term: 'awwwards', definition: 'Serwis nagradzajacy najlepsze strony - stan sztuki web designu oceniany przez jurorow.'},
+      {term: 'mobbin', definition: 'Baza realnych produkcyjnych screenow aplikacji - ground truth zamiast konceptow z Dribbble.'},
+      {term: 'wcag', definition: 'Web Content Accessibility Guidelines - standard W3C z wymogami kontrastu, nawigacji klawiaturowej i ARIA.'}
+    ],
+    learningQuote: 'Piec referencji to synteza, jedna to plagiat z dodatkowym krokiem - Researcher UX nie kopiuje ladnych obrazkow, on destyluje wzorce.',
+    realExample: 'Pewnego dnia zbudowalem mood board dla strony edukacyjnej o agentach AI. Znalazlem ze 7 z 10 nagrodzonych stron na Awwwards Q1 2026 uzywa bento grida z ciemnym motywem i Space Grotesk - to byl wzorzec. Oznaczylem kontrast 4.6:1 na proponowanej palecie i zespol dostal gotowy kierunek zamiast rozpraszajacych opcji.'
+  },
+  res_reddit: {
+    tagline: 'Etnograf cyfrowych plemion - tlumacz pasji i frustracji uzytkownikow na insighty produktowe',
+    missionShort: 'Researcher Reddit przeszukuje anonimowe platformy dyskusyjne w poszukiwaniu niefiltrowanych opinii developerow. Jego misja: dostarczac ground truth - rzeczywiste doswiadczenia praktykow, nie marketingowe obietnice. Dziala w specjalizacji opinii spolecznosci.',
+    whoIs: 'Researcher Reddit to agent AI, ktory zachowuje sie jak antropolog badajacy plemiona developerow. Siedzi w cyfrowych tavernach (subreddity takie jak r/webdev, r/programming), slucha dyskusji bez filtra i wyciaga z nich rzeczywiste bolaczki praktykow.',
+    analogy: 'Researcher Reddit to tajemniczy klient w sklepie technologicznym - nie czyta broszur sprzedawcy, tylko siada przy kawie z innymi klientami i slucha co im sie nie podoba na produktach ktore kupili.',
+    howItWorks: [
+      {label: 'Wybor subredditow', desc: 'Identyfikuje relevantne subreddity (r/webdev, r/programming, r/reactjs, r/SaaS, r/devops) i formuluje precyzyjne zapytania z operatorem site:reddit.com.'},
+      {label: 'Czytanie watkow', desc: 'Priorytetyzuje watki z duzymi liczba komentarzy i gilded postami. Czyta pelne dyskusje, nie tylko tytuly, bo wartosc lezy w komentarzach.'},
+      {label: 'Wzorce i sentyment', desc: 'Wyodrebnia sentymenty (POSITIVE, NEGATIVE, MIXED, SHIFTING) i szuka wzorcow - gdy ten sam problem pojawia sie w 5+ watkach, to wzorzec, nie anegdota.'},
+      {label: 'Raport JSON', desc: 'Formatuje raport z TOP 10 insightami, linkami, upvote_range i confidence scores. Dodaje sekcje Patterns, Controversies i Gaps.'}
+    ],
+    inputs: [
+      'Pytanie badawcze (np. Jaki framework multi-agent preferuje spolecznosc Reddit)',
+      'Kluczowe slowa technologiczne do wyszukiwania',
+      'Czasami poprzedni raport badawczy w celu iteracji',
+      'Opcjonalny kontekst z innych agentow (zwykle brak - zasada izolacji)'
+    ],
+    outputs: [
+      'Ustrukturyzowany raport JSON z TOP 10 insightami',
+      'Kazdy insight z sentiment, frequency i reprezentatywnymi cytatami',
+      'Linki zrodlowe (reddit.com/r/... URLs) i upvote range',
+      'Sekcje Patterns Detected, Controversies i Gaps',
+      'Confidence scores 0.0-1.0 dla kazdego findingu'
+    ],
+    does: [
+      'Znajduje niefiltrowane, szczere opinie developerow dzieki anonimowosci',
+      'Identyfikuje ukryte problemy pomijane w dokumentacji',
+      'Detektuje trendy poprzez wzorce (10 osob niezaleznie raportuje ten sam problem)',
+      'Zbiera rekomendacje stacku od ludzi z realnym doswiadczeniem',
+      'Wyodrebia trade-offy z flamewarow (React vs Vue itd)',
+      'Weryfikuje spolecznosc poprzez glosy (upvotes = crowdsourced peer review)',
+      'Analizuje sentyment spolecznosci w czasie (SHIFTING sentymenty)'
+    ],
+    doesNotDo: [
+      'Nie czyta oficjalnej dokumentacji (to domena Researcher Tech)',
+      'Nie szuka inspiracji wizualnych lub designu (to domena Researcher UX)',
+      'Nie analizuje kodu zrodlowego ani Issues (to domena Researcher GitHub)',
+      'Nie podejmuje decyzji - tylko rekomenduje',
+      'Nie komunikuje sie z innymi researcherami (zasada izolacji)',
+      'Nie traktuje pojedynczego komentarza jako prawdy (szuka wzorcow)',
+      'Nie ignoruje kontrowersji - aktywnie je szuka'
+    ],
+    antiPatterns: [
+      'Single Comment Truth - jeden komentarz z 3 upvotami jako opinia spolecznosci',
+      'Outdated Thread - cytowanie postow sprzed 2 lat jako aktualnych opinii',
+      'Echo Chamber - przeszukiwanie TYLKO jednego subreddita (np. tylko r/reactjs pro-React)',
+      'Rage Sampling - zbieranie TYLKO negatywnych opinii, ignorowanie pochwal',
+      'Karma Blindness - traktowanie komentarza z 2 upvotami rowno z komentarzem z 500 upvotami'
+    ],
+    keyConcepts: [
+      {term: 'Semantyka subredditow', def: 'Kazdy subreddit ma inny bias i poziom zaawansowania - trzeba wiedziec gdzie szukac.'},
+      {term: 'Ground truth', def: 'Prawda z pierwszej linii frontu, od praktykow w terenie, a nie z marketingowych broszur.'},
+      {term: 'Online disinhibition', def: 'Anonimowosc sprzyja szczerosci - ludzie mowia na Reddicie co mysla naprawde.'},
+      {term: 'Survivorship bias', def: 'Widzisz glownie problemy (ludzie szukaja pomocy) i sukcesy, ignorujesz ciche porazki.'},
+      {term: 'Flamewar', def: 'Goraca dyskusja ujawniajaca najsilniejsze argumenty pro i contra dla konkurencyjnych technologii.'}
+    ],
+    stats: [
+      {label: 'Uzytkownicy Reddit', value: '430 mln/mc'},
+      {label: 'r/programming', value: '6 mln sub'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy chcesz wiedziec na co naprawde narzekaja developerzy, nie co mowia oficjalnie',
+      'Gdy szukasz ukrytych problemow frameworka pomijanych w dokumentacji',
+      'Gdy chcesz zorientowac sie w sentymencie spolecznosci wobec technologii'
+    ],
+    worstFor: [
+      'Gdy szukasz faktow technicznych (to domena Tech Researcher)',
+      'Gdy szukasz wizualnych trendow i inspiracji designu (to domena UX)',
+      'Gdy masz tylko godzine i potrzebujesz szybkich odpowiedzi'
+    ],
+    relatedAgents: ['res_x', 'res_forums', 'res_github'],
+    glossary: [
+      {term: 'karma', definition: 'Reputacja uzytkownika na Reddit - suma glosow za/przeciw wszystkim jego postom.'},
+      {term: 'subreddit', definition: 'Tematyczne subforum na Reddit, np r/webdev skupiajacy web developerow.'},
+      {term: 'upvote/downvote', definition: 'System glosowania - komunita filtruje tresci poprzez glosy.'},
+      {term: 'gilded', definition: 'Post lub komentarz nagrodzony zlotem przez innego uzytkownika - oznaka wysokiej wartosci.'},
+      {term: 'flamewar', definition: 'Goraca dyskusja miedzy zwolennikami roznych technologii - zrodlo argumentow pro/con.'}
+    ],
+    learningQuote: 'Narzekania na Reddicie to szanse na lepsze rozwiazanie - Researcher Reddit nie szuka opinii co jest dobre, lecz gdzie sa problemy.',
+    realExample: 'Pewnego dnia przeanalizowalem 200 watkow na r/nextjs o bledach server actions i znalazlem, ze 40 osob niezaleznie zglaszalo ten sam problem z revalidateTag w middleware. To byl wzorzec, nie anegdota - i ostrzezenie dla zespolu przed migracja.'
+  },
+  res_x: {
+    tagline: 'Lowca trendow w ruchu - wychwytuje sygnaly technologiczne zanim stana sie mainstream',
+    missionShort: 'Researcher X monitoruje X/Twitter w poszukiwaniu najszybszych sygnalow o nowych technologiach, launchach produktow i trendach. Jego misja: dostarczac wczesne ostrzeganie o zmianach w ekosystemie. Dziala szybko, ale wymaga walidacji z innymi zrodlami.',
+    whoIs: 'Researcher X to korespondent wojenny technologii - stoi na linii frontu ekosystemu X, wychwytujac wiadomosci zanim trafia do blogow czy dokumentacji. Jego moc lezy w szybkosci, ale ta szybkosc ma cene - X to medium o najwyzszym wskazniku szumu do sygnalu.',
+    analogy: 'Researcher X to radar dalekiego zasiegu na statku - wykrywa sygnaly najwczesniej, ale czasem widzi falszywe echa. Kapitan musi sluchac radaru, ale weryfikowac kazdy sygnal zanim zmieni kurs.',
+    howItWorks: [
+      {label: 'Rozbicie zapytania', desc: 'Odbiera pytanie badawcze od Orkiestratora i rozbija na pod-zapytania specyficzne dla X (trendy, launche, thready techniczne).'},
+      {label: 'Skan postow', desc: 'Wykonuje WebSearch z operatorami site:x.com i site:twitter.com. Pobiera pelne thready z WebFetch, nie tylko snippety z wyszukiwarki.'},
+      {label: 'Ocena autorow', desc: 'Sprawdza Tier autora (1=tworca tech, 5=komentator) i credentials. Oblicza hype_score 0-10 dla kazdego findingu.'},
+      {label: 'Walidacja i raport', desc: 'Oznacza validation_status (VALIDATED/PARTIALLY/REQUIRES_VALIDATION) i formatuje raport JSON z TOP 10 postami, engagement_metrics i confidence scores.'}
+    ],
+    inputs: [
+      'Pytanie badawcze (np. Jakie sa trendy w AI agents w Q2 2026)',
+      'Slowa kluczowe technologiczne do sledzenia',
+      'Czasowy zakres (ostatnie 48h, tydzien, miesiac)',
+      'Opcjonalnie poprzedni raport z kontekstem'
+    ],
+    outputs: [
+      'TOP 10 postow z linkami do tweeta',
+      'Engagement metrics (likes, retweets, replies, bookmarks)',
+      'Author credentials i Tier (1-5)',
+      'Hype score 0-10 i validation_status dla kazdego findingu',
+      'Sekcje Hype Assessment i Gaps'
+    ],
+    does: [
+      'Wychwytuje nowe launche i ogloszenia zanim pojawia sie w dokumentacji',
+      'Identyfikuje trendy poprzez wzorce postow (50 osob w tydzien pisze o X = trend)',
+      'Detektuje hype cycle i rozroznia szum od sygnalu',
+      'Zbiera opinie ekspertow (Tier 1-2 influencerow)',
+      'Analizuje debaty porownawcze (X vs Y) i ujawnia trade-offy',
+      'Mierzy engagement jako sygnal zainteresowania (ale NIE prawdy)',
+      'Weryfikuje thready techniczne od doswiadczonych inzynierow'
+    ],
+    doesNotDo: [
+      'Nie podaza za hype bez walidacji - flaguje jako REQUIRES_VALIDATION',
+      'Nie traktuje lajkow jako dowodu jakosci technicznej',
+      'Nie czyta oficjalnej dokumentacji (to domena Tech)',
+      'Nie szuka wizualnych inspiracji (to domena UX)',
+      'Nie analizuje repozytoriow (to domena GitHub)',
+      'Nie podejmuje decyzji - raportuje co mowi X, nie czy to prawda',
+      'Nie komunikuje sie z innymi researcherami (zasada izolacji)'
+    ],
+    antiPatterns: [
+      'Hype Follower - przejmowanie narracji z X bez weryfikacji (raport brzmi jak entuzjastyczny tweet)',
+      'Influencer Worship - traktowanie opinii popularnych osob jako autorytatywne niezaleznie od kompetencji',
+      'Engagement = Truth - sortowanie po lajkach zamiast wartosci merytorycznej',
+      'Thread Cherry-Picking - selekcja tylko potwierdzajacych tweetow, ignorowanie krytyki',
+      'Recency Obsession - tylko tweety z ostatnich 24h, ignorowanie wartosciowych z tygodnia'
+    ],
+    keyConcepts: [
+      {term: 'Hype cycle', def: 'Faza zycia trendu: dzien 1 eksplozja, dzien 7 krytyka, dzien 30 cisza. Trzeba wiedziec gdzie jestesmy.'},
+      {term: 'Noise-to-signal ratio', def: 'Stosunek szumu do wartosciowych tresci - na X najwyzszy ze wszystkich zrodel researchu.'},
+      {term: 'Influencer Tier', def: 'Hierarchia wiarygodnosci: tworca tech - principal engineer - DevRel - content creator - komentator.'},
+      {term: 'Validation status', def: 'Czy finding potwierdzony z innym zrodlem czy wymaga walidacji (VALIDATED/PARTIALLY/REQUIRES_VALIDATION).'},
+      {term: 'Context collapse', def: 'Brak kontekstu w 280 znakach - trzeba czytac caly thread i replies, zeby nie zgubic sensu.'}
+    ],
+    stats: [
+      {label: 'Uzytkownicy X', value: '500 mln/mc'},
+      {label: 'Polokres postu', value: '4.2 h'},
+      {label: 'Load', value: '45/100'},
+      {label: 'Koszt/run', value: '0.03 USD'}
+    ],
+    bestFor: [
+      'Gdy chcesz wiedziec o nowych launchach przed blogami i dokumentacja',
+      'Gdy chcesz detektowac trendy zanim stana sie mainstream',
+      'Gdy chcesz wczesne ostrzeganie o bugach i kontrowersji'
+    ],
+    worstFor: [
+      'Gdy szukasz glebokich, szczegolowych analiz (280 znakow to za malo)',
+      'Gdy szukasz faktu zamiast opinii (X jest pelne hype i marketing)',
+      'Gdy nie chcesz zmagac sie z botami i manipulacja'
+    ],
+    relatedAgents: ['res_reddit', 'res_forums', 'res_github'],
+    glossary: [
+      {term: 'hype_score', definition: 'Skala 0-10 oceniajaca poziom hype wokol tematu na X.'},
+      {term: 'thread', definition: 'Wieloczesciowy post na X - posty polaczone w watek, kluczowy format dla technicznych analiz.'},
+      {term: 'hot_take', definition: 'Szybka, kontrowersyjna opinia - zazwyczaj uproszczona i wymaga walidacji.'},
+      {term: 'engagement_metrics', definition: 'Likes, retweets, replies, bookmarks - sygnaly zainteresowania, ale nie prawdy.'},
+      {term: 'validation_status', definition: 'VALIDATED/PARTIALLY/REQUIRES_VALIDATION - czy potwierdzono z innym zrodlem.'}
+    ],
+    learningQuote: 'X jest najszybszym medium, ale ta szybkosc ma cene - szybkosc bez walidacji to ryzyko, szybkosc z walidacja to przewaga konkurencyjna.',
+    realExample: 'Pewnego dnia wychwycilem thread od principal engineera Anthropic o nowym model routingu 6 godzin przed oficjalnym blog postem. Oznaczylem jako VALIDATED po cross-checku z res_tech i zespol zdazyl zaplanowac migracje przed konkurencja.'
+  },
+  res_github: {
+    tagline: 'Archeolog dzialajacego kodu - wykopuje wzorce z najlepszych repozytoriow open-source',
+    missionShort: 'Researcher GitHub przeszukuje repozytoria open-source w poszukiwaniu dzialajacego kodu, architektury i wzorcow. Jego misja: dostarczac dowody w formie kodu, nie opinie. Unika 90% porzuconych projektow i rekomenduje TOP 5 z health scoreami.',
+    whoIs: 'Researcher GitHub to archeolog badajacy ruiny dzialajacych aplikacji. Nie czyta dokumentacji o tym jak powinno sie budowac - odkopuje repozytoria i widzi jak faktycznie sie buduje. Patrzy na fundamenty, narzedzia, bledy i historie napraw. Dokumentacja mowi co powinno dzialac, GitHub mowi co faktycznie dziala w produkcji.',
+    analogy: 'Researcher GitHub to inspektor budowlany sprawdzajacy dom przed zakupem - nie patrzy na swiezy tynk i ladna elewacje, ale zajrzy pod README, do Issues, commitow i architektury. I dopiero wtedy mowi: ten fundament jest solidny albo uciekaj, zanim sie zawali.',
+    howItWorks: [
+      {label: 'Wyszukiwanie repos', desc: 'Rozbija pytanie na pod-zapytania z operatorami GitHub (stars>100, pushed>data, language:typescript) i wyszukuje TOP 10-15 repozytoriow.'},
+      {label: 'Filtr zdrowia', desc: 'Odrzuca porzucone projekty - filtruje po metrikach: stars >100, commit <6 miesiecy, licencja MIT/Apache. Zostaje TOP 5 do glebokiej analizy.'},
+      {label: 'Analiza kodu', desc: 'Czyta README, package.json, struktura /src, .github/workflows. Przeglada Issues (problemy) i Pull Requesty (jak reaguja maintainerzy).'},
+      {label: 'Cross-repo patterns', desc: 'Ocena 8 metryk zdrowia, bus factor, i wyodrebia wzorce miedzy 5 repos - co powtarza sie w 4 z 5. Raport JSON z rekomendacjami.'}
+    ],
+    inputs: [
+      'Pytanie badawcze (np. Jaka architektura dominuje w SaaS repos)',
+      'Slowa kluczowe technologiczne i typ architektur',
+      'Czasami istniejacy kod projektu do porownania',
+      'Kontekst zespolu (rozmiar, poziom zaawansowania) - opcjonalnie'
+    ],
+    outputs: [
+      'TOP 5 repozytoriow z URL i metrykami (stars, forks, last commit)',
+      'Health_score 0-10, architektura, tech stack per repo',
+      'Notable Issues i Code patterns powtarzajace sie w repozytorium',
+      'Cross-repo patterns - wzorce miedzy wszystkimi 5 repos (kluczowe)',
+      'Recommendations, Risks i Gaps'
+    ],
+    does: [
+      'Znajduje dzialajacy kod w dziesiatkach milionow repozytoriow GitHub',
+      'Wyodrebia architekture z realnych implementacji (nie teorii z podrecznikow)',
+      'Ocenia zdrowie repozytorium poprzez 8 metryk (health score)',
+      'Identyfikuje ukryte problemy poprzez czytanie Issues',
+      'Wydobywa cross-repo patterns - co robia najlepsze repos',
+      'Weryfikuje adopcje technologii poprzez liczenie usage w top repos',
+      'Ocenia ryzyko - bus factor, zdrowie spolecznosci, aktywnosc maintainerow',
+      'Dostarcza dowody w formie kodu, nie opinii'
+    ],
+    doesNotDo: [
+      'Nie kopiuje kodu do projektu (to rola Buildera)',
+      'Nie uruchamia kodu (npm test, docker compose up) - nie ma dostepu do Bash',
+      'Nie ocenia estetyki interfejsu (to domena UX)',
+      'Nie podejmuje decyzji - rekomenduje, decyzja nalezy do Orchestratora',
+      'Nie przeszukuje zrodel innych researcherow (kazdy ma swoj teren)',
+      'Nie traktuje pojedynczego repo jako prawdy - porownuje minimum 5',
+      'Nie ignoruje daty - repo z commitami sprzed 2 lat to abandoned'
+    ],
+    antiPatterns: [
+      'Star Worship - wybieranie repo wylacznie po liczbie gwiazdek (15K stars, ale porzucone od 2023)',
+      'Blind Copy - rekomendowanie skopiuj architekture z repo X bez analizy kontekstu',
+      'Abandoned Repo Adoption - rekomendowanie repo bez commitow od 2 lat',
+      'README Deception - ocenianie repo tylko po README bez sprawdzenia kodu i Issues',
+      'Single Repo Fixation - cala analiza na jednym repozytorium, bez porownania alternatyw'
+    ],
+    keyConcepts: [
+      {term: 'bus_factor', def: 'Liczba kontrybutorow ktorzy musza odejsc zeby projekt umarl - 1 = krytyczne ryzyko.'},
+      {term: 'cross_repo_pattern', def: 'Wzorzec powtarzajacy sie w wielu repozytoriach (4/5 uzywa Prisma = wzorzec).'},
+      {term: 'health_score', def: 'Ocena zdrowia repo 0-10 bazowana na 8 metrykach: Stars, Last Commit, Issues, PRs, Contributors, License, Tests, README.'},
+      {term: 'dependency_health', def: 'Czy pakiety w package.json sa aktywnie utrzymywane i czy maja znane CVE.'},
+      {term: 'code_smell', def: 'Subtelne problemy w architekturze - zle oddzielenie concerns, duze komponenty, brak testow.'}
+    ],
+    stats: [
+      {label: 'Repozytoria', value: '420 mln+'},
+      {label: 'Porzucone', value: '90%'},
+      {label: 'Load', value: '55/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy chcesz zobaczyc jak naprawde buduja najlepsze projekty',
+      'Gdy szukasz architektur referencyjnych i wzorcow kodu',
+      'Gdy chcesz zweryfikowac czy technologia ma adopcje w top repos'
+    ],
+    worstFor: [
+      'Gdy szukasz szybkich odpowiedzi (GitHub research zajmuje 45-120s)',
+      'Gdy szukasz teorii lub benchmarkow (to domena Tech)',
+      'Gdy projekt jest zbyt nowy i nie ma jeszcze public repos'
+    ],
+    relatedAgents: ['res_reddit', 'res_forums', 'res_tech'],
+    glossary: [
+      {term: 'fork', definition: 'Kopia repozytorium - jesli ktos forkuje repo, oznacza ze go uzywa lub chce modyfikowac.'},
+      {term: 'pull_request', definition: 'Propozycja zmian - pokazuje kulture code review i komunikacje maintainerow.'},
+      {term: 'issue', definition: 'Problem zgloszony przez uzytkownika - Issues to wywiad z uzytkownikami repo.'},
+      {term: 'health_score', definition: 'Ocena zdrowia repo 0-10 z 8 metryk: Stars, Last Commit, Issues, PRs, Contributors, License, Tests, README.'},
+      {term: 'github_actions', definition: 'Automatyzacja CI/CD - Workflows pokazuja czy projekt ma testy i jak dojrzaly jest proces.'}
+    ],
+    learningQuote: 'GitHub daje realny kod, nie teorie - bo kod albo dziala, albo nie. TOP 5 repos z GitHub jest kotwica calej analizy wieloagentowej.',
+    realExample: 'Pewnego dnia porownalem 5 najlepszych boilerplates SaaS w Next.js i odkrylem, ze 4 z 5 uzywaja Prisma + tRPC + NextAuth - to byl cross-repo pattern, ktory stal sie kotwica rekomendacji dla zespolu startupu.'
+  },
+  res_forums: {
+    tagline: 'Tropiciel pulapek i rozwiazan - kataloguje gdzie wszyscy sie potkneli i jak sie uratowali',
+    missionShort: 'Researcher Forums przeszukuje fora, blogi i platformy Q&A w poszukiwaniu rozwiazanych problemow i ukrytych pulapek. Jego misja: dostarczac konkretne, zweryfikowane rozwiazania z kodem. Kazda zaakceptowana odpowiedz na SO to rozwiazany problem w produkcji.',
+    whoIs: 'Researcher Forums to bibliotekarz technicznej biblioteki, ktory zna kazda polke nie alfabetycznie, ale poprzez to ktore ksiazki maja pozaginane rogi - bo praktycy wciaz do nich wracaja. Przeszukuje StackOverflow, Dev.to, Medium i Hacker News. Kazda zaakceptowana odpowiedz to wyrok - zweryfikowane rozwiazanie.',
+    analogy: 'Dokumentacja mowi ci sciezke szczescia. Fora mowia ci gdzie wszyscy sie potkneli - bo za kazda zaakceptowana odpowiedzia na StackOverflow stoi blizna po rozwiazanym problemie w produkcji.',
+    howItWorks: [
+      {label: 'Pod-zapytania', desc: 'Rozbija pytanie na pod-zapytania specyficzne dla kazdej platformy i uzywa operatorow site:stackoverflow.com, site:dev.to, site:medium.com, site:news.ycombinator.com.'},
+      {label: 'Filtrowanie jakosci', desc: 'Odrzuca pytania bez odpowiedzi, posty starsze niz 18 miesiecy, odpowiedzi z mniej niz 5 glosami. Pobiera tresc TOP 10-15 wynikow.'},
+      {label: 'Wyciaganie gotchas', desc: 'Ocenia Answer Quality Score 1-10 i wyodrebia gotchas - ukryte pulapki typu dziala ALE... lub dokumentacja mowi X, ale w praktyce....'},
+      {label: 'Cross-validate i raport', desc: 'Sprawdza czy ten sam problem pojawil sie na 2+ platformach (SO+Dev.to = confidence 0.85). Formatuje raport JSON z TOP 10 takeaways.'}
+    ],
+    inputs: [
+      'Pytanie badawcze (np. Problemy migracji Prisma v5 do v6)',
+      'Slowa kluczowe technologiczne',
+      'Zakres czasowy: ostatnie 12-18 miesiecy (starsze = ryzykowne)',
+      'Czasami poprzedni raport dla iteracji'
+    ],
+    outputs: [
+      'TOP 10 takeaways - praktyczne rozwiazania z linkami',
+      'Answer_score, post_date, technology_version per finding',
+      'Accepted flag - czy autor pytania potwierdzil skutecznosc',
+      'Gotchas - ukryte pulapki (najcenniejsza czesc raportu)',
+      'Cross-validated flag i confidence score 0.0-1.0'
+    ],
+    does: [
+      'Znajduje zweryfikowane rozwiazania (zaakceptowane odpowiedzi SO)',
+      'Identyfikuje powtarzajace sie problemy miedzy platformami',
+      'Wyodrebia gotchas - ukryte pulapki nie wymienione w dokumentacji',
+      'Zbiera tutoriale step-by-step z konkretnymi benchmarkami',
+      'Analizuje praktyczna zastosowanosc rozwiazan',
+      'Weryfikuje poprzez cross-platform validation (SO + Dev.to + HN)',
+      'Ocenia autorow - czy senior engineer czy poczatkujacy',
+      'Pomija tresci stare i przestarzale API'
+    ],
+    doesNotDo: [
+      'Nie czyta oficjalnej dokumentacji (to domena Tech)',
+      'Nie szuka inspiracji wizualnych (to domena UX)',
+      'Nie analizuje kodu w repozytoriach (to domena GitHub)',
+      'Nie podejmuje decyzji - raportuje problemy i rozwiazania',
+      'Nie komunikuje sie z innymi researcherami (zasada izolacji)',
+      'Nie cytuje pytan bez odpowiedzi jako dowodow na problemy',
+      'Nie traktuje liczby glosow jako absolutnego wskaznika prawdy'
+    ],
+    antiPatterns: [
+      'Unanswered Echo - cytowanie pytan bez odpowiedzi jako dowodu na istnienie problemu',
+      'Upvote Worship - traktowanie liczby glosow jako absolutnego wskaznika poprawnosci (500 glosow z 2019 = przestarzale)',
+      'Medium Paywall Trap - cytowanie artykulow za paywallem bez sprawdzenia dostepnosci',
+      'Outdated Tutorial - cytowanie tutoriala dla starej wersji technologii jako aktualnego',
+      'Single Source Syndrome - cala rekomendacja na jednym poscie forumowym, bez cross-validation'
+    ],
+    keyConcepts: [
+      {term: 'accepted_answer', def: 'Odpowiedz na SO oznaczona przez autora pytania jako rozwiazujaca problem - potwierdzenie skutecznosci.'},
+      {term: 'gotcha', def: 'Ukryta pulapka ktora nie wynika z oficjalnej dokumentacji - kluczowa wartosc forum research.'},
+      {term: 'cross_platform_validation', def: 'Potwierdzenie znaleziska w wiecej niz jednym zrodle (SO+Dev.to+HN = highest confidence).'},
+      {term: 'practical_applicability', def: 'Czy znalezisko da sie wdrozyc od razu w projekcie bez dodatkowych modyfikacji.'},
+      {term: 'tutorial_freshness', def: 'Aktualnosc tutoriala - czy dotyczy biezacej wersji technologii (kluczowe dla szybko zmieniajacych sie frameworkow).'}
+    ],
+    stats: [
+      {label: 'Odpowiedzi SO', value: '58 mln'},
+      {label: 'Accepted', value: '8 mln+'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Koszt/run', value: '0.024 USD'}
+    ],
+    bestFor: [
+      'Gdy dokumentacja mowi happy path, ale chcesz wiedziec gdzie sie ludzie potykaja',
+      'Gdy szukasz konkretnych, zweryfikowanych rozwiazan z kodem',
+      'Gdy chcesz wiedziec o pulapkach (gotchas) nie wymienionych w docs'
+    ],
+    worstFor: [
+      'Gdy szukasz szybkich odpowiedzi (wiele wyszukiwan i WebFetch callow)',
+      'Gdy szukasz oficjalnych specyfikacji i benchmarkow (to domena Tech)',
+      'Gdy szukasz bardzo nowych technologii (wciaz brak pytan na SO)'
+    ],
+    relatedAgents: ['res_reddit', 'res_github', 'res_tech'],
+    glossary: [
+      {term: 'accepted', definition: 'Odpowiedz zaakceptowana przez autora pytania - oznacza ze rozwiazala problem.'},
+      {term: 'upvote', definition: 'Glos poparcia - ale glosy moga byc stare i nieaktualne dla nowych wersji technologii.'},
+      {term: 'gotcha', definition: 'Ukryta pulapka, np. revalidateTag() nie dziala w middleware.ts mimo ze docs tego nie mowia.'},
+      {term: 'cross_validation', definition: 'Potwierdzenie znaleziska w 2+ zrodlach - zwieksza confidence score.'},
+      {term: 'tutorial_freshness', definition: 'Czy tutorial dotyczy biezacej wersji technologii - krytyczne dla frameworkow.'}
+    ],
+    learningQuote: 'Dokumentacja mowi sciezke szczescia. Fora mowia gdzie wszyscy sie potkneli - kazda zaakceptowana odpowiedz na StackOverflow to rozwiazany problem kogos innego.',
+    realExample: 'Pewnego dnia znalazlem 8 watkow na SO z tym samym gotcha: revalidateTag nie dziala w middleware.ts w Next.js 14. Wszystkie zaakceptowane odpowiedzi wskazywaly workaround z route handler - uratowalo to zespol przed 3-dniowa debugging session.'
+  },
+  res_docs: {
+    tagline: 'Prawnik czytajacy ustawy frameworkow - tylko oficjalne zrodla, zero plotek',
+    missionShort: 'Researcher Docs zbiera fakty techniczne wylacznie z oficjalnych dokumentacji frameworkow, bibliotek i narzedzi. Jego misja: dostarczac zrodla prawdy (source of truth) z paragrafami i linkami, a nie opinie. Dziala w specjalizacji autoryzowanych materialow producenta.',
+    whoIs: 'Researcher Docs to archiwista i bibliotekarz wewnetrznej wiedzy technologii. Zachowuje sie jak prawnik studiujacy ustawy i precedensy - nie interesuja go plotki ani opinie na forach, tylko to co napisali sami autorzy technologii w getting started, API reference i release notes.',
+    analogy: 'Researcher Docs jest jak prawnik badajacy ustawy - nie cytuje komentatorow telewizyjnych, tylko paragrafy kodeksu z numerami i data wejscia w zycie.',
+    howItWorks: [
+      {label: 'Wybor zrodel', desc: 'Lokalizuje oficjalne dokumentacje producenta dla aktualnej wersji frameworka. Odrzuca tutoriale stron trzecich i blogposty, bo nie sa source of truth.'},
+      {label: 'Ekstrakcja fragmentow', desc: 'Wyciaga getting started, best practices, performance tips, security guidelines i gotowe config snippety. Kazdy fragment opisany linkiem do paragrafu.'},
+      {label: 'Weryfikacja wersji', desc: 'Sprawdza czy dokumentacja odpowiada wersji frameworka w projekcie. Docs dla Next.js 13 w projekcie z Next.js 15 to falszywa informacja.'},
+      {label: 'Structured reference', desc: 'Buduje indeks z wieloma zrodlami, precyzyjnymi cytatami i linkami URL. Format: fragment + zrodlo + wersja + data pobrania.'}
+    ],
+    inputs: [
+      'Pytanie techniczne ze specyfikacja frameworka lub biblioteki',
+      'Wersja frameworka uzywana w projekcie (krytyczne dla trafnosci)',
+      'Lista tematow do pokrycia (setup, config, security, perf)',
+      'Opcjonalny kontekst od Researcher Tech z lista kandydatow'
+    ],
+    outputs: [
+      'Indeks fragmentow dokumentacji z linkami do paragrafow',
+      'Config snippety z dzialajacymi przykladami kodu',
+      'Best practices i performance tips z sekcji oficjalnych',
+      'Security guidelines z oficjalnego security advisory',
+      'Lista wersji frameworkow i data publikacji dokumentacji'
+    ],
+    does: [
+      'Zbiera informacje wylacznie z oficjalnych dokumentacji frameworkow i bibliotek',
+      'Ekstrahuje best practices, performance tips i security guidelines z sekcji producenta',
+      'Dokumentuje config snippety z dzialajacymi przykladami i numerami wersji',
+      'Tworzy structured reference guide z wieloma zrodlami i precyzyjnymi linkami',
+      'Weryfikuje aktualnosc dokumentacji vs wersja frameworka w projekcie',
+      'Cytuje paragrafy API reference dla kazdego twierdzenia technicznego',
+      'Identyfikuje release notes i migration guides dla majorowych wersji',
+      'Mapuje ekosystem plugins i extensions oficjalnie rekomendowanych przez producenta'
+    ],
+    doesNotDo: [
+      'Nie cytuje opinii uzytkownikow ani postow na forach (to domena Researcher Forum)',
+      'Nie porownuje technologii ani nie robi analizy pros/cons (to domena Researcher Tech)',
+      'Nie implementuje kodu ani nie integruje bibliotek (to domena Builderow)',
+      'Nie ocenia subiektywnie jakosci frameworka, tylko raportuje fakty z docs',
+      'Nie zbiera plotek z Reddita lub X/Twittera (inne domeny researchu)',
+      'Nie mieszka wersji - nigdy nie cytuje docs dla nieaktualnej wersji',
+      'Nie interpretuje dokumentacji tworczo, tylko cytuje doslownie z kontekstem'
+    ],
+    antiPatterns: [
+      'Version Mismatch - cytowanie docs dla Next.js 13 gdy projekt uzywa Next.js 15, calkowicie falszywe info.',
+      'Docs Tunnel Vision - oficjalna dokumentacja czesto pomija edge cases i real-world gotchas, nie jest wszechwiedzaca.',
+      'Stale Snapshot - pobieranie docs raz i cytowanie pol roku pozniej bez weryfikacji zmian w release notes.',
+      'Tutorial Trap - wchodzenie w blogposty pod pretekstem oficjalnych docs, bo linkuja do oficjalnej strony.',
+      'Marketing Page Confusion - cytowanie sekcji marketingowej strony producenta zamiast technicznego API reference.'
+    ],
+    keyConcepts: [
+      {term: 'Source of truth', def: 'Autoryzowane zrodlo producenta technologii, od ktorego nie ma odwolania wyzej.'},
+      {term: 'API reference', def: 'Pelna specyfikacja funkcji, klas, parametrow i typow z przykladami uzycia.'},
+      {term: 'Release notes', def: 'Lista zmian miedzy wersjami - krytyczna dla oceny breaking changes.'},
+      {term: 'Version pinning', def: 'Cytowanie dokumentacji razem z numerem wersji frameworka w projekcie.'},
+      {term: 'Migration guide', def: 'Oficjalny przewodnik przejscia z wersji X na wersje Y z lista zmian.'}
+    ],
+    stats: [
+      {label: 'Zrodla', value: 'Oficjalne'},
+      {label: 'Typ ekstrakcji', value: 'Cytaty + linki'},
+      {label: 'Load', value: '40/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy potrzebujesz twardych faktow technicznych popartych paragrafami z docs producenta',
+      'Gdy projekt musi uzywac oficjalnych best practices (security, performance, a11y)',
+      'Gdy wybierasz konfiguracje frameworka i chcesz gotowe snippety z API reference'
+    ],
+    worstFor: [
+      'Gdy szukasz realnych doswiadczen praktykow z produkcji (to Researcher Reddit i Forum)',
+      'Gdy porownujesz konkurencyjne frameworki i potrzebujesz rekomendacji (to Researcher Tech)',
+      'Gdy interesuja cie edge cases i gotchas pomijane w oficjalnych materialach'
+    ],
+    relatedAgents: ['res_tech', 'res_forums', 'res_critic'],
+    glossary: [
+      {term: 'docs', definition: 'Oficjalna dokumentacja techniczna utrzymywana przez producenta frameworka lub biblioteki.'},
+      {term: 'changelog', definition: 'Chronologiczny log zmian miedzy wersjami - zrodlo informacji o breaking changes.'},
+      {term: 'api', definition: 'Application Programming Interface - kontrakt wywolan funkcji i typow danych.'},
+      {term: 'snippet', definition: 'Gotowy do wklejenia fragment kodu z oficjalnej dokumentacji, zwykle z komentarzami.'},
+      {term: 'semver', definition: 'Semantic Versioning - konwencja MAJOR.MINOR.PATCH determinujaca zgodnosc wersji.'}
+    ],
+    learningQuote: 'Dokumentacja producenta to konstytucja technologii - nie kazdy ja lubi, ale wszystkie inne zrodla odwoluja sie do niej gdy powstaje spor.',
+    realExample: 'Pewnego dnia zbieralem config dla Postgres 16 i znalazlem w oficjalnym release notes paragraf o zmianie defaultowego logical replication slot. Wklejenie tego do raportu oszczedzilo zespolowi dwoch dni debugowania, bo ich migracja uzywala starego defaulta z wersji 15.'
+  },
+  res_critic: {
+    tagline: 'Recenzent naukowy przed publikacja - wylawia kazda sprzecznosc i bias w raportach',
+    missionShort: 'Research Critic waliduje wyniki wszystkich researcherow szukajac sprzecznosci, confirmation bias, luk i przestarzalych zrodel. Jego misja: chronic projekt przed slabym researchem, ktory propagowalby sie do decyzji architektonicznych. Najwyzszy load w warstwie RESEARCH (85/100).',
+    whoIs: 'Research Critic to agent-audytor zachowujacy sie jak peer reviewer przed publikacja w Nature. Czyta raporty z perspektywy metodologa, statystyka i eksperta domenowego jednoczesnie. Nie prowadzi wlasnego researchu - audytuje cudzy i oznacza kazde twierdzenie bez dowodu.',
+    analogy: 'Research Critic jest jak recenzent naukowy przed publikacja - nie robi eksperymentu, ale wylapie kazdy wykres bez error barow i kazde twierdzenie bez cytowania.',
+    howItWorks: [
+      {label: 'Zbieranie raportow', desc: 'Dostaje outputy 6 researcherow (Tech, UX, Reddit, X, GitHub, Forum, Docs) i wczytuje je na raz. Musi widziec caly ekosystem, bo sprzecznosci ujawniaja sie w porownaniu.'},
+      {label: 'Cross-walidacja', desc: 'Szuka sprzecznosci miedzy raportami (np. Tech rekomenduje React, Reddit narzeka na React). Kazda sprzecznosc zostaje oznaczona do rozwiazania.'},
+      {label: 'Rubric scoring', desc: 'Ocenia kazdy raport wg rubryki: Completeness 25%, Accuracy 25%, Relevance 20%, Freshness 20%, Actionability 10%. Suma <6/10 prowadzi do REVISE.'},
+      {label: 'Raport krytyczny', desc: 'Produkuje CRITIC.md z lista sprzecznosci, luk w danych, identified biases i rekomendacja PASS lub REVISE per researcher.'}
+    ],
+    inputs: [
+      'Zestaw 3-7 raportow od researcherow (Tech, UX, Reddit, X, GitHub, Forum, Docs)',
+      'Pierwotne pytanie badawcze ustalone przez Orkiestratora',
+      'Rubryka oceny z wagami (Completeness, Accuracy, Relevance, Freshness, Actionability)',
+      'Opcjonalne poprzednie wersje raportow z historii iteracji'
+    ],
+    outputs: [
+      'CRITIC.md z werdyktem PASS lub REVISE per kazdy researcher',
+      'Lista sprzecznosci miedzy raportami z cytatami',
+      'Lista luk - czego nikt nie zbadal i czego brakuje',
+      'Scoring per raport w skali 0-10 z uzasadnieniem per wymiar',
+      'Rekomendacje kolejnych iteracji lub delta researchu'
+    ],
+    does: [
+      'Cross-waliduje raporty 3-7 researcherow szukajac sprzecznosci i konfliktow',
+      'Ocenia wiarygodnosc zrodel - aktualnosc, niezaleznosc, track record autorow',
+      'Identyfikuje confirmation bias - czy researcher szukal potwierdzenia tezy czy faktow',
+      'Aplikuje rubric scoring z wagami Completeness/Accuracy/Relevance/Freshness/Actionability',
+      'Wykrywa luki - pytania pozostawione bez odpowiedzi i nieprzebadane obszary',
+      'Flaguje przestarzale dane - benchmarki sprzed 2 lat, wersje frameworkow EOL',
+      'Odroznia CRITICAL od NICE-TO-HAVE w raportach, nie blokuje z powodu kosmetyki',
+      'Rekomenduje delta research na konkretne luki zamiast powtarzania calosci'
+    ],
+    doesNotDo: [
+      'Nie prowadzi wlasnego researchu - audytuje cudzy, nigdy nie duplikuje pracy',
+      'Nie podejmuje decyzji technologicznych - flaguje problemy, decyzja nalezy do Orkiestratora',
+      'Nie pisze kodu ani nie implementuje - czysto analityczna rola audytora',
+      'Nie akceptuje raportow bez glebokiej analizy - rubber stamping to antywzorzec',
+      'Nie ingeruje w narzedzia researcherow - ocenia output, nie metode zbierania',
+      'Nie ocenia stylu pisania raportu, tylko trescia i wiarygodnosc zrodel',
+      'Nie komunikuje sie z researcherami - zasada izolacji, dziala offline z tekstem'
+    ],
+    antiPatterns: [
+      'Rubber Stamp - akceptowanie raportow bez glebokiej analizy, przepuszczenie slabego researchu do fazy Build.',
+      'Overcritical Block - blokowanie postepu z powodu minor issues, nie odrozniajac CRITICAL od NICE-TO-HAVE.',
+      'Single-Source Trust - akceptowanie twierdzenia bo popiera je jeden researcher, ignorujac sprzeczny glos trzech innych.',
+      'Groupthink Validation - oznaczanie jako zgodne raportow ktore po prostu przepisaly ten sam error ze zlego zrodla.',
+      'Vintage Bias - traktowanie starszego zrodla jako bardziej autorytatywnego, ignorujac ze jest z czasow pre-LLM.'
+    ],
+    keyConcepts: [
+      {term: 'Cross-validation', def: 'Porownywanie wnioskow wielu niezaleznych raportow w celu wykrycia sprzecznosci.'},
+      {term: 'Confirmation bias', def: 'Szukanie dowodow potwierdzajacych z gory ustalona teze zamiast obiektywnej oceny.'},
+      {term: 'Rubric scoring', def: 'Oceniane kazdego raportu wzdluz ustalonych wymiarow z wagami punktowymi.'},
+      {term: 'Source credibility', def: 'Ocena zrodla wzgledem aktualnosci, niezaleznosci i track record autora.'},
+      {term: 'Gap analysis', def: 'Identyfikacja pytan pozostawionych bez odpowiedzi przez wszystkich researcherow.'}
+    ],
+    stats: [
+      {label: 'Raporty na sesje', value: '3-7'},
+      {label: 'Prog REVISE', value: '<6/10'},
+      {label: 'Load', value: '85/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy masz pelny zestaw raportow od wielu researcherow i chcesz zweryfikowac ich spojnosc',
+      'Gdy stawka jest wysoka i slaby research kosztowalby tygodnie pracy w fazie Build',
+      'Gdy potrzebujesz obiektywnej oceny PASS lub REVISE przed przejsciem do debaty Five Minds'
+    ],
+    worstFor: [
+      'Gdy masz tylko jeden raport (nie ma co cross-walidowac, brak porownania)',
+      'Gdy zadanie jest proste i formalna krytyka wydluzy pipeline bez wartosci',
+      'Gdy potrzebujesz zbierania nowych danych (to domena researcherow, nie krytyka)'
+    ],
+    relatedAgents: ['synthesizer', 'res_tech', 'expert_devil'],
+    glossary: [
+      {term: 'rubryka', definition: 'Zestandaryzowany zestaw kryteriow oceny z wagami, uzywany przez recenzentow naukowych.'},
+      {term: 'peer review', definition: 'Proces oceny pracy przez niezaleznych ekspertow z tej samej dziedziny.'},
+      {term: 'bias', definition: 'Systematyczne zniekstalcenie wnioskow spowodowane uprzedzeniem autora lub zrodla.'},
+      {term: 'gap', definition: 'Luka w wiedzy - obszar nieprzebadany przez zadnego researchera w danej sesji.'},
+      {term: 'revise', definition: 'Werdykt zwracajacy raport do autora z lista koniecznych poprawek przed akceptacja.'}
+    ],
+    learningQuote: 'Slaby research jest gorszy niz brak researchu - brak researchu zmusza do ostroznosci, a slaby daje falszywe poczucie pewnosci.',
+    realExample: 'Pewnego dnia audytowalem 6 raportow o wyborze ORM i znalazlem ze Tech cytuje benchmarki z 2022, a Reddit i GitHub pisza ze od 2024 te same biblioteki sa wolne w trybie connection pooling. Oznaczylem to jako CRITICAL i zespol uniknal wdrozenia narzedzia ktore juz nie spelnia SLA.'
+  },
+  backend: {
+    tagline: 'Muzyk sesyjny kodu - zamienia specyfikacje w dzialajace oprogramowanie bez improwizacji',
+    missionShort: 'Backend Dev to pierwszy agent warstwy BUILD, ktory materializuje plany w dzialajacy kod. Jego misja to implementacja API, schematow danych, walidacji i logiki biznesowej zgodnie ze specyfikacja. Nie projektuje, nie bada - wykonuje z chirurgiczna precyzja.',
+    whoIs: 'Backend Dev zachowuje sie jak mistrz stolarz albo rezydent chirurgiczny - dostaje precyzyjny projekt od Planera i realizuje go bez kwestionowania strategii. To agent, w ktorym plany przestaja byc dokumentami i staja sie oprogramowaniem, ktore mozna uruchomic.',
+    analogy: 'Backend Dev jest jak rezydent chirurgiczny, ktory realizuje plan operacji z precyzja - nie zmienia strategii, tylko wykonuje ja bezblednie krok po kroku.',
+    howItWorks: [
+      {label: 'Czytanie specyfikacji', desc: 'Wczytuje specyfikacje od Planera i MANIFEST.md. Rozpoznaje wymagania funkcjonalne, schematy danych, kontrakty API i ograniczenia.'},
+      {label: 'Pisanie kodu', desc: 'Tworzy nowe pliki (Write) i modyfikuje istniejace (Edit) implementujac endpointy, walidacje i logike biznesowa zgodnie z wzorcem mistrza stolarza.'},
+      {label: 'Uruchomienie i test', desc: 'Odpala kod przez Bash (node, python, npm run build), weryfikuje brak bledow i sprawdza podstawowa funkcjonalnosc oraz edge cases.'},
+      {label: 'Petla z QA', desc: 'Ma maksymalnie dwie iteracje na poprawki po raporcie QA. Po drugiej iteracji bledy eskaluja do Orkiestratora.'}
+    ],
+    inputs: [
+      'Specyfikacja techniczna od Planera lub Orkiestratora',
+      'Design tokeny i komponenty od Designera',
+      'MANIFEST.md z wymaganiami i kontraktami',
+      'Raport bledow od QA w petli zwrotnej'
+    ],
+    outputs: [
+      'Dzialajace pliki zrodlowe backend (JS, Python, Go)',
+      'Endpointy API z walidacja wejscia i wyjscia',
+      'Schematy danych i migracje bazy',
+      'Inline komentarze JSDoc dla funkcji publicznych',
+      'Logi z uruchomienia i testow podstawowych'
+    ],
+    does: [
+      'Implementuje endpointy REST i logike biznesowa zgodnie ze specyfikacja',
+      'Tworzy schematy walidacji wejscia uzywajac Zod, Pydantic lub Joi',
+      'Uruchamia kod przez Bash weryfikujac brak bledow runtime',
+      'Pisze obsluge bledow z konkretnymi kodami HTTP i strukturalnymi odpowiedziami',
+      'Dodaje komentarze inline dla zlozonej logiki i publicznego API',
+      'Modyfikuje istniejace pliki precyzyjnie narzedziem Edit zamiast nadpisywania',
+      'Odczytuje kontekst projektu (Read) by uzyc istniejacych wzorcow',
+      'Itera na poprawki QA maksymalnie dwa razy zanim eskaluje problem'
+    ],
+    doesNotDo: [
+      'Nie robi researchu technologii (to domena Researcher Tech)',
+      'Nie podejmuje decyzji architektonicznych (to domena Planera)',
+      'Nie projektuje UI ani CSS (to domena Designera)',
+      'Nie pisze README ani dokumentacji zewnetrznej (to domena Redaktora)',
+      'Nie laczy pracy innych builderow (to domena Integratora)',
+      'Nie robi audytow bezpieczenstwa ani pentestow (to domena QA Security)',
+      'Nie improwizuje i nie kwestionuje specyfikacji - implementuje'
+    ],
+    antiPatterns: [
+      'Premature Optimization - optymalizacja nieistniejacego waskiego gardla zamiast prostej implementacji zgodnej ze specyfikacja.',
+      'Stringly Typed API - przekazywanie wszystkiego jako stringi zamiast typow, enumow i strukturalnych obiektow.',
+      'Naked Response - zwracanie surowego wyniku bez wrappera, statusu, wersji i obslugi bledow.',
+      'Scope Creep - pisanie kodu spoza specyfikacji, dodawanie fajnych ficzerow, ktorych nikt nie zamawial.',
+      'Silent Failure - lapanie wyjatkow bez logowania i bez propagacji bledu do warstwy API.'
+    ],
+    keyConcepts: [
+      {term: 'Specyfikacja jako partytura', def: 'Backend Dev gra dokladnie to co zapisane - nie improwizuje jak kompozytor, tylko wykonuje jak muzyk sesyjny.'},
+      {term: 'Petla QA', def: 'Maksymalnie dwie iteracje poprawek po audycie, potem eskalacja do Orkiestratora z raportem bledow.'},
+      {term: 'Inline docs', def: 'Komentarze tylko dla nietrywialnej logiki i publicznego API, nigdy dla oczywistych instrukcji.'},
+      {term: 'Idempotentnosc', def: 'Endpointy typu PUT i DELETE musza dac ten sam rezultat niezaleznie od liczby wywolan.'},
+      {term: 'Separation of concerns', def: 'Routing, walidacja, logika biznesowa i warstwa danych sa rozdzielone i testowane niezaleznie.'}
+    ],
+    stats: [
+      {label: 'Input tokens', value: '20-40k'},
+      {label: 'Output tokens', value: '10-30k'},
+      {label: 'Load', value: '75/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy masz gotowa specyfikacje i potrzebujesz dzialajacego kodu backend',
+      'Gdy chcesz implementacje API zgodna z kontraktem bez improwizacji',
+      'Gdy potrzebujesz walidacji, obslugi bledow i inline dokumentacji w kodzie'
+    ],
+    worstFor: [
+      'Gdy jeszcze nie wiesz jaka technologie wybrac (skorzystaj z Researcher Tech)',
+      'Gdy potrzebujesz decyzji architektonicznych (poproc Planera lub Analityka)',
+      'Gdy chcesz piekny CSS i animacje (to Designer, nie Backend Dev)'
+    ],
+    relatedAgents: ['db_architect', 'integrator', 'qa_quality'],
+    glossary: [
+      {term: 'endpoint', definition: 'Adres API obslugujacy konkretna operacje, np POST /api/users do tworzenia uzytkownika.'},
+      {term: 'walidacja', definition: 'Sprawdzenie ksztaltu i typu danych wejsciowych przed przekazaniem ich do logiki biznesowej.'},
+      {term: 'migracja', definition: 'Skrypt zmieniajacy schemat bazy danych w sposob powtarzalny i reversible.'},
+      {term: 'lint', definition: 'Automatyczne sprawdzenie stylu kodu i bledow statycznych, np ESLint dla JavaScript.'},
+      {term: 'Sonnet', definition: 'Model Claude srodkowej klasy, kompromis miedzy jakoscia kodu a kosztem wywolania.'}
+    ],
+    learningQuote: 'Backend Dev nie kwestionuje planu - realizuje go z precyzja. Jego wartosc nie lezy w kreatywnosci, lecz w bezbledowym wykonaniu.',
+    realExample: 'Pewnego dnia dostalem specyfikacje endpointu POST /api/users z walidacja Zod i obsluga piecu kodow bledu. Zaimplementowalem to w 30 minutach, uruchomilem przez node app.js, zweryfikowalem edge case z pustym emailem i oddalem QA. Pierwsza iteracja - trzy drobne poprawki. Druga iteracja - zero bledow. Kod poszedl do Integratora.'
+  },
+  frontend: {
+    tagline: 'Stolarz meblowy UI - komponenty piekne, dostepne i szybkie od pierwszej linii',
+    missionShort: 'Frontend Dev implementuje warstwe kliencka mobile-first. Tworzy reuzywalne komponenty React/Vue z obsluga wszystkich stanow (loading, error, empty, success). Jego misja: dostarczyc interfejs gdzie accessibility i performance sa wbudowane, nie dolepione na koncu.',
+    whoIs: 'Frontend Dev to rzemieslnik warstwy widocznej dla uzytkownika. Zachowuje sie jak stolarz meblowy robiacy meble na zamowienie - kazdy komponent musi byc piekny, wygodny, wytrzymaly i pasowac do pokoju (layout). Nie projektuje designu - dostaje tokeny od Designera i je implementuje.',
+    analogy: 'Frontend Dev jest jak stolarz meblowy - dostaje projekt od architekta wnetrz (Designer) i buduje mebel, ktory jest piekny, ergonomiczny i pasuje do pomieszczenia.',
+    howItWorks: [
+      {label: 'Analiza design system', desc: 'Czyta tokeny Designera: paleta, typografia, siatka, odstepy, promienie i cienie. Bez design systemu nie rusza do pracy, bo efektem byloby niespojne UI.'},
+      {label: 'Szkielet komponentow', desc: 'Buduje reuzywalne komponenty od najmniejszych (Button, Input) do zlozonych (Form, Table). Kazdy komponent ma props, stany i aria-attributes od poczatku.'},
+      {label: 'Stany i edge cases', desc: 'Implementuje cztery stany per komponent: loading (spinner/skeleton), error (komunikat + retry), empty (pusty stan + CTA), success (dane). Bez tego UI nie jest gotowy.'},
+      {label: 'Performance i a11y', desc: 'Dodaje lazy loading, code splitting, image optimization. Weryfikuje keyboard navigation, focus traps, aria-live, kontrasty WCAG AA.'}
+    ],
+    inputs: [
+      'Design system z tokenami CSS (paleta, typografia, siatka)',
+      'Specyfikacja komponentow z wireframami i mockupami',
+      'API contracts od Backend Dev (endpoints, payload, blady)',
+      'Wymagania accessibility (WCAG 2.2 AA minimum) i target urzadzenia'
+    ],
+    outputs: [
+      'Komponenty React/Vue/Svelte z props i stanami',
+      'Pliki CSS/SCSS/Tailwind implementujace design tokeny',
+      'Testy komponentow (React Testing Library, Vitest)',
+      'Dokumentacja uzycia komponentow (Storybook lub MDX)',
+      'Raport Lighthouse z metrykami Core Web Vitals'
+    ],
+    does: [
+      'Implementuje responsive mobile-first layout (60%+ ruchu to mobile w 2026)',
+      'Tworzy reuzywalne komponenty z obsluga stanow loading/error/empty/success',
+      'Zapewnia accessibility: aria-labels, keyboard navigation, focus management, skip links',
+      'Optymalizuje performance: lazy loading, code splitting, image optimization, tree shaking',
+      'Implementuje design system od Designera z tokenami CSS i typografia',
+      'Integruje frontendowe API calls do endpointow backendu z obsluga bledow',
+      'Pisze testy jednostkowe komponentow (React Testing Library, Vitest)',
+      'Dba o Core Web Vitals: LCP <2.5s, FID <100ms, CLS <0.1 jako cel bazowy'
+    ],
+    doesNotDo: [
+      'Nie projektuje wygladu interfejsu (to domena Designer)',
+      'Nie implementuje API serwerowego ani biznesowej logiki (to domena Backend Dev)',
+      'Nie pisze testow bezpieczenstwa ani audytow OWASP (to domena QA Security)',
+      'Nie podejmuje decyzji o stacku frameworka (to domena Orkiestratora z researchem)',
+      'Nie implementuje real-time WebSocket ani wizualizacji D3 (to domena Feature Dev)',
+      'Nie zarzadza baza danych ani schematem (to domena Backend lub DB Architect)',
+      'Nie ocenia wydajnosci calego systemu (to domena QA Performance)'
+    ],
+    antiPatterns: [
+      'Desktop-First - projektowanie na desktop i dostosowywanie do mobile, zamiast mobile-first jako standard 2026.',
+      'Prop Drilling Hell - przekazywanie propsow przez 5+ poziomow komponentow zamiast context lub state management.',
+      'Accessibility Afterthought - dodawanie a11y na koncu zamiast wbudowania od poczatku (retrofit jest 10x drozszy).',
+      'CSS Nuclear War - uzywanie !important wszedzie zamiast kaskady i specificzy CSS.',
+      'Loading State Missing - renderowanie undefined zamiast skeletona gdy dane sa w locie do API.'
+    ],
+    keyConcepts: [
+      {term: 'Mobile-first', def: 'Zaczynanie projektowania od malego ekranu i rozszerzanie do desktopa media queries min-width.'},
+      {term: 'Design tokens', def: 'Zmienne CSS definiujace palete, typografie, siatke i odstepy - jedyne zrodlo prawdy dla stylu.'},
+      {term: 'Core Web Vitals', def: 'Trzy metryki Google oceniajace UX: LCP (ladowanie), FID (reaktywnosc), CLS (stabilnosc).'},
+      {term: 'WCAG 2.2 AA', def: 'Standard dostepnosci W3C definiujacy kontrasty, keyboard nav i alternatywy dla mediow.'},
+      {term: 'Code splitting', def: 'Dzielenie bundle JS na mniejsze chunki ladowane na zadanie, redukujace czas TTI.'}
+    ],
+    stats: [
+      {label: 'Cel LCP', value: '<2.5s'},
+      {label: 'Cel bundle', value: '<250KB gzip'},
+      {label: 'Load', value: '70/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy chcesz zbudowac widoczna warstwe aplikacji webowej z komponentami React/Vue/Svelte',
+      'Gdy masz gotowy design system od Designera i potrzebujesz wiernej implementacji',
+      'Gdy projekt wymaga wysokiego poziomu accessibility i performance z metrykami Core Web Vitals'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz real-time WebSocket, streaming AI lub wizualizacji D3 (to Feature Dev)',
+      'Gdy trzeba zaprojektowac design system od zera bez designera (to Designer)',
+      'Gdy zadanie to wylacznie API backendu bez UI (to Backend Dev)'
+    ],
+    relatedAgents: ['designer', 'backend', 'feature'],
+    glossary: [
+      {term: 'component', definition: 'Niezalezna, reuzywalna jednostka UI z wlasnym stanem, propsami i stylami.'},
+      {term: 'props', definition: 'Parametry przekazywane do komponentu z komponentu rodzica w React lub Vue.'},
+      {term: 'hydration', definition: 'Proces aktywacji interaktywnosci JavaScript na statycznym HTML wyrenderowanym przez SSR.'},
+      {term: 'ssr', definition: 'Server-Side Rendering - generowanie HTML na serwerze przed wyslaniem do przegladarki.'},
+      {term: 'a11y', definition: 'Skrot accessibility - techniki zapewniajace dostepnosc UI dla uzytkownikow z niepelnosprawnosciami.'}
+    ],
+    learningQuote: 'Interfejs bez stanu loading to klamstwo - uzytkownik widzi pusty ekran i zaklada ze aplikacja sie zepsula, a tymczasem dane po prostu leca z serwera.',
+    realExample: 'Pewnego dnia budowalem tablice uzytkownikow w React i dodalem cztery stany: skeleton podczas ladowania, error z retry button, empty state z CTA Dodaj uzytkownika, success z tabela. Ta sama funkcja dziala na mobile w 320px i na desktopie 4K, bo zaczalem od mobile-first grid.'
+  },
+  feature: {
+    tagline: 'Specjalista od efektow specjalnych - WebSocket, AI streaming, D3, OAuth',
+    missionShort: 'Feature Dev implementuje zaawansowane funkcjonalnosci wymagajace niszowej wiedzy: real-time, integracje AI/ML, wizualizacje danych, third-party API. Jego misja: robic rzeczy ktorych zwykly Backend lub Frontend Dev nie potrafi. Dziala gdy trzeba wyjsc poza standardowy CRUD.',
+    whoIs: 'Feature Dev to agent-specjalista jak inzynier efektow specjalnych w filmie. Zachowuje sie jak pirotechnik montujacy scene z eksplozjami - robi rzeczy ktorych zwykly operator kamery nie potrafi. WebSocket, streaming AI i D3 to eksplozje, ktore wymagaja innej wiedzy niz standardowe CRUD.',
+    analogy: 'Feature Dev jest jak specjalista od efektow specjalnych w filmie - nie krece dialogow, ale bez niego nie bylo by sceny z eksplozja, ktora definiuje caly film.',
+    howItWorks: [
+      {label: 'Analiza niszy', desc: 'Identyfikuje wymaganie niszowe - czy to WebSocket, streaming LLM, wizualizacja danych, czy OAuth flow. Na podstawie typu dobiera specjalistyczna biblioteke i protokol.'},
+      {label: 'Prototyp na suchno', desc: 'Buduje minimalny dzialajacy prototyp (np. echo WebSocket, hello world D3, mock OAuth) zeby zweryfikowac ze biblioteka pasuje do stacku i nie ma showstopperow.'},
+      {label: 'Integracja z projektem', desc: 'Podlacza prototyp do wlasciwych endpointow, danych i UI. Implementuje obsluge reconnection, retry, streaming chunks i edge cases specyficznych dla niszy.'},
+      {label: 'Handoff i dokumentacja', desc: 'Przekazuje kod Integratorowi z notatka jak dziala biblioteka i czego nie robic. Zapisuje decyzje (np. dlaczego WebSocket a nie SSE) w decision record.'}
+    ],
+    inputs: [
+      'Specyfikacja niszowego wymagania (real-time, AI, wizualizacja, integracja)',
+      'Kontekst od Backend i Frontend Dev o istniejacych endpointach i UI',
+      'Research od Researcher Tech o kandydatach na biblioteki',
+      'Ograniczenia performance, budzetu tokenow lub limitow API'
+    ],
+    outputs: [
+      'Implementacja real-time (WebSocket, SSE) z reconnection logic',
+      'Integracja AI/ML z streaming, function calling i rate limiting',
+      'Wizualizacje danych (D3.js, Chart.js, SVG, Canvas) z interakcjami',
+      'Third-party API integrations (Stripe, OAuth, webhooks)',
+      'Decision record wyjasniajacy wybor biblioteki i protokolu'
+    ],
+    does: [
+      'Implementuje real-time features: WebSocket, Server-Sent Events, long polling z reconnection',
+      'Integruje AI/ML: API calls ze streamingiem, embeddings, function calling, prompt chaining',
+      'Buduje wizualizacje danych z D3.js, Chart.js, SVG, Canvas i interakcjami',
+      'Integruje third-party API: Stripe, Firebase, AWS SDK, OAuth flows, webhook handlers',
+      'Implementuje specjalistyczne biblioteki: PDF generation, image processing, email templates',
+      'Dobiera biblioteki z rozwaga na bundle size i licencje open source',
+      'Pisze adaptery dla niszowych protokolow, zeby reszta kodu nie musiala o nich wiedziec',
+      'Dokumentuje decision records dla wyboru biblioteki (np. dlaczego Chart.js a nie Recharts)'
+    ],
+    doesNotDo: [
+      'Nie buduje podstawowego CRUD i standardowego REST API (to domena Backend Dev)',
+      'Nie projektuje UI ani design system (to domena Designer)',
+      'Nie prowadzi researchu bibliotek od zera (to domena Researcher Tech)',
+      'Nie zastepuje Integratora - laczy swoja prace z systemem, ale nie zarzadza integracja',
+      'Nie implementuje testow bezpieczenstwa (to domena QA Security)',
+      'Nie pisze dokumentacji uzytkownika (to domena Redaktora)',
+      'Nie przejmuje CRUD taskow tylko dlatego ze juz pracuje w repo (scope invasion)'
+    ],
+    antiPatterns: [
+      'Overengineering - WebSocket tam gdzie polling co 30s wystarczy, bo nie kazda strona potrzebuje real-time.',
+      'Library Bloat - dodawanie 200KB dependency na 3 linijki kodu, zamiast napisac natywnie.',
+      'Scope Invasion - przejmowanie CRUD taskow od Backend Dev pod pretekstem bycia juz w repo.',
+      'Vendor Lock-in Amnesia - integracja z zamknietym SDK bez adaptera, co uniemozliwi zmiane providera.',
+      'Stream Without Backpressure - streaming AI bez limitu chunkow, zapycha tokeny i blokuje UI.'
+    ],
+    keyConcepts: [
+      {term: 'Real-time', def: 'Komunikacja z opoznieniem <100ms, zwykle przez WebSocket, SSE lub WebRTC.'},
+      {term: 'Streaming LLM', def: 'Odbieranie odpowiedzi modelu chunk po chunku w locie, zamiast czekac na pelny output.'},
+      {term: 'Function calling', def: 'Mechanizm w API LLM gdzie model moze wywolac zdefiniowane funkcje po stronie aplikacji.'},
+      {term: 'OAuth flow', def: 'Protokol delegacji uprawnien miedzy aplikacja kliencka a serwisem trzecim (np. Google).'},
+      {term: 'Webhook', def: 'Endpoint HTTP ktory serwis zewnetrzny wola gdy zajdzie zdarzenie (np. platnosc w Stripe).'}
+    ],
+    stats: [
+      {label: 'Specjalizacja', value: 'Nisza'},
+      {label: 'Typowe biblioteki', value: 'D3, socket.io, OpenAI SDK'},
+      {label: 'Load', value: '65/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy potrzebujesz real-time (czat, live dashboard, wspolpraca wielu uzytkownikow na jednym dokumencie)',
+      'Gdy integrujesz LLM ze streamingiem, function calling lub embeddings do wyszukiwania semantycznego',
+      'Gdy budujesz wizualizacje danych D3/Chart.js ktore Frontend Dev nie tknie'
+    ],
+    worstFor: [
+      'Gdy zadanie to standardowy CRUD z REST (to Backend Dev, Feature jest za ciezki)',
+      'Gdy potrzebujesz projektu UI od zera (to Designer)',
+      'Gdy chcesz wylacznie dokumentacji lub README (to Redaktor)'
+    ],
+    relatedAgents: ['backend', 'frontend', 'integrator'],
+    glossary: [
+      {term: 'websocket', definition: 'Protokol full-duplex komunikacji miedzy przegladarka a serwerem na pojedynczym polaczeniu TCP.'},
+      {term: 'sse', definition: 'Server-Sent Events - jednokierunkowy strumien danych od serwera do klienta po HTTP.'},
+      {term: 'embedding', definition: 'Wektor liczbowy reprezentujacy tekst w przestrzeni semantycznej, uzywany w wyszukiwaniu.'},
+      {term: 'oauth', definition: 'Otwarty standard delegacji uprawnien, pozwala na logowanie przez Google, GitHub, Microsoft.'},
+      {term: 'bundle size', definition: 'Wielkosc finalnego pliku JS ladowanego do przegladarki, kluczowa dla czasu TTI.'}
+    ],
+    learningQuote: 'Kazda niszowa biblioteka to dlug technologiczny do splacenia - wybierz ja tylko jesli natywne rozwiazanie juz nie starcza.',
+    realExample: 'Pewnego dnia dodalem streaming odpowiedzi z Claude API do czatu i zamiast czekac 8 sekund na pelna odpowiedz, uzytkownik widzial pierwsze slowa po 400ms. Poprawa UX byla dramatyczna, ale wymagala backpressure i buforowania chunkow po stronie frontu.'
+  },
+  designer: {
+    tagline: 'Architekt wnetrz aplikacji - zamienia mood boardy w dzialajacy CSS i design tokeny',
+    missionShort: 'Designer to agent implementacji wizualnej w warstwie BUILD. Otrzymuje raporty Researcher UX i przeksztalca je w dzialajacy CSS, design tokeny, palety kolorow, typografie i animacje. Jest mostem miedzy inspiracja wizualna a kodem produkcyjnym.',
+    whoIs: 'Designer to agent AI, ktory zachowuje sie jak architekt wnetrz albo kolorysta filmowy. Klient przynosi mood board, a Designer wybiera dokladny odcien, dokladna tkanine, dokladna krzywa animacji. Nie szuka inspiracji - implementuje na podstawie badania, ktore zrobil Researcher UX.',
+    analogy: 'Designer jest jak zecer w drukarni, ktory nie pisze tresci, ale sprawia ze tekst wyglada profesjonalnie na stronie dzieki wlasciwym fontom, odstepom i rytmowi.',
+    howItWorks: [
+      {label: 'Lektura raportu UX', desc: 'Wczytuje raport od Researcher UX z trendami, paleta i wymaganiami dostepnosci. Rozpoznaje kierunek estetyczny i ograniczenia.'},
+      {label: 'Tokeny trzypoziomowe', desc: 'Buduje trzy poziomy tokenow - primitive (slate-900), semantic (color-text) i component (button-bg). Zmiana poziomu drugiego propaguje sie na caly projekt.'},
+      {label: 'System typografii i spacing', desc: 'Definiuje skale fontow, line-height, grid bazowy 4px, layout container i responsywne breakpointy. Implementuje system nie pojedyncze strony.'},
+      {label: 'Animacje i a11y', desc: 'Dodaje mikro-interakcje z respektowaniem prefers-reduced-motion, focus-visible 2px i minimalne target 44x44px dla WCAG.'}
+    ],
+    inputs: [
+      'Raport Researcher UX z trendami i mood boardem',
+      'Wymagania dostepnosci WCAG 2.1 AA',
+      'MANIFEST.md z konstraintami brandu i platformy',
+      'Feedback Integratora o konfliktach wizualnych'
+    ],
+    outputs: [
+      'Kompletny design system w pliku tokens.css',
+      'Paleta kolorow primitive, semantic i component',
+      'System typografii ze skala fontow i interlinii',
+      'Utility klasy grid, flex, container i spacing',
+      'Animacje z prefers-reduced-motion i focus-visible'
+    ],
+    does: [
+      'Tworzy design tokeny w trzech poziomach (primitive, semantic, component)',
+      'Definiuje palete kolorow z tokenami success, error, warning i neutralami',
+      'Projektuje skale typografii z responsywnymi rozmiarami',
+      'Implementuje spacing scale na bazie gridu 4px (space-1 do space-16)',
+      'Pisze mikro-animacje z transition i keyframes dla kart i przyciskow',
+      'Zapewnia kontrast minimum 4.5:1 i focus-visible na wszystkich interaktywnych elementach',
+      'Dodaje media query prefers-reduced-motion wylaczajace animacje dla wrazliwych',
+      'Tworzy utility container, grid-auto i breakpointy dla responsywnosci'
+    ],
+    doesNotDo: [
+      'Nie szuka inspiracji ani trendow (to domena Researcher UX)',
+      'Nie pisze logiki JavaScript (to domena Backend Dev i Frontend Dev)',
+      'Nie tworzy tresci tekstowych (to domena Redaktora)',
+      'Nie laczy CSS z HTML w finalny artefakt (to domena Integratora)',
+      'Nie audytuje wizualnej a11y w gotowym produkcie (to domena QA Quality)',
+      'Nie rysuje makiet w Figmie - generuje kod CSS',
+      'Nie definiuje content copywritingu w tokenach'
+    ],
+    antiPatterns: [
+      'Inconsistent Spacing - mieszanie 12px, 13px, 14px, 15px zamiast trzymania sie gridu 4px lub 8px.',
+      'Invisible Errors - komunikat bledu bez ikony, bez koloru i bez kontrastu, ginacy w layoucie.',
+      'Hero Section Addiction - traktowanie kazdej strony jak landing page z ogromnym headerem zabierajacym 80 procent ekranu.',
+      'Low Contrast Ignored - szary tekst na jasnoszarym tle z kontrastem 2:1 zamiast wymaganego 4.5:1.',
+      'Magic Number Hell - wartosci 37px, 129px, 0.618rem w CSS zamiast tokenow semantycznych.'
+    ],
+    keyConcepts: [
+      {term: 'Design tokeny', def: 'Zmienne CSS przechowujace wartosci designu w jednym miejscu - slowniczek kolorow, rozmiarow i odleglosci projektu.'},
+      {term: 'Trzy poziomy', def: 'Primitive (blue-500), semantic (color-primary) i component (button-bg) - zmiana w srodkowej warstwie propaguje sie na caly system.'},
+      {term: 'Grid 4px', def: 'Wszystkie odstepy to wielokrotnosci 4px co daje wizualna regularnosc i przewidywalnosc rytmu.'},
+      {term: 'WCAG AA', def: 'Minimum kontrastu 4.5:1 dla tekstu i target 44x44px dla elementow interaktywnych.'},
+      {term: 'Motion safety', def: 'Respektowanie prefers-reduced-motion i skracanie animacji do 0.01ms dla uzytkownikow wrazliwych.'}
+    ],
+    stats: [
+      {label: 'Input tokens', value: '15-30k'},
+      {label: 'Output tokens', value: '8-20k'},
+      {label: 'Load', value: '55/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy potrzebujesz spojny design system w postaci tokenow CSS',
+      'Gdy chcesz animacje i mikro-interakcje z respektem dla a11y',
+      'Gdy chcesz zmienic cala palete kolorow jedna edycja pliku tokens.css'
+    ],
+    worstFor: [
+      'Gdy jeszcze nie masz badania UX i trendow (poproc Researcher UX)',
+      'Gdy potrzebujesz makiet w Figmie zamiast kodu CSS',
+      'Gdy chcesz pisanie copywritingu i mikrotekstow (to Redaktor)'
+    ],
+    relatedAgents: ['res_ux', 'frontend', 'integrator'],
+    glossary: [
+      {term: 'token', definition: 'Zmienna CSS w :root przechowujaca wartosc designu, np --color-primary: #2563eb.'},
+      {term: 'primitive', definition: 'Pierwszy poziom tokenow - surowe wartosci jak blue-500 lezace w izolacji od znaczenia.'},
+      {term: 'semantic', definition: 'Drugi poziom tokenow nadajacy znaczenie primitive - np color-primary wskazuje na blue-500.'},
+      {term: 'focus visible', definition: 'CSS pseudo-class pokazujaca ramke focus tylko dla klawiatury, nie dla myszki.'},
+      {term: 'reduced motion', definition: 'Preferencja systemowa wylaczajaca animacje dla uzytkownikow z epilepsja i vestibular disorders.'}
+    ],
+    learningQuote: 'Design system to nie kolekcja piekne ekranow - to slownik, ktory pozwala zmienic caly produkt jedna linijka CSS.',
+    realExample: 'Pewnego dnia dostalem raport Researcher UX z kierunkiem Slate plus Amber accent i trendem glassmorphism. Zbudowalem trzy poziomy tokenow, skale typografii Inter, spacing 4px grid i animacje kart z respektowaniem prefers-reduced-motion. Zmiana koloru primary z niebieskiego na zielony zajmowala pozniej jedna linijke kodu.'
+  },
+  integrator: {
+    tagline: 'Monter filmowy systemu - lacze prace rownoleglych workerow w jeden spojny artefakt',
+    missionShort: 'Integrator to ostatni agent warstwy BUILD i brama miedzy BUILD a QA. Laczy kod od Backend Dev, CSS od Designera i tresc od Redaktora w jeden dzialajacy produkt. Rozwiazuje konflikty, waliduje zgodnosc z MANIFEST.md i testuje calosc E2E.',
+    whoIs: 'Integrator to dyrygent proby generalnej i szef kuchni na wydawce. Jest JEDYNYM agentem BUILD, ktory widzi prace wszystkich pozostalych workerow jednoczesnie - dlatego to on znajduje miejsca gdzie elementy sie gryza i komponuje je w harmonijna calosc.',
+    analogy: 'Integrator jest jak monter filmowy, ktory z godzin surowego materialu z kamery, dzwieku i muzyki buduje film - bo kazdy z tych elementow osobno to jeszcze nie jest kino.',
+    howItWorks: [
+      {label: 'Zbiera outputy', desc: 'Pobiera kod HTML/JS od Backend Dev, style CSS od Designera i tresc od Redaktora. Jako jedyny builder widzi wszystkie trzy strumienie pracy razem.'},
+      {label: 'Rozwiazuje konflikty', desc: 'Identyfikuje sprzecznosci - nazwy klas sie nie zgadzaja, tytul nie miesci sie w kontenerze, tekst wypelnia biala przestrzen. Dobiera minimalne rozwiazania szanujace intencje wszystkich workerow.'},
+      {label: 'Testuje E2E', desc: 'Uruchamia zintegrowany artefakt (Bash), sprawdza linki, weryfikuje CSS, testuje interaktywne elementy i responsywnosc.'},
+      {label: 'Waliduje MANIFEST', desc: 'Sprawdza czy kazdy wymog z MANIFEST.md ma odzwierciedlenie w artefakcie. Produkuje finalny pakiet do warstwy QA z raportem konfliktow i testow.'}
+    ],
+    inputs: [
+      'Kod HTML, JS i backend od Backend Dev',
+      'CSS tokens i komponenty od Designera',
+      'Tresc, README i inline komentarze od Redaktora',
+      'MANIFEST.md z wymaganiami do walidacji'
+    ],
+    outputs: [
+      'Zintegrowany artefakt gotowy dla warstwy QA',
+      'Raport rozwiazanych konfliktow miedzy workerami',
+      'Log z testow E2E (linki, CSS, interakcje, responsywnosc)',
+      'Potwierdzenie zgodnosci z MANIFEST.md',
+      'Lista eskalacji jesli konflikty sa fundamentalne'
+    ],
+    does: [
+      'Laczy wyjscia trzech builderow w jeden spojny artefakt',
+      'Rozwiazuje konflikty nazw klas, rozmiarow i intencji minimalnymi zmianami',
+      'Uruchamia testy E2E w srodowisku testowym przez Bash',
+      'Weryfikuje kazdy wymog MANIFEST.md jako checklist do odhaczenia',
+      'Dodaje text-overflow ellipsis i tooltip gdy tekst nie miesci sie w layoucie',
+      'Zachowuje intencje wszystkich workerow zamiast narzucania jednej perspektywy',
+      'Eskaluje fundamentalne konflikty do Orkiestratora z jasnym raportem',
+      'Produkuje dokumentacje zmian jakie wprowadzil podczas integracji'
+    ],
+    doesNotDo: [
+      'Nie pisze nowego kodu od zera (to domena Backend Dev)',
+      'Nie projektuje UI ani nie dobiera kolorow (to domena Designera)',
+      'Nie tworzy tresci tekstowych ani copywritingu (to domena Redaktora)',
+      'Nie prowadzi badan (to domena Researcherow)',
+      'Nie decyduje CO budowac, tylko JAK polaczyc (to domena Orkiestratora)',
+      'Nie testuje bezpieczenstwa ani jakosci kodu (to domena QA Security i Quality)',
+      'Nie przepisuje calych modulow - klei, nie buduje od nowa'
+    ],
+    antiPatterns: [
+      'False Consensus - udawanie ze konflikt nie istnieje i wybranie losowej wersji zamiast jawnego rozwiazania.',
+      'Lowest Common Denominator - usuwanie cech wyroznialnych zeby uniknac konfliktu, zamiast znalezc kompromis zachowujacy wartosc.',
+      'Hidden Merge Conflict - pozostawienie markerow merge w kodzie i przekazanie tak do QA, ktore oznacza sie w blednych miejscach.',
+      'Rewriting Instead of Gluing - przepisywanie calego modulu Backend Dev zamiast minimalnej poprawki nazwy klasy CSS.',
+      'MANIFEST Amnesia - pomijanie walidacji MANIFEST.md i przepuszczenie artefaktu z brakujacym wymogiem.'
+    ],
+    keyConcepts: [
+      {term: 'Minimalna zmiana', def: 'Rozwiazywanie konfliktu najmniejsza mozliwa modyfikacja zachowujaca intencje wszystkich workerow.'},
+      {term: 'E2E testing', def: 'Testy calosci artefaktu - linki, CSS, interakcje - nie bezpieczenstwa ani jakosci kodu.'},
+      {term: 'MANIFEST validation', def: 'Sprawdzenie punkt po punkcie czy kazdy wymog z umowy MANIFEST.md ma realizacje w artefakcie.'},
+      {term: 'Brama do QA', def: 'Integrator jest ostatnim punktem kontroli przed przekazaniem produktu do warstwy QA - tu zatrzymuje sie nietestowalny kod.'},
+      {term: 'Cross-cutting view', def: 'Jedyny agent BUILD widzacy prace wszystkich pozostalych - dzieki temu moze rozstrzygac konflikty.'}
+    ],
+    stats: [
+      {label: 'Input tokens', value: '20-40k'},
+      {label: 'Output tokens', value: '5-15k'},
+      {label: 'Load', value: '70/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy masz rownolegla prace kilku workerow i potrzebujesz spojnej calosci',
+      'Gdy konflikty miedzy kodem, designem i trescia wymagaja minimalnego rozstrzygniecia',
+      'Gdy potrzebujesz walidacji MANIFEST.md przed przekazaniem do QA'
+    ],
+    worstFor: [
+      'Gdy masz jednego workera i nic do integrowania',
+      'Gdy potrzebujesz nowego kodu (to Backend Dev)',
+      'Gdy chcesz code review jakosci (to QA Quality)'
+    ],
+    relatedAgents: ['backend', 'designer', 'writer'],
+    glossary: [
+      {term: 'e2e', definition: 'End-to-end test - sprawdza cala sciezke uzytkownika od wejscia do wyjscia w artefakcie.'},
+      {term: 'manifest', definition: 'Dokument umowy miedzy zleceniodawca a systemem opisujacy wymagania do spelnienia.'},
+      {term: 'merge conflict', definition: 'Sytuacja gdy dwa zrodla zmieniaja to samo miejsce i narzedzie nie potrafi wybrac wersji.'},
+      {term: 'artefakt', definition: 'Gotowy produkt BUILD przechodzacy do QA - jeden plik lub zestaw plikow do review.'},
+      {term: 'eskalacja', definition: 'Przekazanie problemu do Orkiestratora gdy Integrator nie moze rozwiazac konfliktu samodzielnie.'}
+    ],
+    learningQuote: 'Wielki monter sprawia ze indywidualne czesci zaczynaja spiewac razem - Integrator nie gra na zadnym instrumencie, ale tworzy harmonie.',
+    realExample: 'Pewnego dnia dostalem HTML z klasa btn-primary od Backend Dev, CSS ze stylem button-main od Designera i 87-znakowy tytul od Redaktora, a kontener mial max-width 200px. Zamiast przepisywac cokolwiek, dodalem alias CSS btn-primary, wstawilem text-overflow ellipsis i tooltip z pelna trescia. Trzy intencje zachowane, jeden artefakt gotowy do QA.'
+  },
+  writer: {
+    tagline: 'Kurator muzealny tekstu - zamienia surowe notatki w dokumenty gotowe do druku',
+    missionShort: 'Redaktor to agent jakosci tresci w warstwie BUILD. Otrzymuje surowy tekst od Kodera, Designera lub Integratora i przeksztalca go w finalny, czytelny dokument. Dziala w izolowanym document sandbox bez dostepu do Bash i bez mozliwosci uruchamiania programow.',
+    whoIs: 'Redaktor zachowuje sie jak redaktor w wydawnictwie literackim, inzynier dzwieku miksujacy album albo kurator muzealny piszacy etykiety eksponatow. Otrzymuje 50 stron surowej prozy i zamienia je w klarowny tekst, ktory mozna pokazac klientowi.',
+    analogy: 'Redaktor jest jak kurator muzealny, ktory z 50-stronicowej publikacji naukowej potrafi wydestylowac etykiete o 50 slowach objasniajaca eksponat kazdemu.',
+    howItWorks: [
+      {label: 'Lektura surowego tekstu', desc: 'Wczytuje surowe notatki od Kodera, komentarze Designera i raporty Integratora. Identyfikuje bledy gramatyczne, niespojna terminologie i rozwlekle fragmenty.'},
+      {label: 'Redakcja i struktura', desc: 'Poprawia gramatyke, ujednolica terminologie, dodaje naglowki, listy i tabele. Usuwa powtorzenia i zapewnia logiczny przeplyw informacji.'},
+      {label: 'Komentarze inline', desc: 'Dodaje komentarze do kodu tylko dla nietrywialnej logiki - nigdy dla oczywistych instrukcji jak x = 5. Komentuje TODO, FIXME i publiczne API.'},
+      {label: 'README i CHANGELOG', desc: 'Tworzy pliki dokumentacyjne projektu zapewniajace spojny ton, jednolite formatowanie i jasne instrukcje uruchomienia.'}
+    ],
+    inputs: [
+      'Surowy tekst dokumentacji od Kodera lub Integratora',
+      'Komentarze inline i docstringi do polerowania',
+      'Lista terminow do ujednolicenia w calym projekcie',
+      'MANIFEST.md ze standardem stylu i terminologii'
+    ],
+    outputs: [
+      'README.md z opisem projektu i instrukcja uruchomienia',
+      'CHANGELOG.md z historia zmian miedzy wersjami',
+      'Wypolerowane komentarze inline w kodzie',
+      'Decision records dokumentujace wybory architektoniczne',
+      'Glosariusz terminow i ujednolicona terminologia'
+    ],
+    does: [
+      'Poprawia gramatyke, ortografie i interpunkcje w dokumentacji',
+      'Ujednolica terminologie w calym projekcie (jedno slowo zamiast trzech)',
+      'Tworzy README z sekcjami what, why, how, install i usage',
+      'Pisze CHANGELOG w formacie Keep a Changelog z wersjami semver',
+      'Dodaje komentarze inline TYLKO dla nietrywialnej logiki',
+      'Upraszcza zargon techniczny zachowujac precyzje terminow kluczowych',
+      'Strukturyzuje dlugie teksty w naglowki, listy i tabele',
+      'Produkuje dokumentacje API z opisami parametrow, typow i przykladow uzycia'
+    ],
+    doesNotDo: [
+      'Nie pisze kodu logicznego ani algorytmow (to domena Backend Dev)',
+      'Nie projektuje CSS ani layoutu (to domena Designera)',
+      'Nie prowadzi researchu ani nie uzywa WebSearch (to domena Researcherow)',
+      'Nie integruje komponentow ani nie laczy plikow (to domena Integratora)',
+      'Nie uruchamia zadnych programow - nie ma narzedzia Bash',
+      'Nie podejmuje decyzji architektonicznych (to domena Planera)',
+      'Nie upraszcza do poziomu banalnosci - zachowuje precyzje techniczna'
+    ],
+    antiPatterns: [
+      'Jargon Overload - pisanie synchronous asynchronous iteration with lazy evaluation zamiast dane przetwarzane porcjami.',
+      'Passive Voice Addiction - zostalo zaimplementowane zamiast zaimplementowalismy, co maskuje odpowiedzialnosc i wydluza tekst.',
+      'Missing Examples - dokumentacja API bez przykladu wywolania i odpowiedzi, wymuszajaca zgadywanie.',
+      'Wall of Text - jeden akapit na 500 slow bez naglowkow, list i tabel, ktorego nikt nie przeczyta.',
+      'Obvious Comment - komentarz ustawia x na 5 nad linijka x = 5, dodajacy szum bez wartosci.'
+    ],
+    keyConcepts: [
+      {term: 'Document sandbox', def: 'Izolowane srodowisko Redaktora z dostepem tylko do plikow tekstowych, bez Bash i bez uruchamiania.'},
+      {term: 'Inline only nontrivial', def: 'Komentarze w kodzie tylko dla niejasnej logiki, nigdy dla instrukcji ktore czyta sie same.'},
+      {term: 'Style consistency', def: 'Caly projekt mowi jednym glosem - jeden termin, jeden ton, jedno formatowanie.'},
+      {term: 'Keep a Changelog', def: 'Standard formatu CHANGELOG.md z sekcjami Added, Changed, Deprecated, Removed, Fixed, Security.'},
+      {term: 'Semantic versioning', def: 'Wersjonowanie major.minor.patch informujace o skali zmian i backward compatibility.'}
+    ],
+    stats: [
+      {label: 'Input tokens', value: '10-25k'},
+      {label: 'Output tokens', value: '5-15k'},
+      {label: 'Load', value: '35/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy chcesz profesjonalny README i CHANGELOG dla projektu open-source',
+      'Gdy masz surowa dokumentacje API wymagajaca struktury i przykladow',
+      'Gdy potrzebujesz ujednolicenia terminologii w calym projekcie'
+    ],
+    worstFor: [
+      'Gdy musisz uruchomic skrypt - Redaktor nie ma Bash',
+      'Gdy tresc wymaga badania i zrodel (to Researcherzy)',
+      'Gdy piszesz copywriting marketingowy ze storytellingiem (to GTM Strategist)'
+    ],
+    relatedAgents: ['backend', 'integrator', 'res_docs'],
+    glossary: [
+      {term: 'changelog', definition: 'Plik historii zmian projektu opisujacy co sie zmienilo miedzy wersjami i dlaczego.'},
+      {term: 'semver', definition: 'Semantic versioning - format major.minor.patch komunikujacy skale zmian API.'},
+      {term: 'jsdoc', definition: 'Komentarze specjalnego formatu w JavaScript opisujace parametry, typy i zwracana wartosc funkcji.'},
+      {term: 'inline', definition: 'Komentarz w tej samej linii lub bezposrednio nad kodem, nie w zewnetrznym pliku.'},
+      {term: 'style guide', definition: 'Dokument opisujacy konwencje pisania w projekcie - terminologia, ton, formatowanie.'}
+    ],
+    learningQuote: 'Dobra dokumentacja nie dodaje informacji - usuwa szum. Redaktor mierzy sukces tym co udalo mu sie wyciac, nie co dopisal.',
+    realExample: 'Pewnego dnia dostalem od Kodera surowy tekst ta funkcja bierze liste uzytkownikow i zwraca tych co sa aktywni. Zamienilem to w sekcje filterActiveUsers z tabela parametrow, opisem zwracanej wartosci i przykladem wywolania. Dodalem wpis w CHANGELOG i zaktualizowalem README. Cala dokumentacja projektu nagle zaczela mowic jednym glosem.'
+  },
+  qa_security: {
+    tagline: 'Ostatnia linia obrony - etyczny haker skanujacy artefakt zanim trafi do produkcji',
+    missionShort: 'QA Security to audytor bezpieczenstwa dzialajacy w warstwie QA/AUDYT Level 4. Jego misja: znalezc kazda podatnosc OWASP, kazdy zahardkodowany sekret i kazda luke prompt injection zanim kod dotrze do uzytkownika. Nie naprawia - raportuje z severity i remediacja.',
+    whoIs: 'QA Security to kontroler bezpieczenstwa na lotnisku architektury agentowej. Zachowuje sie jak white-hat pentester: mysli jak atakujacy, systematycznie probuje zlamac system uzywajac metodologii OWASP, ale raportuje luki zamiast je wykorzystywac. Pracuje wylacznie w trybie odczytu.',
+    analogy: 'QA Security jest jak inspektor budowlany z lista kontrolna OWASP - nie stawia scian, tylko sprawdza czy instalacja elektryczna nie grozi pozarem.',
+    howItWorks: [
+      {label: 'Inwentaryzacja plikow', desc: 'Uzywa Glob aby zmapowac wszystkie pliki artefaktu: kod zrodlowy, konfiguracje, pliki zaleznosci, .env. Buduje liste powierzchni ataku.'},
+      {label: 'Skanowanie OWASP', desc: 'Systematycznie przechodzi przez OWASP Top 10 uzywajac wzorcow Grep: innerHTML, eval, konkatenacja SQL, brak middleware auth, hardcoded secrets.'},
+      {label: 'Analiza AI-specific', desc: 'Szuka prompt injection, agent output poisoning, tool abuse i token exfiltration - zagrozen unikalnych dla systemow multi-agent.'},
+      {label: 'Raport JSON', desc: 'Kompiluje znalezienia w ustrukturyzowany raport z severity (CRITICAL/HIGH/MEDIUM/LOW), dokladna lokalizacja plik:linia i remediacja dla kazdego findingu.'}
+    ],
+    inputs: [
+      'Artefakt do audytu przekazany przez Integratora',
+      'Kod zrodlowy, konfiguracje, pliki zaleznosci, .env',
+      'Specyfikacja bezpieczenstwa projektu (jesli istnieje)',
+      'Lista wzorcow OWASP Top 10 i zagrozen AI-specific'
+    ],
+    outputs: [
+      'Raport JSON z lista findings uporzadkowanych wedlug severity',
+      'Kazdy finding ma id, category, lokalizacje plik:linia, opis i remediacje',
+      'Scan summary z liczbami CRITICAL/HIGH/MEDIUM/LOW',
+      'Rekomendacja BLOKADA WDROZENIA lub GO dla Managera QA',
+      'Sciezka eksploitacji dla kazdego krytycznego znalezienia'
+    ],
+    does: [
+      'Skanuje kod pod katem OWASP Top 10: XSS, SQLi, CSRF, IDOR, insecure deserialization',
+      'Wykrywa hardcoded secrets (klucze API, hasla, tokeny, connection strings)',
+      'Analizuje prompt injection i agent output poisoning w systemach multi-agent',
+      'Sprawdza wersje pakietow w package.json pod katem znanych CVE',
+      'Identyfikuje niezabezpieczone endpointy bez middleware autentykacji',
+      'Kategoryzuje znalezienia wedlug severity i pisze jasne remediacje',
+      'Dokumentuje sciezke eksploitacji - jak atakujacy moglby wykorzystac luke',
+      'Sprawdza pliki konfiguracyjne .env, docker-compose.yml, nginx.conf, workflows CI/CD'
+    ],
+    doesNotDo: [
+      'Nie naprawia kodu - audytor nie moze modyfikowac tego co audytuje',
+      'Nie ocenia jakosci kodu, czytelnosci czy zgodnosci ze specyfikacja (to QA Quality)',
+      'Nie podejmuje decyzji GO/NO-GO - to obowiazek Managera QA',
+      'Nie komunikuje sie z QA Quality - niezaleznosc zapobiega groupthink',
+      'Nie uruchamia kodu (brak Bash) - zapobiega przypadkowym uszkodzeniom',
+      'Nie uzywa WebSearch - audytuje artefakt, nie bada internetu',
+      'Nie traktuje kazdego console.log jako CRITICAL - priorytezuje ryzyko kontekstowo'
+    ],
+    antiPatterns: [
+      'Compliance Theater - odhaczenie OWASP Top 10 bez zrozumienia kontekstu, checklist bez sensu',
+      'Vuln Noise Flooding - zgloszenie 100 findings gdzie 95 to false positives, szum zabija sygnal',
+      'False Severity Inflation - oznaczanie wszystkiego jako CRITICAL aby wygladac kompetentnie',
+      'Missing Threat Model - skanowanie wzorcow bez zrozumienia rzeczywistej powierzchni ataku',
+      'Fix-While-Auditing - naprawianie luk podczas audytu, co niszczy niezaleznosc audytora'
+    ],
+    keyConcepts: [
+      {term: 'OWASP Top 10', def: 'Kanoniczna lista 10 najczestszych podatnosci webowych aktualizowana co kilka lat przez OWASP Foundation.'},
+      {term: 'Prompt injection', def: 'Atak specyficzny dla LLM polegajacy na manipulacji promptem aby zmusic agenta do ignorowania instrukcji.'},
+      {term: 'Severity rating', def: 'Klasyfikacja podatnosci w 4 poziomach CRITICAL/HIGH/MEDIUM/LOW determinujacych pilnosc naprawy.'},
+      {term: 'Read-only audit', def: 'Zasada ze audytor ma dostep wylacznie do odczytu - nie moze modyfikowac badanego systemu.'},
+      {term: 'Attack surface', def: 'Suma wszystkich punktow wejscia dostepnych dla atakujacego - kazdy endpoint, formularz, import.'}
+    ],
+    stats: [
+      {label: 'Kategorie OWASP', value: '10+5 AI'},
+      {label: 'Koszt/zadanie', value: '$0.02-0.08'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy chcesz bramke bezpieczenstwa przed wdrozeniem - ostatnia linie obrony',
+      'Gdy pracujesz z kodem obslugujacym dane uzytkownikow, platnosci lub autentykacje',
+      'Gdy budujesz system multi-agent podatny na prompt injection i output poisoning'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz naprawy podatnosci (on tylko raportuje, naprawa to Koder)',
+      'Gdy chcesz oceny jakosci kodu lub pokrycia testami (to QA Quality)',
+      'Gdy potrzebujesz pentestu na zywo z exploitami (on skanuje statycznie)'
+    ],
+    relatedAgents: ['qa_quality', 'qa_perf', 'qa_manager'],
+    glossary: [
+      {term: 'owasp', definition: 'Open Web Application Security Project - organizacja tworzaca standardy bezpieczenstwa webowego i lista Top 10.'},
+      {term: 'xss', definition: 'Cross-Site Scripting - wstrzykniecie zlowrogiego skryptu do strony przez niezanityzowany input.'},
+      {term: 'cve', definition: 'Common Vulnerabilities and Exposures - baza znanych podatnosci z unikalnymi identyfikatorami.'},
+      {term: 'remediation', definition: 'Rekomendacja naprawy podatnosci - konkretna instrukcja co zrobic aby ja wyeliminowac.'},
+      {term: 'idor', definition: 'Insecure Direct Object Reference - dostep do obiektow bez sprawdzenia uprawnien uzytkownika.'}
+    ],
+    learningQuote: 'Jeden przeoczony innerHTML moze kosztowac miliony - QA Security nie szuka bledow, szuka sciezek eksploitacji.',
+    realExample: 'Pewnego razu skanowalem artefakt aplikacji platniczej i znalazlem klucz Stripe sk_live zahardkodowany w src/config/api.js linia 8. W tym samym pliku endpoint /api/admin/users byl dostepny bez middleware autentykacji. Zaraportowalem dwa findings HIGH i rekomendacje BLOKADA. Manager QA zablokowal wdrozenie, Koder przeniosl klucz do env i dodal requireAuth. Drugi audyt - zero findings, GO.'
+  },
+  qa_quality: {
+    tagline: 'Inspektor jakosci z checklista - zamiast pytac jak to zlamac, pyta czy to w ogole dziala',
+    missionShort: 'QA Quality to audytor jakosci kodu i zgodnosci ze specyfikacja. Jego misja: zweryfikowac czy artefakt robi to co powinien, czy testy pokrywaja scenariusze, czy kod jest czytelny i wydajny. Dziala rownolegle do QA Security ale z calkowicie inna perspektywa - poprawnosc zamiast bezpieczenstwa.',
+    whoIs: 'QA Quality to recenzent naukowy i kontroler jakosci w fabryce Toyota w jednej osobie. Nie pisze artykulu ani nie buduje samochodu - sprawdza czy metodologia jest poprawna i czy drzwi zamykaja sie prawidlowo. Ma checklist z progami: >80% pokrycia, funkcje <50 linii, zagniezdzenie <3 poziomy.',
+    analogy: 'QA Quality jest jak egzaminator na uczelni - nie przepisuje pracy studenta, czyta ja i pisze recenzje z uwagami, student sam poprawia.',
+    howItWorks: [
+      {label: 'Weryfikacja spec', desc: 'Porownuje artefakt z oryginalna specyfikacja punkt po punkcie. Kazde wymaganie musi miec odpowiadajacy mu fragment implementacji zweryfikowany Grep plus Read.'},
+      {label: 'Uruchomienie testow', desc: 'Uzywa Bash aby odpalic npm test, pytest lub jest coverage. Zbiera metryki pokrycia statements, branches, functions, lines i porownuje z progiem 80%.'},
+      {label: 'Skanowanie smells', desc: 'Szuka code smells: funkcje >50 linii, zagniezdzenie >3 poziomy, duplikacja, zapytania N+1, brak lazy loading, nieobsluzone edge cases null/undefined/ujemne.'},
+      {label: 'Raport JSON', desc: 'Kompiluje findings w hierarchii CORRECTNESS > TESTS > PERFORMANCE > CODE QUALITY. Kazdy finding ma kategorie, severity, lokalizacje i rekomendacje.'}
+    ],
+    inputs: [
+      'Artefakt do audytu - kod zrodlowy, testy, konfiguracja',
+      'Oryginalna specyfikacja wymagan ze strategicznej fazy',
+      'Istniejace testy jednostkowe i integracyjne',
+      'Progi jakosci projektu (coverage, long functions, complexity)'
+    ],
+    outputs: [
+      'Raport JSON z findings uporzadkowanych wedlug priorytetow',
+      'Statystyki pokrycia testami z podzialem statements/branches/functions',
+      'Lista brakujacych edge cases i nieobsluzonych error paths',
+      'Metryki code smells: dlugosc funkcji, zagniezdzenie, duplikacja',
+      'Rekomendacja WDROZENIE lub BLOKADA dla Managera QA'
+    ],
+    does: [
+      'Weryfikuje zgodnosc ze specyfikacja porownujac wymagania z implementacja',
+      'Uruchamia testy i mierzy pokrycie statements/branches/functions dzieki Bash',
+      'Identyfikuje brakujace testy dla error paths i edge cases',
+      'Wykrywa code smells: dlugie funkcje, glebokie zagniezdzenie, duplikacja',
+      'Testuje edge cases: null, undefined, ujemne, puste, znaki specjalne',
+      'Znajduje problemy wydajnosciowe: N+1 queries, brak cache, brak lazy loading',
+      'Sprawdza linter wyniki i zgodnosc ze stylem projektu',
+      'Priorytezuje findings wedlug hierarchii CORRECTNESS > TESTS > PERFORMANCE > STYLE'
+    ],
+    doesNotDo: [
+      'Nie naprawia kodu - raportuje braki, Koder je uzupelnia',
+      'Nie pisze brakujacych testow - identyfikuje BRAKI, implementacja to Koder',
+      'Nie sprawdza bezpieczenstwa XSS/SQLi/secrets - to domena QA Security',
+      'Nie podejmuje decyzji GO/NO-GO - raport idzie do Managera QA',
+      'Nie komunikuje sie z QA Security - niezaleznosc zapobiega groupthink',
+      'Nie modyfikuje plikow - narzedzia READ-ONLY plus Bash tylko do testow',
+      'Nie ocenia jakosci designu UX - skupia sie na poprawnosci i jakosci kodu'
+    ],
+    antiPatterns: [
+      'Metrics Gaming - optymalizacja pod metryki pokrycia zamiast pod rzeczywiste testowanie zachowan',
+      'Coverage Cheating - pisanie testow bez asercji tylko po to aby podbic procent coverage',
+      'Nit-Picking Storm - zalewanie raportu uwagami stylistycznymi zamiast skupienia na correctness',
+      'Missing User Impact - raportowanie smells bez oceny czy blad rzeczywiscie dotyka uzytkownika',
+      'Checklist Myopia - sprawdzanie tylko tego co na liscie, ignorowanie nietypowych problemow'
+    ],
+    keyConcepts: [
+      {term: 'Test coverage', def: 'Procent kodu wykonywany przez testy - statements, branches, functions, lines z progiem minimalnym 80%.'},
+      {term: 'Edge case', def: 'Warunek graniczny: null, undefined, 0, ujemna wartosc, pusty string, znak specjalny, bardzo duza liczba.'},
+      {term: 'Code smell', def: 'Problematyczny wzorzec w kodzie wskazujacy na glebszy problem projektowy - dlugie funkcje, duplikacja, God Class.'},
+      {term: 'N+1 query', def: 'Anty-wzorzec wydajnosci: petla wywoluje N dodatkowych zapytan zamiast pobrac dane jednym JOIN.'},
+      {term: 'Correctness first', def: 'Hierarchia priorytetow poprawnosc > testy > wydajnosc > styl, kazdy kolejny poziom zalezy od poprzedniego.'}
+    ],
+    stats: [
+      {label: 'Prog coverage', value: '>80%'},
+      {label: 'Max funkcja', value: '<50 lin'},
+      {label: 'Load', value: '55/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy chcesz zweryfikowac czy kod rzeczywiscie spelnia wymagania specyfikacji',
+      'Gdy potrzebujesz raportu pokrycia testami z wskazaniem brakujacych scenariuszy',
+      'Gdy szukasz code smells i anti-patternow wydajnosciowych przed wdrozeniem'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz audytu bezpieczenstwa XSS lub CVE (to QA Security)',
+      'Gdy chcesz aby ktos napisal brakujace testy (on je identyfikuje, nie tworzy)',
+      'Gdy potrzebujesz oceny UX lub designu wizualnego (on ocenia kod)'
+    ],
+    relatedAgents: ['qa_security', 'qa_perf', 'qa_manager'],
+    glossary: [
+      {term: 'coverage', definition: 'Pokrycie testami - procent kodu wykonywany podczas uruchomienia testow jednostkowych i integracyjnych.'},
+      {term: 'edge case', definition: 'Warunek graniczny wejscia jak null, undefined, zero, wartosci ujemne czy ekstremalnie duze.'},
+      {term: 'code smell', definition: 'Powierzchniowa oznaka glebszego problemu w kodzie - nie blad ale symptom slabego projektu.'},
+      {term: 'n+1 query', definition: 'Problem wydajnosciowy gdy jedno zapytanie glowne generuje N dodatkowych zapytan w petli.'},
+      {term: 'linter', definition: 'Narzedzie statycznej analizy kodu jak ESLint czy Pylint sprawdzajace zgodnosc ze stylem i wzorcami.'}
+    ],
+    learningQuote: 'Pieknie sformatowany kod ktory nie spelnia specyfikacji jest bezwartosciowy - poprawnosc zawsze przed stylem.',
+    realExample: 'Pewnego razu audytowalem modul platnosci i uruchomilem npm test coverage. Statements 72%, branches 58% - ponizej progu. Grep pokazal ze funkcja calculateDiscount nie waliduje null, undefined ani ujemnej ceny, a processOrder mial 87 linii przy progu 50. Zaraportowalem 4 findings HIGH plus 3 MEDIUM. Manager QA zleca naprawe, Koder dodaje walidacje i rozbija funkcje, drugi audyt - coverage 89%, GO.'
+  },
+  qa_perf: {
+    tagline: 'Inzynier dynamometru - mierzy bottlenecki zamiast zgadywac co jest wolne',
+    missionShort: 'QA Performance audytuje wydajnosc calego stacku: response time, bundle size, memory leaks, query performance, Core Web Vitals. Jego misja: dostarczyc twarde metryki i konkretne rekomendacje optymalizacji. Nie naprawia sam, raportuje do Orkiestratora z numerami.',
+    whoIs: 'QA Performance to jedyny agent skupiony wylacznie na metrykach wydajnosci. Zachowuje sie jak inzynier F1 mierzacy czasy okrazen albo tuningujacy silnik na dynamometrze - zna kazdy parametr, wie co ogranicza osiagi, ale nie naprawia. Daje diagnoze mechanikowi (Kodera).',
+    analogy: 'QA Performance jest jak inzynier F1 z dynamometrem - mierzy moc, moment obrotowy i temperature, wie dokladnie ktora czesc silnika ogranicza wydajnosc, ale sam nie trzyma klucza.',
+    howItWorks: [
+      {label: 'Baseline pomiarow', desc: 'Zbiera pierwotne metryki: response time endpointow, bundle size, Lighthouse scores, Core Web Vitals. Bez baseline nie wiadomo co poprawiac ani czy poprawilo sie w ogole.'},
+      {label: 'Identyfikacja bottlenecka', desc: 'Profiluje stack w poszukiwaniu najwolniejszego ogniwa - wolny endpoint, duze chunki JS, N+1 queries, memory leak. Regula 80/20: 20% kodu ciagnie 80% opoznien.'},
+      {label: 'Rekomendacje z numerami', desc: 'Formuluje konkretne rekomendacje: zmniejsz bundle z 480KB do 250KB, dodaj indeks na users.email, lazy loaduj image gallery. Kazda rekomendacja z szacowana oszczednoscia.'},
+      {label: 'Raport z priorytetami', desc: 'Oddaje perf-report.md do Manager QA z priorytetami CRITICAL/MAJOR/MINOR. Manager syntetyzuje z innymi raportami (Security, Quality) i daje GO/NO-GO Orkiestratorowi.'}
+    ],
+    inputs: [
+      'Aktualna implementacja kodu od Builderow (backend + frontend)',
+      'Cele SLA - akceptowalne response time, bundle size, Core Web Vitals',
+      'Dostep do srodowiska testowego z reprezentatywnymi danymi',
+      'Narzedzia pomiarowe: Lighthouse, k6, Chrome DevTools, EXPLAIN ANALYZE'
+    ],
+    outputs: [
+      'Perf-report.md z metrykami response time, bundle, memory, queries',
+      'Lighthouse score i raport Core Web Vitals (LCP, FID, CLS)',
+      'Lista bottleneckow z priorytetami CRITICAL/MAJOR/MINOR',
+      'Rekomendacje optymalizacji z szacowana oszczednoscia',
+      'Benchmark porownawczy przed i po (gdy dostepny)'
+    ],
+    does: [
+      'Mierzy response time endpointow i identyfikuje wolne API (>200ms to red flag)',
+      'Analizuje bundle size i weryfikuje tree shaking, dead imports, niepotrzebne deps',
+      'Sprawdza memory leaks: event listenery, closures, detached DOM nodes',
+      'Audytuje Core Web Vitals: LCP <2.5s, FID <100ms, CLS <0.1',
+      'Analizuje query performance: N+1 queries, brakujace indeksy, niepotrzebne JOINy',
+      'Profiluje CPU i pamiec pod obciazeniem z narzedziami k6, Artillery, Lighthouse',
+      'Mierzy Time to Interactive i First Contentful Paint dla frontendu',
+      'Formuluje rekomendacje z numerami: szacowana oszczednosc i priorytet CRITICAL/MAJOR/MINOR'
+    ],
+    doesNotDo: [
+      'Nie naprawia problemow wydajnosci (raportuje, Orkiestrator odsyla do Kodera)',
+      'Nie sprawdza bezpieczenstwa ani OWASP Top 10 (to domena QA Security)',
+      'Nie ocenia jakosci kodu ani architektury (to domena QA Quality)',
+      'Nie podejmuje decyzji GO/NO-GO (to domena Manager QA syntetyzujacego wszystkie raporty)',
+      'Nie optymalizuje przedwczesnie bez pomiarow (premature optimization to antywzorzec)',
+      'Nie testuje wylacznie na dev srodowisku z SSD i 64GB RAM (to nie real users)',
+      'Nie rekomenduje zmian bez szacowanej oszczednosci (wszystko musi byc w liczbach)'
+    ],
+    antiPatterns: [
+      'Premature Optimization - optymalizowanie zanim zbierzesz metryki, bez danych nie wiesz co jest wolne.',
+      'Synthetic-Only - testowanie tylko na devowym sprzecie z SSD, real users maja 4G i stary telefon.',
+      'Micro-Benchmark Obsession - optymalizowanie operacji trwajacej 0.1ms zamiast bottlenecka trwajacego 2s.',
+      'Benchmark Without Baseline - pokazywanie ze cos jest szybkie bez porownania do stanu sprzed zmiany.',
+      'Ignoring P95 - raportowanie wylacznie sredniej, ignorujac ze p95 latency jest 10x gorsze niz mean.'
+    ],
+    keyConcepts: [
+      {term: 'Core Web Vitals', def: 'Trzy metryki Google: LCP (ladowanie), FID (reaktywnosc), CLS (stabilnosc layoutu).'},
+      {term: 'P95 latency', def: 'Latencja ktora 95% zapytan nie przekracza - znacznie lepsza miara niz srednia.'},
+      {term: 'Bundle size', def: 'Wielkosc finalnego pliku JS po minifikacji i gzipie, kluczowa dla czasu TTI.'},
+      {term: 'N+1 queries', def: 'Antywzorzec gdzie dla kazdego wiersza z listy robimy dodatkowy query do bazy.'},
+      {term: 'Memory leak', def: 'Pamiec rezerwowana i nigdy nie zwalniana, stopniowo zapychajaca aplikacje.'}
+    ],
+    stats: [
+      {label: 'API red flag', value: '>200ms'},
+      {label: 'Bundle cel', value: '<250KB gzip'},
+      {label: 'Load', value: '45/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy uzytkownicy zglaszaja wolne ladowanie aplikacji i nie wiadomo co jest bottleneckiem',
+      'Gdy bundle rosnie ponad 250KB i Lighthouse score spada ponizej 90',
+      'Gdy trzeba zweryfikowac ze deployment nie wprowadzil regresji wydajnosci'
+    ],
+    worstFor: [
+      'Gdy problemem jest bezpieczenstwo lub podatnosci OWASP (to QA Security)',
+      'Gdy chcesz audytu jakosci kodu i czytelnosci (to QA Quality)',
+      'Gdy nie masz jeszcze zaimplementowanego kodu do zmierzenia (to builderzy pierwsi)'
+    ],
+    relatedAgents: ['qa_quality', 'qa_security', 'qa_manager'],
+    glossary: [
+      {term: 'lighthouse', definition: 'Narzedzie Google mierzace performance, accessibility, SEO i best practices strony.'},
+      {term: 'lcp', definition: 'Largest Contentful Paint - czas wyrenderowania najwiekszego elementu widocznego w viewport.'},
+      {term: 'cls', definition: 'Cumulative Layout Shift - miara stabilnosci layoutu, niska wartosc oznacza brak skakania elementow.'},
+      {term: 'k6', definition: 'Narzedzie load testingu pozwalajace symulowac tysiace uzytkownikow pod obciazeniem.'},
+      {term: 'flamegraph', definition: 'Wizualizacja profilera CPU pokazujaca ktore funkcje zajmuja ile czasu.'}
+    ],
+    learningQuote: 'Bez metryk kazda optymalizacja jest zgadywaniem - mierz przed zmiana, mierz po zmianie, i nigdy nie wierz intuicji ze wiesz co jest wolne.',
+    realExample: 'Pewnego dnia audytowalem API listy zamowien i zauwazylem p95 latency 2.3s podczas gdy srednia byla 180ms. Okazalo sie ze pojedynczy endpoint robil N+1 query do tabeli produktow - 800 zapytan dla jednego requesta. Dodanie joina zbilo p95 do 140ms i Lighthouse score wrocil z 72 do 94.'
+  },
+  qa_manager: {
+    tagline: 'Sedzia sali sadowej QA - syntetyzuje dwa niezalezne audyty w jedna decyzje GO/NO-GO',
+    missionShort: 'Manager QA to orkiestrator warstwy QA i jedyny agent widzacy zarowno raport bezpieczenstwa jak i jakosci. Jego misja: zagregowac findings z QA Security i QA Quality, przyznac wynik 1-10, podjac binarna decyzje wdrozenia i zaplanowac kolejnosc napraw. Uzywa Sonnet bo to praca rozumowania, nie wzorcow.',
+    whoIs: 'Manager QA to sedzia na sali sadowej QA: prokurator Security prezentuje dowody zagrozenia, obronca Quality stan kodu, a sedzia wydaje wyrok GO lub NO-GO. Zachowuje sie jak kontroler lotow - nie pilotuje samolotu, ale wydaje cleared to land na podstawie danych z wielu radarow. Wlada tylko dwoma narzedziami: Read i Write.',
+    analogy: 'Manager QA jest jak redaktor naczelny - nie pisze artykulow, ale to on decyduje czy wydanie idzie do druku i w jakiej kolejnosci poprawki.',
+    howItWorks: [
+      {label: 'Agregacja raportow', desc: 'Czyta dwa raporty JSON od QA Security i QA Quality. Laczy findings w jedna spojna liste z oznaczeniem zrodla Q-01 lub Q-02.'},
+      {label: 'Kalkulacja wyniku', desc: 'Start od 10.0 i odejmuje: -3.0 za kazde CRITICAL, -1.0 za HIGH, -0.5 za MEDIUM, -0.1 za LOW. Sprawdza warunki blokujace jak coverage <70% lub jakikolwiek CRITICAL.'},
+      {label: 'Planowanie napraw', desc: 'Okresla optymalna kolejnosc napraw z uwzglednieniem zaleznosci. Laczy powiazane findings aby zredukowac liczbe iteracji naprawczych.'},
+      {label: 'Decyzja GO/NO-GO', desc: 'Wynik >=6.0 bez blokerow to GO, ponizej to NO-GO. Pisze uzasadnienie i przekazuje Orkiestratorowi. Max 2 iteracje potem eskalacja.'}
+    ],
+    inputs: [
+      'Raport JSON od QA Security z findings bezpieczenstwa',
+      'Raport JSON od QA Quality z findings jakosci i coverage',
+      'Progi decyzyjne projektu (minimum coverage, blocking conditions)',
+      'Historia poprzednich iteracji (aby wykryc regresje)'
+    ],
+    outputs: [
+      'Raport syntezy JSON z decyzja GO lub NO-GO',
+      'Wynik liczbowy 1-10 z uzasadnieniem kalkulacji',
+      'Lista fix_order z priorytetami i zaleznosciami',
+      'Estymacja effortu naprawczego per finding',
+      'Komunikacja ryzyka do Orkiestratora w 30 sekund'
+    ],
+    does: [
+      'Agreguje findings z dwoch niezaleznych audytorow Security i Quality',
+      'Priorytezuje findings wedlug hierarchii CRITICAL > HIGH > MEDIUM > LOW',
+      'Kalkuluje wynik 1-10 wedlug jasnego wzoru odejmowania punktow za severity',
+      'Sprawdza warunki blokujace automatycznego NO-GO (CRITICAL, coverage <70%)',
+      'Planuje optymalna kolejnosc napraw z uwzglednieniem zaleznosci miedzy findings',
+      'Wydaje binarna decyzje GO/NO-GO z pelnym uzasadnieniem',
+      'Kontroluje proces iteracyjny maksymalnie 2 iteracje potem eskalacja',
+      'Komunikuje ryzyko do Orkiestratora w formacie actionable bez zargonu'
+    ],
+    doesNotDo: [
+      'Nie audytuje kodu bezposrednio - czyta WYLACZNIE raporty od Q-01 i Q-02',
+      'Nie otwiera plikow zrodlowych i nie uruchamia testow (brak Grep, Glob, Bash)',
+      'Nie naprawia znalezien - decyduje, Koder implementuje',
+      'Nie komunikuje sie bezposrednio z Q-01 lub Q-02 - tylko czyta ich raporty',
+      'Nie podejmuje decyzji architektonicznych - to odpowiedzialnosc Orkiestratora',
+      'Nie przeprowadza skanowan - on jest decydentem, nie wykonawca',
+      'Nie przebija maksymalnej liczby iteracji - po 2 cyklach eskaluje do Orkiestratora'
+    ],
+    antiPatterns: [
+      'Rubber Stamp - automatyczne GO bez rzeczywistej syntezy, gdy Manager tylko odhacza bez czytania',
+      'Gate Dodging - unikanie trudnej decyzji NO-GO aby nie spowolnic pipeline, wypuszczanie wadliwego kodu',
+      'Consensus by Fatigue - akceptacja po kilku iteracjach ze zmeczenia zamiast po rzeczywistej naprawie',
+      'Late Discovery - odkrycie blocker dopiero w finalnej iteracji bo nie sprawdzono warunkow na wejsciu',
+      'Analyst Drift - zaczyna sam analizowac kod zamiast syntetyzowac raporty co neguje caly model'
+    ],
+    keyConcepts: [
+      {term: 'Quality gate', def: 'Bramka decyzyjna przed wdrozeniem, ktora wydaje binarna decyzje GO lub NO-GO dla artefaktu.'},
+      {term: 'Severity scoring', def: 'Formula kalkulacji wyniku 10.0 minus 3 za CRITICAL, 1 za HIGH, 0.5 za MEDIUM, 0.1 za LOW.'},
+      {term: 'Blocking conditions', def: 'Warunki wymuszajace NO-GO niezaleznie od wyniku: CRITICAL, coverage <70%, niezalatane podatnosci.'},
+      {term: 'Fix dependencies', def: 'Zaleznosci miedzy findings - niektore naprawy musza poczekac na inne, manager planuje kolejnosc.'},
+      {term: 'Iteration control', def: 'Limit maksymalnie 2 iteracji naprawczych, potem eskalacja aby uniknac nieskonczonej petli.'}
+    ],
+    stats: [
+      {label: 'Prog GO', value: '>=6.0'},
+      {label: 'Max iteracje', value: '2'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy potrzebujesz jednego punktu decyzyjnego laczacego bezpieczenstwo i jakosc',
+      'Gdy chcesz formalnej bramki QA przed wdrozeniem z jasnym wynikiem i uzasadnieniem',
+      'Gdy pracujesz z pipeline multi-audytor i potrzebujesz syntezy sprzecznych raportow'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz audytu kodu (on syntetyzuje, nie analizuje zrodla)',
+      'Gdy chcesz szybkiej nieformalnej oceny bez hierarchii audytorow',
+      'Gdy pipeline ma tylko jednego audytora (Manager QA zaklada dwa raporty)'
+    ],
+    relatedAgents: ['qa_security', 'qa_quality', 'qa_perf'],
+    glossary: [
+      {term: 'go/no-go', definition: 'Binarna decyzja o wdrozeniu artefaktu - GO oznacza zatwierdzenie, NO-GO blokade i naprawy.'},
+      {term: 'synteza', definition: 'Proces laczenia wynikow z roznych zrodel w jedna spojna ocene lub decyzje.'},
+      {term: 'deployment gate', definition: 'Bramka decyzyjna w pipeline CI/CD, przez ktora artefakt musi przejsc przed produkcja.'},
+      {term: 'blocking condition', definition: 'Warunek wymuszajacy automatyczne NO-GO niezaleznie od innych wynikow jakosciowych.'},
+      {term: 'fix order', definition: 'Zaplanowana kolejnosc napraw uwzgledniajaca zaleznosci i priorytety znalezien.'}
+    ],
+    learningQuote: 'Sedzia nie prowadzi sledztwa i nie pisze aktu oskarzenia - wydaje wyrok na podstawie dowodow dostarczonych przez strony.',
+    realExample: 'Pewnego razu dostalem dwa raporty: Security znalazl 1 CRITICAL XSS i 2 HIGH, Quality znalazl 1 HIGH brak walidacji i 3 MEDIUM. Kalkulacja: 10.0 -3 -2 -1 -1.5 -0.5 = 2.0. Plus warunek blokujacy CRITICAL = automatyczny NO-GO. Zaplanowalem fix_order: najpierw XSS, potem hardcoded key, potem walidacja zalezna od refaktoryzacji XSS. Druga iteracja - wynik 8.5, GO.'
+  },
+  expert_pragmatist: {
+    tagline: 'Realista od wysylki - ile to kosztuje, kto to zrobi i czy zdazymy do piatku',
+    missionShort: 'Ekspert Pragmatyk jest glosem rzeczywistosci operacyjnej w debacie Five Minds - jego misja to sprowadzenie ambitnych pomyslow do realiow budzetu, zespolu, deadlinu i zdolnosci wykonawczej. Broni pragmatycznej perspektywy kompromisow i trade-offow, pyta kto to zbuduje i kiedy. Dziala w fazie debate1 protokolu.',
+    whoIs: 'Pragmatyk to skrzyzowanie kierownika budowy z doswiadczonym CTO - widzial juz dziesiec razy jak piekne plany rozbijaja sie o realia zespolu i kalendarza. W debacie gra role mostu miedzy wizja a produkcja: kiedy Innowator mowi 10x lepiej, Pragmatyk pyta czy mamy 2x wiecej czasu i 5x wiecej budzetu.',
+    analogy: 'Ekspert Pragmatyk to cieszla na placu budowy luksusowych willi - widzial juz wszystkie architektonicze fantazje i wie ktorej drewno wytrzyma zime a ktorej zawali sie w marcu.',
+    howItWorks: [
+      {label: 'Opening - audyt zasobow', desc: 'Otwiera runde inwentaryzacja - ile osobo-tygodni mamy, jakie skille w zespole, jaki budzet infrastrukturalny, co juz jest na tapecie. Realia przed ambicjami.'},
+      {label: 'Defense - MVP i trade-off', desc: 'Broni propozycji przez najmniejszy sensowny zakres ktory dowiedzie wartosci. Liczba total cost of ownership - koszt build, run, maintain na 3 lata.'},
+      {label: 'Cross-exam - kto zrobi i kiedy', desc: 'Atakuje propozycje innych pytaniem imienne kto to zbuduje, w jakim sprincie, jaka jest sciezka krytyczna. Wyprowadza ukryte zalozenia o zasobach.'},
+      {label: 'Closing - realistyczny plan', desc: 'Zamyka glosem za rozwiazaniem ktore ma jasny owner, timeline, budzet i exit criteria. Odrzuca opcje bez przyjacielskiego terminu dostawy.'}
+    ],
+    inputs: [
+      'Pytanie debaty (np. czy zbudowac wlasne ML pipeline czy uzyc SaaS)',
+      'Propozycje pozostalych ekspertow z rundy pierwszej',
+      'Zasoby zespolu - liczba inzynierow, skille, obciazenie kalendarzy',
+      'Budzet projektu i deadline dostawy'
+    ],
+    outputs: [
+      'Ustrukturyzowane stanowisko z explicitnym kosztem i timeline',
+      'Trzy argumenty oparte na trade-offach time vs cost vs scope',
+      'Liczenie total cost of ownership na 3-letni horyzont',
+      'Lista zalozen o zasobach ktorych pozostali eksperci nie policzyli',
+      'Koncowy glos za Gold Solution z jawnym owner, timeline i exit criteria'
+    ],
+    does: [
+      'Liczy realny koszt build + run + maintain dla kazdej propozycji',
+      'Identyfikuje najkrotsza sciezke do dowiedzenia wartosci - MVP logika',
+      'Wyprowadza trade-offy time vs scope vs quality jawnie na stol',
+      'Pyta imiennie kto to zbuduje i czy ma wolne rece',
+      'Przypomina o koszcie odrzuconej alternatywy (opportunity cost)',
+      'Mierzy zlozonosc zmiany liczba zespolow i systemow dotknietych',
+      'Uzywa planning poker i story point heuristics dla realistycznych estymacji',
+      'Preferuje odwracalne decyzje nad nieodwracalne przy podobnej wartosci'
+    ],
+    doesNotDo: [
+      'Nie gloryfikuje wizji bez planu - to robota Innowatora bez kontroli',
+      'Nie zadaje dowodow statystycznych - to robota Analityka',
+      'Nie broni uzytkownika koncowego - to robota Rzecznika',
+      'Nie atakuje kazdej tezy - to robota Devila',
+      'Nie pisze kodu ani specyfikacji technicznej',
+      'Nie akceptuje planu bez wlasciciela i terminu',
+      'Nie mylu opportunity cost z direct cost'
+    ],
+    antiPatterns: [
+      'Status Quo Worship - odrzucanie kazdej zmiany jako za drogiej tylko dlatego ze nowa',
+      'Scope Creep Denial - nieuznawanie ukrytego rozszerzenia zakresu w propozycji',
+      'Hero Assumptions - planowanie w oparciu o to ze kazdy inzynier bedzie najlepszy',
+      'MVP Abuse - okreslanie MVP tak waskim ze nie dowodzi niczego wartosciowego',
+      'Deadline Theater - akceptowanie narzuconego terminu bez kontr-propozycji realnego planu'
+    ],
+    keyConcepts: [
+      {term: 'MVP', def: 'Minimum Viable Product - najmniejszy zakres ktory pozwala zweryfikowac kluczowa hipoteze produktowa.'},
+      {term: 'Total cost of ownership', def: 'Pelen koszt rozwiazania na calym cyklu zycia wliczajac build, run, maintain, migrate.'},
+      {term: 'Opportunity cost', def: 'Utracona wartosc najlepszej alternatywy ktora odrzuca sie wybierajac dana opcje.'},
+      {term: 'Critical path', def: 'Sekwencja zadaс ktorej dlugosc okresla minimalny czas ukoсczenia calego projektu.'},
+      {term: 'Two way door', def: 'Decyzja latwo odwracalna - wymagajaca mniejszej ostroznosci niz decyzja jednokierunkowa.'}
+    ],
+    stats: [
+      {label: 'Rundy debaty', value: '3 rundy'},
+      {label: 'Argumentow', value: '10-14 na debate'},
+      {label: 'Load', value: '85/100'},
+      {label: 'Model', value: 'Opus'}
+    ],
+    bestFor: [
+      'Gdy debata ulatuje w abstrakcji a potrzebujesz sprowadzenia jej na ziemie',
+      'Gdy projekt ma ostry deadline i wymagana jest brutalna priorytetyzacja',
+      'Gdy budzet jest ograniczony i kazdy tydzieс ma imienna wartosc'
+    ],
+    worstFor: [
+      'Gdy zespol potrzebuje przelomu a nie optymalizacji w obecnych ramach',
+      'Gdy projekt jest moonshotem ktory wymaga tolerancji dla ryzyka',
+      'Gdy innowacja jest strategicznie krytyczna i zwyczajne TCO jest bez znaczenia'
+    ],
+    relatedAgents: ['planner', 'expert_innovator', 'synthesizer'],
+    glossary: [
+      {term: 'velocity', definition: 'Srednia iloscic story pointow jakie zespol dostarcza w sprincie - baza do realistycznych estymacji.'},
+      {term: 'technical debt', definition: 'Ukryty koszt przyszly decyzji o szybkim ale niedoskonalym rozwiazaniu zaciagniete jako kredyt.'},
+      {term: 'build vs buy', definition: 'Dylemat miedzy budowa wlasnego rozwiazania a zakupem gotowego produktu z rynku.'},
+      {term: 'burn rate', definition: 'Tempo wydawania srodkow finansowych przez zespol lub projekt mierzone zwykle miesiecznie.'},
+      {term: 'runway', definition: 'Liczba miesiecy ktore projekt lub firma moze dzialac przy obecnym burn rate zanim skoсcza sie srodki.'}
+    ],
+    learningQuote: 'Pieknay plan bez wlasciciela i terminu to tylko kosztowne zyczenie - moja robota to zapytac kto, kiedy i za ile zanim zespol sie zakocha w wizji.',
+    realExample: 'Pewnego razu debata dotyczyla migracji z monolitu na mikroserwisy dla poprawy skalowania. Cztery umysly chwalily architekturalna czystosc. Policzylem total cost of ownership - 18 osobo-miesiecy build, 40 procent wzrost infra cost, 6 miesiecy spadek velocity w transition. Wskazalem opcje modular monolith ktora daje 80 procent korzysci za 20 procent kosztu. Zespol zaoszczedzil 14 osobo-miesiecy i dowiozl release na czas.'
+  },
+  expert_innovator: {
+    tagline: 'Wizjoner od pierwszych zasad - pyta co gdyby zrobic na odwrot i rozbija konwencje',
+    missionShort: 'Ekspert Innowator jest moonshot advocate w debacie Five Minds - jego misja to zmuszenie pozostalych umyslow do zakwestionowania obecnego rozwiazania od fundamentow. Pyta dlaczego to w ogole istnieje, co by bylo gdyby rozwiazac problem inaczej, i gdzie sa 10x szanse ktorych nikt jeszcze nie zauwazyl. Dziala w fazie debate1 protokolu.',
+    whoIs: 'Innowator to Elon Musk stereotypu skrzyzowany z fizykiem-teoretykiem - zawsze zaczyna od pierwszych zasad, odrzuca argumenty tak-sie-robi i szuka nieoczywistych analogii z innych domen. W debacie gra rolg rozmrazacza mysli: kiedy pozostali czterej zgadzaja sie zbyt szybko, on rzuca prowokacje ktora rozbija konsensus i wymusza powrot do rysownicy.',
+    analogy: 'Ekspert Innowator to fizyk-teoretyk na warsztacie stolarskim - zadna deska go nie interesuje dopoki ktos mu nie wyjasni dlaczego w ogole budujemy krzeslo a nie dlon pneumatyczna.',
+    howItWorks: [
+      {label: 'Opening - kwestionowanie', desc: 'Otwiera runde pytaniem od pierwszych zasad: dlaczego w ogole rozwiazujemy ten problem w ten sposob? Szuka ukrytych zalozen ktore wszyscy traktuja jako oczywiste.'},
+      {label: 'Defense - analogie z innych domen', desc: 'Broni swojej propozycji przez cross-pollination: jak podobny problem rozwiazano w biologii, fizyce, branzy muzycznej, lotnictwie. Laduje kontekst spoza dziedziny.'},
+      {label: 'Cross-exam - stress test status quo', desc: 'Podczas debaty ataktuje konwencjonalne rozwiazania pytaniem co gdyby bylo odwrotnie i zadaje pozostalym policzenie alternatywy o ktorej nie pomysleli.'},
+      {label: 'Closing - 10x lub 0x', desc: 'Zamyka wlasne stanowisko glosem za rozwiazaniem 10x lepszym albo rezygnacja z problemu w ogole. Nie akceptuje poprawek o 10 procent jako innowacji.'}
+    ],
+    inputs: [
+      'Pytanie debaty (np. jak skalowac aplikacje do 1M uzytkownikow)',
+      'Opinie pozostalych czterech ekspertow z rundy pierwszej',
+      'Historia poprzednich rund debaty (argumenty i kontrargumenty)',
+      'Constrainty projektu z fazy strategii - tylko jako punkt wyjscia do podwazenia'
+    ],
+    outputs: [
+      'Ustrukturyzowane stanowisko z jedna smiala teza kontrariariska',
+      'Trzy kluczowe argumenty oparte na pierwszych zasadach i analogiach',
+      'Lista ukrytych zalozen ktore reszta ekspertow wziela za pewnik',
+      'Minimum jedna propozycja 10x poprawy albo rewriting problemu od nowa',
+      'Koncowy glos za Gold Solution z uzasadnieniem dlaczego nie status quo'
+    ],
+    does: [
+      'Zadaje pytania od pierwszych zasad, nie od best practice',
+      'Wprowadza analogie z odleglych domen do stress-testowania pomyslow',
+      'Identyfikuje ukryte zalozenia pozostalych ekspertow i nazywa je wprost',
+      'Proponuje rozwiazania kontrariariskie nawet jesli wydaja sie absurdalne',
+      'Mierzy ambicja propozycji skala 1x vs 10x vs 100x',
+      'Prowokuje Devil\u0027s Advocate do bronienia status quo aby pokazac jak slabe jest',
+      'Szuka szans typu blue ocean tam gdzie wszyscy widza tylko czerwony',
+      'Fowardzi szalone pomysly do fazy syntezy zamiast samemu je odrzucac'
+    ],
+    doesNotDo: [
+      'Nie akceptuje incremental improvement jako innowacji - to robota Pragmatyka',
+      'Nie domaga sie dowodow empirycznych - to robota Analityka',
+      'Nie broni konkretnego uzytkownika - to robota Rzecznika Uzytkownika',
+      'Nie atakuje kazdej tezy mechanicznie - to robota Devila',
+      'Nie pisze kodu ani planow implementacji - to robota Buildera',
+      'Nie mediuje miedzy stanowiskami - to robota Syntetyka',
+      'Nie przestaje prowokowac dopoki konsensus nie zostal naprawde sprawdzony'
+    ],
+    antiPatterns: [
+      'Shiny Object Syndrome - gonienie za nowa technologia bez sprawdzenia czy rozwiazuje rzeczywisty problem',
+      'Not Invented Here - odrzucanie sprawdzonych rozwiazan tylko dlatego ze nie sa nowe',
+      'Moonshot Paralysis - proponowanie pomyslow tak ambitnych ze debata wpadnie w impas',
+      'Analogy Overreach - wyciaganie falszywych wnioskow z odleglej analogii bo brzmi ladnie',
+      'Incrementalism Contempt - pogardzanie drobnymi usprawnieniami ktore daja realny zysk'
+    ],
+    keyConcepts: [
+      {term: 'First principles', def: 'Rozklad problemu na fundamenty fizyczne lub ekonomiczne zamiast opierania sie na analogiach.'},
+      {term: 'Adjacent possible', def: 'Przestrzen rozwiazan dostepnych gdy polacza sie istniejace klocki w nowy sposob.'},
+      {term: 'Moonshot', def: 'Propozycja z 10x ambicja i niskim prawdopodobieсstwem ale ogromnym wyplata.'},
+      {term: 'Cross-pollination', def: 'Transfer rozwiazania z jednej dziedziny do drugiej poprzez analogie strukturalna.'},
+      {term: 'Strong opinions loosely held', def: 'Mocne tezy przedstawiane z przekonaniem ale gotowe do porzucenia wobec lepszego argumentu.'}
+    ],
+    stats: [
+      {label: 'Rundy debaty', value: '3 rundy'},
+      {label: 'Argumentow', value: '8-12 na debate'},
+      {label: 'Load', value: '85/100'},
+      {label: 'Model', value: 'Opus'}
+    ],
+    bestFor: [
+      'Gdy zespol utknal w lokalnym optimum i potrzebuje rozmrozenia mysli',
+      'Gdy problem wyglada na rozwiazany ale czujesz ze cos wazniejszego pomijasz',
+      'Gdy projekt wymaga przelomu 10x a nie kolejnych 10 procent optymalizacji'
+    ],
+    worstFor: [
+      'Gdy deadline to jutro i potrzebujesz wdrozenia sprawdzonego rozwiazania',
+      'Gdy problem jest calkowicie rutynowy i innowacja to overkill',
+      'Gdy zespol jest juz w paralizie analitycznej a nie w fazie generowania'
+    ],
+    relatedAgents: ['expert_devil', 'expert_pragmatist', 'synthesizer'],
+    glossary: [
+      {term: 'steel man', definition: 'Technika argumentacji polegajaca na wzmocnieniu tezy przeciwnika przed jej atakowaniem.'},
+      {term: 'blue ocean', definition: 'Nowa przestrzeс rynkowa bez konkurencji uzyskana przez redefinicje problemu.'},
+      {term: 'second order thinking', definition: 'Przemyslenie konsekwencji konsekwencji a nie tylko bezposredniego skutku decyzji.'},
+      {term: 'inversion', definition: 'Rozwiazywanie problemu przez zapytanie jak spowodowac porazke zamiast jak osiagnac sukces.'},
+      {term: 'premise busting', definition: 'Aktywne kwestionowanie zalozen ktore reszta uczestnikow przyjela bez sprawdzenia.'}
+    ],
+    learningQuote: 'Najwazniejsze pytanie w debacie to nie jak lepiej zrobic to co robimy, tylko dlaczego w ogole to robimy - jak odpowiedz brzmi bo zawsze tak robilismy, to znalazlem zlota zyle.',
+    realExample: 'Pewnego razu debata dotyczyla skalowania kolejki zadaс do 10 mln wiadomosci dziennie. Cztery umysly dyskutowaly o Kafka vs Pulsar vs RabbitMQ. Zadaлem pytanie od pierwszej zasady - dlaczego w ogole mamy kolejke, skoro 90 procent zadaс mozna policzyc na brzegu przy uzytkowniku. Debata przeniosla sie z wyboru brokera na architekture edge computing i rozwiazanie okazalo sie 10x taсsze.'
+  },
+  expert_analyst: {
+    tagline: 'Empiryk z kalkulatorem - gdzie sa dane, base rates i dowody, a nie opinie',
+    missionShort: 'Ekspert Analityk Danych jest glosem empiryzmu w debacie Five Minds - jego misja to zmuszenie dyskusji do oparcia kazdej tezy na liczbach, benchmarkach i historycznych base rates. Broni perspektywy opartej na danych, atakuje argumenty intuicyjne i wymaga confidence intervals przy kazdej predykcji. Dziala w fazie debate1 protokolu.',
+    whoIs: 'Analityk to skrzyzowanie statystyka Bayesian z detektywem-sledczym - nie wierzy w opowiesci, wierzy w liczby i ich rozklady. W debacie gra rolge audytora epistemologicznego: kiedy ktos rzuca teze brzmi przekonujaco, Analityk pyta na jakich danych, z jaka proba, z jaka niepewnoscia i czy juz gdzies ta hipoteza byla testowana.',
+    analogy: 'Ekspert Analityk Danych to sedzia sledczy z XIX wieku w laboratorium Bayesa - kazde slowo swiadka musi miec pokrycie w liczbach a kazda pewnosc musi byc zwazona prawdopodobieсstwem a priori.',
+    howItWorks: [
+      {label: 'Opening - stan danych', desc: 'Otwiera runde inwentaryzacja tego co juz wiemy - jakie sa historyczne base rates, benchmarki branzowe, publikowane wyniki A/B testow. Bez danych brak tezy.'},
+      {label: 'Defense - intervals zamiast punktow', desc: 'Broni swoich rekomendacji przedstawiajac rozklady a nie pojedyncze liczby. Zamiast 100ms podaje 80-120ms p50 i 180-220ms p95 z zrodlem.'},
+      {label: 'Cross-exam - falsyfikacja', desc: 'Atakuje tezy innych pytaniem jaki dowod by cie przekonal ze jestes w bledzie. Jesli ktos nie umie odpowiedziec, oznacza teze jako nieweryfikowalna.'},
+      {label: 'Closing - decision under uncertainty', desc: 'Zamyka glosem za rozwiazaniem o najwyzszym expected value przy znanej niepewnosci. Explicit rozroznia co wiemy, co zgadujemy i co trzeba jeszcze zmierzyc.'}
+    ],
+    inputs: [
+      'Pytanie debaty (np. ktory framework wybrac do nowego projektu)',
+      'Raporty researcherow z benchmarkami, liczbami i zrodlami',
+      'Opinie pozostalych ekspertow z runda pierwsza - do zadania o dane',
+      'Historyczne dane z poprzednich projektow jesli dostepne'
+    ],
+    outputs: [
+      'Ustrukturyzowane stanowisko z tezami zwiazanymi z konkretnymi liczbami',
+      'Trzy argumenty kazdy z minimum jednym benchmarkiem lub base rate',
+      'Lista zalozen nieudowodnionych oznaczonych jako ryzyka epistemiczne',
+      'Confidence label per teza - CERTAIN / PROBABLE / SPECULATION',
+      'Koncowy glos za Gold Solution z wyliczeniem expected value pod niepewnoscia'
+    ],
+    does: [
+      'Wymaga zrodla i liczby za kazda teza przedstawiona w debacie',
+      'Szuka base rates i rozkladow zamiast pojedynczych anegdot',
+      'Kwantyfikuje niepewnosc poprzez confidence intervals i error bars',
+      'Identyfikuje biasy poznawcze w rozumowaniu pozostalych ekspertow',
+      'Porownuje predykcje do historycznych benchmarkow',
+      'Oznacza tezy jako weryfikowalne lub niefalsyfikowalne',
+      'Liczy expected value alternatyw pod ryzykiem i niepewnoscia',
+      'Wymaga pre-registered hypothesis zamiast p-hackingu post-hoc'
+    ],
+    doesNotDo: [
+      'Nie broni pomyslow pieknych ale bez dowodow - to robota Innowatora',
+      'Nie broni uzytkownika jako priorytetu - to robota Rzecznika',
+      'Nie atakuje kazdej tezy mechanicznie - to robota Devila',
+      'Nie ocenia wykonalnosci budzetowej - to robota Pragmatyka',
+      'Nie produkuje planow implementacyjnych ani kodu',
+      'Nie akceptuje tez niefalsyfikowanych jako argumentow',
+      'Nie kompresuje niepewnosci do pojedynczej liczby jesli nie ma dowodu'
+    ],
+    antiPatterns: [
+      'Analysis Paralysis - wymaganie coraz wiekszej ilosci danych az decyzja nigdy nie zapadnie',
+      'P-Hacking - wybieranie tylko tych statystyk ktore pasuja do preferowanej tezy',
+      'Scientism - traktowanie kazdej liczby jako prawdy tylko dlatego ze jest liczba',
+      'Base Rate Neglect - ignorowanie historycznych rozkladow przy ocenie unikalnego przypadku',
+      'False Precision - podawanie 97.3 procent gdy rzeczywista niepewnosc to 60-95 procent'
+    ],
+    keyConcepts: [
+      {term: 'Base rate', def: 'Historyczna czestosc zdarzenia w populacji stanowiaca punkt odniesienia dla predykcji unikalnego przypadku.'},
+      {term: 'Confidence interval', def: 'Zakres wartosci w ktorym z okreslona pewnoscia znajduje sie rzeczywisty parametr.'},
+      {term: 'Falsifiability', def: 'Warunek naukowej tezy - musi istniec mozliwy dowod ktory by ja obalil.'},
+      {term: 'Bayesian update', def: 'Aktualizacja przekonaс na podstawie nowego dowodu wazaca go przeciwko prior a priori.'},
+      {term: 'Expected value', def: 'Srednia wazona wyplat alternatyw z uwzglednieniem prawdopodobieсstw kazdego scenariusza.'}
+    ],
+    stats: [
+      {label: 'Rundy debaty', value: '3 rundy'},
+      {label: 'Argumentow', value: '10-14 na debate'},
+      {label: 'Load', value: '85/100'},
+      {label: 'Model', value: 'Opus'}
+    ],
+    bestFor: [
+      'Gdy decyzja ma wysoki koszt i dostepne sa historyczne dane do porownaсnia',
+      'Gdy debata osуnie w stronge opinii i trzeba ja zakotwiczyc w liczbach',
+      'Gdy trzeba wybrac miedzy dwiema podobnymi opcjami i rozstrzyga niuans statystyczny'
+    ],
+    worstFor: [
+      'Gdy problem jest calkowicie nowy i nie istnieja base rates ani benchmarki',
+      'Gdy decyzja musi zapasc w 10 minut a analiza wymaga 10 godzin',
+      'Gdy najwazniejsza jest wizja przyszlosci a nie ekstrapolacja z przeszlosci'
+    ],
+    relatedAgents: ['statistician', 'eda_analyst', 'synthesizer'],
+    glossary: [
+      {term: 'prior', definition: 'Poczatkowe przekonanie o prawdopodobieсstwie hipotezy przed zobaczeniem nowych danych.'},
+      {term: 'posterior', definition: 'Zaktualizowane przekonanie po polaczeniu priora z dowodem przez twierdzenie Bayesa.'},
+      {term: 'effect size', definition: 'Wielkosc efektu niezalezna od wielkosci proby wskazujaca czy roznica ma znaczenie praktyczne.'},
+      {term: 'p-value', definition: 'Prawdopodobieсstwo zaobserwowania wyniku co najmniej tak ekstremalnego przy prawdziwej hipotezie zerowej.'},
+      {term: 'confirmation bias', definition: 'Tendencja do szukania dowodow wspierajacych istniejaca teze i ignorowania kontr-dowodow.'}
+    ],
+    learningQuote: 'Opinia bez liczby to tylko dobrze ubrana intuicja - pokaz mi base rate a powiem ci czy twoja smiala teza jest odwazna czy nieostrozna.',
+    realExample: 'Pewnego razu debata dotyczyla przepisania backendu z Node na Go dla poprawy performance. Cztery umysly podawaly anegdoty o 5x szybszym Go. Zadaлem bazowe pytanie - jaka jest historyczna czestosc sukcesu rewrite projektow o podobnej skali. Base rate wyniosl 12 procent. Z taka znajomoscia zespol wybral profilowanie Node a nie rewrite i zaoszczedzil 9 miesiecy.'
+  },
+  expert_user: {
+    tagline: 'Adwokat czlowieka w maszynie - broni empatii kiedy wszyscy mowia o systemach',
+    missionShort: 'Ekspert Rzecznik Uzytkownika jest glosem empatii w debacie Five Minds - jego misja to pilnowanie aby kazda decyzja architektoniczna byla przetlumaczona na realne doswiadczenie koncowego uzytkownika. Reprezentuje uzytkownikow ktorzy nie siedza przy stole - starszych, niewidomych, mobile-only, z wolnym internetem. Dziala w fazie debate1 protokolu.',
+    whoIs: 'Rzecznik Uzytkownika to terapeuta skrzyzowany z etnografem - rozumie zarowno frustracje Marii z Kielc jak i strach Pawla ktory nigdy nie uzywal aplikacji bankowej. W debacie gra role sumienia: kiedy inzynierzy i analitycy dyskutuja o TPS i p99, on przypomina ze na drugim koсcu jest czlowiek ktory chce tylko wroblic paragon.',
+    analogy: 'Ekspert Rzecznik Uzytkownika to terapeuta par na konferencji inzynierow - jedyny w sali ktory wciaz pyta ale co czuja osoby na ktore te systemy dzialaja.',
+    howItWorks: [
+      {label: 'Opening - journey uzytkownika', desc: 'Otwiera runde od konkretnego journey - wybiera Marie 58 lat z mobilem na 3G i prowadzi ja przez proponowany flow. Pokazuje wszystkie punkty friction.'},
+      {label: 'Defense - persona i emocje', desc: 'Broni swojej rekomendacji opowiadajac historia konkretnej persony - jej celow, frustracji, emocjonalnego kontekstu. Liczby zawsze laczy z twarzami.'},
+      {label: 'Cross-exam - test accesabilnosci', desc: 'Atakuje propozycje innych pytaniem jak to brzmi screen-readerem, jak dziala na 3G, co robi osoba slabowidzaca, dziecko, senior. Wyprowadza ukryte wykluczenia.'},
+      {label: 'Closing - mierzalna empatia', desc: 'Zamyka glosem za rozwiazaniem ktore mozna zmierzyc metrykami uzytkownika - SUS score, task success rate, WCAG AA, czas do pierwszego kliknieccia.'}
+    ],
+    inputs: [
+      'Pytanie debaty (np. jak uproscic proces rejestracji)',
+      'Raporty UX researcherow z personami i journey maps',
+      'Opinie pozostalych ekspertow - do przetlumaczenia na wplyw ludzki',
+      'Dane dotychczasowe od uzytkownikow - NPS, tickets, nagrania sesji'
+    ],
+    outputs: [
+      'Ustrukturyzowane stanowisko oparte na minimum dwoch personach',
+      'Trzy argumenty kazdy z journey przyklad i emocjonalnym kontekstem',
+      'Lista ukrytych grup uzytkownikow wykluczonych przez propozycje innych',
+      'Kryteria akceptacji WCAG 2.2 i mierzalne user metrics',
+      'Koncowy glos za Gold Solution z oczekiwanym wplywem na SUS i task success'
+    ],
+    does: [
+      'Buduje i broni persony reprezentujace realnych uzytkownikow produktu',
+      'Przechodzi przez kazdy flow oczami konkretnej osoby z jej ograniczeniami',
+      'Detektuje ukryte wykluczenia - ageizm, ableizm, bandwidth privilege',
+      'Laczy kazda decyzje techniczna z konkretnym wplywem emocjonalnym',
+      'Wymaga WCAG 2.2 AA jako podlogi a nie jako bonusu',
+      'Mierzy sukces metrykami uzytkownika nie tylko technicznymi',
+      'Szuka niewidocznych grup ktorych reszta zespolu nie reprezentuje',
+      'Przeklada abstrakcyjne decyzje systemowe na jezyk codziennego uzytkownika'
+    ],
+    doesNotDo: [
+      'Nie broni wizji technicznej - to robota Innowatora',
+      'Nie wymaga dowodow statystycznych - to robota Analityka',
+      'Nie ocenia kosztow i deadline - to robota Pragmatyka',
+      'Nie atakuje kazdej tezy - to robota Devila',
+      'Nie pisze kodu ani specyfikacji technicznej',
+      'Nie ignoruje konfliktu uzytkownik vs biznes - aktywnie go nazywa',
+      'Nie uznaje ze wystarczy zapytac jednego uzytkownika bo sam sie domysli'
+    ],
+    antiPatterns: [
+      'User Worship - ignorowanie realnych ograniczeс biznesu w imie mitycznego uzytkownika',
+      'Persona Fiction - wymyslanie person bez badaс terenowych pod swoja teze',
+      'Accessibility Theater - deklaracja WCAG bez faktycznego testowania z narzedziami asystujacymi',
+      'HiPPO Projection - zakladanie ze reszta zespolu to reprezentatywny sample uzytkownikow',
+      'Empathy Fatigue - stopniowa utrata kontaktu z uzytkownikiem przez nadmierne rytualy personowe'
+    ],
+    keyConcepts: [
+      {term: 'Persona', def: 'Archetypowa reprezentacja grupy uzytkownikow z konkretnymi celami, ograniczeniami i kontekstem uzycia.'},
+      {term: 'Jobs to be done', def: 'Framework opisujacy co uzytkownik stara sie osiagnac w zyciu a nie jak uzywa narzedzia.'},
+      {term: 'Accessibility first', def: 'Projektowanie zaczynajace od skrajnych przypadkow dostepnosci ktore poprawia doswiadczenie dla wszystkich.'},
+      {term: 'Emotional journey', def: 'Mapa emocji uzytkownika wzdluz flow od frustracji do satysfakcji lub odwrotnie.'},
+      {term: 'Cognitive load', def: 'Iloscic pamieci roboczej wymagana do wykonania zadania - minimalizowanie jej to rdzen dobrego UX.'}
+    ],
+    stats: [
+      {label: 'Rundy debaty', value: '3 rundy'},
+      {label: 'Argumentow', value: '8-12 na debate'},
+      {label: 'Load', value: '80/100'},
+      {label: 'Model', value: 'Opus'}
+    ],
+    bestFor: [
+      'Gdy zespol zoptymalizowal metryki techniczne a uzytkownicy zaczynaja odchodzic',
+      'Gdy projekt dotyka wrazliwych grup - seniorzy, dzieci, niepelnosprawni',
+      'Gdy nowa funkcja komplikuje flow dla korzysci wewnetrznej zespolu'
+    ],
+    worstFor: [
+      'Gdy problem jest czysto backendowy bez bezposredniej interakcji uzytkownika',
+      'Gdy debata dotyczy wyboru narzedzia dev - uzytkownik nie jest klientem',
+      'Gdy trzeba zamknac debate szybko a analiza person to dwa dni'
+    ],
+    relatedAgents: ['res_ux', 'designer', 'synthesizer'],
+    glossary: [
+      {term: 'SUS score', definition: 'System Usability Scale - standardowa ankieta 10 pytaс oceniajaca uzyteczno od 0 do 100.'},
+      {term: 'WCAG', definition: 'Web Content Accessibility Guidelines - miedzynarodowy standard dostepnosci tresci webowych.'},
+      {term: 'task success', definition: 'Procent uzytkownikow ktorzy ukoсczyli zadanie bez pomocy w zalozonym czasie.'},
+      {term: 'friction', definition: 'Wszelkie elementy flow ktore spowalniaja lub frustruja uzytkownika dochodzacego do celu.'},
+      {term: 'dark pattern', definition: 'Element interfejsu zaprojektowany aby zmanipulowac uzytkownika do akcji ktora nie leza w jego interesie.'}
+    ],
+    learningQuote: 'Kazda metryka techniczna ma twarz konkretnej osoby po drugiej stronie - moja robota to pamietac o niej kiedy wszyscy patrza na wykresy.',
+    realExample: 'Pewnego razu debata dotyczyla uproszczenia rejestracji z 8 pol do 3 poprzez automatyczne wykrywanie z pesel. Cztery umysly chwalily efficiency. Przedstawilem persone Marii 67 lat ktora panicznie boji sie wpisywaс pesel online. Zaproponowalem opcjonalny flow manualny. Metryka task success dla seniorow wzrosla o 34 procent a churn first day spadl o 18 procent.'
+  },
+  expert_devil: {
+    tagline: 'Adwokat diabla bez lojalnosci - atakuje kazdy konsensus i szuka ukrytej porazki',
+    missionShort: 'Ekspert Cien jest strukturalnym przeciwnikiem w debacie Five Minds - jego misja to zakwestionowanie kazdej tezy, szukanie luk w rozumowaniu i stress-testowanie konsensusu zanim zostanie zatwierdzony. Nie ma lojalnosci domenowej - atakuje nawet Innowatora jesli debata wymaga wzmocnienia przez destrukcje. Dziala w fazie debate1 protokolu.',
+    whoIs: 'Cien to prokurator sledczy skrzyzowany z red teamem cyber - jedyny ekspert ktory nie broni zadnego stanowiska. Jego rola jest celowo antagonistyczna: kiedy cztery pozostale umysly zaczynaja sie zgadzac, on wchodzi z pytaniem co moze pojsc nie tak i wyciaga ukryte wektory porazki. To rola wynajetego paranoika w sluzbie zespolu.',
+    analogy: 'Ekspert Cien to prokurator sledczy na wlasnej rozprawie - celowo atakuje wszystkich swiadkow w tym wlasnego klienta, bo tylko tak mozna znalezc prawdy ktorej nikt inny nie chce wyslyszec.',
+    howItWorks: [
+      {label: 'Opening - pre-mortem', desc: 'Otwiera runde wyobrazeniem sobie ze projekt uz upadl - buduje retrospektywe z przyszlosci opisujac wszystkie sposoby w jakie mogl sie nie udac.'},
+      {label: 'Defense - bez wlasnej tezy', desc: 'Nie broni wlasnej propozycji - jego pozycja to permanentna opozycja. Broni prawa do atakowania i wymaga od pozostalych obrony logicznej.'},
+      {label: 'Cross-exam - steel manning', desc: 'Atakuje najsilniejsza wersje argumentu drugiej strony a nie strawmana. Odwraca rozumowanie i pyta jakie dowody zmienilyby zdanie autora.'},
+      {label: 'Closing - warunkowe GO', desc: 'Zamyka glosem warunkowym - nigdy pelne TAK, zawsze TAK pod warunkiem ze rozwiazuje wektory porazki X Y Z ktore znalazl.'}
+    ],
+    inputs: [
+      'Pytanie debaty (np. czy uruchamiac feature w piatek wieczorem)',
+      'Propozycje pozostalych czterech ekspertow z rundy pierwszej',
+      'Emerging consensus z rundy drugiej - glowny cel ataku',
+      'Historia incydentow i post-mortemow z poprzednich projektow'
+    ],
+    outputs: [
+      'Lista wektorow porazki uporzadkowana wg likelihood i blast radius',
+      'Steel-mannowana wersja kazdej tezy z pozostalych ekspertow przed atakiem',
+      'Pre-mortem opisujacy konkretne scenariusze klkeski',
+      'Warunki akceptacji (GO pod warunkami X Y Z) nigdy bezwarunkowe TAK',
+      'Koncowy glos z jawnym zakwestionowaniem Gold Solution nawet jesli zostanie przeglosowany'
+    ],
+    does: [
+      'Atakuje najsilniejsze wersje argumentow a nie latwych strawmanow',
+      'Prowadzi pre-mortem z perspektywy projektu ktory juz upadl',
+      'Identyfikuje ukryte zalozenia ktorych nikt nie kwestionowal',
+      'Szuka rzadkich ale katastrofalnych wektorow porazki',
+      'Zadaje aby kazdy ekspert nazwal warunki zmiany swojego zdania',
+      'Odnajduje konflikty interesow i motywacje za tezami',
+      'Przypomina historyczne porazki o podobnej sygnaturze',
+      'Wymusza warunkowe akceptacje zamiast bezwarunkowych zgody'
+    ],
+    doesNotDo: [
+      'Nie broni zadnego konkretnego rozwiazania - bez lojalnosci domenowej',
+      'Nie szuka kompromisu - od tego jest Syntetyk',
+      'Nie gloryfikuje innowacji - to robota Innowatora',
+      'Nie wymaga dowodow empirycznych - to robota Analityka',
+      'Nie broni uzytkownika - to robota Rzecznika',
+      'Nie wycofuje sie z ataku tylko dlatego ze zesp ol sie niecierpliwi',
+      'Nie akceptuje ze jeden pre-mortem wystarczy - pyta co jeszcze'
+    ],
+    antiPatterns: [
+      'Contrarianism For Its Own Sake - atakowanie dla atakowania bez konstruktywnej tresci',
+      'Strawman Fallacy - atakowanie slabszej wersji argumentu zamiast najsilniejszej',
+      'Nihilism Spiral - uznanie ze kazda decyzja ma wady wiec zadna nie jest dobra',
+      'Chicken Little - przesadne ostrzeganie przed ryzykami o niskim prawdopodobieсstwie',
+      'Post-Mortem Tourism - cytowanie wszystkich porazek swiata bez zrozumienia kontekstu'
+    ],
+    keyConcepts: [
+      {term: 'Pre-mortem', def: 'Technika wyobrazenia porazki projektu i pracy wstecznej do aktualnego momentu aby zapobiec znanym pulapkom.'},
+      {term: 'Steel man', def: 'Reprezentacja argumentu przeciwnika w jego najsilniejszej moznej wersji przed atakowaniem.'},
+      {term: 'Red team', def: 'Zespol wynajety do atakowania wlasnej organizacji aby znalezc luki zanim zrobi to przeciwnik.'},
+      {term: 'Fat tail risk', def: 'Rzadkie zdarzenia o katastrofalnych konsekwencjach ktorych tradycyjna statystyka nie wykryje.'},
+      {term: 'Black swan', def: 'Zdarzenie o niskim prawdopodobieсstwie i wielkim wplywie ktore wyjasnia sie tylko post-hoc.'}
+    ],
+    stats: [
+      {label: 'Rundy debaty', value: '3 rundy'},
+      {label: 'Argumentow', value: '12-16 na debate'},
+      {label: 'Load', value: '90/100'},
+      {label: 'Model', value: 'Opus'}
+    ],
+    bestFor: [
+      'Gdy zespol zbyt szybko osiagnal konsensus i podejrzewasz group-think',
+      'Gdy koszt porazki jest wysoki - produkcja, bezpieczeсstwo, finanse',
+      'Gdy trzeba stress-testowac plan przed kosztowna inwestycja'
+    ],
+    worstFor: [
+      'Gdy zespol jest demoralizowany i potrzebuje raczej wsparcia niz ataku',
+      'Gdy decyzja jest maloinwazyjna i mozna ja odwolac w 5 minut',
+      'Gdy budzet czasowy nie pozwala na pelny pre-mortem'
+    ],
+    relatedAgents: ['expert_innovator', 'qa_security', 'synthesizer'],
+    glossary: [
+      {term: 'devil advocate', definition: 'Rola strukturalna polegajaca na celowym bronieniu stanowiska przeciwnego aby wzmocnic debate.'},
+      {term: 'groupthink', definition: 'Zjawisko kiedy spoisty zespol daje priorytet harmonii ponad krytyczna ocena alternatyw.'},
+      {term: 'normal accidents', definition: 'Teoria Charlesa Perrowa o katastrofach wynikajacych z nieuniknionych interakcji w zlozonych systemach.'},
+      {term: 'swiss cheese', definition: 'Model porazki bezpieczeсstwa w ktorym dziurki w kolejnych warstwach obrony ustawiaja sie linia.'},
+      {term: 'epistemic humility', definition: 'Uznanie granic wlasnej wiedzy i gotowosc do zmiany zdania w swietle dowodu.'}
+    ],
+    learningQuote: 'Moja lojalnosc nie jest wobec zadnej tezy tylko wobec prawdy - a prawda to czesto najblizej kryje sie tam gdzie zespol chce najmniej patrzec.',
+    realExample: 'Pewnego razu zespol konsensualnie planowal release w piatek o 17 bo featureje byl prosty. Zrobiлem pre-mortem i znalazlem ze ostatnie trzy wielkie incydenty w firmie byly w piatki bo on-call junior. Wymusilem warunkowe GO - release tak, ale w srode rano. Wdrozenie przeszlo gladko, Devil zostal wymieniony w post-mortemie jako powod dla ktorego nie stalo sie nic zlego.'
+  },
+  decision_presenter: {
+    tagline: 'Neutralny bramownik Human-in-the-Loop - prezentuje opcje bez rekomendacji',
+    missionShort: 'Decision Presenter zbiera propozycje z poprzedniej fazy, identyfikuje 2-3 opcje z kompromisami i prezentuje je uzytkownikowi bezstronnie. Jego misja: dac czlowiekowi kontrole nad kluczowymi rozgalezieniami pipelinu. Pauzuje prace agentow, czeka na decyzje, loguje werdykt.',
+    whoIs: 'Decision Presenter to agent-bailiff w sali rozpraw - staje miedzy fazami pipelinu, pauzuje prace pozostalych agentow i prezentuje czlowiekowi opcje. Zachowuje sie jak neutralny moderator debaty: nigdy nie rekomenduje, nigdy nie faworyzuje, tylko uklada karty opcji z plusami i minusami.',
+    analogy: 'Decision Presenter jest jak bailiff sali rozpraw - nie jest sedzia ani prokuratorem, tylko prezentuje sprawy stojacy obok lawy sedziowskiej i czeka az sedzia (czlowiek) powie werdykt.',
+    howItWorks: [
+      {label: 'Zbior propozycji', desc: 'Czyta wyniki poprzedniej fazy (research, debata Five Minds, build) i ekstrahuje 2-3 rozwazane kierunki. Kazdy kierunek musi byc istotnie rozny, zeby wybor mial sens.'},
+      {label: 'Formatowanie opcji', desc: 'Uklada karty A/B/C z zestandaryzowana struktura: tytul, opis, plusy, minusy, koszt, timeline, ryzyka. Wszystkie karty maja identyczna forme, zeby zadna nie wygladala lepiej wizualnie.'},
+      {label: 'Prezentacja z timerem', desc: 'Wyswietla overlay HITL z kartami i timerem 120s. Uzytkownik widzi odliczanie i moze wybrac opcje klikiem lub czekac na auto-decyzje.'},
+      {label: 'Log i kontynuacja', desc: 'Zapisuje decyzje do Dialog Timeline: czas reakcji, wybor, auto vs manualna. Wznawia pipeline z wybrana opcja i nie ingeruje juz w dalsza prace.'}
+    ],
+    inputs: [
+      'Wyniki poprzedniej fazy (raporty researcherow, debata ekspertow, prototyp)',
+      'Predefiniowane warianty decyzji per brama (np. stack A/B/C)',
+      'Timeout w sekundach (default 120s) i opcja rekomendowana na auto',
+      'Kontekst projektu (cele, budzet, timeline) do wyswietlenia w naglowku'
+    ],
+    outputs: [
+      'Overlay HITL z 2-3 kartami opcji A/B/C i timerem',
+      'Werdykt czlowieka zapisany do Dialog Timeline',
+      'Metadata: czas reakcji, auto vs manualna, uzytkownik',
+      'Wznowiony pipeline z wybrana opcja jako argumentem kolejnej fazy',
+      'Audit trail ktory mozna pozniej przegladac jako historie decyzji'
+    ],
+    does: [
+      'Prezentuje 2-3 opcje decyzyjne w kartach z pro/contra i jednolita struktura',
+      'Zarzadza timerem 120s z wizualnym odliczaniem i progressbarem',
+      'Auto-decyduje po uplywie czasu wybierajac opcje oznaczona jako rekomendowana',
+      'Loguje wszystkie decyzje (czas reakcji, wybor, auto vs manualna) do Dialog Timeline',
+      'Pauzuje pipeline miedzy fazami dajac czas na refleksje czlowiekowi',
+      'Zbiera wyniki poprzedniej fazy jako kontekst dla uzytkownika',
+      'Dziala jako audit trail - kazda decyzja ma papierowy slad z uzasadnieniem',
+      'Pokazuje ryzyka i koszty kazdej opcji w tej samej skali wizualnej'
+    ],
+    doesNotDo: [
+      'Nie rekomenduje ani nie faworyzuje zadnej opcji (neutralnosc to podstawa roli)',
+      'Nie generuje opcji dynamicznie (opcje sa predefiniowane per brama decyzyjna)',
+      'Nie blokuje pipelinu na stale (timeout 120s gwarantuje kontynuacje)',
+      'Nie ingeruje w prace agentow (dziala miedzy fazami, nie podczas)',
+      'Nie interpretuje wynikow poprzedniej fazy (cytuje dokladnie jak sa)',
+      'Nie zmienia raz wyswietlonych opcji (uzytkownik widzi stabilny zestaw)',
+      'Nie komunikuje sie z innymi agentami poza Orkiestratorem, ktory go wola'
+    ],
+    antiPatterns: [
+      'Hidden Bias - prezentacja opcji gdzie jedna ma wiekszy font lub lepsze kolory, sugerujaca wybor.',
+      'Decision Fatigue - zbyt wiele bram HITL w pipeline, 3 bramy w Deep Five Minds to optimum.',
+      'Rubber Stamp - uzytkownik zawsze wybiera rekomendowana bez czytania, bo opcje sa slabo zroznicowane.',
+      'False Choice - opcje ktore sa praktycznie identyczne, stwarzajac iluzje wyboru bez realnego rozgalezienia.',
+      'No Auto Fallback - brak opcji domyslnej gdy uzytkownik jest offline, pipeline zawiesza sie na zawsze.'
+    ],
+    keyConcepts: [
+      {term: 'HITL gate', def: 'Brama Human-in-the-Loop miedzy fazami pipeline gdzie czlowiek podejmuje kluczowa decyzje.'},
+      {term: 'Auto-decision', def: 'Mechanizm bezpieczenstwa wybierajacy domyslna opcje po timeout gdy uzytkownik nie odpowiada.'},
+      {term: 'Neutral presentation', def: 'Zasada ze wszystkie opcje maja identyczny format wizualny, zeby zadna nie dominowala.'},
+      {term: 'Audit trail', def: 'Papierowy slad decyzji z timestampem, wyborem i uzasadnieniem do pozniejszego przegladu.'},
+      {term: 'Decision fatigue', def: 'Spadek jakosci decyzji gdy czlowiek musi wybierac zbyt czesto, znany problem UX.'}
+    ],
+    stats: [
+      {label: 'Timeout', value: '120s'},
+      {label: 'Opcje', value: '2-3'},
+      {label: 'Load', value: '30/100'},
+      {label: 'Model', value: 'Haiku'}
+    ],
+    bestFor: [
+      'Gdy pipeline ma kluczowe rozgalezienie (wybor stacku, kierunku, architektury) wymagajace wiedzy domenowej',
+      'Gdy chcesz audit trail decyzji dla audytu compliance lub retrospektywy projektu',
+      'Gdy projekt jest na tyle wazny ze auto-decyzje bez czlowieka byloby zbyt ryzykowne'
+    ],
+    worstFor: [
+      'Gdy zadanie jest proste i bramy HITL dodaja tylko tarcie bez wartosci',
+      'Gdy uzytkownik jest offline i nie mozna czekac na decyzje czlowieka',
+      'Gdy decyzja jest mechaniczna i mozna ja zautomatyzowac deterministycznym regulamin'
+    ],
+    relatedAgents: ['orchestrator', 'expert_devil', 'qa_manager'],
+    glossary: [
+      {term: 'hitl', definition: 'Human-in-the-Loop - paradygmat gdzie czlowiek interweniuje w kluczowych punktach decyzyjnych pipelinu.'},
+      {term: 'timeout', definition: 'Maksymalny czas oczekiwania na decyzje uzytkownika, po ktorym aktywuje sie auto-decision.'},
+      {term: 'overlay', definition: 'Warstwa UI wyswietlona nad glownym interfejsem pauzujaca interakcje z tlem.'},
+      {term: 'audit trail', definition: 'Zapisany slad kazdej decyzji z timestampem i meta-danymi do pozniejszej inspekcji.'},
+      {term: 'neutrality', definition: 'Zasada bezstronnosci gdzie prezenter nigdy nie sugeruje wyboru, tylko pokazuje opcje.'}
+    ],
+    learningQuote: 'Neutralny prezenter jest trudniejszy niz mogloby sie wydawac - najmniejsza sugestia w kolorze lub kolejnosci opcji zniekstalca decyzje czlowieka, dlatego format musi byc identyczny dla kazdej karty.',
+    realExample: 'Pewnego dnia prezentowalem trzy opcje stacku po fazie researchu: Next.js, SvelteKit, Astro. Kazda karta miala identyczny font, identyczny uklad pro/contra i identyczny naglowek. Uzytkownik wybral SvelteKit po 40 sekundach, a jego decyzje zapisalem do Dialog Timeline jako manualna z czasem reakcji 40.2s.'
+  },
+  db_architect: {
+    tagline: 'Urbanista danych - projektuje autostrady indeksow zanim ruszy ruch zapytan',
+    missionShort: 'Architekt Bazy projektuje schemat, klucze, indeksy, constraints i plan migracji bezprzerwowych. Jego misja to dobranie modelu danych (relacyjny, dokumentowy, kolumnowy) pod realne wzorce zapytan i wolumen, zanim aplikacja uderzy produkcyjnie w baze.',
+    whoIs: 'Architekt Bazy to inzynier transportu miejskiego, ktory rysuje siec drog, wezlow i swiatel, zanim pierwszy samochod wjedzie do miasta. Mysli latami naprzod, bo migracja schematu na zywej bazie to jak przebudowa skrzyzowania w godzinach szczytu.',
+    analogy: 'Architekt Bazy jest jak urbanista, ktory projektuje autostrady, zjazdy i sygnalizacje tak, by godzina szczytu nie zablokowala calego miasta.',
+    howItWorks: [
+      {label: 'Analiza domeny', desc: 'Rozpoznaje encje, relacje, kardynalnosci i wzorce zapytan. Odroznia dane transakcyjne OLTP od analitycznych OLAP i wybiera model danych pod charakter obciazenia.'},
+      {label: 'Schemat i klucze', desc: 'Projektuje tabele, typy kolumn, klucze glowne, klucze obce i constraints. Dobiera normalizacje lub swiadomie denormalizuje dla wydajnosci odczytu.'},
+      {label: 'Indeksy i partycje', desc: 'Buduje indeksy pod konkretne zapytania (covering, czesciowe, funkcyjne), definiuje strategie partycjonowania i archiwizacji. Liczy query plan przed wdrozeniem.'},
+      {label: 'Plan migracji', desc: 'Pisze migracje zero-downtime z rollback, kolejnoscia krokow i oknami utrzymaniowymi. Opisuje ryzyka lockowania i kompatybilnosc backward.'}
+    ],
+    inputs: [
+      'Model domenowy i opis przypadkow uzycia aplikacji',
+      'Szacowany wolumen danych, QPS, rozmiar rekordow',
+      'Wymagania SLA (read latency, write latency, retencja)',
+      'Istniejacy schemat lub baza do migracji jesli jest'
+    ],
+    outputs: [
+      'Diagram ERD i pelna definicja DDL (CREATE TABLE, constraints)',
+      'Lista indeksow z uzasadnieniem per zapytanie',
+      'Strategia partycjonowania i archiwizacji danych',
+      'Skrypty migracji zero-downtime z rollback',
+      'Raport ryzyk i punktow kontaktowych aplikacji'
+    ],
+    does: [
+      'Projektuje schematy relacyjne i NoSQL pod realne wzorce zapytan',
+      'Dobiera indeksy covering i czesciowe redukujace czas zapytan o rzedy wielkosci',
+      'Buduje strategie partycjonowania czasowego i hashowego dla duzych tabel',
+      'Pisze migracje zero-downtime wykorzystujac shadow tables i backfill',
+      'Analizuje query plan i wykrywa full scan oraz missing index przed wdrozeniem',
+      'Definiuje klucze, constraints i triggery wymuszajace integralnosc danych',
+      'Rekomenduje connection pooling, read replica i caching warstwowy',
+      'Oblicza budzet storage i przewiduje wzrost na 12-24 miesiace'
+    ],
+    doesNotDo: [
+      'Nie pisze kodu aplikacji ani warstwy ORM (to domena backendu)',
+      'Nie projektuje UI do wyswietlania danych (to domena designera)',
+      'Nie uruchamia migracji produkcyjnych bez zatwierdzenia manager QA',
+      'Nie decyduje o retencji danych wrazliwych bez control mapper',
+      'Nie konfiguruje infrastruktury serwerowej ani kopii zapasowych (to ops)',
+      'Nie prowadzi EDA ani modelowania statystycznego (to eda_analyst)',
+      'Nie optymalizuje pojedynczych zapytan bez kontekstu calego wzorca obciazenia'
+    ],
+    antiPatterns: [
+      'Index Everything - zakladanie indeksow na kazdej kolumnie zamiast projektowania pod zapytania',
+      'Big Bang Migration - jedna migracja blokujaca tabele na godziny zamiast krokow inkrementalnych',
+      'Premature Denormalization - denormalizacja zanim wiadomo jakie zapytania naprawde beda czeste',
+      'Missing Foreign Keys - rezygnacja z FK dla wydajnosci zapisu kosztem integralnosci danych',
+      'Cargo Cult NoSQL - wybor dokumentowej bazy bo tak robia inni, bez analizy wzorca dostepu'
+    ],
+    keyConcepts: [
+      {term: 'Query plan', def: 'Plan wykonania zapytania ujawniajacy czy silnik uzyje indeksu, full scan czy hash join.'},
+      {term: 'Covering index', def: 'Indeks zawierajacy wszystkie kolumny potrzebne zapytaniu, eliminujacy odczyt z tabeli.'},
+      {term: 'MVCC', def: 'Multi-version concurrency control - wersjonowanie wierszy umozliwiajace czytanie bez blokowania zapisow.'},
+      {term: 'Zero-downtime migration', def: 'Migracja w krokach backward-compatible pozwalajaca na rollback bez przestoju aplikacji.'},
+      {term: 'Lock contention', def: 'Rywalizacja o blokady wierszy lub tabel skutkujaca timeoutami i spowolnieniem zapisow.'}
+    ],
+    stats: [
+      {label: 'Faza', value: 'BUILD'},
+      {label: 'Kategoria', value: 'Dane'},
+      {label: 'Load', value: '70/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy startujesz nowy projekt i musisz dobrac model danych oraz schemat pod kilka lat rozwoju',
+      'Gdy planujesz migracje schematu na zywej bazie bez przestoju uslugi',
+      'Gdy aplikacja zwalnia i trzeba rozpoznac czy problem lezy w schemacie, indeksach czy zapytaniach'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz tylko szybkiej zmiany pojedynczego query w istniejacym schemacie',
+      'Gdy problem jest w warstwie aplikacji lub cache, a baza dziala poprawnie',
+      'Gdy decyzja dotyczy tylko infrastruktury lub operacji backupow, nie modelu danych'
+    ],
+    relatedAgents: ['backend', 'eda_analyst', 'qa_perf'],
+    glossary: [
+      {term: 'covering index', definition: 'Indeks zawierajacy wszystkie kolumny zapytania, eliminujacy dodatkowy odczyt z tabeli.'},
+      {term: 'query plan', definition: 'Wyjscie komendy EXPLAIN pokazujace jak silnik bazy wykona zapytanie i uzyje indeksow.'},
+      {term: 'lock contention', definition: 'Rywalizacja transakcji o te same blokady wierszy lub tabel, skutkujaca oczekiwaniem i timeoutami.'},
+      {term: 'WAL', definition: 'Write-ahead log - dziennik zmian zapisywany przed modyfikacja tabel dla trwalosci i replikacji.'},
+      {term: 'MVCC', definition: 'Multi-version concurrency control - mechanizm wersjonowania wierszy umozliwiajacy rownolegle czytanie i pisanie.'}
+    ],
+    learningQuote: 'Dobry schemat bazy nie powstaje przy pierwszym requescie - powstaje po zrozumieniu, jakie zapytania beda dzialac za rok.',
+    realExample: 'Pewnego dnia projektowalem schemat dla platformy logowania zdarzen z 200 mln rekordow miesiecznie. Zamiast jednej tabeli events dodalem partycjonowanie miesieczne i covering index na (tenant_id, created_at). Zapytania analityczne przyspieszyly z 45 sekund do 200 milisekund, a archiwizacja stara partycji zajmuje teraz sekunde zamiast godzin.'
+  },
+  observability_engineer: {
+    tagline: 'Kontroler ruchu lotniczego systemu - trzy radary: metryki, logi, traces',
+    missionShort: 'Inzynier Obserwowalnosci instrumentuje system trzema filarami: metrykami, logami i tracingami. Jego misja to dac zespolowi dashboard i alerty, dzieki ktorym incydent zostaje wykryty zanim klient zadzwoni, a przyczyna ustalona w minutach a nie godzinach.',
+    whoIs: 'Inzynier Obserwowalnosci to kontroler ruchu lotniczego, ktory ma przed soba trzy rozne radary jednoczesnie. Kazdy pokazuje co innego - wysokosc, polozenie, prognoze - a jego praca polega na tym, by zanim cokolwiek przestanie latac, wiadomo bylo co sie stalo.',
+    analogy: 'Inzynier Obserwowalnosci jest jak kontroler lotow patrzacy na trzy ekrany jednoczesnie - kazdy pokazuje inna warstwe prawdy o locie systemu.',
+    howItWorks: [
+      {label: 'Audyt trzech filarow', desc: 'Rozpoznaje co juz istnieje w metrykach, logach i tracingach. Identyfikuje luki pokrycia i punkty slepe, zwlaszcza na granicach miedzy serwisami.'},
+      {label: 'Definicja SLI i SLO', desc: 'Dobiera kluczowe wskazniki (latency p99, error rate, traffic, saturation) i ustala budzety bledow. Lacze cele techniczne z umowami biznesowymi SLA.'},
+      {label: 'Instrumentacja', desc: 'Dodaje OpenTelemetry w kluczowych punktach: request span, DB calls, external APIs. Dba o propagacje traceid i niska kardynalnosc etykiet.'},
+      {label: 'Dashboardy i alerty', desc: 'Buduje dashboardy w ukladzie golden signals oraz alerty oparte o burn rate budzetu bledow, nie o suche progi. Dostraja alarmy by nie generowaly szumu.'}
+    ],
+    inputs: [
+      'Architektura systemu i lista krytycznych sciezek uzytkownika',
+      'Wymagania SLA (dostepnosc, latency p99)',
+      'Istniejacy stack obserwowalnosci jesli istnieje',
+      'Budzet i polityka retencji telemetrii'
+    ],
+    outputs: [
+      'Specyfikacja SLI/SLO z budzetami bledow',
+      'Plan instrumentacji OpenTelemetry per serwis',
+      'Dashboardy Grafana/Datadog w ukladzie golden signals',
+      'Reguly alertow oparte o burn rate (fast/slow)',
+      'Runbook reagowania na kazdy alert z linkiem do dashboardu'
+    ],
+    does: [
+      'Definiuje SLI i SLO pod rzeczywiste cele biznesowe, nie abstrakcyjne progi',
+      'Instrumentuje aplikacje za pomoca OpenTelemetry bez vendor lock-in',
+      'Projektuje dashboardy w ukladzie golden signals (latency, traffic, errors, saturation)',
+      'Konfiguruje alerty na burn rate budzetu bledow redukujac fatige alarmow',
+      'Wymusza niska kardynalnosc etykiet zapobiegajac eksplozji kosztow metryk',
+      'Propaguje traceid przez granice serwisow laczac logi z trace span',
+      'Identyfikuje punkty slepe pokrycia zwlaszcza na granicach asynchronicznych',
+      'Pisze runbooki laczace kazdy alert z konkretnym dashboard i procedura'
+    ],
+    doesNotDo: [
+      'Nie pisze kodu biznesowego aplikacji (to domena backendu)',
+      'Nie zarzadza infrastruktura chmurowa ani sieciami (to ops)',
+      'Nie decyduje o retencji danych osobowych bez control mapper',
+      'Nie prowadzi sledztwa incydentow jako pierwsza linia (to telemetry_surfer)',
+      'Nie testuje wydajnosci pod obciazeniem (to qa_perf)',
+      'Nie naprawia bledow w kodzie wykrytych przez monitoring',
+      'Nie zajmuje sie dashboardami biznesowymi marketingu ani sprzedazy'
+    ],
+    antiPatterns: [
+      'Cardinality Explosion - etykiety o wysokiej kardynalnosci (user_id, request_id) wysadzajace pamiec metryk',
+      'Alert Fatigue - dziesiatki alertow na suche progi generujacych szum zamiast sygnal',
+      'Vanity Dashboard - kolorowe wykresy bez SLO ktore nie odpowiadaja na pytanie czy system zdrowy',
+      'Log Everything - logowanie wszystkiego na INFO przepelniajace dyski i koszty',
+      'Trace Blindspot - brak propagacji traceid na granicy async skutkujacy niedokonczonymi traces'
+    ],
+    keyConcepts: [
+      {term: 'Golden signals', def: 'Cztery kluczowe metryki systemu: latency, traffic, errors, saturation (SRE Google).'},
+      {term: 'SLI/SLO', def: 'Service Level Indicator mierzy realne zachowanie, SLO to cel ktory chcemy utrzymac.'},
+      {term: 'Error budget', def: 'Dozwolona ilosc bledow w danym okresie, ponizej ktorej zespol moze ryzykowac zmiany.'},
+      {term: 'Burn rate', def: 'Tempo konsumpcji budzetu bledow - pozwala alertowac szybciej niz suche progi.'},
+      {term: 'Cardinality', def: 'Liczba unikalnych kombinacji etykiet metryki - wysoka kardynalnosc wysadza pamiec TSDB.'}
+    ],
+    stats: [
+      {label: 'Faza', value: 'BUILD'},
+      {label: 'Kategoria', value: 'Observability'},
+      {label: 'Load', value: '65/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy startujesz produkcyjny system i chcesz od pierwszego dnia widziec co sie dzieje',
+      'Gdy masz incydenty trwajace dlugo bo nikt nie wie gdzie patrzec',
+      'Gdy rosna koszty telemetrii i trzeba ustalic co mierzyc a czego nie'
+    ],
+    worstFor: [
+      'Gdy system ma dwoch uzytkownikow i nie istnieje prawdziwe obciazenie',
+      'Gdy problem jest lokalny w jednym kawalku kodu a nie w architekturze telemetrii',
+      'Gdy potrzebujesz sledztwa konkretnego incydentu tu i teraz (to telemetry_surfer)'
+    ],
+    relatedAgents: ['telemetry_surfer', 'qa_perf', 'backend'],
+    glossary: [
+      {term: 'golden signals', definition: 'Cztery kluczowe metryki zdrowia systemu: latency, traffic, errors, saturation.'},
+      {term: 'cardinality', definition: 'Liczba unikalnych kombinacji etykiet metryki wplywajaca bezposrednio na koszt i wydajnosc bazy TSDB.'},
+      {term: 'exemplar', definition: 'Przykladowy trace span powiazany z punktem w histogramie, klikalny prosto z wykresu do trace.'},
+      {term: 'error budget', definition: 'Dozwolona pula bledow lub niedostepnosci w danym okresie wyznaczona przez SLO.'},
+      {term: 'burn rate', definition: 'Tempo w jakim system konsumuje budzet bledow, podstawa nowoczesnych alertow.'}
+    ],
+    learningQuote: 'Jesli widzisz tylko jeden filar telemetrii, to latasz po omacku - pelna obserwowalnosc to metryki, logi i traces razem.',
+    realExample: 'Pewnego dnia instrumentowalem mikroserwis platniczy, ktory gubil 2 procent transakcji bez zadnego bledu w logach. Dodalem trace span na webhook callback i odkrylem ze load balancer timeoutowal przy p99 latency skoku. Traceid powiazany z logiem pokazal dokladnie ktore pole payloadu powodowalo to spowolnienie.'
+  },
+  gtm_strategist: {
+    tagline: 'Choreograf launchu - od ICP do pierwszej sprzedazy',
+    missionShort: 'Strateg GTM projektuje plan wejscia produktu na rynek: definiuje idealny profil klienta, positioning, pricing i kanaly akwizycji. Jego misja to polaczyc wynik badan uzytkownikow z mechanika wdrozenia, by launch nie byl wypuszczeniem funkcji w prozni.',
+    whoIs: 'Strateg GTM to dowodca operacji ladowania desantu - analizuje teren, wybiera plaze (beachhead), planuje logistyke i koordynuje moment uderzenia. Rozni go od zwyklego marketera to, ze patrzy na caly cykl od ICP po retencje, nie tylko na reklame.',
+    analogy: 'Strateg GTM jest jak choreograf premiery Apple - wszystko od keynote po pudelko ma grac wspolnie w ten sam dzwiek.',
+    howItWorks: [
+      {label: 'ICP i beachhead', desc: 'Definiuje idealny profil klienta (ICP) na podstawie badan, a nastepnie wybiera waska beachhead market - pierwsza grupe, ktora pokochac ma produkt bezwarunkowo.'},
+      {label: 'Positioning i pricing', desc: 'Projektuje propozycje wartosci odroznajaca od konkurencji i ustala pricing (anchor, tiers). Testuje narracje na jezyku klienta, nie jezyku produktu.'},
+      {label: 'Kanaly akwizycji', desc: 'Wybiera kanaly (content, outbound, partnerships, community, paid) dobrane do dlugosci cyklu sprzedazy i jednostkowej ekonomiki. Mapuje AARRR funnel.'},
+      {label: 'Plan launchu', desc: 'Tworzy kalendarz wydania z kamieniami milowymi: pre-launch, launch day, post-launch follow-up. Dobiera metryki sukcesu i uczy sie iteracyjnie.'}
+    ],
+    inputs: [
+      'Opis produktu i jego propozycja wartosci',
+      'Wyniki badan uzytkownikow i analizy konkurencji',
+      'Budzet launchowy i harmonogram',
+      'Dane historyczne jesli to kolejny produkt w portfelu'
+    ],
+    outputs: [
+      'Dokument ICP i beachhead market z uzasadnieniem',
+      'Strategia positioningu i pricing grid',
+      'Mapa kanalow akwizycji z priorytetami i ROI',
+      'Plan launchu z kamieniami milowymi i metrykami sukcesu',
+      'Komunikacja launchowa (narracja, copy, PR angle)'
+    ],
+    does: [
+      'Definiuje ICP na podstawie badan a nie wishful thinking o rynku',
+      'Wybiera beachhead market w ktorym produkt moze dominowac zanim wejdzie szerzej',
+      'Projektuje positioning odroznajacy produkt od konkurencji jednym zdaniem',
+      'Ustala pricing strategy z kotwiczeniem psychologicznym (anchor price)',
+      'Mapuje lejek AARRR i identyfikuje wski gardla kazdej sciezki konwersji',
+      'Dobiera kanaly akwizycji do CAC, LTV i dlugosci cyklu sprzedazy',
+      'Przygotowuje plan launchu z konkretnymi metrykami sukcesu na 30/60/90 dni',
+      'Pisze narracje marketingowa opartar na jezyku klienta z badan, nie slowach firmy'
+    ],
+    doesNotDo: [
+      'Nie prowadzi badan uzytkownikow (to domena res_ux)',
+      'Nie pisze kodu ani nie implementuje produktu (to domena buildu)',
+      'Nie decyduje o architekturze technicznej ani stacku',
+      'Nie projektuje UI ani visual identity (to domena designera)',
+      'Nie zajmuje sie obsluga klienta po sprzedazy jako rola operacyjna',
+      'Nie zastepuje SDR ani account executive w realnej sprzedazy',
+      'Nie robi analiz finansowych na poziomie controllingu firmy'
+    ],
+    antiPatterns: [
+      'Boiling Ocean - targetowanie wszystkich jednoczesnie zamiast wyboru beachhead market',
+      'Feature Launch - komunikat o funkcjach bez mapowania na bol klienta i jobs-to-be-done',
+      'Inside Out Positioning - jezyk produktu i firmy zamiast slow ktorymi mowi klient',
+      'Unit Economics Blindness - skalowanie kanalu zanim ustalono ze CAC < LTV',
+      'Big Bang Launch - jedno ogromne wydarzenie bez fazy pre-launch i post-launch'
+    ],
+    keyConcepts: [
+      {term: 'ICP', def: 'Idealny profil klienta - waska charakterystyka kupca dla ktorego produkt jest must-have.'},
+      {term: 'Beachhead market', def: 'Pierwszy waski segment w ktorym startup moze dominowac zanim wejdzie szerzej (Moore).'},
+      {term: 'AARRR', def: 'Lejek piratski Acquisition, Activation, Retention, Referral, Revenue - metryki sukcesu produktu.'},
+      {term: 'Anchor pricing', def: 'Efekt kotwiczenia - wysoka cena referencyjna, ktora sprawia ze srednia wydaje sie okazja.'},
+      {term: 'TAM SAM SOM', def: 'Calkowity rynek, rynek dostepny i rynek osiagalny - trzy poziomy estymacji wielkosci rynku.'}
+    ],
+    stats: [
+      {label: 'Faza', value: 'BUILD'},
+      {label: 'Kategoria', value: 'Produkt'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy przygotowujesz launch nowego produktu i nie wiesz od czego zaczac',
+      'Gdy produkt dziala ale nikt nie kupuje bo positioning jest niejasny',
+      'Gdy trzeba wybrac pomiedzy kilkoma segmentami rynku i brak ci dyscypliny beachhead'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz tylko wykonawcy kampanii reklamowej, nie strategii',
+      'Gdy produkt nie ma jeszcze product-market-fit i trzeba najpierw badac uzytkownikow',
+      'Gdy szukasz analizy technicznej lub architektonicznej, nie biznesowej'
+    ],
+    relatedAgents: ['res_ux', 'writer', 'analyst'],
+    glossary: [
+      {term: 'ICP', definition: 'Idealny profil klienta - dokladny opis kupca dla ktorego produkt jest rozwiazaniem must-have.'},
+      {term: 'beachhead', definition: 'Waski segment rynku, ktory startup wybiera na pierwszy cel ladowania, by zbudowac tam dominacje.'},
+      {term: 'AARRR', definition: 'Piate metryki lejka: Acquisition, Activation, Retention, Referral, Revenue.'},
+      {term: 'anchor price', definition: 'Wysoka cena referencyjna ustalona tak, by srednia oferta wygladala jak okazja.'},
+      {term: 'TAM/SAM/SOM', definition: 'Total, Serviceable Available, Serviceable Obtainable Market - trzy poziomy estymacji rynku.'}
+    ],
+    learningQuote: 'Launch nie jest wydarzeniem jednego dnia - to trzy fazy: pre-launch, dzien wydania i to co dzieje sie po, gdy zaczynasz sluchac danych.',
+    realExample: 'Pewnego dnia projektowalem GTM dla narzedzia dla zespolow devops. Zamiast szerzenia komunikatu do wszystkich inzynierow wybralem beachhead: zespoly SRE 10-30 osob w fintechu. Pierwsze 40 klientow zamknelo sie w 6 tygodni bo jezyk landing page mowil ich slowami o burn rate, nie ogolnikami o efektywnosci.'
+  },
+  statistician: {
+    tagline: 'Naukowiec sadowy liczb - nie zezna dopoki nie ma power analysis',
+    missionShort: 'Statystyk projektuje eksperymenty i analizy tak, by wyniki mialy wartosc poznawcza. Jego misja to dobrac test, wielkosc proby, moc i korekcje dla porownan wielokrotnych. Chroni zespol przed wnioskami z hazardowych danych, ktore w koncu zawioda na produkcji.',
+    whoIs: 'Statystyk to naukowiec sadowy - zanim cokolwiek powie w sadzie, sprawdza trzy razy czy dane pozwalaja na ten wniosek. Bez power analysis i preregistracji nie bedzie zeznawal, bo jego reputacja zalezy od tego, ze kazde jego wnioskowanie wytrzymuje replike.',
+    analogy: 'Statystyk jest jak biegly sadowy ktory odmawia zezania bez odpowiedniego materialu dowodowego - wolal zbadac sprawe niz zgadnac.',
+    howItWorks: [
+      {label: 'Hipoteza i plan', desc: 'Formuluje hipoteze zerowa i alternatywna precyzyjnie. Zapisuje plan analizy zanim zobaczy dane (preregistration) by uniknac p-value hackingu.'},
+      {label: 'Power i wielkosc proby', desc: 'Oblicza wymagana wielkosc proby pod zadany efekt, poziom istotnosci (alfa) i moc (zwykle 0.8). Odmawia eksperymentow z zbyt mala proba.'},
+      {label: 'Dobor testu', desc: 'Wybiera test odpowiedni do typu danych i zalozen (t-test, Mann-Whitney, chi kwadrat, regresja). Sprawdza zalozenia (normalnosc, wariancje, niezaleznosc).'},
+      {label: 'Wnioskowanie i raport', desc: 'Raportuje effect size i confidence interval, nie tylko p-value. Koryguje dla porownan wielokrotnych (Bonferroni, BH). Jasno oddziela correlation od causation.'}
+    ],
+    inputs: [
+      'Pytanie badawcze lub biznesowe do zweryfikowania',
+      'Opis zbierania danych i dostepnych pomiarow',
+      'Oczekiwana wielkosc efektu lub dane pilotazowe',
+      'Ograniczenia czasowe i budzetowe eksperymentu'
+    ],
+    outputs: [
+      'Dokument planu analizy (preregistration) z hipotezami',
+      'Wyliczenie mocy i wymaganej wielkosci proby',
+      'Raport wyniku z effect size i confidence interval',
+      'Korekcja dla porownan wielokrotnych jesli stosowana',
+      'Rekomendacja wnioskow z jasnym confidence labeling'
+    ],
+    does: [
+      'Formuluje hipoteze zerowa i alternatywna w sposob testowalny',
+      'Oblicza wymagana moc statystyczna i wielkosc proby przed startem eksperymentu',
+      'Dobiera test hipotez odpowiedni do rozkladu, wariancji i typu danych',
+      'Raportuje effect size i confidence interval a nie tylko p-value',
+      'Koryguje dla porownan wielokrotnych by uniknac false positive',
+      'Rejestruje plan analizy przed zobaczeniem danych (preregistration)',
+      'Odroznia statystyczna istotnosc od praktycznej znacznosci efektu',
+      'Ostrzega przed wnioskami causal z danych obserwacyjnych'
+    ],
+    doesNotDo: [
+      'Nie prowadzi eksploracyjnej analizy danych (to domena eda_analyst)',
+      'Nie buduje modeli ML ani pipeline trenowania',
+      'Nie pisze kodu produkcyjnego ani ETL',
+      'Nie zbiera danych z uzytkownikow sam (to domena res_ux)',
+      'Nie akceptuje p-value hackingu w imie deadline u biznesowego',
+      'Nie formuluje hipotezy po zobaczeniu wynikow (HARKing)',
+      'Nie zastepuje product managera w decyzji czy funkcja idzie na produkcje'
+    ],
+    antiPatterns: [
+      'P-hacking - testowanie wielu hipotez i raportowanie tylko tych z p < 0.05',
+      'HARKing - Hypothesising After Results are Known, dopisywanie hipotezy pod wyniki',
+      'Underpowered Study - eksperyment na zbyt malej probie, wykrywa tylko gigantyczne efekty',
+      'P Value Worship - raportowanie tylko p-value bez effect size i confidence interval',
+      'Correlation as Causation - wnioski przyczynowe z danych czysto obserwacyjnych'
+    ],
+    keyConcepts: [
+      {term: 'Null hypothesis', def: 'Hipoteza zerowa zakladajaca brak efektu, ktora test stara sie odrzucic.'},
+      {term: 'Type I/II error', def: 'Bledy I rodzaju (false positive) i II rodzaju (false negative) sa nieuniknione, mozna je balansowac.'},
+      {term: 'Power', def: 'Prawdopodobienstwo wykrycia prawdziwego efektu; standardowy cel to 0.8, wymaga wielkosci proby.'},
+      {term: 'Effect size', def: 'Miara wielkosci efektu (Cohen d, r, OR) niezalezna od wielkosci proby, wazniejsza niz p-value.'},
+      {term: 'Preregistration', def: 'Rejestracja planu analizy przed zbieraniem danych, chroni przed p-hackingiem.'}
+    ],
+    stats: [
+      {label: 'Faza', value: 'STRATEGY'},
+      {label: 'Kategoria', value: 'Dane'},
+      {label: 'Load', value: '45/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy projektujesz eksperyment A/B i musisz wiedziec ile tygodni go pusczac',
+      'Gdy zespol chce wyciagnac wnioski z danych i potrzebujesz kontroli poprawnosci',
+      'Gdy trzeba zbadac czy pozorny wynik nie jest efektem szumu lub porownan wielokrotnych'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz eksploracyjnej analizy i szukasz wzorcow (to eda_analyst)',
+      'Gdy decyzja jest jakosciowa i nie opiera sie na metryce ktora mozna policzyc',
+      'Gdy masz 30 minut do konca spotkania i potrzebujesz prostej odpowiedzi'
+    ],
+    relatedAgents: ['eda_analyst', 'analyst', 'expert_analyst'],
+    glossary: [
+      {term: 'null hypothesis', definition: 'Hipoteza zerowa - wyjsciowe zalozenie, ze nie ma efektu, ktore test probuje odrzucic.'},
+      {term: 'power', definition: 'Moc testu - prawdopodobienstwo wykrycia efektu gdy rzeczywiscie istnieje, standardowy cel 0.8.'},
+      {term: 'effect size', definition: 'Miara wielkosci efektu niezalezna od wielkosci proby, np Cohen d albo iloraz szans.'},
+      {term: 'p-hacking', definition: 'Manipulowanie danymi lub testami az do uzyskania p < 0.05, zlamanie rygorow statystyki.'},
+      {term: 'preregistration', definition: 'Publiczna rejestracja hipotez i planu analizy przed zobaczeniem danych, broni przed HARKingiem.'}
+    ],
+    learningQuote: 'P-value to nie jest wyrocznia - effect size i wielkosc proby mowia wiecej o rzeczywistosci niz magiczne 0.05.',
+    realExample: 'Pewnego dnia zespol chcial wypuscic nowy onboarding bo wstepny test pokazal poprawe konwersji o 3 procent przy p = 0.04. Policzylem moc: proba byla za mala, a efekt prawdopodobnie zawiera sie w 95 procentowym CI od -0.5 do 6.5. Zablokowalem wdrozenie, poprosilem o dluzszy eksperyment i finalnie okazalo sie ze prawdziwy efekt to 1.2 procenta, czyli nieistotny biznesowo.'
+  },
+  eda_analyst: {
+    tagline: 'Detektyw danych z lupa - opisuje rzeczywistosc zanim ktos ja modeluje',
+    missionShort: 'Analityk EDA prowadzi eksploracyjna analize danych: profilowanie, wykrywanie anomalii, korelacje i wizualizacje. Jego misja to opisac dane tak, by zespol wiedzial z czym pracuje zanim zbuduje model lub podejmie decyzje, i by ukryte pulapki wyszly na jaw wczesnie.',
+    whoIs: 'Analityk EDA to detektyw z lupa w reku - nie stawia tezy zanim nie zobaczy miejsca zbrodni. Chodzi po kolumnach, kartkuje rozklady, patrzy na punkty odstajace i slucha co dane probuja mu powiedziec. Jego praca to pytania, nie gotowe odpowiedzi.',
+    analogy: 'Analityk EDA jest jak astronom przed budowa teleskopu - najpierw patrzy na niebo golym okiem i mapuje gdzie sa gwiazdy, a gdzie pustki.',
+    howItWorks: [
+      {label: 'Profilowanie danych', desc: 'Opisuje kazda kolumne: typ, braki, unikalne wartosci, rozklad, statystyki. Tworzy data dictionary jako wspolna podstawe dla zespolu.'},
+      {label: 'Wizualizacje rozkladow', desc: 'Buduje histogramy, boxploty i density ploty dla zmiennych liczbowych oraz bar charty dla kategorycznych. Patrzy na skew, kurtoze i modalnosc.'},
+      {label: 'Korelacje i relacje', desc: 'Liczy macierze korelacji, pair ploty i cross-tabulacje. Szuka potencjalnych leak features i kolinearnosci ktore popsulyby model.'},
+      {label: 'Anomalie i raport', desc: 'Identyfikuje wartosci odstajace, braki systematyczne, duplikaty i paradoksy typu Simpson. Pisze raport z kluczowymi obserwacjami i rekomendacjami.'}
+    ],
+    inputs: [
+      'Surowy zbior danych (CSV, Parquet, tabela SQL)',
+      'Opis pochodzenia danych i kontekstu biznesowego',
+      'Pytanie badawcze lub hipoteza robocza do potwierdzenia',
+      'Slownik kolumn jesli istnieje albo tylko metadata'
+    ],
+    outputs: [
+      'Data dictionary z typami, brakami i rozkladami',
+      'Zestaw wizualizacji rozkladow i korelacji',
+      'Lista anomalii, outlierow i problemow jakosci',
+      'Raport z kluczowymi obserwacjami i rekomendacjami',
+      'Notatnik Jupyter lub skrypt odtwarzalny dla zespolu'
+    ],
+    does: [
+      'Profiluje dane kolumna po kolumnie z typami, brakami i unikalnosciami',
+      'Buduje histogramy, boxploty i density plots wychwytujace ksztalt rozkladu',
+      'Liczy macierz korelacji Pearsona i Spearmana wykrywajac kolinearnosci',
+      'Identyfikuje wartosci odstajace metodami IQR, z-score i wizualnie',
+      'Wykrywa paradoksy Simpsona i ukryte warunkowania zmienne',
+      'Oznacza braki systematyczne (MCAR vs MAR vs MNAR) z konsekwencjami',
+      'Rysuje pair ploty i cross-tabulacje dla zmiennych kategorycznych',
+      'Tworzy odtwarzalny notatnik ktory mozna przekazac modelarzom i statystykowi'
+    ],
+    doesNotDo: [
+      'Nie buduje modeli ML ani nie trenuje sieci neuronowych',
+      'Nie prowadzi testow hipotez z rygorem statystycznym (to statistician)',
+      'Nie podejmuje decyzji biznesowych na podstawie danych',
+      'Nie robi ETL ani nie czyste dane poza wykryciem problemow',
+      'Nie projektuje schematu bazy danych (to db_architect)',
+      'Nie przypisuje braki metodami zaawansowanymi bez konsultacji',
+      'Nie wyciaga wnioskow causal z danych obserwacyjnych'
+    ],
+    antiPatterns: [
+      'Jump to Model - pominiecie EDA i przejscie od razu do trenowania modelu',
+      'Mean Addiction - opisywanie zmiennych tylko srednia bez rozkladu i odchylenia',
+      'Correlation Equals Causation - wnioski przyczynowe z korelacji w danych obserwacyjnych',
+      'Outlier Removal Without Reason - wycinanie outlierow bo przeszkadzaja wykresom',
+      'Aggregated Blindness - patrzenie tylko na agregaty globalne ignorujac segmenty i Simpson paradox'
+    ],
+    keyConcepts: [
+      {term: 'Simpson paradox', def: 'Trend widoczny w agregatach znika lub odwraca sie po rozbiciu na podgrupy.'},
+      {term: 'Outlier', def: 'Wartosc odstajaca - moze byc bledem, anomalia lub najwazniejsza informacja w zbiorze.'},
+      {term: 'Skewness', def: 'Asymetria rozkladu - mowi czy srednia ciagnie w lewo lub prawo od mediany.'},
+      {term: 'Correlation vs causation', def: 'Korelacja nie implikuje przyczynowosci, trzeba sprawdzic zmienne ukryte i kolejnosc czasowa.'},
+      {term: 'Missingness', def: 'Wzorzec brakow danych: MCAR losowy, MAR warunkowy, MNAR systematyczny i informacyjny.'}
+    ],
+    stats: [
+      {label: 'Faza', value: 'BUILD'},
+      {label: 'Kategoria', value: 'Dane'},
+      {label: 'Load', value: '60/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy dostajesz nowy zbior danych i chcesz zrozumiec z czym pracujesz',
+      'Gdy model nie dziala dobrze i podejrzewasz problem z jakoscia danych',
+      'Gdy planujesz eksperyment i chcesz wiedziec czy dane maja niewidoczne pulapki'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz testowania hipotez z rygorem statystycznym (to statistician)',
+      'Gdy chcesz tylko wytrenowac model bez rozumienia danych (nie polecane ale...)',
+      'Gdy dane sa juz dobrze opisane i zespol zna kazda kolumne na pamiec'
+    ],
+    relatedAgents: ['statistician', 'analyst', 'db_architect'],
+    glossary: [
+      {term: 'Simpson paradox', definition: 'Efekt w ktorym kierunek zwiazku odwraca sie po rozbiciu danych na podgrupy.'},
+      {term: 'outlier', definition: 'Wartosc znaczaco odbiegajaca od pozostalych, wymagajaca decyzji czy to blad czy sygnal.'},
+      {term: 'z-score', definition: 'Znormalizowany dystans od sredniej mierzony w odchyleniach standardowych.'},
+      {term: 'histogram', definition: 'Wykres slupkowy pokazujacy rozklad czestosci wartosci w przedzialach.'},
+      {term: 'pair plot', definition: 'Siatka wykresow rozrzutu par zmiennych z histogramami na przekatnej.'}
+    ],
+    learningQuote: 'Zanim zbudujesz model, zrozum dane - sredniej nie mozna ufac jesli nie widzisz rozkladu ani odchylenia.',
+    realExample: 'Pewnego dnia profilowalem zbior transakcji e-commerce dla nowej rekomendacji. Wykrylem ze 12 procent rekordow mialo ujemne ceny (return-y zakodowane blednie), a korelacja ceny z konwersja odwracala sie przy rozbiciu na regiony (Simpson paradox). Zespol ML oszczedzil miesiac trenowania modelu na zepsutych danych.'
+  },
+  control_mapper: {
+    tagline: 'Tlumacz miedzy legalesem a kodem - jak GDPR staje sie konkretnym commitem',
+    missionShort: 'Mapper Kontroli tlumaczy wymagania regulacyjne (GDPR, SOC2, ISO27001, HIPAA) na konkretne kontrole techniczne i procesowe. Jego misja to zbudowac matryce kontroli, identyfikowac luki i wskazac dowody zgodnosci, zanim audytor zapuka do drzwi.',
+    whoIs: 'Mapper Kontroli to tlumacz przysiegly miedzy swiatem prawnym i inzynierskim. Czyta regulacje jak ustawy, ale mowi kodem, konfiguracja i ticketem. Rozumie, ze kazda klauzula GDPR na koncu musi wyladowac jako checkbox w rolach IAM albo polityka retencji w bazie.',
+    analogy: 'Mapper Kontroli jest jak tlumacz na dwujezycznej rozprawie sadowej - po jednej stronie paragraf, po drugiej commit, a on musi zadbac by obaj mowili o tym samym.',
+    howItWorks: [
+      {label: 'Analiza wymagan', desc: 'Czyta ramy regulacyjne (GDPR art, SOC2 trust services, ISO27001 Annex A, HIPAA Security Rule) i ekstraktuje konkretne wymagania dotyczace danych i procesow.'},
+      {label: 'Mapowanie kontroli', desc: 'Dla kazdego wymagania identyfikuje kontrole techniczna (szyfrowanie, RBAC, logi audytu) lub procesowa (przeglad kwartalny, DPIA). Unika duplikatow przez reuse kontroli CIS/NIST.'},
+      {label: 'Matryca zgodnosci', desc: 'Buduje matryce wymagania vs kontrole vs dowody. Pokazuje gdzie brakuje dowodu, gdzie sa kompensacje i gdzie jest luka.'},
+      {label: 'Gap analysis', desc: 'Wskazuje luki z priorytetyzacja (blocker, major, minor) i rekomenduje konkretne kroki. Przygotowuje dokument audytorski pod zewnetrznych kontrolerow.'}
+    ],
+    inputs: [
+      'Lista ram regulacyjnych objetych scope (np GDPR + SOC2)',
+      'Opis systemu, architektury i przeplywu danych',
+      'Istniejace polityki i dokumenty compliance jesli sa',
+      'Dostep do evidence (logi, konfiguracje, polityki)'
+    ],
+    outputs: [
+      'Matryca kontroli wymagania vs kontrole vs evidence',
+      'Lista luk z priorytetami i rekomendacjami',
+      'Specyfikacja kontroli technicznych do implementacji',
+      'Dokumentacja procesow i polityk compliance',
+      'Raport gotowosci audytowej (audit-ready checklist)'
+    ],
+    does: [
+      'Mapuje wymagania GDPR, SOC2, ISO27001, HIPAA na kontrole techniczne i procesowe',
+      'Buduje matryce wymagania vs kontrole vs evidence wielu frameworkow jednoczesnie',
+      'Identyfikuje luki i priorytetyzuje je wedlug ryzyka biznesowego i prawnego',
+      'Wybiera kontrole kompensacyjne gdy pelna kontrola jest niemozliwa',
+      'Reuse bazowych kontroli CIS/NIST zamiast wymyslania wszystkiego na nowo',
+      'Dokumentuje DPIA dla GDPR i procesow przetwarzania danych osobowych',
+      'Mapuje STRIDE na kontrole zapobiegajace konkretnym zagrozeniom',
+      'Przygotowuje dokumentacje audytowa dla zewnetrznych kontrolerow (ISO, SOC2 type 2)'
+    ],
+    doesNotDo: [
+      'Nie implementuje kontroli technicznych (to domena backendu i qa_security)',
+      'Nie pisze kodu i konfiguracji infrastruktury',
+      'Nie prowadzi audytow zewnetrznych jako niezalezny auditor',
+      'Nie decyduje o ryzyku biznesowym firmy (to rola CISO i prawnika)',
+      'Nie tlumaczy z jezyka prawnego na polski potoczny (to domena legal)',
+      'Nie ignoruje luk dla kompromisu z deadline u biznesowego',
+      'Nie testuje penetracyjnie systemu (to qa_security)'
+    ],
+    antiPatterns: [
+      'Checkbox Compliance - odfajkowywanie wymagan bez rzeczywistego dowodu implementacji',
+      'Framework Silos - osobna dokumentacja per framework zamiast reuse bazowych kontroli',
+      'Evidence Theater - gromadzenie screenshotow bez polaczenia z realna kontrola',
+      'Control Sprawl - setki kontroli bez priorytetow, nikt nie wie ktore sa krytyczne',
+      'Last Minute Audit - zbieranie dowodow dzien przed audytem zamiast ciaglego monitoringu'
+    ],
+    keyConcepts: [
+      {term: 'CIA triad', def: 'Podstawowe cele bezpieczenstwa: Confidentiality, Integrity, Availability.'},
+      {term: 'SOC2 trust services', def: 'Piec kategorii: Security, Availability, Processing integrity, Confidentiality, Privacy.'},
+      {term: 'GDPR DPIA', def: 'Data Protection Impact Assessment - ocena skutkow dla ochrony danych osobowych przy wysokim ryzyku.'},
+      {term: 'STRIDE', def: 'Model zagrozen: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege.'},
+      {term: 'Compensating control', def: 'Kontrola zastepcza gdy oryginalna nie jest mozliwa - musi zapewnic rownowazne zmniejszenie ryzyka.'}
+    ],
+    stats: [
+      {label: 'Faza', value: 'BUILD'},
+      {label: 'Kategoria', value: 'Compliance'},
+      {label: 'Load', value: '55/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy firma szykuje sie do audytu SOC2 lub ISO27001 i nie ma matrycy kontroli',
+      'Gdy wdrazasz produkt dla klientow w EU i musisz spelnic GDPR z ewidencja',
+      'Gdy masz wiele frameworkow jednoczesnie (SOC2 + HIPAA + GDPR) i chcesz reuse kontroli'
+    ],
+    worstFor: [
+      'Gdy potrzebujesz testu penetracyjnego systemu (to qa_security)',
+      'Gdy problem jest techniczny w kodzie, nie w zgodnosci regulacyjnej',
+      'Gdy szukasz doradcy prawnego do interpretacji klauzul (to prawnik, nie agent)'
+    ],
+    relatedAgents: ['qa_security', 'backend', 'writer'],
+    glossary: [
+      {term: 'CIA triad', definition: 'Confidentiality, Integrity, Availability - trzy filary bezpieczenstwa informacji.'},
+      {term: 'SOC2 TSC', definition: 'SOC2 Trust Services Criteria - piec kategorii kontroli dla audytu AICPA.'},
+      {term: 'DPIA', definition: 'Data Protection Impact Assessment wymagane GDPR przy przetwarzaniu wysokiego ryzyka.'},
+      {term: 'STRIDE', definition: 'Model zagrozen Microsoft uzywany do threat modelingu aplikacji i infrastruktury.'},
+      {term: 'compensating control', definition: 'Kontrola zastepcza wdrozona gdy oryginalna jest niemozliwa, musi rownowazyc ryzyko.'}
+    ],
+    learningQuote: 'Zgodnosc nie istnieje bez dowodu - checkbox w dokumencie ktory nie ma polaczenia z konfiguracja systemu to fikcja.',
+    realExample: 'Pewnego dnia mapowalem SOC2 i GDPR dla startupu HR-tech. Zamiast pisac dwie osobne matryce zbudowalem jedna bazowa na CIS Controls i zmapowalem 78 procent kontroli do obu frameworkow jednoczesnie. Audytor SOC2 type 2 przeszedl na tych samych dowodach co DPIA, a zespol zaoszczedzil trzy miesiace pracy duplikujacej.'
+  },
+  telemetry_surfer: {
+    tagline: 'Strazak z kamera termowizyjna - sledzi incydent poprzez zapytania PromQL',
+    missionShort: 'Surfer Telemetrii przeszukuje istniejaca telemetrie (metryki, logi, traces) w poszukiwaniu wzorcow, anomalii i sladow incydentow. Jego misja to odpowiadac na pytania co sie stalo i co sie dzieje teraz przy uzyciu reproducibilnych zapytan PromQL, LogQL i trace search.',
+    whoIs: 'Surfer Telemetrii to strazak z kamera termowizyjna wchodzacy do ciemnego budynku. Nie widzi ogniem na wprost, widzi temperature, dym i ruch powietrza, i z tych sygnalow sklada obraz tego co sie pali. Jego jezykiem sa zapytania, nie zgadywanki.',
+    analogy: 'Surfer Telemetrii jest jak ratownik gorski z echosonda - nie kopie w sniegu na slepo, odczytuje sygnaly i lokalizuje zrodlo problemu po danych.',
+    howItWorks: [
+      {label: 'Formulacja pytania', desc: 'Przekodowuje mglisty raport incydentu (cos nie dziala) na konkretne pytanie telemetryczne: jaka metryka, jaki period, jaki serwis.'},
+      {label: 'Zapytania PromQL i LogQL', desc: 'Pisze reproducowalne zapytania rate(), histogram_quantile(), sum by, LogQL stream selector. Unika scenariuszy gdzie query zwraca cos innego po godzinie.'},
+      {label: 'Korelacja trzech filarow', desc: 'Laczy anomalie metryk z konkretnym trace span (exemplar), a nastepnie z logami za pomoca traceid. Uklada chronologie zdarzen.'},
+      {label: 'Raport i runbook', desc: 'Pisze raport z konkretna hipoteza, dowodami, zapytaniami do reprodukcji i propozycja akcji. Uzupelnia runbook by nastepny raz byl szybszy.'}
+    ],
+    inputs: [
+      'Opis incydentu lub pytanie operacyjne co sie stalo',
+      'Dostep do Prometheus/Loki/Tempo lub rowowaznych',
+      'Zakres czasowy i lista podejrzanych serwisow',
+      'Istniejace dashboardy i runbooki jesli sa'
+    ],
+    outputs: [
+      'Chronologia incydentu z timestampami',
+      'Reproducowalne zapytania PromQL/LogQL w raporcie',
+      'Korelacja metryka ze trace span i logami po traceid',
+      'Hipoteza przyczyny z poziomem pewnosci',
+      'Aktualizacja runbooku dla nastepnego podobnego zdarzenia'
+    ],
+    does: [
+      'Formuluje pytania telemetryczne z mglistych raportow incydentow',
+      'Pisze reproducowalne zapytania PromQL z rate(), histogram_quantile, sum by',
+      'Wyszukuje logi za pomoca LogQL stream selector i wyrazen regex',
+      'Laczy metryki z trace span przez exemplary i z logami przez traceid',
+      'Wykrywa korelacje czasowe miedzy deployem a wzrostem error rate',
+      'Porownuje zachowanie przed i po zdarzeniu dla tej samej metryki',
+      'Identyfikuje eksplozje kardynalnosci i drogie zapytania dezynfekujace TSDB',
+      'Pisze raport sledczy z dowodami i propozycja runbook update'
+    ],
+    doesNotDo: [
+      'Nie instrumentuje systemu ani nie dodaje nowych metryk (to observability_engineer)',
+      'Nie naprawia kodu ktory spowodowal incydent (to domena buildu)',
+      'Nie buduje dashboardow ani SLO od zera (to observability_engineer)',
+      'Nie podejmuje decyzji o rollback produkcji bez decision presenter',
+      'Nie zglasza incydentow jako pierwsza linia support',
+      'Nie pisze post-mortemu zamiast manager QA',
+      'Nie wyciaga wnioskow o kulturze zespolu z danych telemetrycznych'
+    ],
+    antiPatterns: [
+      'Eye Balling Graphs - zgadywanie z wykresu bez konkretnego zapytania reproducowalnego',
+      'Single Pillar Investigation - patrzenie tylko na metryki albo tylko na logi zamiast korelacji trzech filarow',
+      'Cardinality Query - grupowanie po wysokiej kardynalnosci polu wywalajace sam Prometheus',
+      'Post Hoc Correlation - laczenie zdarzen tylko dlatego ze wydarzyly sie obok czasu',
+      'Irate Over Long Range - uzycie irate() na dlugim oknie dajace bezwartosciowe wyniki'
+    ],
+    keyConcepts: [
+      {term: 'histogram_quantile', def: 'Funkcja PromQL liczaca kwantyle (p50/p95/p99) z histogramu bucketow.'},
+      {term: 'rate vs irate', def: 'rate() liczy srednia na oknie, irate() chwilowy stosunek - uzywa sie inaczej zaleznie od kontekstu.'},
+      {term: 'LogQL stream selector', def: 'Filtr strumieni logow w Loki wg etykiet, np {app="api", level="error"}.'},
+      {term: 'Trace span', def: 'Jednostka tracingu reprezentujaca operacje z czasem start/stop i relacja parent-child.'},
+      {term: 'Exemplar', def: 'Przykladowy trace span powiazany z punktem metryki, klikalny z wykresu do trace.'}
+    ],
+    stats: [
+      {label: 'Faza', value: 'RESEARCH'},
+      {label: 'Kategoria', value: 'Ops'},
+      {label: 'Load', value: '50/100'},
+      {label: 'Model', value: 'Sonnet'}
+    ],
+    bestFor: [
+      'Gdy masz incydent produkcyjny i musisz w minutach ustalic co sie dzieje',
+      'Gdy cos zwolnilo i nie wiadomo ktory serwis, a telemetria istnieje',
+      'Gdy chcesz odtworzyc chronologie zdarzen z dowodami do post-mortemu'
+    ],
+    worstFor: [
+      'Gdy system nie ma wystarczajacej telemetrii (najpierw observability_engineer)',
+      'Gdy problem jest w designie UI lub w produkcie, nie w operacjach',
+      'Gdy potrzebujesz dlugoterminowego planu SLO i dashbordow od podstaw'
+    ],
+    relatedAgents: ['observability_engineer', 'qa_perf', 'res_tech'],
+    glossary: [
+      {term: 'histogram_quantile', definition: 'Funkcja PromQL liczaca kwantyl (np p99) z histogramu metryki.'},
+      {term: 'rate vs irate', definition: 'rate() liczy srednia z okna, irate() chwilowa zmiane z dwoch ostatnich probek.'},
+      {term: 'LogQL', definition: 'Jezyk zapytan Loki laczacy stream selector z wyrazeniami regex i pipe operatorami.'},
+      {term: 'traceid', definition: 'Identyfikator tracea propagowany przez wszystkie spany i powiazane logi.'},
+      {term: 'exemplar', definition: 'Przyklad trace span dolaczony do punktu metryki, pozwala skoczyc z wykresu do tracea.'}
+    ],
+    learningQuote: 'Jesli nie potrafisz zreprodukowac wyniku zapytaniem za godzine, to nie jest sledztwo tylko wrozenie z wykresow.',
+    realExample: 'Pewnego dnia badalem incydent gdzie p99 latency API skoczyl z 200 ms do 4 sekund bez widocznego bledu. Napisalem rate(http_request_duration_seconds_bucket) z histogram_quantile 0.99 i zobaczylem ze skok zaczal sie dokladnie o 14:32. Exemplar prowadzil do trace span w warstwie DB, a log po traceid pokazal query planner wybrany full scan po migracji indeksu. Minut 12, nie godzin.'
+  }
+};

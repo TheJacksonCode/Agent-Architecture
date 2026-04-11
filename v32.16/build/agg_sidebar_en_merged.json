@@ -1,0 +1,1200 @@
+{
+  "agentLong": {
+    "orchestrator": "<p>The Orchestrator is the team's central conductor operating at hierarchy level 0, the only agent with a full view of the system and the authority to delegate work. It decomposes the user's large problem into smaller subtasks by agent specialization, delegates each subtask to the right specialist, and controls quality gates G0-G4, making GO or NO-GO calls between phases.</p><p>It synthesizes the final result from the outputs of every agent involved and resolves conflicts when two agents return contradictory recommendations. It does not write code, run research, or design UI - that is what the specialists are for. Sweet spot is a team of 6-10 agents; below that go linear, above that call two orchestrators hierarchically.</p>",
+    "synthesizer": "<p>The Synthesizer is the project's memory and chronicler, the only agent that views the work along the time dimension. It maintains MANIFEST.md in append-only mode as a living decision archive, collects outputs from each finished phase, updates ADRs with rationale, and flags conflicts between artifacts from different phases.</p><p>It is the only agent with the privilege of direct agent-to-agent communication, acting as an information broker. It does not make design decisions, write code, or talk to the end user, and it never deletes history from the archive. It runs on Opus or Sonnet with Read, Grep, Glob, and Write tools.</p>",
+    "analyst": "<p>The Analyst is a problem decomposer and dependency graph architect. It takes a vague \"just build it\" and converts it into a precise DAG of atomic subtasks in the 8-20 item sweet spot, with S/M/L/XL complexity ratings and categorization by agent specialization.</p><p>The core rule is WHAT vs WHEN: the Analyst says what has to be done and what depends on what, then the Planner takes that JSON and creates a schedule with timing. No time estimates in minutes, because the Analyst does not know how fast a given agent will finish. Prefers Claude Sonnet - Haiku is too weak for graphs, Opus is too expensive.</p>",
+    "planner": "<p>The Planner is the schedule tactician that takes the Analyst's task list with dependencies and answers how to execute it cheapest and fastest. It builds the execution schedule, identifies the critical path, defines the 5 quality gates G0-G4, and picks one of 4 execution modes for each task group.</p><p>The four modes: SEQUENTIAL (safest), PARALLEL (fastest for 6 researchers), PARALLEL_THEN_SEQUENTIAL (research-build hybrid), and SEQUENTIAL_WITH_COLLABORATION (rare, expensive). The Plan-and-Execute pattern saves up to 83 percent of tokens compared to a single monolithic agent.</p>",
+    "res_tech": "<p>Researcher Tech is the technical scout, first of six researchers in the RESEARCH phase. Its territory is hard technical sources in strict hierarchy: official docs, engineering blogs, published benchmarks, tutorials, forums, tweets. It compares technologies with a minimum of 3 options and 3 dimensions, analyzes benchmarks, and flags technical risks.</p><p>The 3-3-3 rule is mandatory: at least 3 alternatives, 3 sources per alternative, 3 comparison dimensions. Every claim gets a confidence label: CERTAIN/PROBABLE/SPECULATION. The critical anti-groupthink rule: researchers do not talk to each other and do not see each other's reports. Runs on Haiku.</p>",
+    "res_ux": "<p>Researcher UX is the design trend scout, second of 6 researchers, looking at the visual world. Its job is to build a mood board with at least 5 references from different sources and deliver a WCAG 2.1 AA accessibility audit, but not to write a single line of CSS. Pulls from Dribbble, Behance, Awwwards, Mobbin, Material Design, Apple HIG, and WCAG.</p><p>Separating UX research from design implementation lets each agent operate in a narrow context. The accessibility audit matters as much as trend scouting - 4.5:1 contrast, focus visible, keyboard navigation, 44x44px touch targets. It does not pick the final palette; it hands the Designer justified options with pros and cons.</p>",
+    "res_reddit": "<p>Researcher Reddit is the dev-community anthropologist, third of 6 researchers. Works like an investigative journalist - listens to practitioner conversations in the key subreddits (r/webdev, r/programming, r/reactjs, r/SaaS, r/devops), where people under pseudonyms are far more candid than in official case studies.</p><p>The core technique is ground truth: \"we've been running X in production for 3 years\" is worth more than the best marketing post. The second pillar is sentiment analysis and ragepost detection - one ragepost is nothing, 20 in a week is a red flag. Requires triangulation: at least 3 independent comments per claim.</p>",
+    "res_x": "<p>Researcher X is the trend war correspondent, fourth of 6 researchers, focused on platform X. Monitors tech community trends, tracks first-24h reactions to product launches, analyzes longer expert threads, and maps influencers on a Tier 1 to Tier 5 scale. A 0-10 hype score measures community mood.</p><p>The lowest load of all researchers (45/100) because tweets are short. X is a good early warning system (a trend starts here before it reaches Reddit) but poor for ground truth. Reports what is trending, not whether the trend is real - validation is Tech and Reddit's job.</p>",
+    "res_github": "<p>Researcher GitHub is the repository archaeologist, fifth of 6 researchers, wearing the reverse engineer's hat. With 420 million repositories, GitHub is the largest knowledge base for how people actually solve problems in code. Runs discovery with a stars > 100 filter, architecture analysis, and health assessment across 8 metrics.</p><p>Highest load among researchers (70/100) because repositories are large. Key steps are pattern extraction and issue analysis. The biggest traps are Star Worship (50k stars does not mean quality), Abandoned Repo Adoption, and README Deception. Does not write its own code or clone repos locally - reads via GitHub API/WebFetch.</p>",
+    "res_forums": "<p>Researcher Forums is the Q&amp;A library guide, sixth of 6 researchers, specializing in Stack Overflow, Dev.to, Medium, Hacker News, and Hashnode. Finds solutions to known problems, rates answer quality by upvotes/accepted status/comments/dates, and extracts lessons learned from discussions.</p><p>The big trap is Upvote Blindness - an answer with 500 upvotes may be from 2015 and broken in the 2026 version, so always check the date and comments. Often the most useful information is not in the answer itself but in the comments underneath. Does not write code and does not validate whether a solution works in your specific context.</p>",
+    "res_docs": "<p>Researcher Docs is the specialist for official framework and tool documentation, a lawyer reading statutes rather than opinions. Collects getting-started, best practices, performance tips, security guidelines, and config snippets from authorized vendor sources. Lowest load in research (40/100).</p><p>Core rule: official docs are the source of truth for technical facts but not for quality opinions. ALWAYS checks version alignment - citing Next.js 13 docs when the project uses Next.js 15 is the Version Mismatch anti-pattern. Does not interpret user opinions, compare technologies, or rate framework quality.</p>",
+    "res_critic": "<p>Research Critic is the validator and quality gatekeeper of the research phase, the only agent evaluating the work of ALL 6 researchers simultaneously. Analyzes reports hunting for contradictions, confirmation bias, data gaps, and outdated sources. Scoring rubric: Completeness 25%, Accuracy 25%, Relevance 20%, Freshness 20%, Actionability 10%.</p><p>Highest load in research (85/100) because it has to read and compare the outputs of 6 agents at once. The only RESEARCH-layer agent running on Sonnet instead of Haiku. Operates like a Nature peer reviewer: every unsupported claim flagged, every contradiction surfaced, every bias named.</p>",
+    "backend": "<p>Backend Coder is the server-layer implementation agent. It takes a finished API spec from MANIFEST.md and converts it into working endpoint code, data schemas, request validation, and business logic. Works in TDD - unit tests BEFORE implementation, never the other way around.</p><p>Specializes in REST/GraphQL, the database layer (queries, transactions, migrations), error handling, and using env vars instead of hardcoded secrets. Has the highest load in BUILD (75-80/100). Does not design architecture, question the stack, or write frontend - it gets a technical drawing and builds to spec.</p>",
+    "frontend": "<p>Frontend Coder implements the mobile-first client layer - what the user sees and interacts with. Takes the finished design system from the Designer (CSS tokens, palette, typography) and the wireframe from the Analyst, and ships reusable UI components with full loading, error, empty, and success state handling.</p><p>Master of responsive layout, accessibility (aria-labels, keyboard navigation, focus management), and performance (lazy loading, code splitting, image optimization). Handles state management, SPA routing, and backend API integration. Does not design the look (that's Designer), create endpoints (that's Backend), or write copy (that's Writer).</p>",
+    "feature": "<p>Feature Dev is the specialist for advanced functionality that needs niche expertise: real-time (WebSocket, SSE, long polling with reconnection logic), AI/ML integrations (streaming, embeddings, function calling), data visualizations (D3.js, Chart.js, SVG, Canvas), and third-party APIs (Stripe, Firebase, AWS SDK, OAuth, webhooks).</p><p>Implements what Backend and Frontend Dev cannot - requires deep knowledge of specialized libraries and protocols. Like the special effects specialist on a film set: not every project needs one, but when it does, the regular camera operator cannot deliver. Does not build basic CRUD, design UI, or run research.</p>",
+    "designer": "<p>Designer is the bridge between visual inspiration and working CSS. Receives the mood board and accessibility audit from Researcher UX and converts them into design tokens (primitive/semantic/component), color palettes, typography systems, layout grids, micro-animations, and SVG icons.</p><p>Implementation, not research - like a film colorist applying actual color curves to the footage the camera operator captured. Builds HTML layout with grid/flexbox, implements dark/light mode, watches contrast ratio and visual consistency. Does not research trends, write JavaScript logic, create text content, or integrate components into the final product.</p>",
+    "integrator": "<p>The Integrator is the last agent in the BUILD layer and the gate between BUILD and QA. Merges outputs from Coder, Designer, and Writer into one coherent artifact, verifies API contracts (whether frontend and backend speak the same language), resolves integration conflicts, and runs E2E tests on the full flow.</p><p>Has the widest tool arsenal in BUILD and the highest input token budget - reads ALL outputs. The only builder that sees the whole team's work. Like a film editor at the editing bench: the camera operator, sound designer, and composer did their jobs perfectly, but the film only exists once the editor synchronizes them. Does not write new code, design, or audit.</p>",
+    "writer": "<p>Writer is the content-quality agent - turns raw text from the Coder or Integrator into a professional document. Edits technical documentation (grammar, terminology, structure), creates README.md with instructions, writes CHANGELOG, API docs, and decision records. Adds comments ONLY for nontrivial code - over-documentation is noise.</p><p>Operates inside an isolated document sandbox - only sees text files, no Bash access. Lowest load in BUILD (35/100) because polishing text is lighter than generating code. Like a sound engineer mixing an album: balances, removes noise, adds clarity.</p>",
+    "qa_security": "<p>QA Security is the last line of defense before production deployment. It works like a white-hat pentester - thinks like an attacker but reports vulnerabilities instead of exploiting them. Its methodology is OWASP Top 10 extended with threats specific to agent systems: Indirect Prompt Injection, Agent Output Poisoning, Tool Abuse, Token Exfiltration, System Prompt Leakage.</p><p>The only tools are Read, Grep, and Glob - fully read-only. The absence of Bash, Write, and Edit is intentional, because an auditor who can modify the code being audited loses objectivity. It works in complete isolation from QA Quality to avoid groupthink.</p>",
+    "qa_quality": "<p>QA Quality is QA Security's partner in the audit layer, but from a completely different angle. Where Security asks how to break it, Quality asks whether it actually works correctly. The key architectural difference: Quality HAS access to Bash, so it can really run npm test, pytest, eslint, or jest --coverage and see real data instead of just scanning patterns.</p><p>The Quality checklist has four hierarchical priorities: CORRECTNESS (spec compliance), TEST COVERAGE (>80% statements, >75% branches), PERFORMANCE (N+1, no cache, no lazy loading), and CODE QUALITY (functions under 50 lines, nesting under 3). Beautifully formatted code that does not meet the spec is worthless.</p>",
+    "qa_perf": "<p>QA Perf is the only agent in the system specializing EXCLUSIVELY in performance metrics. It measures response time, bundle size, memory leaks, query performance, and Core Web Vitals (LCP under 2.5s, FID under 100ms, CLS under 0.1). It works like an engineer tuning an engine on a dyno - measures every parameter and points to the specific bottleneck.</p><p>It does not write code and does not fix - only reports. The lightest in QA (load 45/100) because measurement is more pattern-based than analytical. Model: Haiku. Used by the dedicated Performance Boost preset as the central measurement tool.</p>",
+    "qa_manager": "<p>QA Manager is the judge. It does not run investigations, does not question witnesses, does not audit code. It reads reports from QA Security and QA Quality and issues the verdict: GO or NO-GO. It is the ONLY agent in the entire system that sees both the security report and the quality report at the same time.</p><p>The decision framework is a 1-10 scale with a 6.0 threshold. An artifact starts with a score of 10.0 and loses points: CRITICAL -3.0, HIGH -1.0, MEDIUM -0.5, LOW -0.1. Automatic NO-GO conditions: any CRITICAL, coverage under 70%, unpatched security vulnerability. The only QA agent on Sonnet, because it requires reasoning.</p>",
+    "expert_pragmatist": "<p>The Pragmatist is the Five Minds expert on feasibility, cost, timeline, and resources. It works like a company CFO - sees every idea through the lens of budget, deadline, and available people. When others call for microservices, it asks who will pay for it and how long it will take. It assesses implementation time, estimates in hours and dollars, and looks for 80/20 compromises.</p><p>In natural tension with the Innovator - ambition versus realism. It does not kill innovation, it makes sure innovation is FEASIBLE. It is not a pessimist, it is a realist: a pessimist says impossible, a realist says here is what is needed. Model: Sonnet.</p>",
+    "expert_innovator": "<p>The Innovator is the Five Minds expert on competitive edge and new approaches. It works like a startup CTO - sees the technologies of the future and wants to be first to market. It does not accept good enough, it looks for the best possible solution. It proposes SPECIFIC technology names and benchmarks, not generalities.</p><p>In natural tension with the Pragmatist - ambition versus realism. It argues with market data, user research, and case studies, not opinions. It is not naive, it knows innovation costs, but ROI can be 100x. Its mandate: prevent stagnation and technical debt hidden under the label safe choice.</p>",
+    "expert_analyst": "<p>The Data Analyst is the Five Minds expert on evidence, benchmarks, metrics, and KPIs. The only expert without its own agenda - its agenda is FACTS. It works like a Data Scientist on the board: when someone says this is industry standard, it asks which benchmark, which sample, which year. It does not accept storytelling without data.</p><p>Its superpower is forcing others to prove their claims. It compares against industry standards (Gartner, Forrester, Anthropic benchmarks). Often in conflict with the Innovator (data vs. vision) and the Pragmatist (data vs. experience). It does not propose solutions - it validates those proposed by others.</p>",
+    "expert_user": "<p>The User Advocate is the Five Minds expert representing the end user's perspective - the only expert who does NOT think like an engineer. It works like a Product Manager with empathy: knows users personally, tested prototypes with grandma, and knows people do not read instructions. When engineers debate architecture, it asks how many clicks the user needs.</p><p>It speaks the language of the end user, not technical jargon. It watches WCAG 2.1 AA, keyboard navigation, screen readers. It assesses onboarding: whether a new user will understand the app in 30 seconds. It challenges technical solutions that sacrifice UX, because technology serves people, not the other way around.</p>",
+    "expert_devil": "<p>The Shadow (Devil's Advocate) is the only agent in the entire system without domain loyalty. It can attack the position of ANY expert - Pragmatist, Innovator, Analyst, and User Advocate equally. Its mandate: prevent groupthink. If everyone agrees, that is an ALARM - consensus without conflict is suspicious.</p><p>It attacks the strongest position, the one most people agree with. It tests assumptions, looks for blind spots, forces a pre-mortem (imagine the project FAILED - why). It does not propose alternatives - its role is destruction of consensus, not construction. Inspiration: Advocatus Diaboli in the Vatican, a process that has existed since 1587 because IT WORKS.</p>",
+    "decision_presenter": "<p>Decision Presenter is the Human-in-the-Loop gatekeeper. It works like an air traffic controller: planes (agents) fly autonomously, but at critical moments a human in the tower makes the final decision. It presents 2-3 decision options as readable cards with pro/con descriptions and pauses the pipeline between phases, giving time to reflect.</p><p>It manages a 120s timer with a visual countdown and progress bar; after the time runs out, it auto-decides by picking the recommended option. It does not make the decision itself - its role is PRESENTATION of options. Model: Haiku, because this is the UI layer, not the compute layer.</p>",
+    "db_architect": "<p>DB Architect is the specialist for data layer design. It designs the database schema (DDL: CREATE TABLE/INDEX/CONSTRAINT or ORM models), picks indexes for real query patterns (never speculatively), writes zero-downtime migrations in the expand-backfill-contract scheme, and defines partitioning and sharding strategies.</p><p>It estimates storage and I/O cost, sets retention and soft-delete policies, recommends read replicas and cache layers. Runs on Sonnet, load 70/100. It does not pick the database technology (that is Research Tech), does not write application logic, does not run migrations in production - it delivers the plan and reversible scripts.</p>",
+    "observability_engineer": "<p>Observability Engineer instruments the system into three pillars: metrics, logs, and traces. It identifies golden signals (latency, traffic, errors, saturation), designs metric names while controlling cardinality, picks log levels per module and structured JSON format, and defines trace context propagation across service boundaries.</p><p>It writes SLOs in the format metric operator value in window for X percent of requests and designs symptom-based alerts with runbooks. Picks the OpenTelemetry, Prometheus, Grafana stack. It does not write feature code, does not decide on business SLAs, does not design the database - it instruments the existing system.</p>",
+    "gtm_strategist": "<p>GTM Strategist designs the go-to-market: defines the ICP (Ideal Customer Profile) and buyer personas, writes the positioning statement in the format for whom, for what, better in what, picks the pricing model (freemium/tiered/usage-based/seat-based), and maps acquisition channels (organic/paid/community/partnerships/outbound).</p><p>Proposes a launch sequence (private beta, public beta, GA) and success metrics (activation, retention, revenue) with 30/60/90 day targets. The ICP must be sharp - if it sounds like everyone, it is for nobody. Pricing anchored in value to the customer, not in cost. Does not design the product, does not write code or copy.</p>",
+    "statistician": "<p>The Statistician is the guardian of methodological correctness. Designs experiments without p-hacking: formalizes H0/H1 hypotheses, picks a test matching the data type (parametric/nonparametric, independent/paired), checks assumptions (normality, homoscedasticity, independence), and calculates sample size for the required power.</p><p>Plans corrections for multiple testing (Bonferroni/BH) and defines the primary metric BEFORE looking at the data, to avoid cherry picking. Always reports effect size and CI alongside the p-value - p<0.05 alone says nothing on a small sample. Distinguishes statistical significance from practical significance.</p>",
+    "eda_analyst": "<p>EDA Analyst is the specialist for Exploratory Data Analysis. Uncovers structure, quality, and surprises in the data BEFORE anyone builds a model on it. Profiles each column (type, NULL, uniques, statistics), detects anomalies with IQR/z-score methods, checks distributions (skewness, kurtosis), and proposes transformations (log, Box-Cox).</p><p>Computes Pearson/Spearman correlations and flags pairs with absolute value above 0.8 as multicollinearity risk. Generates at least 5 visualizations: histograms, boxplots, scatter matrix, correlation heatmap, missing map. Does not clean data without approval - reports and proposes.</p>",
+    "control_mapper": "<p>Control Mapper maps regulatory requirements (GDPR, SOC2 Type II, ISO27001, HIPAA) to concrete technical and process controls. Breaks each regulation into atomic requirements (e.g., GDPR art. 32 encryption at-rest and in-transit), builds control matrices, and identifies gaps with critical/high/medium/low priority.</p><p>Prefers technical controls over procedural ones (automate when you can), defines reproducible and timestamped evidence. Does not interpret law, does not give legal advice, does not implement controls (that is the Backend/DevOps role), does not perform the audit - it delivers the material for the audit.</p>",
+    "telemetry_surfer": "<p>Telemetry Surfer searches existing production telemetry (logs, metrics, traces) for patterns, anomalies, and incidents. Answers questions like what happened at 12:34 and do we have a memory leak - based on data from Prometheus, Loki, Tempo, CloudWatch.</p><p>Starts from golden signals in the specified window, correlates metrics with error logs and traces, identifies top contributors, checks recent deploys before the window. Key: delivers literal reproducible queries (PromQL/LogQL/TraceQL), distinguishes correlation from causation. Read-only queries, does not fix problems.</p>"
+  },
+  "agentMid": {
+    "orchestrator": "Use when you have 3+ parallel specialists and clear phases with quality gates G0-G4 to coordinate.",
+    "synthesizer": "Use on projects longer than one session where MANIFEST.md and ADRs are critical for post-compaction recovery.",
+    "analyst": "Use when you have a complex task with 8+ subtasks and unclear dependencies that need decomposition into a DAG.",
+    "planner": "Use when the pipeline has 5+ tasks with possible parallelism and you need quality gates G0-G4 with acceptance criteria.",
+    "res_tech": "Use when picking a framework or stack that demands benchmarks, 3+ option comparisons, and hard technical data.",
+    "res_ux": "Use on a new project without an established design system when you need a mood board and a WCAG audit.",
+    "res_reddit": "Use when you need ground truth from practitioners running the solution in production, not vendor marketing.",
+    "res_x": "Use for early detection of tech-community trends and real-time measurement of product launch reactions.",
+    "res_github": "Use when you want a reference implementation of a pattern or need to assess the health of an open-source library before adoption.",
+    "res_forums": "Use for concrete \"how do I X in Y\" problems where someone has already solved it on Stack Overflow.",
+    "res_docs": "Use when you need authorized facts from a framework's official documentation with precise URLs.",
+    "res_critic": "Use when you have 4+ parallel researcher reports to cross-validate for contradictions and bias.",
+    "backend": "Use when you have a finished API spec and need endpoints, schemas, validation, and business logic with TDD tests.",
+    "frontend": "Use when you have a design system and a wireframe and need responsive UI components with accessibility and performance from day one.",
+    "feature": "Use for real-time, AI/ML, data visualization, or third-party APIs - wherever standard Backend and Frontend fall short.",
+    "designer": "Use when you have a mood board from Researcher UX and need design tokens, palettes, typography, animations, and dark/light mode.",
+    "integrator": "Use at the end of BUILD to merge outputs from Coder, Designer, and Writer, verify API contracts, and run E2E tests.",
+    "writer": "Use to polish README, CHANGELOG, API docs, and decision records when the code is ready but documentation is still notes.",
+    "qa_security": "Use for every artifact before production deployment, especially code touching authentication and agent systems.",
+    "qa_quality": "Use when you have a spec and require test coverage above 80 percent - quality audit before release, verification of compliance with requirements.",
+    "qa_perf": "Use when you care about Core Web Vitals, response time, bundle size, or memory leaks - Performance Boost preset is its natural habitat.",
+    "qa_manager": "Use when you need a formal GO/NO-GO decision before release - synthesizes Security and Quality reports into a single 1-10 verdict.",
+    "expert_pragmatist": "Use in Five Minds debates when the debate risks drifting away from the realism of budget, timeline, or team competence.",
+    "expert_innovator": "Use in Five Minds debates when the team risks picking safe old solutions instead of exploring new competitive advantages.",
+    "expert_analyst": "Use in Five Minds debates when the decision requires hard data and benchmarks instead of opinions, intuition, or storytelling.",
+    "expert_user": "Use in Five Minds debates when the team risks designing for engineers instead of the end user.",
+    "expert_devil": "Use in Five Minds debates when everyone agrees too quickly - without the Shadow the system is blind to its own errors and groupthink.",
+    "decision_presenter": "Use when the pipeline has critical decision points and you want a human to have the final word - 3 gates in Deep Five Minds.",
+    "db_architect": "Use when you are designing a new database schema, planning zero-downtime migrations, or need an indexing and partitioning strategy.",
+    "observability_engineer": "Use when you are instrumenting a system with metrics, logs, and traces, defining SLOs, or designing dashboards and symptom-based alerts.",
+    "gtm_strategist": "Use when you have an MVP and need ICP, positioning, a pricing model, and a launch plan with channels and 30/60/90 day KPIs.",
+    "statistician": "Use when designing experiments, A/B tests, and analyses requiring hypothesis tests - before you touch the data, not after.",
+    "eda_analyst": "Use as the first step on a new dataset - profiles data, detects anomalies and surprises before you start modeling.",
+    "control_mapper": "Use when preparing for a GDPR, SOC2, ISO27001, or HIPAA audit and you need a control matrix and gap analysis.",
+    "telemetry_surfer": "Use for incident post-mortems and production debugging, when you have telemetry and the question why/when/how wide."
+  },
+  "agentGreen": {
+    "orchestrator": [
+      "3+ specialists in parallel",
+      "Clear pipeline phases",
+      "Quality gates G0-G4",
+      "Multi-source synthesis",
+      "Delegation coordination"
+    ],
+    "synthesizer": [
+      "Long multi-session projects",
+      "MANIFEST as SSoT",
+      "ADR archive",
+      "Post-compaction recovery",
+      "Inter-agent broker"
+    ],
+    "analyst": [
+      "Decomposing 8+ subtasks",
+      "DAG dependency graph",
+      "Structured handoff",
+      "Complexity S/M/L/XL",
+      "Specialization categories"
+    ],
+    "planner": [
+      "Schedule with parallelism",
+      "Critical path",
+      "Quality gates G0-G4",
+      "4 execution modes",
+      "Plan-and-Execute pattern"
+    ],
+    "res_tech": [
+      "Framework selection",
+      "Performance benchmarks",
+      "Comparing 3+ options",
+      "Rule 3-3-3",
+      "Source hierarchy"
+    ],
+    "res_ux": [
+      "Mood board with 5+ refs",
+      "WCAG 2.1 AA audit",
+      "Design trends",
+      "Design system analysis",
+      "No established style yet"
+    ],
+    "res_reddit": [
+      "Ground truth from practitioners",
+      "Community sentiment",
+      "Validation vs marketing",
+      "Ragepost detection",
+      "Comment triangulation"
+    ],
+    "res_x": [
+      "Early trend warning",
+      "First 24h reactions",
+      "Hype score 0-10",
+      "Influencer mapping",
+      "Thread analysis"
+    ],
+    "res_github": [
+      "Reference implementation",
+      "8-metric health assessment",
+      "Pattern extraction",
+      "Architecture analysis",
+      "Issue analysis"
+    ],
+    "res_forums": [
+      "Concrete how-to answers",
+      "Stack Overflow lookup",
+      "Lessons learned",
+      "Pattern recognition",
+      "Long-form tutorials"
+    ],
+    "res_docs": [
+      "Official facts",
+      "Config snippets",
+      "Best practices",
+      "Security guidelines",
+      "Version-matched docs"
+    ],
+    "res_critic": [
+      "Cross-validating reports",
+      "Contradiction detection",
+      "Confirmation bias check",
+      "Scoring rubric",
+      "Gap detection"
+    ],
+    "backend": [
+      "API endpoints + schemas",
+      "Request validation",
+      "Business logic",
+      "TDD tests",
+      "Error handling",
+      "Data migrations"
+    ],
+    "frontend": [
+      "Responsive UI components",
+      "State management",
+      "Accessibility aria/keyboard",
+      "Lazy loading + code split",
+      "Dark/light mode",
+      "SPA routing"
+    ],
+    "feature": [
+      "WebSocket real-time",
+      "AI/ML integrations",
+      "D3/Canvas visualizations",
+      "Stripe + OAuth flows",
+      "Streaming APIs",
+      "Webhook handlers"
+    ],
+    "designer": [
+      "CSS design tokens",
+      "Palettes and typography",
+      "Micro-animations",
+      "Dark/light mode",
+      "SVG icons",
+      "Grid/flexbox layout"
+    ],
+    "integrator": [
+      "Merging BUILD outputs",
+      "API contract verification",
+      "E2E test flow",
+      "Conflict resolution",
+      "Compliance validation"
+    ],
+    "writer": [
+      "README.md + instructions",
+      "CHANGELOG",
+      "API docs",
+      "Decision records",
+      "Grammar polish",
+      "Terminology consistency"
+    ],
+    "qa_security": [
+      "Pre-release audit",
+      "OWASP Top 10",
+      "Prompt injection scan",
+      "Hardcoded secrets hunt",
+      "Dependency CVE scan",
+      "SOC2 compliance"
+    ],
+    "qa_quality": [
+      "Spec compliance check",
+      "Test coverage audit",
+      "Edge case review",
+      "N+1 query detection",
+      "Code smell audit",
+      "Pre-release QA gate"
+    ],
+    "qa_perf": [
+      "Core Web Vitals audit",
+      "Bundle size analysis",
+      "Response time measurement",
+      "Memory leak detection",
+      "Query performance review"
+    ],
+    "qa_manager": [
+      "Formal GO/NO-GO gate",
+      "Multi-dim audit synthesis",
+      "Release risk assessment",
+      "Iterative fix loop control",
+      "Stakeholder reporting"
+    ],
+    "expert_pragmatist": [
+      "Budget reality check",
+      "Timeline estimation",
+      "ROI analysis",
+      "Resource feasibility",
+      "Cost/quality tradeoffs"
+    ],
+    "expert_innovator": [
+      "Competitive edge hunt",
+      "New tech evaluation",
+      "Cross-domain inspiration",
+      "Market trend analysis",
+      "Differentiation strategy"
+    ],
+    "expert_analyst": [
+      "Benchmark validation",
+      "KPI definition",
+      "Evidence demand",
+      "Data-driven decisions",
+      "Claim fact-checking"
+    ],
+    "expert_user": [
+      "UX perspective advocacy",
+      "Accessibility a11y check",
+      "Onboarding assessment",
+      "Click-count reduction",
+      "End-user empathy"
+    ],
+    "expert_devil": [
+      "Groupthink prevention",
+      "Pre-mortem analysis",
+      "Assumption testing",
+      "Worst-case identification",
+      "Blind spot discovery"
+    ],
+    "decision_presenter": [
+      "HITL decision gates",
+      "Pipeline pause for human",
+      "Option card presentation",
+      "Timer-based auto-decide",
+      "Decision logging"
+    ],
+    "db_architect": [
+      "DDL schema + indexes",
+      "Zero-downtime migrations",
+      "Partitioning strategy",
+      "Query pattern tuning",
+      "Retention policies"
+    ],
+    "observability_engineer": [
+      "Metrics + logs + traces",
+      "SLI/SLO definitions",
+      "Symptom-based alerts",
+      "Grafana dashboards",
+      "W3C trace propagation"
+    ],
+    "gtm_strategist": [
+      "ICP and buyer personas",
+      "Positioning statement",
+      "Pricing model",
+      "Acquisition channels",
+      "Beta/GA launch plan"
+    ],
+    "statistician": [
+      "Hypothesis design",
+      "Sample size calculation",
+      "Test selection",
+      "Multiple testing correction",
+      "Effect size reporting",
+      "A/B test planning"
+    ],
+    "eda_analyst": [
+      "Dataset profiling",
+      "Anomaly detection",
+      "Correlation analysis",
+      "Distribution checks",
+      "Missing data mapping",
+      "Pre-modeling reconnaissance"
+    ],
+    "control_mapper": [
+      "GDPR/SOC2 control matrix",
+      "Gap analysis",
+      "Compliance evidence",
+      "Gap prioritization",
+      "Technical controls"
+    ],
+    "telemetry_surfer": [
+      "Incident post-mortems",
+      "Metrics-to-logs correlation",
+      "Golden signals analysis",
+      "Reproducible PromQL",
+      "Root cause hypotheses"
+    ]
+  },
+  "agentRed": {
+    "orchestrator": [
+      "Simple 1-agent task",
+      "2-step A to B pipeline",
+      "Exploratory sessions",
+      "User acting as PM"
+    ],
+    "synthesizer": [
+      "One-off scripts",
+      "Tiny bugfixes",
+      "Team of 1-2 agents",
+      "Simple feature toggle"
+    ],
+    "analyst": [
+      "1-3 step tasks",
+      "Solo hacking",
+      "Action list already set",
+      "Exploratory sessions"
+    ],
+    "planner": [
+      "1-3 step pipeline",
+      "Obvious sequence",
+      "Experiment without order",
+      "Reverse engineering"
+    ],
+    "res_tech": [
+      "Known stack",
+      "Throwaway prototype",
+      "Decision already made",
+      "Non-technical questions"
+    ],
+    "res_ux": [
+      "Established design system",
+      "Backend-only tasks",
+      "Incremental changes",
+      "CSS implementation"
+    ],
+    "res_reddit": [
+      "Niche technologies",
+      "Hard documentation",
+      "Throwaway prototype",
+      "Controversy without consensus"
+    ],
+    "res_x": [
+      "Hard technical decisions",
+      "Niche with no presence",
+      "Deep analysis",
+      "Ground truth validation"
+    ],
+    "res_github": [
+      "No open-source repos",
+      "Needing benchmarks",
+      "License blocks the pattern",
+      "Hunting trends"
+    ],
+    "res_forums": [
+      "Bleeding-edge technologies",
+      "Architecture-level work",
+      "Trends and hype",
+      "Practitioner feedback"
+    ],
+    "res_docs": [
+      "User opinions",
+      "Technology comparisons",
+      "Quality assessment",
+      "Code implementation"
+    ],
+    "res_critic": [
+      "Own research",
+      "Technology decisions",
+      "Writing code",
+      "Rubber-stamping reports"
+    ],
+    "backend": [
+      "Architecture design",
+      "Framework research",
+      "Writing frontend",
+      "Technology decisions",
+      "Security audits"
+    ],
+    "frontend": [
+      "Design system design",
+      "API implementation",
+      "Security testing",
+      "Stack selection",
+      "Writing copy"
+    ],
+    "feature": [
+      "Basic CRUD",
+      "UI design",
+      "Running research",
+      "System integration",
+      "Generalist tasks"
+    ],
+    "designer": [
+      "UX trend research",
+      "JavaScript logic",
+      "Writing tests",
+      "Text content",
+      "Component integration"
+    ],
+    "integrator": [
+      "Writing new code",
+      "Designing",
+      "Quality audits",
+      "Force merge without testing",
+      "Late integration"
+    ],
+    "writer": [
+      "Logic code",
+      "Research",
+      "Visual design",
+      "Running scripts",
+      "Over-documentation"
+    ],
+    "qa_security": [
+      "Internal POCs",
+      "Offline isolated code",
+      "Duplicating external scanners",
+      "Experimental prototypes",
+      "Fixing code"
+    ],
+    "qa_quality": [
+      "Prototypes without spec",
+      "MVP speed > quality",
+      "Experimental code",
+      "Projects with CI/CD auto-tests",
+      "Fixing bugs"
+    ],
+    "qa_perf": [
+      "Early prototypes",
+      "Code without baseline metrics",
+      "Micro-optimization",
+      "Security audit",
+      "Code quality review"
+    ],
+    "qa_manager": [
+      "MVP without release gate",
+      "Hotfix without time",
+      "Single-dimension QA",
+      "Human code review",
+      "Architecture decisions"
+    ],
+    "expert_pragmatist": [
+      "Code implementation",
+      "Sole innovation blocker",
+      "Pessimistic blockades",
+      "Purely technical debate",
+      "Fast solo decisions"
+    ],
+    "expert_innovator": [
+      "Ignoring costs",
+      "Shiny object syndrome",
+      "Over-engineering MVP",
+      "Hype-driven decisions",
+      "Code implementation"
+    ],
+    "expert_analyst": [
+      "Proposing solutions",
+      "Analysis paralysis",
+      "Vanity metrics worship",
+      "Data cherry-picking",
+      "Decisions without data"
+    ],
+    "expert_user": [
+      "Architecture decisions",
+      "Code implementation",
+      "Ignoring tech constraints",
+      "Feature bloat advocacy",
+      "Design by committee"
+    ],
+    "expert_devil": [
+      "Proposing alternatives",
+      "Soft critique",
+      "Nihilistic blocking",
+      "Attack without substance",
+      "Consensus building"
+    ],
+    "decision_presenter": [
+      "Making decisions",
+      "Technical analysis",
+      "Dynamic options",
+      "Interfering with agent work",
+      "Too many HITL gates"
+    ],
+    "db_architect": [
+      "Picking database tech",
+      "Application logic",
+      "Production migrations",
+      "Speculative indexes"
+    ],
+    "observability_engineer": [
+      "Feature code",
+      "Business SLAs",
+      "Database design",
+      "Logging PII without redaction"
+    ],
+    "gtm_strategist": [
+      "Product design",
+      "Writing code",
+      "UX research",
+      "Ad copy writing"
+    ],
+    "statistician": [
+      "Data exploration",
+      "ML pipelines",
+      "Business interpretation",
+      "Metric cherry-picking",
+      "P-hacking"
+    ],
+    "eda_analyst": [
+      "Building ML models",
+      "Hypothesis testing",
+      "Cleaning without approval",
+      "Outlier removal",
+      "Feature engineering decisions"
+    ],
+    "control_mapper": [
+      "Legal advice",
+      "Implementing controls",
+      "Running the audit",
+      "Interpreting law"
+    ],
+    "telemetry_surfer": [
+      "Fixing problems",
+      "Designing metrics",
+      "Production changes",
+      "Over-interpreting correlations"
+    ]
+  },
+  "presetLong": {
+    "solo": "<strong>The idea:</strong> Sometimes a task is so simple that adding more people to the team only slows things down. It's like calling a renovation crew to change one light bulb - pointless. One person and a moment is enough. This preset gives you exactly that: one agent, one task, zero overhead.<br><br><strong>How it works:</strong> The main agent gets the task and immediately gets to work. A second agent acts as validator, quickly checking that the result is correct and nothing got broken. Zero extra planning, zero waiting on others.<br><br><strong>What you get:</strong> A fixed bug or finished small code change, a quick verification that it works, a short summary of what was done.<br><br><strong>Ideal for:</strong> a small bug like a typo or a missing empty-field check, a simple fix in one file, small one-off scripts, a button that reacts wrong, quick code cleanups.<br><br><strong>Don't use when:</strong> the task touches several places at once, you need to gather information before changing anything, or the stakes are high and you need a second check from someone more experienced.",
+    "quick_fix": "<strong>The idea:</strong> When something is on fire in production, you don't have time to talk. You need to act in a loop: try, check, fix, check - until it stops burning. It's like a mechanic tightening a bolt, checking whether it stopped dripping, tightening again if needed, until it holds. Zero wasted steps.<br><br><strong>How it works:</strong> One agent tries to fix the bug, another immediately checks whether the fix worked, a third verifies nothing else broke. If something still isn't right, the loop starts over. All in one continuous session.<br><br><strong>What you get:</strong> A fixed problem ready to ship, a short summary of what was wrong and what got changed, confirmation that the basics still work.<br><br><strong>Ideal for:</strong> urgent hotfixes when something blew up in production, a simple bug whose fix needs a few attempts, emergency patches that have to ship today, situations when customers are writing in full panic.<br><br><strong>Don't use when:</strong> the problem is complex and you don't know the root cause, the fix requires changes in many places, or you have time to properly investigate instead of slapping on quick patches.",
+    "recon": "<strong>The idea:</strong> Before diving into an unknown topic, it's worth sending out a scout. Imagine walking into a dark room - better to glance inside first before doing anything there. This preset sends one agent on reconnaissance and only then starts building anything.<br><br><strong>How it works:</strong> First the main agent splits the work. A second agent gathers information: reads docs, checks how others did it before, writes down what it finds. Only then does a third agent write simple test code based on that information to verify the idea works.<br><br><strong>What you get:</strong> A short report with topic notes, a prototype showing whether the idea is feasible, a list of things to polish in the next step, warnings about traps ahead.<br><br><strong>Ideal for:</strong> checking whether a technology fits your project, a quick prototype for a client meeting, evaluating a new library before committing to it, first contact with an unfamiliar topic, a feasibility study before a bigger decision.<br><br><strong>Don't use when:</strong> you already know what you want to build and have a plan, you're building something meant for customers (this is only a prototype), or you need thorough analysis from multiple sources.",
+    "trio": "<strong>The idea:</strong> The classic triangle: backend, frontend, and someone checking quality. This is the smallest team that can deliver a working feature end to end. Like three friends building a small app together - one handles the server, another the screen, the third tests before showing the client.<br><br><strong>How it works:</strong> The first agent writes the backend - server-side logic and database. The second builds the frontend - what the user sees on screen. The third checks that everything fits: forms react, data flows correctly, no obvious bugs.<br><br><strong>What you get:</strong> A working feature with the full stack: server, screen, and basic tests that everything ties together, ready to integrate with the rest of the app.<br><br><strong>Ideal for:</strong> a simple form that saves data, a small CRUD app (add/remove/edit), a small API with a simple panel, a prototype with working logic, the first feature in a new project.<br><br><strong>Don't use when:</strong> you need detailed design before coding, the task requires gathering information from many sources, or the stakes are high and you need thorough security tests.",
+    "reflect": "<strong>The idea:</strong> Sometimes the point isn't to build something but to really understand a topic. It's like preparing for an important meeting: one person gathers materials, another arranges them into a coherent picture, and a third challenges the conclusions and checks nothing was stretched. You get a serious analysis, not a surface glance.<br><br><strong>How it works:</strong> The first agent gathers every piece of information it can find. The second analyzes that data, looks for patterns, and writes preliminary conclusions. The third sharply critiques those conclusions: looks for gaps, weak arguments, places where something got skipped. All the work without writing a single line of code.<br><br><strong>What you get:</strong> A thought-out report with conclusions, a list of weak points and things to double-check, justification for every conclusion, a note on where information was missing.<br><br><strong>Ideal for:</strong> deep analysis before a decision, due diligence before buying a company or service, review of a proposed solution, evaluation of a business idea, risk analysis, verification that something that sounds good actually is.<br><br><strong>Don't use when:</strong> you need working code (this preset builds nothing), the topic is trivial and doesn't need deep critique, or the decision has to land in 5 minutes.",
+    "bug_hunt": "<strong>The idea:</strong> Some bugs are tricky: you fix one spot and suddenly another breaks. It's like fixing up an old house - every nail can pull another hole in the wall. So it's better to have someone fixing plus two more people in parallel checking that nothing else went sideways in the process.<br><br><strong>How it works:</strong> The main agent assigns tasks. One agent takes on the bug fix. Two testers work in parallel: one checks whether the fix itself works, the other tests other parts of the app to see if they still hold. If anyone finds a new issue, the loop repeats.<br><br><strong>What you get:</strong> A fixed bug, a report on exactly what was wrong, confirmation that nothing else broke along the way, a short note on how to avoid a similar problem in the future.<br><br><strong>Ideal for:</strong> a bug that was already \"fixed\" once and came back, an error in an old system where you're scared to touch anything, a problem in an area touching many features, a bug after the last deploy.<br><br><strong>Don't use when:</strong> the reporter only writes \"something doesn't work\" with no details, you can't reproduce the bug, or the bug is trivial and doesn't need 4 agents.",
+    "content": "<strong>The idea:</strong> A good text isn't a single guess. Before writing, someone has to gather facts, someone has to organize them, then write, and finally someone has to check for typos and make sure everything adds up. Picture a newspaper newsroom: reporters gather material, the editor writes, copy catches errors. This preset does exactly that.<br><br><strong>How it works:</strong> Two agents gather information from different sources in parallel. An editor takes what they found and writes a coherent text from it. At the end a quality agent checks for typos, confirms the facts match the sources, and checks the text makes sense to the reader.<br><br><strong>What you get:</strong> A text ready to publish, a list of sources the facts came from, a short note on whether the text matches the brand tone, suggestions for any edits.<br><br><strong>Ideal for:</strong> a company blog post, a product description for a store, a landing page for a new service, user documentation, a monthly client report, a newsletter post.<br><br><strong>Don't use when:</strong> you need code (this preset writes no code), the text is only a 2-sentence social media post (too heavy), or you have a highly specialized topic that needs a real expert.",
+    "plan_exec": "<strong>The idea:</strong> When the change is bigger, the worst thing you can do is throw yourself at the code without a plan. The result: half the work tossed out, forgotten pieces, errors from the rush. Better to look at the map first: what exactly needs doing, in what order, what can go wrong. Only then start acting. Like building a house - first the blueprint, then the foundation, then the walls.<br><br><strong>How it works:</strong> The first agent makes a detailed plan broken into stages and action order. The second lays out a concrete schedule. The third executes the plan step by step. The fourth checks at the end whether every step was actually done correctly.<br><br><strong>What you get:</strong> A plan with concrete steps, a schedule with order and dependencies, executed code matching the plan, a report on what was done and what still needs finishing.<br><br><strong>Ideal for:</strong> migrating an old system to a new one, bigger code cleanup, moving features from one place to another, a change touching many files at once, a project with a clear end but many steps along the way.<br><br><strong>Don't use when:</strong> the task is small and planning is overkill, you have 5 minutes and no time to plan, or you already have a plan and only need execution.",
+    "perf_boost": "<strong>The idea:</strong> When the site crawls or the API responds in 5 seconds, customers leave. But \"optimize this\" without a plan wastes time - you have to measure what exactly is slow first, then fix that specific spot, and at the end verify that it really is faster. Like swapping car parts: diagnostics first, wrench second.<br><br><strong>How it works:</strong> The first agent investigates what exactly is slow (database, backend code, queries, memory). The second writes a fix in the server-side code. The third is a performance measurement specialist who measures before and after the fix so the real effect is visible.<br><br><strong>What you get:</strong> A report on what exactly was slow, fixed code, before/after measurements with concrete numbers (e.g., \"API now responds in 200ms instead of 2s\"), a list of further improvements still possible.<br><br><strong>Ideal for:</strong> an API that responds too slowly, a home page that loads forever, database queries eating resources, an admin panel that hangs, a list that takes ages to render.<br><br><strong>Don't use when:</strong> \"it feels slow\" but nobody measured it (measure first), the issue is visual not performance, or you're optimizing something nobody uses.",
+    "startup": "<strong>The idea:</strong> A startup doesn't need perfect code, just a working version to show customers or investors that the idea has legs. Zero ceremony, maximum speed. Picture a 5-person crew in a garage: everyone handles their piece and a week later you have the first version to test. This preset is exactly that.<br><br><strong>How it works:</strong> The main agent splits the work. An analyst figures out what the customer actually wants. A research agent checks how other apps did it. A builder writes the code: backend and a simple screen. At the end a quality agent tests the basics and briefly summarizes what works and what doesn't yet.<br><br><strong>What you get:</strong> A working prototype with the most important features, a simple user screen, short docs on how to run it, a list of things to finish in the next version.<br><br><strong>Ideal for:</strong> a first customer version of an app (MVP), a prototype for an investor pitch, a hackathon, a small SaaS to test whether the idea catches on, a demo for a sales meeting.<br><br><strong>Don't use when:</strong> you're building something that must be reliable from day one (e.g., payments, medical data), you have plenty of time and want solid code right away, or the task is more than a small prototype.",
+    "cascade": "<strong>The idea:</strong> The most expensive AI model is great but expensive. If the task is simple, using the most expensive model is like taking a limo to the grocery store. Better to use a cascade: start with the cheap model, if it handles the task you're done. If not, move to the mid-tier. Only if mid-tier can't handle it does the most expensive model step in. 70-80% savings at comparable results.<br><br><strong>How it works:</strong> First the cheap model (Haiku) takes the task. If the result is good enough, done. If not, the task moves to the mid-tier (Sonnet). If mid-tier also can't handle it, only then does the top model (Opus) step in. Each model knows when to give up and pass the task on.<br><br><strong>What you get:</strong> The task done, a report on which model did what percentage of the work, a cost much lower than if the top model did everything, quality comparable to the top model alone.<br><br><strong>Ideal for:</strong> large volumes of repetitive tasks (email classification, content tagging), batch document processing, handling lots of simple questions cheaply, situations where most tasks are easy but a few are hard.<br><br><strong>Don't use when:</strong> every task is complex and ends up on the top model anyway, you need guaranteed quality on every single case, or the volume is small and savings don't matter.",
+    "test_suite": "<strong>The idea:</strong> Before shipping a new version you want to be sure nothing blows up. But one person won't catch everything - everyone has their blind spots. Better to have a tester team: one specializing in security, another in general quality, a third in performance, and a test lead deciding whether it can ship. Like an exam board instead of a single examiner.<br><br><strong>How it works:</strong> The main agent splits the work. Three testing specialists check the code from different angles in parallel: one for quality and correctness, another for security, a third for performance. The test lead (manager) collects all reports and at the end says: ship it (GO) or fix it (NO-GO) with justification.<br><br><strong>What you get:</strong> Reports from 3 testing areas, a list of bugs sorted by severity (from critical to minor), a clear GO/NO-GO decision with justification, suggestions on what to fix before you try shipping again.<br><br><strong>Ideal for:</strong> the last check before pushing a version to production, an automatic gate on code merge, a periodic app quality review, before an important client demo.<br><br><strong>Don't use when:</strong> you need code written (this preset only tests), the task is so small it's not worth it, or you already know the code has bugs and want to fix them (use bug_hunt).",
+    "a11y": "<strong>The idea:</strong> An app that works for some doesn't automatically work for everyone. Blind users rely on screen readers. Users with vision issues need good contrast. Users with motor issues navigate with the keyboard instead of the mouse. This isn't a whim - it's a requirement from many corporate customers and the law in many countries. This preset checks that everyone can use your app.<br><br><strong>How it works:</strong> A user experience specialist investigates what problems different groups might have. A designer prepares graphic fixes (colors, contrast, button sizes). A frontend agent applies the changes in screen code. A tester checks whether everything works with a screen reader and keyboard. At the end someone documents the changes.<br><br><strong>What you get:</strong> A fixed interface with good contrast and keyboard support, an accessibility audit report (what was wrong and what was fixed), WCAG compliance, docs for the team on how to keep accessibility going.<br><br><strong>Ideal for:</strong> before shipping an app to external customers, meeting requirements from corporate or public-sector customers, legal accessibility compliance, a redesign that should also cover users with disabilities, an accessibility audit on an existing product.<br><br><strong>Don't use when:</strong> the app is internal and no disabled users touch it, the project has no graphical interface at all, or you only need a quick fix for one small problem.",
+    "security": "<strong>The idea:</strong> A single security agent will always miss something. Attackers use different angles: one hunts code bugs, another exploits old libraries with known holes, a third attacks authentication. So better to have several specialists looking for different things in parallel, with a team lead collecting results and deciding whether the change can ship safely. Like airport security - x-ray, metal detector, and a dog trained on explosives, each catching something different.<br><br><strong>How it works:</strong> An agent builds or fixes code. Three security specialists check in parallel: one the code for security bugs, another the libraries for known vulnerabilities, a third the auth and permissions flow. The team lead collects reports, builds a risk list sorted by severity, and makes the GO/NO-GO call.<br><br><strong>What you get:</strong> A report from 3 security layers, a list of issues rated by severity (critical, high, medium, low), concrete remediation advice, a shipping decision with justification, an audit trail for compliance.<br><br><strong>Ideal for:</strong> before shipping a feature touching personal data or payments, an audit before a big deploy, prep for a corporate customer's security audit, after finding a vulnerability that needs a thorough review, a regular quarterly check.<br><br><strong>Don't use when:</strong> the app touches no sensitive data, the change is cosmetic (text, colors), you only need one library checked (overkill), or you have automated tools like Snyk doing this non-stop.",
+    "review": "<strong>The idea:</strong> Imagine a writer proofreading their own book - they'll always miss something because they have a twin view of their own text. Same with code. The problem is that when the same person writes and checks, they struggle to spot their own errors. This preset separates the roles - first someone builds, then two OTHER people review.<br><br><strong>How it works:</strong> First one agent analyzes the task, a second writes the code, and at the end two others review the finished result: one for security (any holes?), the other for quality (is the code clean?). A lead collects the notes and issues a verdict.<br><br><strong>What you get:</strong> Finished code plus a report with notes from two reviewers - what works well, what needs fixing, whether it can ship to production.<br><br><strong>Ideal for:</strong> important changes in code that reaches customers, changes in payments or auth, code written by junior developers, code touching sensitive parts of the system.<br><br><strong>Don't use when:</strong> small fixes like a typo, cosmetic changes with no logic impact, or projects nobody will actually use.",
+    "design_sys": "<strong>The idea:</strong> Imagine building a house where every room has a different wall color, different door handles, different light switches. Chaos. A design system is a rulebook saying \"across the company we use THESE three colors, THESE two fonts, THESE buttons.\" The problem is that without such rules every page looks different and users get lost.<br><br><strong>How it works:</strong> Two agents search for patterns in parallel - one studies design trends, the other reads docs of known libraries. Then a designer arranges it into a coherent system, a frontend engineer codes it, and a writer creates instructions on how to use it.<br><br><strong>What you get:</strong> Ready color, font, and spacing sets, a small component library (buttons, fields, cards) plus documentation on how to use it.<br><br><strong>Ideal for:</strong> companies cleaning up their visual identity, launching a new brand, consolidating several products under one style, building a reusable component library.<br><br><strong>Don't use when:</strong> you're building backend features (not what this is about), you have one small page (overkill), or you're using a ready-made system like Material or Bootstrap.",
+    "api_modern": "<strong>The idea:</strong> Imagine an old house where you want to replace the pipes and wiring without touching the wallpaper and furniture. The user sees nothing, but the utilities work much better. Same with API modernization - the app's \"engine\" used by other programs. The problem is that an old API is hard to evolve, sometimes has holes or runs slow.<br><br><strong>How it works:</strong> First an analyst surveys what's there, then a researcher looks for modern patterns, next a backend engineer rewrites the code and an integrator makes sure old connections still work, and finally a tester checks everything.<br><br><strong>What you get:</strong> A cleaned-up API with new versions, documentation for developers, a safety net ensuring old apps still work unchanged.<br><br><strong>Ideal for:</strong> quietly modernizing an old system, switching from one technology to another (e.g., REST to GraphQL), adding versioning to API contracts, paying down technical debt under the hood.<br><br><strong>Don't use when:</strong> you want to change the app's look (not what this is), you're adding a brand new feature visible to users, or your system has no API yet.",
+    "ui_overhaul": "<strong>The idea:</strong> Picture a full apartment renovation - same number of rooms, same doors, but new walls, new furniture, new lighting. People walk in and say \"wow, it looks young again.\" Same with an app that works well but looks old - you lose customers, because looks are the first impression.<br><br><strong>How it works:</strong> Two teams gather ideas in parallel - one studies interface trends, the other checks technical constraints. Then an analyst settles what's possible, a designer draws the new look, a frontend engineer codes it, and a tester checks everything works and is accessible.<br><br><strong>What you get:</strong> A new look for the app with all logic and data preserved, a new color palette, new fonts, better spacing, subtle animations.<br><br><strong>Ideal for:</strong> products that work well but look old, switching to a dark theme, adding modern effects, modernizing a landing page, a redesign after customer feedback.<br><br><strong>Don't use when:</strong> you're adding new functionality (different preset), the main problem is on the backend, or you have no UI yet to rework.",
+    "feature_sprint": "<strong>The idea:</strong> Picture adding an extra room to a house - you need to check whether the load-bearing wall can take it, plan, hire masons, an electrician, a painter, and finally walk through the final inspection. Same with a new feature in an app. The problem is that without such a process either something gets forgotten or someone misreads the requirements and you end up redoing it.<br><br><strong>How it works:</strong> First an analyst breaks the idea into smaller pieces, then two teams research in parallel (one the technical side, the other the user side), next backend and frontend engineers build, and a tester checks everything works.<br><br><strong>What you get:</strong> A finished feature with backend and frontend code, tested, ready to deploy. Plus docs on how to use it.<br><br><strong>Ideal for:</strong> adding a new feature like comments, favorites, data export, a notification system, payment integration, a new screen in a mobile app.<br><br><strong>Don't use when:</strong> you're only fixing the look (use UI Overhaul), it's just a bug fix (use Bug Hunter), or you don't yet have a clear idea of what you want to build.",
+    "standard": "<strong>The idea:</strong> Imagine walking into a hardware store and asking \"what should I buy if I don't know yet what I'll be doing?\". The clerk hands you a universal kit that covers 70% of situations. Same with Standard Dev - the preset you pick when you don't know which to pick. The problem is that specialized presets are great when you know what you want, but often it's not worth the time deciding.<br><br><strong>How it works:</strong> Eight agents in four layers: a lead manages, a planner splits the work, a researcher gathers info, backend and frontend engineers build, a tester checks. The classic architectural-office setup.<br><br><strong>What you get:</strong> Full backend and frontend code, a plan of what was done, a test report, technical docs. Nothing extra, nothing missing.<br><br><strong>Ideal for:</strong> typical web projects, SaaS apps, admin panels, platforms with login and data, shaping a new feature when you don't know where to start.<br><br><strong>Don't use when:</strong> very simple fixes (too many people for a small task), research-only work with no code (use Research Swarm), irreversible strategic decisions (use Five Minds).",
+    "data_pipe": "<strong>The idea:</strong> Picture an oil refinery - raw material goes in, passes through pipes and filters, and comes out as fuel ready to sell. Same with company data: somewhere there are raw numbers (in a database, a file, a CRM), and you need finished reports. The problem is that doing this by hand doesn't work, because there's too much data and it changes daily.<br><br><strong>How it works:</strong> A planner lays out the steps, a researcher checks the data format, a backend engineer writes the ingest code, a feature specialist writes the processing logic, and an integrator ties everything into one automated flow.<br><br><strong>What you get:</strong> An automated data flow from one place to another, cleaning and transformation rules, documentation of sources and destinations, ready to plug into reports.<br><br><strong>Ideal for:</strong> building a data warehouse, automated reports for the board, data migration between systems, daily dashboard refreshes, collecting data from many sources into one place.<br><br><strong>Don't use when:</strong> you're building a regular web app with a UI (different preset), you have one simple database query, or you have no data sources to plug in yet.",
+    "research": "<strong>The idea:</strong> Imagine having to choose between 5 cars where each has different pros and cons, opinions conflict, and every salesman tells you something different. Six people read tests, forums, expert sites, comparisons, and owner reviews in parallel, and at the end someone turns it into one report. The problem is one person can never handle that many sources at once - they lose the thread.<br><br><strong>How it works:</strong> Six agents read different sources in parallel (documentation, GitHub, forums, Reddit, expert articles), each writes a short summary. A critic checks whether anyone is lying or contradicting themselves, and the final writer produces a coherent report.<br><br><strong>What you get:</strong> A structured report from six perspectives, every claim tied to its source, confidence tags (certain / probable / speculation), a list of contradictions, and an executive summary on page one.<br><br><strong>Ideal for:</strong> picking a technology for the next 3 years, market research before a product launch, competitive analysis, due diligence before an investment, literature review on a topic.<br><br><strong>Don't use when:</strong> you need code (this preset programs nothing), the decision has to happen in 5 minutes, you already have one trusted source of answers.",
+    "ab_test_lab": "<strong>The idea:</strong> Imagine running a taste test between two drinks but you only sample 10 people - half get drink X, half get Y. The result is noise. Many companies run A/B tests like this and then ship changes based on bogus statistics. The problem is a bad test gives you false conclusions and you can lose money rolling out the wrong change.<br><br><strong>How it works:</strong> A statistician calculates the sample size needed for a trustworthy result, a designer draws two variants, a Devil's Advocate hunts for flaws in the plan (cherry-picking, p-hacking, instrumentation bugs), and someone signs off on the plan before the test starts.<br><br><strong>What you get:</strong> A test plan with sample-size calculation, two ready-to-ship variants, the list of metrics to instrument, a list of traps to avoid, and a signed approval document.<br><br><strong>Ideal for:</strong> pricing tests, signup flow variants, checkout changes, landing page tests, payment layout variants.<br><br><strong>Don't use when:</strong> you have too few users (the test would run for months), you don't yet know what to measure, the change is a minor cosmetic tweak.",
+    "tech_writing_pipe": "<strong>The idea:</strong> Imagine writing a longer expert article and just start typing - three hours in you realize the facts are wrong, the structure is chaotic, and there are no diagrams. A professional writer first builds an outline, then gathers facts, then drafts, then adds visuals, and finally has someone else review. Without that separation, content often contains hallucinations or a messy flow of thought.<br><br><strong>How it works:</strong> First an analyst builds the outline and defines the audience, then two researchers gather facts in parallel (one from docs, one from GitHub), a writer drafts text based only on those facts, a designer adds diagrams, someone picks SEO keywords, and at the end a critic verifies everything lines up.<br><br><strong>What you get:</strong> A long article or whitepaper with facts, code examples, diagrams, titles and meta descriptions for search engines, fact-checked. Ready to publish.<br><br><strong>Ideal for:</strong> deep company blog posts, customer whitepapers, trade magazine articles, conference talks, customer case studies, developer guides.<br><br><strong>Don't use when:</strong> short Twitter posts, social media updates, quick emails, internal messages, content you have 10 minutes for.",
+    "perf_squad": "<strong>The idea:</strong> Imagine your car suddenly drives slower and you don't know if it's the engine, the oil, the brake pads, or something else. Three mechanics propose different hypotheses, a fourth challenges each one with \"what if it's NOT that?\", and a fifth finally runs a stopwatch and has proof. The problem is during a performance regression it's easy to bet on the wrong cause and waste days fixing something that works fine.<br><br><strong>How it works:</strong> Three specialists inspect different layers in parallel (database, backend, frontend) and each proposes their own hypothesis for what slowed the system. The Devil's Advocate attacks each one trying to falsify it, and at the end a performance tester benchmarks the top candidates.<br><br><strong>What you get:</strong> A root-cause document (3 hypotheses + counter-hypotheses), concrete fix locations ordered by expected impact, before/after measurements, and a remediation plan.<br><br><strong>Ideal for:</strong> the app slowed down after the last deploy, growing response-time tail latencies, tracking down resource leaks, server cost optimization, sudden memory spikes.<br><br><strong>Don't use when:</strong> you have no measurements (\"feels slow\"), you want to optimize speculatively without a real problem, the issue is in a layer outside the app (network, provider).",
+    "legacy": "<strong>The idea:</strong> Imagine swapping the engine of a plane that has to keep flying - you can't shut it down, you can't land. That's what cleaning up an old production system that serves real customers looks like. The problem is the old system is fragile, hard to evolve, and a full rewrite from scratch usually fails.<br><br><strong>How it works:</strong> First an analyst inventories what's actually in there, then a researcher looks up how others handled similar modernizations, then three teams build new pieces in parallel (backend, frontend, bridging layer) swapping in piece by piece, and two QA teams verify nothing regressed.<br><br><strong>What you get:</strong> A dependency map of the old system, a phased modernization plan, new versions of the most critical pieces, a compatibility layer so old clients still work, and regression tests proving nothing broke.<br><br><strong>Ideal for:</strong> a 10-year-old Rails app moving to a new stack, swapping jQuery for React, evolving a database schema with zero downtime, reducing technical debt, modernizing an inherited project.<br><br><strong>Don't use when:</strong> you're starting a project from scratch (nothing to modernize), you have one bug to fix (overkill), the customer accepts a few days of downtime (then a full rewrite is better).",
+    "saas": "<strong>The idea:</strong> Imagine building a house from the foundation - you need an architect, bricklayers, an electrician, a plumber, a painter, and a final inspection. Same with a new SaaS product. The problem is if you start with just a website and then bolt on auth, payments, and a customer panel, everything ends up inconsistent and painful to maintain.<br><br><strong>How it works:</strong> Researchers gather requirements and scan the market, then three parallel teams build: one backend (database, API, auth), one frontend (user screens), one designer (consistent look). An integrator wires it all together, and two QA teams verify security and quality.<br><br><strong>What you get:</strong> A shippable SaaS product with user accounts, an admin panel, a coherent design, tested, ready to deploy for first customers. Plus technical documentation.<br><br><strong>Ideal for:</strong> launching a new B2B SaaS, a platform with user accounts and subscriptions, a new customer dashboard, a multi-tenant system, an MVP for investors.<br><br><strong>Don't use when:</strong> you only need the backend (no frontend), only the frontend (no backend), you're building an internal tool for 5 people (form over function).",
+    "microservices": "<strong>The idea:</strong> When an application grows for years, it turns into one giant block where everything depends on everything. Changing one thing breaks three others. The fix: split that giant block into smaller, independent pieces - each responsible for one job and evolvable on its own. Like replacing one giant department store with a mall of independent boutiques.<br><br><strong>How it works:</strong> First a planner analyzes the old system and splits it into logical pieces. Then four developers build their pieces in parallel (each owns one). Finally three testers check that all pieces talk to each other correctly.<br><br><strong>What you get:</strong> A decomposition plan for the old system, working code for four new independent services, a communication contract between them, and a quality report.<br><br><strong>Ideal for:</strong> a large app that has become too hard to maintain, splitting an old system across teams, companies scaling from 10 to 100 developers, preparing to scale to more users.<br><br><strong>Don't use when:</strong> small applications (form over function), a brand new project (build something simpler first), a team with no distributed systems experience.",
+    "deep_research_swarm_pro": "<strong>The idea:</strong> When you have to compare 7 solutions and make a high-stakes decision, one human (or one agent) drowns in the flood of information. The brain stops tracking. The fix: split the work across seven specialists - each reads only their slice. One reads only docs, another only forum opinions, another only Reddit. Nobody crosses into anyone else's lane. At the end one person compiles the report.<br><br><strong>How it works:</strong> A lead researcher splits the question into seven parts. Seven researchers work in parallel, each in their own source. A critic checks for contradictions between them. A writer compiles everything into one report with conclusions.<br><br><strong>What you get:</strong> A structured report from seven perspectives, every fact with a source link, confidence tags on each claim, a list of source-level contradictions, and a short executive summary at the top.<br><br><strong>Ideal for:</strong> picking technology for a new project (e.g., which database), market analysis before a product launch, competitive comparison, academic literature review, framework migration decisions.<br><br><strong>Don't use when:</strong> you have only one source, you need code (no agent here writes code), the decision has to happen in 5 minutes.",
+    "migration_crew": "<strong>The idea:</strong> Rewriting an old system onto a new one is like renovating a house that has to stay lived in. One mistake and the residents (users) lose power. The problem is one developer trying to read all the old code gets lost and starts guessing. The fix: split the old code into three parts and assign each to its own specialist. Nobody crosses lanes.<br><br><strong>How it works:</strong> An analyst inventories the old codebase. Three specialists read their areas in parallel (e.g., one only auth, one only database, one only interfaces). A human approves the migration plan - all-at-once or phased. Only then does the team execute the migration, and a tester verifies the result.<br><br><strong>What you get:</strong> A dependency map of the old system, migration strategy options with pros and cons, a rollout plan with checkpoints, and a list of changes that could break existing behavior.<br><br><strong>Ideal for:</strong> Java 8 to Java 21, Angular to React, Python 2 to 3, REST to GraphQL, breaking a monorepo into smaller repos.<br><br><strong>Don't use when:</strong> a brand new project (nothing to migrate), a full rewrite from scratch (different scope), you don't have access to the old code.",
+    "fullstack_premium": "<strong>The idea:</strong> A standard team builds a feature that works \"on the developer's laptop\", but in production the database buckles, nobody knows what's happening, and there's a security hole. The fix: add the three specialists usually missing - a database architect, someone for runtime observability, and someone for user research. The result is a feature ready for real customers.<br><br><strong>How it works:</strong> A 12-agent team: an orchestrator coordinates, planners draft the plan, two researchers (user and docs) work in parallel, a DB architect designs the schema, then four build in parallel (UI designer, backend, frontend, integrator), and finally a security audit and observability setup.<br><br><strong>What you get:</strong> A shippable feature with a designed database, a monitoring dashboard, a security audit report, a UI grounded in user research, and documentation.<br><br><strong>Ideal for:</strong> a SaaS dashboard with customer charts, user authentication, payment systems, critical customer-facing features, anything that MUST work reliably.<br><br><strong>Don't use when:</strong> a hackathon prototype (too heavy), small internal tools, when you have no running system yet.",
+    "security_multi_vector": "<strong>The idea:</strong> One security scanner always misses something - each has its specialty. It's like hunting a water leak: a plumber checks the pipes but won't notice the water is coming from the roof. The fix: five independent scanners hunt flaws in parallel, each in a different area. Then one expert compiles the results, weighs severity, and decides whether the product can ship.<br><br><strong>How it works:</strong> Five scanners in parallel: one reads code, one audits dependencies, one checks infrastructure, one hunts secrets in code, one audits authentication. A QA manager collects everything, builds a threat model, and rates each finding's severity. A human makes the ship decision.<br><br><strong>What you get:</strong> A full audit across five areas, a threat model (what can go wrong), a prioritized findings list from most to least critical, a list of known library vulnerabilities with fix guidance, and a release decision.<br><br><strong>Ideal for:</strong> audit before a major release, SOC2 audit prep, responding to a customer's security questionnaire, cleanup after a security incident, quarterly review.<br><br><strong>Don't use when:</strong> continuous background scanning (use automated tooling), without an upfront threat model, for a small internal app.",
+    "prd_to_launch": "<strong>The idea:</strong> You have a product idea or a recorded customer call, but you don't know how to turn it into a ready launch. You're missing the requirements doc, the task list, mockups, copy, and a go-to-market plan. The fix: one pipeline that takes informal input and produces a full launch package. Like a machine that turns an idea into a shippable product.<br><br><strong>How it works:</strong> An analyst extracts the real customer problem from the call. A writer drafts the requirements doc. In parallel: a planner writes the task list with timeline, a designer mocks up screens, a marketing writer drafts launch copy, a strategist builds the GTM plan. At the end a PM signs off on everything.<br><br><strong>What you get:</strong> A product requirements document, a developer task list, interface mockups, marketing copy, a go-to-market plan, success metrics, and a pre-launch checklist.<br><br><strong>Ideal for:</strong> turning a recorded customer call into a shippable package, moving an idea-pitch into a concrete launch, planning a large new feature before a quarter, aligning departments before a launch.<br><br><strong>Don't use when:</strong> writing code (different preset), purely technical decisions, when you have no access to customers.",
+    "kb_constructor": "<strong>The idea:</strong> In every company knowledge is scattered: some in Slack, some in Confluence, some in PDFs, some on GitHub. A new hire loses weeks just searching. The problem is manually stitching those sources together takes weeks. The fix: four agents read one source each in parallel and normalize the data into one format. The system deduplicates and writes finished articles.<br><br><strong>How it works:</strong> Four agents read their sources in parallel (Slack, wiki, PDFs, GitHub). Each converts what they find into a uniform format with a title, body, and source link. A deduplicator removes duplicates (when two sources say the same thing). A writer produces articles from the best chunks. A critic verifies every claim exists in a source.<br><br><strong>What you get:</strong> A knowledge base structure (categories and tags), ready articles organized by topic, deduplicated data, a fact-verification report, and a ready-to-import bundle for your chosen system.<br><br><strong>Ideal for:</strong> migrating an internal wiki from Confluence to Notion, a new-hire knowledge base, a customer support knowledge base, unifying scattered documentation into one place.<br><br><strong>Don't use when:</strong> you have only one source (overkill), you want continuous updates (this is a one-shot operation), you already have a good document search system.",
+    "soc2_sweep": "<strong>The idea:</strong> SOC2 is the security standard most large customers require. Preparing for an audit manually takes weeks and requires coordinating several departments (security, operations, legal, engineering). The fix: a team of agents that reads the company's policies, maps them to SOC2 requirements, collects evidence, and finds gaps. At the end the CISO signs off on readiness.<br><br><strong>How it works:</strong> An agent reads the company policies. A mapper assigns policies to the 9 SOC2 requirement groups. An auditor checks technical controls (encryption, MFA, logging, access reviews). A collector gathers screenshots, configurations, and logs as evidence. A gap analyst flags what's missing. The CISO approves.<br><br><strong>What you get:</strong> A compliance matrix with each requirement and its evidence, an evidence folder (screenshots, configurations, logs), a prioritized gap list, CISO approval, and an auditor-ready package.<br><br><strong>Ideal for:</strong> SOC2 Type II audit prep, responding to an enterprise customer risk assessment, compliance gap analysis, quarterly security review, ISO27001 prep.<br><br><strong>Don't use when:</strong> you have no policies yet (write them first), continuous compliance (use tools like Vanta/Drata), minor security tweaks.",
+    "data_analysis_pipe": "<strong>The idea:</strong> \"Give me insights from this spreadsheet\" sounds simple, but it takes many steps - one agent easily hallucinates statistics if it's not careful. The problem is without discipline it's easy to draw the wrong conclusions. The fix: nine agents in sequence - one profiles the data (without reading the whole thing), one cleans it, two hunt patterns in parallel, a statistician checks it isn't coincidence, another builds a predictive model, a writer produces the report.<br><br><strong>How it works:</strong> A data collector profiles the spreadsheet (column names, statistics, samples - without reading everything). A cleaner handles missing values and errors. Two pattern hunters work in parallel. A statistician validates the findings hold up. Optionally a modeler builds a predictive model. A writer drafts the report. A designer produces the charts.<br><br><strong>What you get:</strong> A board-ready report with key findings, confidence ratings on each claim, statistically validated results, charts, optionally a predictive model, and a list of recommendations.<br><br><strong>Ideal for:</strong> board-ready reports from raw data, business questions like \"why did sales drop in March?\", churn analysis, pricing analysis, product analysis, A/B test readouts.<br><br><strong>Don't use when:</strong> live streaming data (different architecture), deploying a model to production, you have no access to raw data.",
+    "incident_war_room": "<strong>The idea:</strong> When production goes down, every minute costs money. An incident commander under pressure often bets on the wrong hypothesis and burns time chasing the wrong lead. The fix: three specialists check three directions in parallel (metrics, logs, recent changes), a fourth (Devil's Advocate) challenges every hypothesis, and a human decides whether to roll back the last change.<br><br><strong>How it works:</strong> Three in parallel: one checks metrics and performance, one analyzes logs and errors, one looks at recent changes and deploys. Two testers (performance and security) rule out their areas. A Devil's Advocate attacks the leading theory. A human makes the rollback call. A writer drafts the customer communication and the post-incident report.<br><br><strong>What you get:</strong> An investigation timeline (who did what when), a leading theory with counter-arguments, a rollback decision with rationale, a status-page message for customers, and a post-mortem with 5 whys and an action-item list.<br><br><strong>Ideal for:</strong> a serious production incident (P0/P1), a customer-facing regression, a bad deploy to roll back, writing the post-mortem, on-call escalation.<br><br><strong>Don't use when:</strong> without access to production metrics, planned maintenance work, long-term code cleanup, generic \"system feels slow\".",
+    "full": "<strong>The idea:</strong> This is the reference full team - 13 agents organized across five layers (like a company): lead, planners, researchers, builders, testers. No role is redundant, no role is duplicated. The problem is when you're building something important, a single missing link (a researcher or a tester) can cost more than the entire project. This preset is the insurance against those gaps.<br><br><strong>How it works:</strong> A lead coordinates. Two planners break the project into phases. Three researchers gather information in parallel. Four build (backend, frontend, integration, design). Three testers check quality, security, and performance. A QA manager makes the final call.<br><br><strong>What you get:</strong> A complete project from idea to release: the plan, research reports, working code, documentation, security report, quality report, and a release decision.<br><br><strong>Ideal for:</strong> business-critical projects, enterprise system architecture, formal audits and compliance, projects where the cost of a mistake is much higher than the cost of thorough analysis, large external teams.<br><br><strong>Don't use when:</strong> simple features (overkill), hackathon prototypes, urgent same-day deploys, when you have a tight budget.",
+    "deep": "<strong>The idea:</strong> Sometimes before you write code, you have to really deeply understand the topic - algorithm choice, a framework for the next 5 years, integration with regulated systems. The problem is standard teams have too little research and builders end up guessing. The fix: expand research to six parallel researchers, add a critic and a synthesizer, and only then build. Like a NASA mission - 6 teams study different aspects before the rocket is built.<br><br><strong>How it works:</strong> Six researchers gather information from different sources in parallel. A critic checks for contradictions. A synthesizer turns it into one coherent plan. Four build in parallel. Three testers (security, quality, performance) audit the result. 18 agents total.<br><br><strong>What you get:</strong> A full report from 6 sources, a synthesized plan, working code across all layers, and triple quality validation from the tests.<br><br><strong>Ideal for:</strong> building an enterprise platform, evaluating 3-5 vendors for large spend, regulated industries (banking, healthcare), migrating an entire platform to new technology.<br><br><strong>Don't use when:</strong> standard feature development (too heavy), prototypes, tight deadlines, constrained budgets.",
+    "five_minds": "<strong>The idea:</strong> Some decisions have no obvious answer - every option has pros and cons, experts disagree. A single voice easily drowns out common sense. The fix: formalize the argument. Four experts defend their positions, a fifth (the Devil's Advocate) attacks the strongest proposal and hunts for weak points. From the dialectic emerges a solution better than any original proposal - not a compromise, but a synthesis.<br><br><strong>How it works:</strong> Four experts receive the problem and each presents their solution. Round two: debate, where each attacks the others' weaknesses. The Devil's Advocate challenges the strongest proposal looking for gaps. Round three: joint construction of the final solution (the Gold Solution) that addresses the raised concerns.<br><br><strong>What you get:</strong> A full debate log with each expert's arguments, a list of the Devil's Advocate's attacks, the final solution with rationale for why it beats the alternatives, and a list of \"what ifs\" that were considered.<br><br><strong>Ideal for:</strong> strategic technology decisions, architecture with competing requirements (speed vs security), high stakes with no obvious winner, resolving disputes between teams.<br><br><strong>Don't use when:</strong> simple implementations, decisions with an obvious answer, urgent deliveries (debate takes time), when the team isn't ready for confrontation.",
+    "deep_five_minds": "<strong>The idea:</strong> The largest preset in the entire system. 27 agents, 6 phases, 3 human approval gates, two rounds of expert debate (one before building, one after). The problem is irreversible decisions (migrating an entire million-dollar platform, banking architecture, medical systems) can't have a shadow of error. This preset is the full safety net - research, debate, human, build, debate again, human again, testing, final approval.<br><br><strong>How it works:</strong> Six researchers gather information in parallel, a critic verifies. A human approves direction (Gate #1). Five experts debate before building. A human approves the plan (Gate #2). Five build. Five experts debate the result again. Three testers audit. A human approves release (Gate #3).<br><br><strong>What you get:</strong> A full research report, two expert debate logs, three human-in-the-loop decisions, working code, triple quality validation, and documentation of irreversible choices with rationale.<br><br><strong>Ideal for:</strong> investment decisions above 500 thousand dollars, mission-critical architecture, regulated industries (finance, healthcare, aviation), decisions affecting the organization for 5+ years, irreversible platform choices.<br><br><strong>Don't use when:</strong> anything below 50 thousand dollars in stake, standard feature development, prototypes, urgent deliveries, when leadership won't commit to the decision.",
+    "five_minds_strategic": "<strong>The idea:</strong> A standard Five Minds debate without data generates an \"opinion war\" - experts argue over what they \"feel\" rather than what the numbers show. The problem is strategic decisions need hard facts (market data, finance, technical feasibility, legal requirements) BEFORE anyone starts discussing. The fix: first four researchers gather concrete data in parallel, and only then five experts debate with hard numbers in hand.<br><br><strong>How it works:</strong> Four researchers gather market, financial, technical, and legal data in parallel. An analyst presents the question with concrete options and their pros and cons. Five experts + the Devil's Advocate debate three rounds (proposals, counter-arguments, final synthesis). A lead writes the Gold Solution, and a human signs off at the end.<br><br><strong>What you get:</strong> A hard-data report across four areas, a log of three debate rounds, a final solution (Gold Solution) with pros/cons analysis, leadership approval, and a list of dissenting votes to remember.<br><br><strong>Ideal for:</strong> a company pivot decision, evaluating an acquisition, strategic technology choice for 3+ years, major architectural decisions, build-vs-buy calls, irreversible business choices.<br><br><strong>Don't use when:</strong> tactical same-day decisions (too heavy), urgent matters (three debate rounds takes time), when there's no time for research, when the answer is obvious to everyone."
+  },
+  "presetMid": {
+    "solo": "One agent takes one simple task and delivers it end to end. Zero coordination, zero waiting on others. Good choice for a small bug, a typo, a small fix in one file.",
+    "quick_fix": "Fast fix in a loop: tweak, check, tweak, check - until it works. For urgent bugs that have to ship today. Not for changes across many places at once.",
+    "recon": "One agent gathers information, a second writes simple code based on it. Like sending out a scout before deciding. Use it when you want to check whether something is even feasible before going in seriously.",
+    "trio": "Three agents split the work: one backend, one frontend, one checking quality. Like a small team delivering a simple feature end to end. Good for typical forms, a simple API with a screen.",
+    "reflect": "Three agents work in sequence: one gathers information, the second analyzes, and the third critically checks whether the conclusions hold. Use when you need a topic thoroughly investigated without writing code.",
+    "bug_hunt": "One agent fixes the bug while two others test in parallel that nothing else broke. Use when the bug is suspicious and you're worried fixing one place will break another.",
+    "content": "Two agents gather information, a third writes the text, a fourth checks for errors and facts. A text ready to publish. Good for blog posts, product descriptions, documentation, client reports.",
+    "plan_exec": "First one agent makes a detailed step-by-step plan, then another executes it and someone at the end checks that everything lines up. Use when the change is big and you want to see the plan before anything moves.",
+    "perf_boost": "One agent investigates what's slowing the app, another fixes it, a third measures whether it's actually faster. Use when a page or API runs too slow and you know it's a specific performance problem.",
+    "startup": "A small team of 5 agents builds a working prototype from idea to a version for early users. Good for an MVP, a simple SaaS app, a prototype for an investor pitch.",
+    "cascade": "First the cheapest model works, then the mid-tier, and the most expensive only if truly needed. 70-80% savings compared to using the top model everywhere. Use it for large volumes of simple tasks.",
+    "test_suite": "Four testing specialists check the app from different angles and the team lead says at the end whether it can ship. Use before an important release or as an automated pre-deploy gate.",
+    "a11y": "The team checks whether the app works for users with disabilities: whether screen readers handle the content, whether colors have good contrast, whether you can navigate by keyboard. Use before shipping to customers and whenever accessibility is required.",
+    "security": "Three security specialists check the code from different angles, and the team lead says whether it can safely ship. Use before deploying an important change touching user data or payments.",
+    "review": "The team first writes the code and only then two separate people review it - one for security, one for quality. Use when the change is important and you don't want the same person who wrote it also checking their own work.",
+    "design_sys": "A team creating consistent rules for the app's look - colors, fonts, buttons, icons. Use when your app looks like a patchwork of styles and you want to clean it up, or when you're launching a new brand.",
+    "api_modern": "A team for cleaning up an app's old engine so users don't notice. Nothing changes on screen - only what's underneath gets fixed. Use when you have an old system that's hard to evolve.",
+    "ui_overhaul": "A team refreshing the app's look: new colors, fonts, spacing, animations, while keeping the same logic. Use when the product works well but looks outdated and you're losing customers because of it.",
+    "feature_sprint": "A full team to build a new feature from idea to finished code: analysis, research, backend, frontend, tests. Use when you have a concrete new feature in mind and want to deliver it without chaos.",
+    "standard": "A universal team of 8 - a good choice when you don't know which preset to pick. Covers 70% of typical web and SaaS projects. Use it as a safe starting point if your project has no special specifics.",
+    "data_pipe": "A team for moving and transforming data - reads from one place, cleans, transforms, and writes somewhere else. Use when you're building reporting, data warehouses, or passing data between systems.",
+    "research": "Six agents gather information in parallel from different sources, a critic validates the conclusions, and someone writes the final report. Zero code, pure knowledge gathering. Use when you have to make a decision that requires comparing many options.",
+    "legacy": "A team for cleaning up an old system that's hard to evolve without breaking it. First it analyzes what's there, then gradually refactors piece by piece. Use when you have an application from years ago that everyone is afraid to touch.",
+    "saas": "A full 10-person team to build a SaaS product from scratch: auth, payments, user panel, design. Use when launching a new customer-facing web product and you want it shipped as one piece.",
+    "microservices": "A large app split into smaller independent pieces (microservices). Four developers build in parallel, three testers verify. Use when one giant system has become too hard to maintain.",
+    "full": "A full 13-agent team from research to release. Five layers of organization: lead, planners, researchers, builders, testers. Use for large projects where a mistake costs more than thorough analysis.",
+    "deep": "Eighteen agents with a heavy emphasis on thorough research before building. Six people hunt information in parallel, a critic validates, four build, three test. Use when the implementation needs truly deep preparation.",
+    "five_minds": "Four experts debate a problem, a fifth (the Devil's Advocate) attacks every proposal. From the argument emerges a solution better than all the originals. Use when the decision is contested and there's no obvious winner.",
+    "deep_five_minds": "The biggest preset: 27 agents, deep research, two rounds of expert debate, and three human approval gates. Use for irreversible decisions whose consequences will ripple for years.",
+    "deep_research_swarm_pro": "Seven specialists hunt information on one topic in parallel, each in a different source. At the end a critic checks contradictions and an editor writes the report. Use when you have to compare many options before a major decision.",
+    "migration_crew": "Safely rewriting an old system onto a new one. Three specialists read different parts of the code in parallel, a human approves the plan, then the team executes the migration. Use when you have an old system that has to be modernized.",
+    "fullstack_premium": "A large 12-agent team building a production-ready feature. Includes a database architect, observability, and a security audit. Use for critical features that MUST work reliably (auth, payments).",
+    "security_multi_vector": "Five independent scanners hunt security flaws in parallel, then an expert compiles the findings and a human makes the ship call. Use before a major release or when a customer asks for a security audit.",
+    "perf_squad": "A team hunting down the reason an application became slow. Three people propose different hypotheses, a fourth challenges them, and the last one measures the actual effect. Use when \"something slowed down after the last deploy\" and you don't know what.",
+    "prd_to_launch": "From an idea or a customer call recording comes a full product launch package: requirements doc, tasks, mockups, marketing copy, and a GTM plan. Use when you have an idea but don't know where to start.",
+    "ab_test_lab": "A team designing a fair A/B test so the result is trustworthy and not cooked. Calculates the sample size, hunts holes in the plan. Use before an important pricing, signup, or payments test.",
+    "kb_constructor": "Builds a company knowledge base from scattered sources (Slack, wiki, PDFs, GitHub). Four agents read one source each in parallel, then the system deduplicates and writes articles. Use when you want to gather scattered documentation in one place.",
+    "tech_writing_pipe": "A team writes a long technical piece - first an outline, then fact gathering, drafting, diagrams, and at the end someone checks nothing is made up. Use when creating an article, whitepaper, or conference talk.",
+    "five_minds_strategic": "Four researchers first gather hard data (market, finance, technology, legal), and only then five experts debate. At the end a human signs off. Use for strategic choices like a company pivot or an acquisition.",
+    "soc2_sweep": "Preparation for a SOC2 security audit (the standard most enterprise customers require). The team maps company policies to requirements, collects evidence, and finds gaps. Use before a scheduled audit.",
+    "data_analysis_pipe": "From raw data comes a board-ready report. Nine agents in sequence clean the data, hunt patterns, validate statistics, build charts, and write conclusions. Use when you have data but don't know what to do with it.",
+    "incident_war_room": "Fast response when production breaks. Three specialists check metrics, logs, and recent changes in parallel, a Devil's Advocate challenges the hypotheses, and a human decides on rollback. Use for a serious incident."
+  },
+  "presetGreen": {
+    "solo": [
+      "Fastest and cheapest preset",
+      "Zero coordination, zero waiting",
+      "Ideal for a small bug or typo",
+      "Small fix in one file",
+      "Quick scripts and code cleanups"
+    ],
+    "quick_fix": [
+      "Fixes in a loop until it works",
+      "Independent tester after every try",
+      "Ideal for urgent hotfixes",
+      "Emergency patches in production",
+      "Fewer regressions than a one-shot"
+    ],
+    "recon": [
+      "Scout first, act second",
+      "Saves hours on dead ends",
+      "Checks idea feasibility",
+      "Good for a new technology",
+      "A prototype for a client meeting"
+    ],
+    "trio": [
+      "Backend, frontend, and tests together",
+      "Natural full-stack split",
+      "Small app works end to end",
+      "Good for simple forms and panels",
+      "No unnecessary planning"
+    ],
+    "reflect": [
+      "Deep understanding of the topic",
+      "Critic challenges the conclusions",
+      "Ideal for due diligence",
+      "Risk analysis without code",
+      "Honest report with justifications"
+    ],
+    "bug_hunt": [
+      "Two testers in parallel",
+      "Catches problems that come back",
+      "Checks nothing else broke",
+      "Good for a post-deploy bug",
+      "Zero hidden damage"
+    ],
+    "content": [
+      "Two data sources for certainty",
+      "Text ready to publish",
+      "Fact-checked against sources",
+      "Good for a blog, product page, report",
+      "Text with real sources"
+    ],
+    "plan_exec": [
+      "Plan first, act second",
+      "Saves half the work from being tossed",
+      "Ideal for migrations and bigger changes",
+      "Step by step with a final check",
+      "No chaos across multi-file changes"
+    ],
+    "perf_boost": [
+      "Measures before touching anything",
+      "Concrete before/after numbers",
+      "Performance measurement specialist",
+      "Ideal for slow APIs and pages",
+      "Shows what really slows you down"
+    ],
+    "startup": [
+      "Full cycle in 5 people",
+      "Maximum speed, zero ceremony",
+      "Ideal for MVPs and pitches",
+      "A hackathon prototype",
+      "92% of a big team's effect at low cost"
+    ],
+    "cascade": [
+      "70-80% cost savings",
+      "Cheap model for simple tasks",
+      "Expensive only when truly needed",
+      "Ideal for large volumes of repeat work",
+      "Quality without overpaying"
+    ],
+    "test_suite": [
+      "Three testers from different angles",
+      "Security, quality, and performance",
+      "GO or NO-GO decision at the end",
+      "Ideal before shipping a version",
+      "An exam board instead of one pair of eyes"
+    ],
+    "a11y": [
+      "App works for everyone",
+      "Screen readers and keyboard navigation",
+      "Good contrast and button sizes",
+      "Accessibility law compliance",
+      "Ideal for corporate customers"
+    ],
+    "security": [
+      "Three layers of security checks",
+      "Independent reports instead of one",
+      "Catches 70-85% of holes",
+      "GO or NO-GO decision with justification",
+      "Audit trail for customers"
+    ],
+    "review": [
+      "A different viewer than the writer",
+      "Two reviewers rate the finished code",
+      "Security and quality separately",
+      "Ideal for important production changes",
+      "Releases the author from self-checking"
+    ],
+    "design_sys": [
+      "Consistent look across the app",
+      "Ready colors, fonts, and components",
+      "No more style chaos",
+      "Ideal for a new brand",
+      "Reusable library"
+    ],
+    "api_modern": [
+      "Modernizes the engine without changing the client",
+      "Old apps keep working",
+      "Contract versioning",
+      "Ideal for an old hard-to-evolve system",
+      "Reduces technical debt"
+    ],
+    "ui_overhaul": [
+      "New look without touching logic",
+      "Two sources of trend research",
+      "Backend stays untouched",
+      "Ideal for a working but old-looking product",
+      "Modernizes color, fonts, and animations"
+    ],
+    "feature_sprint": [
+      "Full new-feature cycle",
+      "Backend and frontend together",
+      "Technical and UX research",
+      "Ideal for a concrete feature request",
+      "A feature ready to ship"
+    ],
+    "standard": [
+      "Safe default pick",
+      "Covers 70% of typical projects",
+      "Full cycle from planning to tests",
+      "Ideal when you don't know which to pick",
+      "Statistical sweet spot"
+    ],
+    "data_pipe": [
+      "Automated data flow",
+      "Ideal for warehouses and reports",
+      "Cleans and transforms data",
+      "Pulls data from many sources",
+      "Processing specialist, not frontend"
+    ],
+    "research": [
+      "Six independent sources",
+      "Critic catches contradictions",
+      "Every claim tied to a source",
+      "Ideal for technology selection",
+      "90% better results than a single agent"
+    ],
+    "legacy": [
+      "Engine swap without downtime",
+      "Three teams build in parallel",
+      "Old clients still work",
+      "Ideal for applications from years ago",
+      "Gradual modernization instead of one big leap"
+    ],
+    "saas": [
+      "Full product with design",
+      "Auth, panel, payments together",
+      "Three teams build in parallel",
+      "Ideal for a new SaaS from scratch",
+      "73% higher customer adoption"
+    ],
+    "microservices": [
+      "Four teams build in parallel",
+      "Splits one giant block into independent pieces",
+      "Three testers verify",
+      "Ideal for an app that has grown too large",
+      "Preparation for scaling"
+    ],
+    "full": [
+      "Full team with no gaps",
+      "Five-layer hierarchy",
+      "Three layers of testing",
+      "Ideal for a mission-critical project",
+      "Reference pattern for the whole system"
+    ],
+    "deep": [
+      "Sixteen agents in full orchestration",
+      "Maximum research before building",
+      "Four teams build in parallel",
+      "Ideal for a large platform",
+      "Triple quality validation"
+    ],
+    "five_minds": [
+      "Four experts debate",
+      "Devil's Advocate attacks the strongest",
+      "Solution better than any single proposal",
+      "Ideal for contested decisions",
+      "Synthesis instead of compromise"
+    ],
+    "deep_five_minds": [
+      "The biggest preset in the system",
+      "Two rounds of expert debate",
+      "Three human approval moments",
+      "Ideal for irreversible decisions",
+      "Full safety net for regulated industries"
+    ],
+    "deep_research_swarm_pro": [
+      "Seven sources in parallel",
+      "Each specialist in their own area",
+      "Critic catches contradictions",
+      "Ideal for a strategic decision",
+      "Report with links to sources"
+    ],
+    "migration_crew": [
+      "Three code areas in parallel",
+      "Human approves the migration plan",
+      "Old clients still work",
+      "Ideal for a technology change",
+      "Dependency map of the old system"
+    ],
+    "fullstack_premium": [
+      "Production-ready feature",
+      "Database architect on the team",
+      "Built-in observability and audit",
+      "Ideal for auth and payments",
+      "Everything a standard team is missing"
+    ],
+    "security_multi_vector": [
+      "Five scanners in parallel",
+      "Each in a different risk area",
+      "Human makes the ship call",
+      "Ideal before a major deploy",
+      "SOC2-compliant audit trail"
+    ],
+    "perf_squad": [
+      "Three hypotheses instead of one",
+      "Devil's Advocate challenges each",
+      "Before/after measurement on the best",
+      "Ideal when the app has slowed down",
+      "Concrete fix locations"
+    ],
+    "prd_to_launch": [
+      "From idea to ready launch",
+      "Requirements doc and mockups",
+      "GTM plan and marketing copy",
+      "Ideal for a new product",
+      "Everything ready for release"
+    ],
+    "ab_test_lab": [
+      "Calculates the sample size needed",
+      "Devil's Advocate hunts holes in the plan",
+      "Protects against cooked results",
+      "Ideal for a pricing or signup test",
+      "Signed plan before launch"
+    ],
+    "kb_constructor": [
+      "Four sources in parallel",
+      "Slack, wiki, PDFs, and GitHub together",
+      "Automatic deduplication",
+      "Ideal for a new knowledge base",
+      "Verified facts with sources"
+    ],
+    "tech_writing_pipe": [
+      "Long content from outline to publication",
+      "Facts from two sources",
+      "Diagrams and SEO titles",
+      "Ideal for a whitepaper or article",
+      "Fact-checked"
+    ],
+    "five_minds_strategic": [
+      "Hard data first, then debate",
+      "Four research areas in parallel",
+      "Five experts with numbers in hand",
+      "Ideal for a pivot or acquisition",
+      "Human approves the Gold Solution"
+    ],
+    "soc2_sweep": [
+      "Maps policies to SOC2 requirements",
+      "Collects evidence automatically",
+      "Shows where the gaps are",
+      "Ideal before an audit",
+      "Auditor-ready package"
+    ],
+    "data_analysis_pipe": [
+      "Raw data to board-ready report",
+      "Statistician validates the results",
+      "Charts and conclusions together",
+      "Ideal for a business question",
+      "Concrete recommendations at the end"
+    ],
+    "incident_war_room": [
+      "Three specialists in parallel",
+      "Metrics, logs, and recent changes",
+      "Devil's Advocate challenges theories",
+      "Ideal for a serious incident",
+      "Final report and customer communication"
+    ]
+  },
+  "presetRed": {
+    "solo": [
+      "No security check",
+      "Not for complex tasks",
+      "No information gathering",
+      "Only one pair of eyes on the result"
+    ],
+    "quick_fix": [
+      "Not for new features",
+      "Only one builder",
+      "No research phase",
+      "Not for multi-place changes"
+    ],
+    "recon": [
+      "Output is only a prototype",
+      "Not for production",
+      "Single information source",
+      "Not for a known solution"
+    ],
+    "trio": [
+      "No research phase",
+      "No one planning",
+      "No security specialist",
+      "Not for complicated tasks"
+    ],
+    "reflect": [
+      "Zero code",
+      "Builds nothing",
+      "Not for simple questions",
+      "Takes time to reflect"
+    ],
+    "bug_hunt": [
+      "No research phase",
+      "Not for new features",
+      "Needs a reporter with specifics",
+      "Overkill for trivial bugs"
+    ],
+    "content": [
+      "Generates no code",
+      "No feature implementation",
+      "Too heavy for a short post",
+      "Not for highly specialized topics"
+    ],
+    "plan_exec": [
+      "Only one builder",
+      "Too much for a simple bug",
+      "Not for urgent hotfixes",
+      "Takes time to plan"
+    ],
+    "perf_boost": [
+      "No frontend in the team",
+      "Needs a concrete problem",
+      "Not for vague \"feels slow\"",
+      "Not for visual issues"
+    ],
+    "startup": [
+      "Only one researcher",
+      "Too much for an ordinary bug",
+      "Not for big projects",
+      "Not for high-reliability systems"
+    ],
+    "cascade": [
+      "Needs a routing rule",
+      "Not for tasks that are always hard",
+      "No quality guarantee",
+      "Small savings at low volume"
+    ],
+    "test_suite": [
+      "No builders",
+      "Only tests, writes nothing",
+      "Too heavy for a small task",
+      "Not for fixing bugs"
+    ],
+    "a11y": [
+      "No backend changes",
+      "Not for business logic",
+      "Only for apps with an interface",
+      "Not for internal tools"
+    ],
+    "security": [
+      "Won't replace a pentester audit",
+      "Possible false alarms",
+      "Too heavy for cosmetic changes",
+      "Not for apps with no sensitive data"
+    ],
+    "review": [
+      "No research phase",
+      "Not for small fixes",
+      "Too heavy for typos",
+      "Not for no-risk projects"
+    ],
+    "design_sys": [
+      "No backend",
+      "Not for new features",
+      "Too heavy for a single page",
+      "Pointless with a ready Material/Bootstrap"
+    ],
+    "api_modern": [
+      "No frontend in the team",
+      "Not for visual changes",
+      "Not for user-visible new features",
+      "Needs an existing system"
+    ],
+    "ui_overhaul": [
+      "No backend changes",
+      "Not for new functionality",
+      "Needs an existing screen",
+      "Not for designing from scratch"
+    ],
+    "feature_sprint": [
+      "No designer in the team",
+      "Not for pure cosmetic fixes",
+      "Not for bug fixes",
+      "Needs a clear idea"
+    ],
+    "standard": [
+      "Too much for simple fixes",
+      "Not for specialized work",
+      "Not for pure research",
+      "Medium time and cost"
+    ],
+    "data_pipe": [
+      "No frontend",
+      "Not for a regular web app",
+      "Too heavy for a single query",
+      "Needs data sources"
+    ],
+    "research": [
+      "Zero code",
+      "Builds nothing",
+      "Not for quick answers",
+      "Too heavy for a single source"
+    ],
+    "legacy": [
+      "Very high cost",
+      "Not for new projects",
+      "Too heavy for a single bug",
+      "Not when the customer accepts downtime"
+    ],
+    "saas": [
+      "Very large team",
+      "Not for backend only",
+      "Not for frontend only",
+      "Too heavy for internal tools"
+    ],
+    "microservices": [
+      "Very high cost",
+      "Not for small apps",
+      "Not for a new project",
+      "Requires distributed systems experience"
+    ],
+    "full": [
+      "Very high cost",
+      "Too heavy for a simple feature",
+      "Not for urgent deploys",
+      "Not for tight budgets"
+    ],
+    "deep": [
+      "Very high cost",
+      "Too heavy for a normal feature",
+      "Not for prototypes",
+      "Not for tight deadlines"
+    ],
+    "five_minds": [
+      "Requires time for debate",
+      "Not for simple implementations",
+      "Not for obvious decisions",
+      "Requires a team ready for confrontation"
+    ],
+    "deep_five_minds": [
+      "The most expensive preset in the system",
+      "Only for very important decisions",
+      "Requires leadership commitment",
+      "Not for daily tasks"
+    ],
+    "deep_research_swarm_pro": [
+      "Zero code",
+      "Not for a single source",
+      "Not for urgent decisions",
+      "No builders"
+    ],
+    "migration_crew": [
+      "Not for new projects",
+      "Not for a full rewrite from scratch",
+      "Requires access to the old code",
+      "Not for small changes"
+    ],
+    "fullstack_premium": [
+      "Very large team",
+      "Not for prototypes",
+      "Not for internal tools",
+      "Requires an existing stack"
+    ],
+    "security_multi_vector": [
+      "High cost",
+      "Not for continuous background scanning",
+      "Requires a threat model",
+      "Too heavy for a small app"
+    ],
+    "perf_squad": [
+      "Requires profiles and measurements",
+      "Not for speculative optimization",
+      "Not when the issue is outside the app",
+      "Not for micro-tweaks"
+    ],
+    "prd_to_launch": [
+      "Doesn't write code",
+      "Requires customer contact",
+      "Not for technical decisions",
+      "Too heavy for a tiny idea"
+    ],
+    "ab_test_lab": [
+      "Requires baseline metrics",
+      "Not for low traffic",
+      "Not for minor changes",
+      "Requires time for the test"
+    ],
+    "kb_constructor": [
+      "Requires several sources",
+      "Not for a single document",
+      "One-shot operation, not continuous",
+      "Requires a source list"
+    ],
+    "tech_writing_pipe": [
+      "Not for short posts",
+      "Not for internal notes",
+      "Not for tweets or social media",
+      "Too heavy for 10-minute content"
+    ],
+    "five_minds_strategic": [
+      "Not for tactical decisions",
+      "Requires time for three rounds",
+      "Not for urgent matters",
+      "Not when the answer is obvious"
+    ],
+    "soc2_sweep": [
+      "Requires existing policies",
+      "Not for continuous compliance",
+      "Too heavy for minor fixes",
+      "Doesn't replace an auditor"
+    ],
+    "data_analysis_pipe": [
+      "Requires access to raw data",
+      "Not for live data",
+      "Not for deploying a model",
+      "Requires clean data"
+    ],
+    "incident_war_room": [
+      "Requires production access",
+      "Not for planned work",
+      "Not for long refactors",
+      "Requires system observability"
+    ]
+  }
+}

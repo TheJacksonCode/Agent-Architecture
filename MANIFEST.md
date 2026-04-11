@@ -1,10 +1,10 @@
 # MANIFEST.md -- Agent Architecture Designer
-## Single Source of Truth | v31 -> v0.1.0 GitHub Publication
+## Single Source of Truth | v32.16 SHIPPED
 
 **Author:** Synthesizer [OPUS] | Role: System Memory
-**Date:** 2026-04-07
-**Product version:** v31 (current) | v0.1.0 (publication target)
-**Sources:** 7 research reports (Tech, UX, GitHub, Reddit, Forum, X, Critic) + Five Minds validations + ALPHA/OMEGA Final Verdict
+**Date:** 2026-04-07 | Last state update: 2026-04-11
+**Product version:** v32.16 "Universal Bilingual" (SHIPPED) | plugin version 0.32.16
+**Sources:** 7 research reports (Tech, UX, GitHub, Reddit, Forum, X, Critic) + Five Minds validations + ALPHA/OMEGA Final Verdict + v32.8 / v32.13 / v32.14 / v32.15 / v32.16 research + plans archives
 **Purpose:** Implementable GitHub publication specification + product roadmap
 
 ---
@@ -12,20 +12,23 @@
 ## 0. Project Identity
 
 **Name:** Agent Architecture Designer (Agent Teams Configurator)
-**Repository:** github.com/TheJacksonCode/agent-architecture-designer (target)
+**Repository:** github.com/TheJacksonCode/Agent-Architecture
+**Live at:** https://thejacksoncode.github.io/Agent-Architecture/
 **Format:** Single-file HTML, zero dependencies, zero build step
-**Current size:** ~4600 lines (v31)
-**Stack:** Vanilla JS + SVG inline + CSS transitions + Canvas 2D + localStorage
+**Current size:** ~27500 lines, 5.7 MB (v32.16 - includes full PL+EN encyclopedia + inline base64 infographics for PL)
+**Stack:** Vanilla JS (ES2022) + SVG inline + CSS transitions + Canvas 2D + container queries + View Transitions API + localStorage
 **Owner:** TheJacksonCode (GitHub)
-**UI Language:** Bilingual Polish/English (since v30, fully fixed in v31) | Documentation: English
+**UI Languages:** Bilingual Polish/English (since v30, fully bilingual across encyclopedia + chrome since v32.16) | Documentation: English
+**Primary purpose:** Educational and developmental - helping developers understand what each agent does, how teams collaborate, and what the cost/context budget of a multi-agent system looks like before any token is spent.
 
 **What it is:**
-A visual configurator for multi-agent Claude Code systems. The designer drags agents onto a canvas, connects them with links, selects models (Opus/Sonnet/Haiku), and then generates a ready-to-use system prompt for the entire team. Includes 28 agents, 29 presets, Live Simulation, Five Minds Protocol, HITL Decision Gates, and Agent Encyclopedia.
+A visual configurator + encyclopedia for multi-agent Claude Code systems. The designer drags 35 agents onto a canvas, connects them, selects models (Opus/Sonnet/Haiku), and generates a ready-to-use system prompt. Includes **35 agents**, **42 presets**, full bilingual encyclopedia with 10-section bento layouts for every agent and every preset, Live Simulation with animated speech bubbles, Five Minds Protocol debate, HITL Decision Gates, Cost Command Center with p50-p90 ranges and what-if scenarios, Context Budget tracking, and Custom Agent Creator Pro (7-feature builder with 159-icon library).
 
 **What it is NOT:**
-- Not a tool that runs real agents (this is for education and planning)
-- Not a framework (no backend, no API)
+- Not a tool that runs real agents (this is for education, planning, and prompt generation)
+- Not a framework (no backend, no API, no server)
 - Not a mobile app (desktop-first, intentionally)
+- Not a replacement for learning Claude Code itself - it is a companion for understanding the multi-agent layer on top
 
 ---
 
@@ -256,9 +259,11 @@ Human-in-the-Loop 120s standard (Forum). HITL = the heart of educational value (
 
 ---
 
-## 6. Agent Architecture (v31 state)
+## 6. Agent Architecture (v32.16 state - updated 2026-04-11)
 
-### 6.1 Agents (28)
+> **State note:** the tables in sections 1-5 above reflect the original v31 publication plan. The actual shipped v32.16 has grown to **35 agents** and **42 presets** and the 5000-line hard cap from section 1.1 is formally retired (file is now ~27500 lines, dominated by encyclopedia content + inline base64 infographics). The sections below are authoritative for v32.16.
+
+### 6.1 Agents (35)
 
 | Category | Agents | Phase |
 |----------|--------|-------|
@@ -266,13 +271,23 @@ Human-in-the-Loop 120s standard (Forum). HITL = the heart of educational value (
 | Research | Res.Tech, Res.UX, Res.Reddit, Res.X, Res.GitHub, Res.Forums, Res.Docs, Res.Critic | research |
 | Build | Backend, Frontend, Feature Dev, Designer, Integrator, Writer | build |
 | QA | QA Security, QA Quality, QA Perf, Manager QA | qa |
-| Five Minds | Expert Pragmatist, Expert Innovator, Expert Analyst, Expert Advocate, Expert Shadow | fiveminds |
+| Five Minds | Expert Pragmatist, Expert Innovator, Expert Analyst, Expert Advocate, Expert Shadow | debate |
 | HITL | Decision Presenter | hitl |
+| Data / Ops / Product (v32.6) | DB Architect, Observability Engineer, GTM Strategist, Statistician, EDA Analyst, Control Mapper, Telemetry Surfer | build / data / compliance |
 
-### 6.2 Presets (29)
+### 6.2 Presets (42)
 
-Tiering: Tier 1 Minimal (3), Tier 2A Core (5), Tier 2B Core (7), Tier 3 Advanced (8), Tier 4 Enterprise (6).
-Flagship: **Deep Five Minds Ultimate** (29 agents, 5 HITL checkpoints, two Five Minds debates).
+Tiering by agent count: Minimal 2-3 (5), Core 4-6 (8), Advanced 6-11 (11 + 3 new-tier research-backed), Enterprise 10-27 (15 including 12 new-tier blueprint presets).
+Flagship: **Deep Five Minds Ultimate** (27 agents, 5 HITL checkpoints, two Five Minds debates).
+"New tier" blueprint presets (13, introduced v32.6) have a green NEW badge, a ~250-word Polish detailed description citing source paper/reference, and explicit per-node model overrides. Sources include Anthropic Lead Researcher, wshobson, Magentic-One, arxiv 2510.04023, and internal Five Minds applied to perf/strategic problems.
+
+### 6.3 Encyclopedia (v32.13 -> v32.16)
+
+Every one of the 35 agents and 42 presets has a 10-section bento encyclopedia entry accessible from the sidebar. Schema (18 fields): tagline, missionShort, whoIs, howItWorks (phase array), inputs, outputs, does, doesNotDo, antiPatterns, keyConcepts, stats, bestFor, worstFor, relatedAgents, relatedPresets, glossary, learningQuote, realExample. Agents additionally have 4 Polish `AGENT_*_PL` constants (Long, Mid, Green, Red) - 140 entries total. Presets have the equivalent 4 `PRESET_*_PL` constants - 168 entries total. v32.16 mirrored ALL of this to English through 10 new I18N_EN namespaces (~1694 translated fields, produced by 18 parallel Sonnet translation subagents with STYLE_GUIDE_EN.md as contract). Access is via lang-aware dispatcher getters (getAgentEdu, getPresetEdu, getAgentLongPl, getPresetLongPl, etc.) that fall back from EN to PL when a namespace is missing.
+
+### 6.4 Cost + Context visibility (v32.4 + v32.6)
+
+Cost Command Center (v32.4): multi-cell glance HUD in topbar (COST p50-p90 + TOK in/out micro-bar + MIX model chips), severity color coding, 4-tab modal (Overview donut + phase bar, Breakdown sortable table, What-if 3-slider + 4-scenario chart, Export MD/CSV/JSON). Context Budget (v32.6): MODEL_CTX constants (opus/sonnet 1M, haiku 200K), CTX_BASELINE_TOTAL 22.4k per subagent, CTX_SEVERITY bands, Context tab in cost modal with heaviest-agent list. walidujPremiumCtx() warns when any agent in a premium preset exceeds 50% of window.
 
 ### 6.3 Models
 
