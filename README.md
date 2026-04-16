@@ -84,11 +84,11 @@ Start with the preset **Deep Five Minds Ultimate** for the full experience, clic
 | **Research** | Tech, UX, Reddit, X/Twitter, GitHub, Forums, Docs (7 researchers) + Research Critic | Research | Haiku / Sonnet |
 | **Build** | Backend, Frontend, Feature, Designer, Integrator, Writer | Build | Sonnet |
 | **QA** | QA Security, QA Quality, QA Performance, QA Manager | QA | Haiku / Sonnet |
-| **Five Minds** | Pragmatist, Innovator, Data Analyst, User Advocate, Shadow (Devil's Advocate) | Debate | Sonnet |
+| **Five Minds** | Pragmatist, Innovator, Data Analyst, User Advocate, Shadow (Devil's Advocate) | Debate | Opus |
 | **HITL** | Decision Presenter | HITL | Haiku |
 | **Data / Ops / Product** | DB Architect, Observability Engineer, GTM Strategist, Statistician, EDA Analyst, Control Mapper, Telemetry Surfer | Build / Data / Compliance | Sonnet |
 
-Every agent ships with a v28 research-backed prompt following ROLE / INPUT / OUTPUT / RESPONSIBILITIES / RULES / WHAT YOU DO NOT DO / REPORT FORMAT. Prompts are self-contained so an isolated subagent can execute without additional context.
+Every agent ships with a v32.16 research-backed prompt following ROLE / INPUT / OUTPUT / RESPONSIBILITIES / RULES / ANTI-PATTERNS / WHAT YOU DO NOT DO / REPORT FORMAT. Prompts are self-contained so an isolated subagent can execute without additional context. See `docs/SKILLS_ARCHITECTURE.md` for the full format.
 
 ### 42 presets, grouped by size
 
@@ -126,18 +126,44 @@ A subset of the presets carry a small green "NEW" badge - those are blueprint-ba
 
 ## Claude Code integration
 
-Agent Architecture Designer ships with Claude Code skills in `.claude/skills/`:
+Agent Architecture Designer includes a complete orchestration layer: **35 agent skills** and **42 team presets** that work as slash commands in Claude Code.
 
-- **five-minds/SKILL.md** - run a Five Minds Protocol debate on a design question
-- **hitl-pipeline/SKILL.md** - run a pipeline with HITL decision gates between phases
-
-Clone the repo and invoke as slash commands inside Claude Code (`/five-minds`, `/hitl-pipeline`):
+### Quick start
 
 ```bash
-git clone https://github.com/TheJacksonCode/Agent-Architecture.git
+# 1. Generate agent skills (35 files -> ~/.claude/skills/)
+node generate_skills.js
+
+# 2. Generate team presets (42 files -> ~/.claude/commands/)
+node generate_commands.js
 ```
 
-The `plugin.json` at the repo root makes this discoverable as a Claude Code plugin.
+Once generated, presets are **global** - they work in every project, not just this repo.
+
+### Using presets
+
+Type `/` in Claude Code and pick a preset, or describe your task and let Claude auto-route to the best one:
+
+| Tier | Example presets | Agents |
+|------|----------------|--------|
+| Minimal | `/solo`, `/quick-fix`, `/trio` | 2-3 |
+| Core | `/bug-hunt`, `/test-suite`, `/startup` | 4-6 |
+| Advanced | `/security`, `/design-sys`, `/research` | 6-11 |
+| Enterprise | `/saas`, `/full`, `/five-minds`, `/deep-five-minds` | 9-27 |
+
+Each preset orchestrates a team of agents across phases (Strategy -> Research -> Build -> QA) with HITL decision gates between them. See `docs/ROUTING_SYSTEM.md` for the full catalog and auto-routing architecture.
+
+### Architecture
+
+```
+~/.claude/skills/*.md        # 35 agent prompts (single source of truth)
+~/.claude/commands/*.md      # 42 preset files (reference skills, not duplicate them)
+~/.claude/PRESET_CATALOG.md  # Routing catalog (task -> best preset)
+generate_skills.js           # Regenerate skills from HTML source
+generate_commands.js         # Regenerate commands from HTML source
+```
+
+See `docs/SKILLS_ARCHITECTURE.md` for the full skill format, model routing (Opus / Sonnet / Haiku), and how to add new agents.
 
 ## Technical details
 
@@ -157,7 +183,7 @@ The `plugin.json` at the repo root makes this discoverable as a Claude Code plug
 
 Each new version is saved as a **separate file** (`v32.1/`, `v32.2/`, ..., `v32.16/`). Previous versions remain untouched for reference and reuse of research. The root `index.html` always mirrors the latest shipped version.
 
-See [CLAUDE.md](CLAUDE.md) for the full versioning policy and a changelog covering all versions from v1 through v32.16.
+See [VERSIONS.md](VERSIONS.md) for the full changelog covering all versions from v1 through v32.16.
 
 ### Recent version highlights
 

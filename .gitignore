@@ -31,6 +31,10 @@ v30/CHANGES_pl.md
 # Agent architect working files
 agent-architect/
 
+# OrgChart experiments (separate project)
+orgchart/
+orgchart-demo/
+
 # Vercel deploy experiments
 vercel-deploy/
 
@@ -39,7 +43,6 @@ GIF i screens/
 notebookLM/
 
 # Generated scripts (icons already embedded in HTML)
-generate_skills.js
 ikony/generate_all.js
 ikony/regenerate_fix.js
 ikony/generate_presets.js
