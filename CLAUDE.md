@@ -45,8 +45,6 @@ node generate_commands.js  # 42 command files from PR data
 index.html                  # Live demo (= v32 copy)
 v32/                        # Current version
   AGENT_TEAMS_CONFIGURATOR_v32.html
-  MASTER_PLAN.md
-  PROGRESS.md
 docs/                       # Architecture documentation
   SKILLS_ARCHITECTURE.md    # 35 agents: format, fields, model routing
   ROUTING_SYSTEM.md         # Auto-routing: catalog, token budget, flow
