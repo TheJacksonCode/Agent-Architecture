@@ -147,9 +147,6 @@ Each pattern entry explains the idea, when to reach for it, when NOT to, and whi
 ### Agent encyclopedia (bento layout)
 <img src="docs/screenshots/encyclopedia-bento.png" alt="Agent Encyclopedia - bento layout with numbered kickers" width="100%">
 
-### Preset verdict panel (green / red)
-<img src="docs/screenshots/preset-verdict.png" alt="Preset sidebar dual-column verdict panel" width="100%">
-
 ### Hooks Playground
 <img src="docs/screenshots/hooks-playground.png" alt="Hooks Playground - all 27 Claude Code lifecycle events across 4 lanes" width="100%">
 
