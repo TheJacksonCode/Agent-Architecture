@@ -1,0 +1,279 @@
+{
+  "extractor": "E5",
+  "source": "R5_env_vars_cli.md",
+  "scope": "Environment variables + CLI flags: ANTHROPIC_*, CLAUDE_CODE_*, OTEL_*, MCP/proxy, 50+ CLI flags, precedence, hooks, deprecated items",
+  "word_count_source": "~4200",
+  "extracted_at": "2026-04-17",
+  "claims": [
+    {
+      "id": "R5.C1",
+      "topic": "Precedence hierarchy (official)",
+      "quote": "1. Managed settings (server-managed / MDM / file-based / registry) 2. Command line arguments 3. Local settings (.claude/settings.local.json) 4. Project settings (.claude/settings.json) 5. User settings (~/.claude/settings.json)",
+      "paraphrase": "Oficjalna kolejnosc precedencji Claude Code: Managed > CLI args > Local > Project > User settings, z env vars jako rownolegla sciezka i defaultami na samym dole.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["precedence", "hierarchy", "settings", "official-docs"]
+    },
+    {
+      "id": "R5.C2",
+      "topic": "Managed settings absolute lockdown",
+      "quote": "Cannot be overridden by any other level, including command line arguments",
+      "paraphrase": "Managed settings to jedyna warstwa ktora nie pozwala sie nadpisac - nawet CLI flags nie moga tego zlamac. Jesli Managed ma model=sonnet, --model opus jest ignorowany.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["managed", "precedence", "lockdown", "security"]
+    },
+    {
+      "id": "R5.C3",
+      "topic": "Array settings merge cross-scope",
+      "quote": "When the same array-valued setting (such as sandbox.filesystem.allowWrite or permissions.allow) appears in multiple scopes, the arrays are concatenated and deduplicated, not replaced.",
+      "paraphrase": "Pola typu array (permissions.allow, sandbox.filesystem.allowWrite) sa ZAWSZE mergowane przez concat+dedup pomiedzy wszystkimi scope'ami - to wyjatek od standardowej reguly 'higher scope wygrywa'.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["arrays", "merge", "permissions", "precedence-exception"]
+    },
+    {
+      "id": "R5.C4",
+      "topic": "Deep merge for objects in managed drop-in",
+      "quote": "Later files override earlier ones for scalar values; arrays are concatenated and de-duplicated; objects are deep-merged.",
+      "paraphrase": "W managed-settings.d/ drop-in directory: scalary nadpisuje, arraye merguja, objecty sa deep-merged rekurencyjnie. Ta sama semantyka stosowana cross-scope.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["merge", "managed", "drop-in", "objects"]
+    },
+    {
+      "id": "R5.C5",
+      "topic": "Managed hard-reject of CLI flag",
+      "quote": "Removes auto from the Shift+Tab cycle and rejects --permission-mode auto at startup.",
+      "paraphrase": "disableAutoMode:'disable' w Managed settings powoduje ODRZUCENIE --permission-mode auto z bledem startup - Managed ma hard veto nie tylko override.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["managed", "veto", "permission-mode", "CLI-override"]
+    },
+    {
+      "id": "R5.C6",
+      "topic": "availableModels restriction",
+      "quote": "availableModels: Restrict which models users can select via /model, --model, Config tool, or ANTHROPIC_MODEL.",
+      "paraphrase": "Managed 'availableModels' ogranicza liste dozwolonych modeli we wszystkich kanalach wyboru: /model, --model CLI, Config tool i ANTHROPIC_MODEL env.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["managed", "model", "availableModels", "restriction"]
+    },
+    {
+      "id": "R5.C7",
+      "topic": "Authentication priority",
+      "quote": "Authentication Priority: ANTHROPIC_API_KEY > ANTHROPIC_AUTH_TOKEN > Claude Pro/Team/Enterprise subscription",
+      "paraphrase": "API key ma priorytet nad bearer tokenem ktory ma priorytet nad subskrypcja. Jesli user ma aktywna subskrypcje + wyeksportowany API key, rachunek idzie przez API billing.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auth", "api-key", "oauth", "billing-risk"]
+    },
+    {
+      "id": "R5.C8",
+      "topic": "Dual Bedrock + Mantle routing",
+      "quote": "Setting both CLAUDE_CODE_USE_BEDROCK and CLAUDE_CODE_USE_MANTLE lets Claude Code call both endpoints from the same session. Model IDs that match the Mantle format are routed to Mantle, and all other model IDs go to the Bedrock Invoke API.",
+      "paraphrase": "CLAUDE_CODE_USE_BEDROCK i CLAUDE_CODE_USE_MANTLE mozna ustawic RAZEM - routing decyduje sie per model ID (anthropic.* -> Mantle, us.anthropic.* -> Bedrock Invoke).",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["bedrock", "mantle", "aws", "dual-routing"]
+    },
+    {
+      "id": "R5.C9",
+      "topic": "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB security",
+      "quote": "Scrub credentials (API keys) z env child processes - hooki nie widza ANTHROPIC_API_KEY. Critical for security.",
+      "paraphrase": "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 filtruje credential patterns (ANTHROPIC_API_KEY, AWS_*, GITHUB_TOKEN) z env subprocesow - krytyczna ochrona przy deleguacji do untrusted plugins/hooks.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["security", "env-scrub", "hooks", "credentials"]
+    },
+    {
+      "id": "R5.C10",
+      "topic": "cmd.exe unsupported on Windows",
+      "quote": "Claude Code nie uzywa cmd.exe nigdy domyslnie - zawsze probuje Git Bash (jesli jest) lub PowerShell. cmd.exe jest unsupported.",
+      "paraphrase": "Na Windows cmd.exe jest unsupported dla hookow - wymagany Git Bash (CLAUDE_CODE_GIT_BASH_PATH) lub PowerShell (CLAUDE_CODE_USE_POWERSHELL_TOOL=1 / defaultShell:'powershell').",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["windows", "shell", "hooks", "cmd-unsupported"]
+    },
+    {
+      "id": "R5.C11",
+      "topic": "--debug-file overrides env var",
+      "quote": "--debug-file: Takes precedence over CLAUDE_CODE_DEBUG_LOGS_DIR",
+      "paraphrase": "CLI flag --debug-file zawsze nadpisuje env var CLAUDE_CODE_DEBUG_LOGS_DIR - przyklad klasycznej reguly 'CLI > shell env'.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["debug", "precedence", "CLI-over-env"]
+    },
+    {
+      "id": "R5.C12",
+      "topic": "Deny rules precedence",
+      "quote": "Deny rules take precedence over allow rules at the same level",
+      "paraphrase": "permissions.deny zawsze wygrywa nad permissions.allow na tym samym poziomie. Nawet jesli CLI --allowedTools dodaje wpis, Managed deny go wyeliminuje.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["permissions", "deny", "allow", "precedence"]
+    },
+    {
+      "id": "R5.C13",
+      "topic": "--help incomplete",
+      "quote": "claude --help does not list every flag, so a flag's absence from --help does not mean it is unavailable.",
+      "paraphrase": "Lista flag w claude --help jest NIEKOMPLETNA - niektore flagi (np. --dangerously-load-development-channels) sa udokumentowane tylko w /en/cli-reference.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["CLI", "help", "documentation-gap"]
+    },
+    {
+      "id": "R5.C14",
+      "topic": "--add-dir scope (file access only)",
+      "quote": "Dodatkowe working dirs (tylko file access, nie ladowanie .claude/ z nich).",
+      "paraphrase": "--add-dir daje dostep do plikow w dodatkowych katalogach, ALE NIE laduje .claude/settings.json ani CLAUDE.md z tych dirow (chyba ze CLAUDE_CODE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1).",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["add-dir", "scope", "file-access", "CLAUDE-md"]
+    },
+    {
+      "id": "R5.C15",
+      "topic": "ANTHROPIC_SMALL_FAST_MODEL deprecated",
+      "quote": "DEPRECATED - zastapiony ANTHROPIC_DEFAULT_HAIKU_MODEL. Nadal czytany dla kompatybilnosci.",
+      "paraphrase": "ANTHROPIC_SMALL_FAST_MODEL jest deprecated i nalezy migrowac do ANTHROPIC_DEFAULT_HAIKU_MODEL. Stary var nadal dziala backward-compat.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["deprecated", "haiku", "model", "migration"]
+    },
+    {
+      "id": "R5.C16",
+      "topic": "--enable-auto-mode removed",
+      "quote": "--enable-auto-mode (CLI) Removed v2.1.111",
+      "paraphrase": "CLI flag --enable-auto-mode usuniete w v2.1.111, zastapione przez auto w Shift+Tab cycle + --permission-mode auto.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["deprecated", "removed", "CLI", "auto-mode"]
+    },
+    {
+      "id": "R5.C17",
+      "topic": "ignorePatterns and includeCoAuthoredBy deprecated",
+      "quote": "includeCoAuthoredBy Deprecated -> attribution.commit / attribution.pr; ignorePatterns Deprecated -> permissions.deny z patternami Read(./path)",
+      "paraphrase": "Dwa settings fields zdeprekowane: includeCoAuthoredBy -> attribution.commit/pr, ignorePatterns -> permissions.deny z Read() patterns.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["deprecated", "settings-fields", "migration"]
+    },
+    {
+      "id": "R5.C18",
+      "topic": "Windows managed-settings path changed",
+      "quote": "C:\\ProgramData\\ClaudeCode\\managed-settings.json (Windows path) Removed v2.1.75 -> C:\\Program Files\\ClaudeCode\\managed-settings.json",
+      "paraphrase": "Sciezka managed settings na Windows zmieniona w v2.1.75: z C:\\ProgramData\\ClaudeCode\\ na C:\\Program Files\\ClaudeCode\\.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["windows", "managed", "path-change", "breaking"]
+    },
+    {
+      "id": "R5.C19",
+      "topic": "OTEL master switch requirement",
+      "quote": "Master switch - bez tego OTEL_* sa ignorowane.",
+      "paraphrase": "Wszystkie OTEL_* vars wymagaja CLAUDE_CODE_ENABLE_TELEMETRY=1 jako master switch - bez tego pozostale ustawienia telemetryjne sa ignorowane.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["otel", "telemetry", "master-switch", "observability"]
+    },
+    {
+      "id": "R5.C20",
+      "topic": "OTEL_LOG_USER_PROMPTS privacy risk",
+      "quote": "Kontrowersyjne - wlacza logowanie TRESCI promptow uzytkownika. Privacy risk.",
+      "paraphrase": "OTEL_LOG_USER_PROMPTS=true loguje PELNA tresc promptow uzytkownika do collectora - znaczace ryzyko prywatnosci, default false.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["otel", "privacy", "prompts", "security-risk"]
+    },
+    {
+      "id": "R5.C21",
+      "topic": "Settings env block exported to hooks",
+      "quote": "Plus settings.json env block - eksportowany przez Claude Code zanim hooki sa odpalane. Te klucze sa widoczne wewnatrz hookow.",
+      "paraphrase": "Wpisy env w settings.json sa aplikowane jak 'export' przed odpaleniem hookow - hooki widza je w srodowisku razem z injected vars Claude Code (CLAUDE_PROJECT_DIR, CLAUDE_ENV_FILE).",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["hooks", "env-block", "settings", "inheritance"]
+    },
+    {
+      "id": "R5.C22",
+      "topic": "HTTP hooks allowedEnvVars restriction",
+      "quote": "HTTP hooks maja ograniczony dostep do env - tylko vars wymienione w allowedEnvVars hooka SA rozwiazywane w header values. Dodatkowo Managed settings moga zawezic ta liste przez httpHookAllowedEnvVars (intersection).",
+      "paraphrase": "HTTP hooki NIE dostaja pelnego env - tylko allowedEnvVars listed vars sa substituowane w headers, i Managed.httpHookAllowedEnvVars moze zawezic przez intersection.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["hooks", "http", "env-access", "managed-intersection"]
+    },
+    {
+      "id": "R5.C23",
+      "topic": "CLAUDE_ENV_FILE workflow",
+      "quote": "CLAUDE_ENV_FILE - (tylko SessionStart, CwdChanged, FileChanged) - sciezka do pliku gdzie hook moze wypisac export X=Y i Claude podniesie te vars dla nastepnych Bash commands",
+      "paraphrase": "Mechanizm CLAUDE_ENV_FILE: hooki SessionStart/CwdChanged/FileChanged moga pisac 'export X=Y' do sciezki z tego var, i nastepne Bash commands w sesji dostana te vars.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["hooks", "env-file", "session", "bash-inheritance"]
+    },
+    {
+      "id": "R5.C24",
+      "topic": "--strict-mcp-config isolation",
+      "quote": "Tylko z --mcp-config, ignoruj .mcp.json i uzytkownika.",
+      "paraphrase": "--strict-mcp-config (wymaga --mcp-config) izoluje sesje od .mcp.json projektu i user-level MCP config - uzywa TYLKO podanego pliku.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["mcp", "isolation", "CLI", "strict"]
+    },
+    {
+      "id": "R5.C25",
+      "topic": "--exclude-dynamic-system-prompt-sections for cache reuse",
+      "quote": "Tnie per-machine sekcje (cwd, git, memory paths) dla prompt-cache reuse w multi-user workloads.",
+      "paraphrase": "Flag --exclude-dynamic-system-prompt-sections usuwa sekcje per-machine (cwd, git state, memory paths) z system promptu - krytyczne dla prompt-cache reuse w multi-user/CI workloads.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["system-prompt", "cache", "multi-user", "optimization"]
+    },
+    {
+      "id": "R5.C26",
+      "topic": "Scenario 4 - project env wins over shell",
+      "quote": "Telemetry wylaczone (Project env wygrywa nad shell i User, bo jest wyzszy scope niz User)",
+      "paraphrase": "Project settings 'env' block wygrywa nad shell export dla tego samego klucza - shell env jest ponizej Project settings w precedencji.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["precedence", "env-block", "project-scope", "scenario"]
+    },
+    {
+      "id": "R5.C27",
+      "topic": "CLI --settings scope unclear",
+      "quote": "'additional' sugeruje merge, ale nie wiadomo na ktorym poziomie scope (czy nadpisuje User, czy dodawana jako nowy scope miedzy Local a Project?)",
+      "paraphrase": "GAP: CLI --settings 'loads additional settings' ale dokumentacja nie precyzuje na ktorym scope levelu jest wstawiana - niejasny priorytet vs User/Project/Local.",
+      "stance": "unique",
+      "confidence": "low",
+      "tags": ["gap", "CLI", "settings", "scope-unclear"]
+    },
+    {
+      "id": "R5.C28",
+      "topic": "CLAUDECODE read-only flag",
+      "quote": "Ustawione w srodowisku child processes - skrypty wiedza, ze biegna pod Claude.",
+      "paraphrase": "CLAUDECODE=1 jest wstawiany read-only do srodowiska child processes - skrypty/hooki moga wykryc ze dzialaja pod Claude Code (if [ -n \"$CLAUDECODE\" ]).",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["runtime-detection", "child-processes", "scripts"]
+    },
+    {
+      "id": "R5.C29",
+      "topic": "--dangerously-skip-permissions equivalence",
+      "quote": "= --permission-mode bypassPermissions. Pomija WSZYSTKIE prompty.",
+      "paraphrase": "--dangerously-skip-permissions jest tozsame z --permission-mode bypassPermissions - pomija WSZYSTKIE permission prompts (high risk flag).",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["permissions", "bypass", "danger", "CLI"]
+    },
+    {
+      "id": "R5.C30",
+      "topic": "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC air-gapped",
+      "quote": "Wylacz wszystkie non-essential HTTP calls (analytics, updater, error reporting). Zalecane w air-gapped.",
+      "paraphrase": "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 wylacza wszystkie non-essential HTTP (analytics, updater, error reports) - zalecane dla air-gapped/isolated environments.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["air-gapped", "network-isolation", "enterprise", "traffic-control"]
+    }
+  ]
+}

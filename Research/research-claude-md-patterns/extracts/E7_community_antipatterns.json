@@ -1,0 +1,218 @@
+{
+  "source": "R7_community_antipatterns.md",
+  "extractor": "E7",
+  "model": "Opus 4.7",
+  "date": "2026-04-17",
+  "campaign": "CLAUDE.md Patterns 2026",
+  "word_count_target": "300-500",
+  "claims": [
+    {
+      "id": "R7.C1",
+      "text": "Community converged on less-is-more orthodoxy by early 2026, driven by HumanLayer essay, ETH Zurich empirical study, and Karpathy viral tweet.",
+      "quote": "the community has converged on a 'less is more' orthodoxy by early 2026, driven by three forces: (a) HumanLayer's widely-cited 'writing a good CLAUDE.md' essay (root file < 60 lines), (b) ETH Zurich's February-2026 empirical study showing auto-generated CLAUDE.md files actively *decrease* agent success on SWE-bench, and (c) Andrej Karpathy's viral January-2026 tweet",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["evolution", "orthodoxy", "2026"]
+    },
+    {
+      "id": "R7.C2",
+      "text": "Five archetypes dominate the corpus: Minimalist, Convention-heavy, Command-driven, Architecture-focused, Meta-CLAUDE.",
+      "quote": "Five archetypes dominate the corpus: **Minimalist** (< 30 lines, e.g., Metabase 54-line root pointing to frontend/CLAUDE.md), **Convention-heavy** (LangGraphJS 80-character line width, oxlint, NodeNext imports), **Command-driven** (HumanLayer 88 lines with TODO(0-4) priority system), **Architecture-focused** (VoltAgent/awesome-claude-code-subagents with 10-category orchestration taxonomy), and **Meta-CLAUDE** (Karpathy's 4 principles about how agents should think)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["taxonomy", "archetypes", "patterns"]
+    },
+    {
+      "id": "R7.C3",
+      "text": "Karpathy/Forrest Chang meta-CLAUDE.md went viral with tens of thousands of stars in two weeks - unique outlier proving meta-CLAUDE is a category.",
+      "quote": "Star velocity: tens of thousands in first two weeks (one of fastest-growing repos in GitHub history for a single-file payload)... This is *meta-CLAUDE.md* - it doesn't describe a project, it describes how Claude should *behave* in any project",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["karpathy", "meta-claude", "viral", "outlier"]
+    },
+    {
+      "id": "R7.C4",
+      "text": "Karpathy's 4 principles: think before coding, simplicity first, surgical changes, goal-driven execution.",
+      "quote": "Four principles - (1) Think before coding (state assumptions, surface tradeoffs), (2) Simplicity first ('Minimum code that solves the problem. Nothing speculative.'), (3) Surgical changes ('Touch only what you must. Clean up only your own mess.'), (4) Goal-driven execution",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["karpathy", "principles", "meta-claude"]
+    },
+    {
+      "id": "R7.C5",
+      "text": "HumanLayer root CLAUDE.md target: less than 60 lines - most-cited best practice essay of 2026.",
+      "quote": "At HumanLayer, our root CLAUDE.md file is less than sixty lines... Frontier thinking LLMs can follow approximately 150-200 instructions with reasonable consistency",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["humanlayer", "size-ceiling", "60-lines", "instruction-budget"]
+    },
+    {
+      "id": "R7.C6",
+      "text": "HumanLayer rewrite anecdote: reducing file from ~180 to under 60 lines improved Claude's convention compliance.",
+      "quote": "after rewriting their CLAUDE.md from ~180 lines to < 60, 'we noticed Claude following conventions more consistently'",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["humanlayer", "rewrite", "anecdote", "compliance"]
+    },
+    {
+      "id": "R7.C7",
+      "text": "Issue #2142: Claude Code committed 3 live API keys despite CLAUDE.md security section - proves CLAUDE.md is advisory, not enforcement.",
+      "quote": "Issue anthropics/claude-code#2142 (commit 09c203e on r0bug/YFEvents, June 2025): Claude Code, with a 150+ line CLAUDE.md security section loaded, still wrote Gmail app password, Google Maps key, and Firecrawl key to `.env` *and committed them*. Three incidents in one session... Root cause: CLAUDE.md is guidance - for hard rules use a pre-commit hook",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["security", "issue-2142", "guidance-vs-enforcement", "api-keys"]
+    },
+    {
+      "id": "R7.C8",
+      "text": "Compliance decay curve: 95%+ at messages 1-2, drops to 20-60% by messages 6-10, mostly lost beyond 10.",
+      "quote": "Messages 1-2: 95%+ compliance, Messages 3-5: 60-80% compliance, Messages 6-10: 20-60% compliance, Beyond 10: 'original instructions mostly lost'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compliance-decay", "metrics", "wiegold", "context-dilution"]
+    },
+    {
+      "id": "R7.C9",
+      "text": "ETH Zurich Feb 2026 study: auto-generated CLAUDE.md files decrease success and raise costs ~20%, human-written give ~4% gain.",
+      "quote": "Auto-generated (LLM-written) CLAUDE.md files: decrease success rates and increase cost ~20%... Human-written CLAUDE.md: ~4% improvement on AGENTbench",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["eth-zurich", "empirical", "auto-generation", "swe-bench"]
+    },
+    {
+      "id": "R7.C10",
+      "text": "ETH Zurich: Claude Code uniquely benefits only when repo docs are stripped - 2.7% improvement in ablation.",
+      "quote": "Claude Code specifically was the only agent where even developer-written files failed to improve performance over 'no file at all'... when researchers stripped *all* documentation (READMEs, docs/, examples) from repos, CLAUDE.md helped with a consistent 2.7% improvement",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["eth-zurich", "ablation", "claude-code-specific", "redundancy"]
+    },
+    {
+      "id": "R7.C11",
+      "text": "ETH Zurich: tool-specific commands in CLAUDE.md are 160x more effective than abstract rules - agents used uv package manager 160x more often when mentioned.",
+      "quote": "Tool-specific instructions are highly effective: agents used `uv` package manager 160x more often when mentioned in CLAUDE.md",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["eth-zurich", "tool-commands", "160x", "commands-over-concepts"]
+    },
+    {
+      "id": "R7.C12",
+      "text": "Anti-pattern A - auto-generation trap: running /init produces codebase-scan dump; HumanLayer says don't use /init.",
+      "quote": "A: auto-generation trap. Running `claude /init` produces a codebase-scan dump. HumanLayer: 'Don't use `/init` or auto-generate your CLAUDE.md'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-pattern", "auto-generation", "init-command"]
+    },
+    {
+      "id": "R7.C13",
+      "text": "Anti-pattern B - 500+ line monolith; past 200-300 lines Claude reliably ignores content; 80-line threshold per abhishekray07.",
+      "quote": "B: 500+ line CLAUDE.md monolith. Reddit complaints converge: past roughly 200-300 lines, Claude reliably ignores content. Abhishekray07 template rule: 'if your project CLAUDE.md is over 80 lines, Claude starts ignoring parts of it.'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-pattern", "bloat", "size-ceiling"]
+    },
+    {
+      "id": "R7.C14",
+      "text": "Anti-pattern D - LLM as linter: waste of tokens when Biome/ESLint/oxlint are deterministic and cheaper.",
+      "quote": "D: using LLM to enforce linter rules. HumanLayer: 'Never send an LLM to do a linter's job.' Biome/ESLint/oxlint are 10000x cheaper and 100% deterministic",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-pattern", "linter", "humanlayer", "delegation"]
+    },
+    {
+      "id": "R7.C15",
+      "text": "Anti-pattern Q - pasted code blocks vs file:line references; snippets go stale, references stay live.",
+      "quote": "Q: huge codeblocks instead of file:line references. HumanLayer recommends: 'Include file:line references to point Claude to the authoritative context instead of code snippets.' Snippets go stale; references stay live",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["anti-pattern", "file-line-refs", "staleness"]
+    },
+    {
+      "id": "R7.C16",
+      "text": "Instruction enforcement gap: CLAUDE.md ~70% followed, hooks 100% enforced - near-universal consensus.",
+      "quote": "Near-universal in the corpus: **CLAUDE.md instructions: ~70% followed; hooks: 100% enforced**",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["enforcement-gap", "hooks", "70-vs-100"]
+    },
+    {
+      "id": "R7.C17",
+      "text": "Mészáros 6-level capability model: L0 Absent, L1 Basic, L2 Scoped, L3 Structured, L4 Abstracted, L5 Maintained, L6 Adaptive; most teams stabilize L1-L2.",
+      "quote": "The **6-level capability model** (L0 Absent, L1 Basic, L2 Scoped with MUST/MUST NOT, L3 Structured routing to `@docs/*.md`, L4 Abstracted path-scoped via `.claude/rules/`, L5 Maintained with staleness tracking, L6 Adaptive with skills + MCP). Noted that most teams stabilize at L1-L2",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["meszaros", "6-levels", "capability-model", "L1-L2-stabilization"]
+    },
+    {
+      "id": "R7.C18",
+      "text": "Metabase root: 54 lines acting as router to domain-specific skills + frontend/CLAUDE.md overlay - textbook L3 Structured.",
+      "quote": "Length: ~54 lines, ~2,560 characters... Router to domain-specific skills (`clojure-eval`, `clojure-write`, `clojure-review`, `typescript-write`, `typescript-review`) plus explicit pointer to `frontend/CLAUDE.md`... Textbook Level-3 (Structured) pattern. Root file is tiny and acts as a router",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["metabase", "minimalist", "router", "L3"]
+    },
+    {
+      "id": "R7.C19",
+      "text": "HumanLayer TODO(0-4) priority system: TODO(0) should never merge - semantic convention Claude cannot infer.",
+      "quote": "TODO(0-4) priority system with PERF markers, language-specific conventions ('Package managers vary - check package.json for npm or bun'), explicit instruction: 'TODO(0) should never merge'... The TODO(N) priority system is a semantic convention Claude can't infer",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["humanlayer", "command-driven", "TODO-priority", "conventions"]
+    },
+    {
+      "id": "R7.C20",
+      "text": "Wiegold canonical two-liner: CLAUDE.md is guidance for flexible decisions, hooks are enforcement for non-negotiable rules.",
+      "quote": "CLAUDE.md is guidance for flexible decisions. Hooks are enforcement for non-negotiable rules",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["wiegold", "guidance-vs-enforcement", "canonical-summary"]
+    },
+    {
+      "id": "R7.C21",
+      "text": "BotMonster parallel-development pattern with CLAUDE.md + git worktrees: reported 18% throughput improvement.",
+      "quote": "Parallel-development pattern using CLAUDE.md + git worktrees: reported up to 18% throughput improvement (botmonster.com) - modest but positive",
+      "stance": "anecdote",
+      "confidence": "low",
+      "tags": ["botmonster", "throughput", "worktrees", "18-percent"]
+    },
+    {
+      "id": "R7.C22",
+      "text": "Evolution 2024-2026: CLAUDE.md size approximately halved while precision doubled; context architecture replaces prompt engineering.",
+      "quote": "CLAUDE.md size has approximately halved between 2024 and 2026 while its *precision* has doubled. The file is no longer a codebase-summary; it is a minimum-viable operating manual... 'Context architecture over prompting' replaces 'prompt engineering' as the dominant framing",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["evolution", "size-halved", "context-architecture"]
+    },
+    {
+      "id": "R7.C23",
+      "text": "Rajiv Pant: CLAUDE.md bypasses retrieval problem - Claude doesn't have to decide to look at it.",
+      "quote": "CLAUDE.md is the only layer that **bypasses the retrieval problem** - Claude doesn't have to *decide* to look at it... 'Read markdown, write markdown. The hack that enables infinite context.'",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["rajiv-pant", "memory-model", "retrieval-bypass"]
+    },
+    {
+      "id": "R7.C24",
+      "text": "byme8 contrarian: for small projects token cost of CLAUDE.md exceeds value; strong naming + tests are better investment.",
+      "quote": "byme8 on dev.to - 'You Don't Need a CLAUDE.md'... The strongest contrarian voice. Argues that for small projects the token cost of CLAUDE.md exceeds its value and that strong naming + tests are a better investment",
+      "stance": "unique",
+      "confidence": "low",
+      "tags": ["byme8", "contrarian", "small-projects"]
+    },
+    {
+      "id": "R7.C25",
+      "text": "Reddit recurring failure: Claude ignores instructions after 2-5 prompts; 600-line files clearly stop being read; duplicated ALWAYS rules still ignored.",
+      "quote": "'Claude ignores instructions in CLAUDE.md after 2-5 prompts' - extremely common... 'My CLAUDE.md is 600 lines and Claude clearly stopped reading' - resolves to the 200-300 line ceiling... 'I wrote ALWAYS use X 5 times in different sections, Claude still used Y' - diagnostic: duplicated/contradictory rules",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["reddit", "failure-modes", "decay", "duplication"]
+    },
+    {
+      "id": "R7.C26",
+      "text": "Reddit access gap: citations via aggregators aitooldiscovery.com and morphllm.com, not direct thread URLs - potential synthesis drift.",
+      "quote": "Reddit citations are via aggregator summaries (aitooldiscovery.com, morphllm.com), not direct thread URLs; some risk of synthesis drift. Prefer original threads in synthesis",
+      "stance": "gap",
+      "confidence": "medium",
+      "tags": ["gap", "reddit", "aggregators", "methodology"]
+    }
+  ]
+}

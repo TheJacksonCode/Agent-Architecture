@@ -1,0 +1,179 @@
+{
+  "source_report": "R4_claude_code_cli.md",
+  "report_words": 2220,
+  "extract_words": 720,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R4.C1",
+      "claim": "Claude Code CLI cache'uje 4 warstwy: system prompt (~4000 tok), tool definitions (5000-15000 tok), CLAUDE.md (1-20k tok), conversation history",
+      "citation": "CCh wykorzystuje prompt caching bardzo agresywnie - automatycznie cache'uje 4 warstwy prefiksu: (1) system prompt (~4000 tokenow), (2) tool definitions (~10+ builtin tools, plus dynamicznie zarejestrowane MCP), (3) CLAUDE.md, (4) conversation history.",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["4-layers", "architecture", "auto-cache"]
+    },
+    {
+      "id": "R4.C2",
+      "claim": "Claude Code achievuje 96% cache hit rate w typowej sesji multi-turn",
+      "citation": "Real Claude Code sessions achieve 96% cache hit rates through aggressive multi-layer caching.",
+      "source_location": "section: Details, 2. Zachowanie cache",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hit-rate-96", "claude-code", "performance"]
+    },
+    {
+      "id": "R4.C3",
+      "claim": "CCh uzywa mechanizmu <system-reminder> - XML tagow w messages array dla dynamic info bez invalidacji cache",
+      "citation": "Magia CCh: dynamic context bez lamania cache. Zamiast wstawiac daty, nazwiska uzytkownika, git status do system prompta (co bylo by invalidatorem cache), CCh injectuje je jako XML tagi w messages array.",
+      "source_location": "section: Details, 3. <system-reminder> mechanism",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["system-reminder", "dynamic-context", "pattern"]
+    },
+    {
+      "id": "R4.C4",
+      "claim": "System prompt CCh ma marker __SYSTEM_PROMPT_DYNAMIC_BOUNDARY__ dzielacy na static/dynamic polowki",
+      "citation": "System prompt dzielony na dwie polowki przez __SYSTEM_PROMPT_DYNAMIC_BOUNDARY__: Static half (rules, tool conventions) cacheowane stabilnie; Dynamic half (computed values) cached do /clear lub /compact.",
+      "source_location": "section: Details, 1. Layer 1",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["dynamic-boundary", "reverse-engineered", "marker"]
+    },
+    {
+      "id": "R4.C5",
+      "claim": "System prompt CCh jest identyczny dla wszystkich userow tej samej wersji - shared cache prefix",
+      "citation": "System prompt jest identyczny dla wszystkich userow tej samej wersji. Zawiera: role definition, tool use rules, security rules, git workflow rules, komunikacyjne zasady.",
+      "source_location": "section: Details, 1. Layer 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["shared-prefix", "version-specific", "system-prompt"]
+    },
+    {
+      "id": "R4.C6",
+      "claim": "/compact w CCh zachowuje cache dla system+tools+CLAUDE.md (~18k tokens), tracisz cache messages",
+      "citation": "/compact: Kompaktuj messages history do summary. Zachowaj cache dla system + tools + CLAUDE.md (18k tokenow). Zwolnij ~80% context window. Cache starych wiadomosci guaranteed stale po compaction.",
+      "source_location": "section: Details, 4. /compact behavior",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compact", "behavior", "18k-tokens"]
+    },
+    {
+      "id": "R4.C7",
+      "claim": "/clear czysci conversation history ale zachowuje CLAUDE.md i settings - cache prefix TTL-retained przez 5-60 min",
+      "citation": "/clear: Conversation history cleared -> cache dla messages layer invalidated. System prompt + tools + CLAUDE.md layer ZACHOWANE przez TTL (5m lub 1h jesli explicitly set).",
+      "source_location": "section: Details, 5. /clear behavior",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["clear", "behavior", "ttl-retained"]
+    },
+    {
+      "id": "R4.C8",
+      "claim": "CCh v2.1.62 ma regression: server-side KV cache zwraca stale context po compaction, P1 severity",
+      "citation": "v2.1.62: Server-side KV cache stale context (Issue #29230). Model pracuje na nieaktualnym kontekscie po compaction. P1 severity.",
+      "source_location": "section: Details, 7. Wersje 2026",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["v2.1.62", "regression", "kv-cache-bug"]
+    },
+    {
+      "id": "R4.C9",
+      "claim": "CCh --continue / --resume bug v2.1.89+: pelny cache rebuild 400-500k tokens za kazdym powrotem do sesji",
+      "citation": "Resuming a session with --continue or /resume completely invalidates the prompt cache, even when re-entering within seconds. On a long session with a large prompt, this forces a full cache_creation of 400-500k tokens each time.",
+      "source_location": "section: Details, 6. /resume bug",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["resume-bug", "v2.1.89", "cache-rebuild"]
+    },
+    {
+      "id": "R4.C10",
+      "claim": "CCh v2.1.100+ inflates cache_creation ~20K tokens vs v2.1.98 (same payload)",
+      "citation": "v2.1.100+ (Mar 2026): Cache creation inflates ~20K tokens vs v2.1.98. Issue #46917.",
+      "source_location": "section: Details, 7. Wersje 2026",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["v2.1.100", "inflation", "regression"]
+    },
+    {
+      "id": "R4.C11",
+      "claim": "Max Plan userow wyczerpalo 100% quota w 70 minut zamiast normalnych 8 godzin w marcu 2026",
+      "citation": "Max Plan users z marca 2026 odnotowali rate limit exhaustion w 70 minut vs normalnie 8 godzin.",
+      "source_location": "section: Details, 7. Wersje 2026",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["max-plan", "quota-drain", "impact"]
+    },
+    {
+      "id": "R4.C12",
+      "claim": "Dodanie MCP tool mid-session kasuje WSZYSTKO - tools + system + CLAUDE.md + messages",
+      "citation": "Dodanie nowego MCP tool poprzez /mcp add mid-session invalidates tools layer (bo tools array sie zmienia). Cascade: invalidates system + CLAUDE.md + messages (caly prefix).",
+      "source_location": "section: Details, 8. MCP tools interaction",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp", "invalidation", "anti-pattern"]
+    },
+    {
+      "id": "R4.C13",
+      "claim": "CLAUDE.md 5000 tokenow: bez cache $2.50 za 100 turn, z cache $0.34 - 87% savings",
+      "citation": "Bez cache: 5000 tokens * $5 (Opus) = $0.025 per turn. 100 turn = $2.50 tylko za CLAUDE.md. Z cache: $0.0034 per turn. 100 turn = $0.34.",
+      "source_location": "section: Details, 9. CLAUDE.md economics",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["claude-md", "economics", "savings"]
+    },
+    {
+      "id": "R4.C14",
+      "claim": "Claude Code Pro Plan $20/miesiac jest viable TYLKO dzieki cache - bez cache Anthropic by tracil",
+      "citation": "Claude Code Pro Plan za $20/miesiac jest ekonomicznie viable TYLKO dzieki cache'owi. Bez cache Anthropic by tracil na kazdym userze.",
+      "source_location": "section: Details, Case 2",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["business-model", "pro-plan", "economics"]
+    },
+    {
+      "id": "R4.C15",
+      "claim": "Dla zachowania 96% hit rate musza byc spelnione warunki: continuous session <5min gaps, no MCP changes, no CLAUDE.md edits, no model switch, no /compact/clear",
+      "citation": "Warunek zachowania 96%: Sesja continuous, requesty co <5min. Brak MCP tool changes. Brak file edit w CLAUDE.md. Brak model switch. Brak /compact ani /clear.",
+      "source_location": "section: Details, 2. Zachowanie cache",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hygiene-rules", "96-percent", "conditions"]
+    },
+    {
+      "id": "R4.C16",
+      "claim": "Realne cache hit rate w practice waha sie 70-96% (gdy conditions sa czesciowo lamane)",
+      "citation": "W praktyce te warunki sa czesto lamane (developer edituje CLAUDE.md, dodaje plugin), dlatego REAL cache hit rate waha sie 70-96%.",
+      "source_location": "section: Details, 2. Zachowanie cache",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["realistic-rate", "range", "practice"]
+    },
+    {
+      "id": "R4.C17",
+      "claim": "Piebald-AI reverse-engineered CCh system prompts - publiczny GitHub repo z dumpami per wersja",
+      "citation": "Piebald-AI reverse-engineered Claude Code system prompts (github.com/Piebald-AI/claude-code-system-prompts) i udokumentowal strukture.",
+      "source_location": "section: Details, 1. Architektura",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["reverse-engineering", "community", "tools"]
+    },
+    {
+      "id": "R4.C18",
+      "claim": "Workaround dla resume bug: /clear + nowa sesja lub downgrade do v2.1.88",
+      "citation": "Workaround dla affected wersji: Uzywaj /clear + nowa sesja zamiast --continue jezeli masz dluga historie. Alternatywa: downgrade do v2.1.88 lub wczesniej.",
+      "source_location": "section: Details, 6. /resume bug",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["workaround", "resume-bug", "downgrade"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak oficjalnego Anthropic changelog dla cache-related zmian w CCh",
+    "Niejasne jak CCh wspoluje z Claude Managed Agents (nowa feature 2026)",
+    "Brak publicznego spec dla /compact - jak dokladnie dzieli summary"
+  ],
+  "conflicts_flagged": [
+    "R4.C11 vs R2.C6: Anthropic (The Register 13 kwietnia) twierdzi quota drain 'not caused by cache tweaks'. Community (R4.C9, R4.C10, R4.C11) wskazuje wiele bugow cache. Rozstrzygniecie: multi-cause incident.",
+    "R4.C4 dynamic boundary nie jest w oficjalnej dokumentacji - tylko Piebald reverse-engineering. Ufamy bo na realnych binarkach."
+  ]
+}

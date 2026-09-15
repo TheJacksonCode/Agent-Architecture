@@ -1,0 +1,42 @@
+{
+  "source": "R7_debugging_community.md",
+  "topic": "MCP Debugging + Community Patterns",
+  "date_accessed": "2026-04-17",
+  "claims": [
+    {"id": "R7.C1", "claim": "Claude Code eksponuje MCP tools pod wzorcem `mcp__<server-name>__<tool-name>`, double underscore literal.", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R7.C2", "claim": "Permissions patterns uzywaja tego prefixu: permissions.deny: ['mcp__untrusted__*'] dla blocking.", "url": "https://code.claude.com/docs/en/permissions", "trust": 1},
+    {"id": "R7.C3", "claim": "Top symptom A: server connected ale zero tools w /mcp menu. Root cause issue #11175 - server deklaruje tools capability ale tools/list zwraca pusty array.", "url": "https://github.com/anthropics/claude-code/issues/11175", "trust": 1},
+    {"id": "R7.C4", "claim": "Symptom B: connection fail 'server unavailable' (issue #1611). Root causes: binary not in PATH, SSL cert issue, firewall, server crash silent.", "url": "https://github.com/anthropics/claude-code/issues/1611", "trust": 1},
+    {"id": "R7.C5", "claim": "Symptom C: dziala w Claude Desktop nie w Claude Code CLI (issue #72, #12086). Root: rozne config paths (Desktop: claude_desktop_config.json vs Code: ~/.claude/settings.json).", "url": "https://github.com/anthropics/claude-code/issues/72", "trust": 1},
+    {"id": "R7.C6", "claim": "Symptom D: timeout pomimo config (#20335, #3033, #44032).", "url": "https://github.com/anthropics/claude-code/issues/20335", "trust": 1},
+    {"id": "R7.C7", "claim": "Symptom E: silent failure, Claude nie uzywa tool. Root: description za dlugie/za krotkie, name collision z built-in, prompt injection w description, permissions deny wygral.", "url": "https://www.arsturn.com/blog/why-is-claude-ignoring-your-mcp-prompts-a-troubleshooting-guide", "trust": 2},
+    {"id": "R7.C8", "claim": "Standard debug flow: (1) claude mcp list, (2) MCP Inspector standalone, (3) sprawdz logs, (4) restart sesji, (5) minimal config izolacja.", "url": "https://modelcontextprotocol.io/docs/tools/debugging", "trust": 1},
+    {"id": "R7.C9", "claim": "MCP Inspector command: `npx @modelcontextprotocol/inspector <command>` -> http://localhost:5173 GUI.", "url": "https://modelcontextprotocol.io/docs/tools/debugging", "trust": 1},
+    {"id": "R7.C10", "claim": "Logs locations: Claude Desktop macOS ~/Library/Logs/Claude/, Windows %APPDATA%\\Claude\\logs\\, Linux ~/.config/Claude/logs/. Claude Code: ~/.claude/logs/.", "url": "https://www.arsturn.com/blog/the-complete-guide-to-debugging-mcp-connection-issues-in-claude-desktop", "trust": 2},
+    {"id": "R7.C11", "claim": "DevTools Claude Desktop: Cmd-Opt-I (macOS) / Ctrl-Alt-I (Windows). Claude Code CLI nie ma DevTools.", "url": "https://modelcontextprotocol.io/docs/tools/debugging", "trust": 1},
+    {"id": "R7.C12", "claim": "Reddit pattern: po update Claude Code (npm update -g) serwery przestaja dzialac. Fix: claude mcp remove + add na nowo.", "url": "https://www.reddit.com/r/ClaudeAI/", "trust": 3},
+    {"id": "R7.C13", "claim": "Reddit pattern: /mcp pokazuje server ale tools zero - czeka na auth OAuth (pierwsze tools/list zwraca pusty, po auth complete widac tools).", "url": "https://www.truefoundry.com/blog/mcp-authentication-in-claude-code", "trust": 2},
+    {"id": "R7.C14", "claim": "Power-user pattern A: personal MCP per projekt z domain context (product schema, recent orders, design tokens).", "url": "https://github.com/modelcontextprotocol/servers", "trust": 2},
+    {"id": "R7.C15", "claim": "Power-user pattern B: MCP jako config vector dla live preferences - 90% use cases Skill lepszy.", "url": "https://alexop.dev/posts/understanding-claude-code-full-stack/", "trust": 2},
+    {"id": "R7.C16", "claim": "Power-user pattern C: MCP aggregator gateway (Rube, docker/mcp-gateway, Zapier MCP) - jedna connection dla 500+ tools.", "url": "https://rube.app", "trust": 2},
+    {"id": "R7.C17", "claim": "Most adopted production pattern D: CLAUDE.md (project context) + 2-3 MCP servers + 5-10 Skills + 5-20 Commands.", "url": "https://alexop.dev/posts/claude-code-customization-guide-claudemd-skills-subagents/", "trust": 2},
+    {"id": "R7.C18", "claim": "CI/CD (GitHub Actions) issue #647: 'permission denied for MCP'. Fix: enableAllProjectMcpServers: true w workflow env (trade-off akceptowany dla headless).", "url": "https://github.com/anthropics/claude-code-action/issues/647", "trust": 1},
+    {"id": "R7.C19", "claim": "CI/CD mitigation: pinnowac exact versions serwerow (npx -y package@X.Y.Z zamiast @latest).", "url": "https://github.com/anthropics/claude-code-action", "trust": 2},
+    {"id": "R7.C20", "claim": "Tool availability dependent on auth: pierwsze tools/list na OAuth server zwraca pusty array dopoki auth complete. Workaround: claude mcp auth <server> + restart.", "url": "https://www.truefoundry.com/blog/mcp-authentication-in-claude-code", "trust": 2},
+    {"id": "R7.C21", "claim": "Naming collisions: gdy MCP tool name koliduje z built-in (np. Read, Bash), built-in wygrywa. Workaround: rename w serverze.", "url": "https://www.arsturn.com/blog/why-is-claude-ignoring-your-mcp-prompts-a-troubleshooting-guide", "trust": 2},
+    {"id": "R7.C22", "claim": "Claude Code CLI --debug flag: pokazuje pelny log JSON-RPC traffic miedzy Claude a serwerami.", "url": "https://code.claude.com/docs/en/", "trust": 2},
+    {"id": "R7.C23", "claim": "Anti-patterns reddit: (1) install everything awesome-mcp, (2) enableAll w OSS repo, (3) no restart po config change, (4) mix Desktop/Code config, (5) vague tool descriptions.", "url": "https://www.reddit.com/r/ClaudeCode/", "trust": 3},
+    {"id": "R7.C24", "claim": "Debug community tools: mcpcat.io (SaaS logs), glama.ai (directory+helpers), mcp-inspector (oficjalny), context-mode (sandbox wrapper).", "url": "https://mcpcat.io", "trust": 3},
+    {"id": "R7.C25", "claim": "Known long-standing open bugs 2026-04-17: #424 (timeout configurable), #11364 (lazy-load), #20335 (HTTP timeout), #44032 (Windows 4min), #15945 (no stuck detection), #12086 (external not loading).", "url": "https://github.com/anthropics/claude-code/issues", "trust": 1}
+  ],
+  "conflicts_flagged": [
+    "R7.C22 (--debug flag exists) vs brak formalnej dokumentacji w cli-reference - flag moze byc undocumented albo nieaktywny w niektorych wersjach. CRITIC weryfikacja.",
+    "R7.C15 (MCP jako config vector - Skill better) vs R4 ktore wskazuje resources jako legitimate use case - rozstrzygac: resources lepsze dla LIVE EXTERNAL data, Skill dla static configs/preferences."
+  ],
+  "gaps_flagged": [
+    "Formalny debug CLI dla Claude Code MCP (poza /mcp) - dokumentacja skapa.",
+    "Long-running process cleanup (zombie handling) - community workarounds but no official Anthropic guidance.",
+    "GitHub Actions MCP debug UX - issue #647 addressed basic, ale dalsza obsluga unclear.",
+    "Post-fix status known bugs #424, #20335, #44032, #15945 na 2026-04-17 - wymaga verification."
+  ]
+}

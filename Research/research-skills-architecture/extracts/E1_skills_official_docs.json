@@ -1,0 +1,193 @@
+{
+  "report_id": "R1",
+  "source_file": "research/R1_skills_official_docs.md",
+  "extractor_persona": "Haiku-equivalent (Orchestrator-run)",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R1.C1",
+      "claim": "Claude Code supports 4 scope levels for skills with priority order Enterprise > Personal (~/.claude/skills/) > Project (.claude/skills/) > Plugin (namespaced as plugin-name:skill-name).",
+      "evidence": "Official table at code.claude.com/docs/en/skills with exact scope paths; quote 'higher-priority locations win: enterprise > personal > project'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C2",
+      "claim": "Plugin skills use a plugin-name:skill-name namespace and cannot conflict with other scope levels.",
+      "evidence": "Quote from code.claude.com/docs/en/skills: 'Plugin skills use a plugin-name:skill-name namespace, so they cannot conflict with other levels.'",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C3",
+      "claim": "In Claude Code 2.1+, custom commands (.claude/commands/) and skills (.claude/skills/) are merged; when both exist with same name, the skill takes precedence.",
+      "evidence": "Quote: 'if a skill and a command share the same name, the skill takes precedence'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C4",
+      "claim": "Progressive disclosure is a 3-level architecture: Level 1 metadata (~100 tokens/skill, always loaded), Level 2 instructions (<5k tokens, loaded on trigger), Level 3 resources (unlimited, loaded via bash read).",
+      "evidence": "Official table platform.claude.com/docs/en/agents-and-tools/agent-skills/overview with token cost columns.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C5",
+      "claim": "Anthropic engineering blog reports total startup overhead ~1,500 tokens for 40 skills via progressive disclosure.",
+      "evidence": "Eng blog: 'With progressive disclosure, the overhead is roughly 1,500 tokens total for all 40 skills'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C6",
+      "claim": "Frontmatter has 13 officially documented fields: name, description, when_to_use, argument-hint, disable-model-invocation, user-invocable, allowed-tools, model, effort, context, agent, hooks, paths, shell (all optional; only description recommended).",
+      "evidence": "Official frontmatter reference table code.claude.com/docs/en/skills.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C7",
+      "claim": "Agent Skills API spec enforces: name max 64 chars lowercase/numbers/hyphens only, description max 1024 chars, no XML tags, reserved words 'anthropic' and 'claude' forbidden in name.",
+      "evidence": "Agent Skills spec platform.claude.com validation rules.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C8",
+      "claim": "Claude Code truncates combined (description + when_to_use) to 1536 characters per entry in skill listing; skill listing budget scales dynamically to 1% of context window with fallback 8000 chars, overridable via SLASH_COMMAND_TOOL_CHAR_BUDGET env var.",
+      "evidence": "Troubleshooting section code.claude.com/docs/en/skills.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C9",
+      "claim": "After auto-compaction, Claude Code re-attaches the most recent invocation of each skill keeping first 5,000 tokens; total re-attached skills share 25,000 tokens combined budget; older skills may be dropped entirely.",
+      "evidence": "Content lifecycle section code.claude.com/docs/en/skills.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C10",
+      "claim": "Three invocation paths exist: (a) automatic description-match (Claude decides), (b) manual /skill-name (user slash), (c) Skill tool programmatic (agents/skills can invoke).",
+      "evidence": "Official invocation paths section code.claude.com/docs/en/skills.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C11",
+      "claim": "disable-model-invocation:true removes skill description from system prompt (token savings) and blocks all automatic/programmatic invocation; skill remains accessible only via manual /name.",
+      "evidence": "Official behavior table: 'disable-model-invocation:true -> Description NOT in context, full skill on user invoke'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C12",
+      "claim": "user-invocable:false hides skill from / slash menu but does NOT block Skill tool programmatic access; description remains in context.",
+      "evidence": "Quote: 'The user-invocable field only controls menu visibility, not Skill tool access. Use disable-model-invocation:true to block programmatic invocation.'",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C13",
+      "claim": "Permission rules for Skill tool support: Skill (deny all), Skill(name) (exact), Skill(name *) (prefix), Skill(name *) in deny (block specific).",
+      "evidence": "Restrict Claude skill access section code.claude.com/docs/en/skills.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C14",
+      "claim": "Five string substitution variables available in skill content: $ARGUMENTS (full), $ARGUMENTS[N]/$N (indexed), ${CLAUDE_SESSION_ID}, ${CLAUDE_SKILL_DIR}.",
+      "evidence": "String substitutions section official docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C15",
+      "claim": "Dynamic context injection via !`command` executes BEFORE skill content enters context; output replaces placeholder; disableable via settings 'disableSkillShellExecution':true.",
+      "evidence": "Dynamic context injection section docs; security note.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C16",
+      "claim": "context:fork creates isolated subagent context; requires agent field (e.g., Explore, Plan, general-purpose); SKILL.md becomes prompt; main session receives summary.",
+      "evidence": "Subagent integration section docs; warning: 'context:fork only makes sense for skills with explicit instructions'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C17",
+      "claim": "Live change detection: Claude Code watches skill directories and applies add/edit/remove within current session; exception is creating top-level skills directory which requires session restart.",
+      "evidence": "Live change detection section docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C18",
+      "claim": "Nested discovery: in monorepo, editing file in packages/frontend/ also loads skills from packages/frontend/.claude/skills/.",
+      "evidence": "Quote: 'if you're editing a file in packages/frontend/, Claude Code also looks for skills in packages/frontend/.claude/skills/'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C19",
+      "claim": "--add-dir flag grants file access but not configuration, except skills: .claude/skills/ inside added directories loads automatically (unique exception among subagents/commands/output-styles).",
+      "evidence": "Docs on --add-dir behavior.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C20",
+      "claim": "allowed-tools field pre-approves tools without permission prompt but does NOT restrict available tools; every tool remains callable via user permission settings.",
+      "evidence": "Quote: 'It does not restrict which tools are available: every tool remains callable'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C21",
+      "claim": "Skills do NOT sync across surfaces: Claude Code (filesystem), claude.ai (zip upload), Claude API (/v1/skills endpoints) require separate management.",
+      "evidence": "Cross-surface limitations section docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C22",
+      "claim": "Runtime environment differs by surface: Claude API has NO network access and NO runtime package install (pre-configured deps only); Claude Code has full host network but discourages global package install.",
+      "evidence": "Runtime section docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C23",
+      "claim": "Claude Code skills follow the Agent Skills open standard (agentskills.io); core fields (name, description) portable across AI tools (OpenCode etc.); invocation control, subagent execution, and dynamic context injection are Claude Code extensions.",
+      "evidence": "Quote: 'Claude Code skills follow the Agent Skills open standard... Claude Code extends the standard with additional features'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C24",
+      "claim": "Anthropic bundles pre-built skills: Claude Code bundles /simplify, /batch, /debug, /loop, /claude-api; Claude API and claude.ai bundle pptx, xlsx, docx, pdf (container-based, Anthropic hosted); open-source repo github.com/anthropics/skills.",
+      "evidence": "Pre-built skills section docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R1.C25",
+      "claim": "Common installation error: nesting SKILL.md one level too deep. Correct path is ~/.claude/skills/skill-name/SKILL.md NOT ~/.claude/skills/skill-name/another-folder/SKILL.md.",
+      "evidence": "Quote: 'The most frequent installation error is nesting the skill one level too deep'.",
+      "confidence": "high"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "R1.CONFLICT1",
+      "description": "Description char cap: API spec (1024) vs Claude Code listing (1536 combined description+when_to_use). Not strictly contradictory (1024 per field, 1536 per combined entry), but behavior unclear when description alone exceeds 1024 on API upload.",
+      "severity": "medium"
+    },
+    {
+      "id": "R1.CONFLICT2",
+      "description": "user-invocable:false + disable-model-invocation:true combination: skill is menu-hidden AND auto-invocation-blocked AND Skill-tool-blocked. Docs do not explicitly state outcome; effectively zombie skill.",
+      "severity": "low"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R1.GAP1",
+      "description": "Skill chaining mechanism (skill invoking another skill) not explicitly documented. Indirect paths via context:fork + subagent-with-skills but direct chain unclear. Routed to R4.",
+      "severity": "high"
+    },
+    {
+      "id": "R1.GAP2",
+      "description": "Plugin skill vs same-named user skill: plugin gets namespace prefix but which wins when user types /name? Routed to R6.",
+      "severity": "medium"
+    },
+    {
+      "id": "R1.GAP3",
+      "description": "Practical max-skills limit given 1% budget / 8000 char fallback / 1536 char per entry. Anthropic claims 40 skills = 1500 tokens but per-entry cap suggests ~5 skills fit in 8k. Discrepancy requires empirical test. Routed to R2.",
+      "severity": "medium"
+    },
+    {
+      "id": "R1.GAP4",
+      "description": "Recursion: context:fork with agent that has skills: field itself. Docs silent on nested fork behavior.",
+      "severity": "low"
+    }
+  ],
+  "summary": "R1 establishes baseline: 4 scope levels, 13 frontmatter fields, 3-level progressive disclosure (~100/~5k/unlimited tokens), 3 invocation paths (auto/manual/Skill tool), 25k compaction budget with 5k per skill, 1%/8000 char listing budget. Agent Skills open standard with Claude Code extensions. Primary gaps on chaining (R4) and plugin semantics (R6)."
+}

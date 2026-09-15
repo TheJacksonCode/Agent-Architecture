@@ -1,0 +1,227 @@
+{
+  "source": "R2_three_tiers.md",
+  "extractor": "E2",
+  "model": "Opus 4.7",
+  "date": "2026-04-17",
+  "word_count_approx": 420,
+  "claims": [
+    {
+      "id": "R2.C1",
+      "text": "Wszystkie odkryte pliki CLAUDE.md sa konkatenowane do kontekstu, a nie nadpisywane - Claude Code nie robi project overrides user, robi concat wszystkich CLAUDE.md w okreslonej kolejnosci do jednego user message.",
+      "quote": "All discovered files are concatenated into context rather than overriding each other.",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["concat", "merge-semantics", "architecture", "consensus"]
+    },
+    {
+      "id": "R2.C2",
+      "text": "Precedencja jest de facto rozstrzygana przez tail bias - ostatnia linia na temat X jest traktowana jako najswiezsza, a LLMy maja bias na recency w instrukcjach. To nie jest hard override, tylko miekki priorytet.",
+      "quote": "ostatnia linia instrukcji na temat X bedzie tym co Claude widzi jako najnowsze - i LLMy maja bias na freshness/recency w instrukcjach. To jest defacto mechanizm precedencji",
+      "stance": "claim",
+      "confidence": "high",
+      "tags": ["tail-bias", "precedence", "unique-R2", "LLM-behavior"]
+    },
+    {
+      "id": "R2.C3",
+      "text": "Managed policy CLAUDE.md to jedyna warstwa ktorej uzytkownik nie moze wykluczyc - claudeMdExcludes w settings nie dziala na nia, co czyni ja hard requirement dla enterprise.",
+      "quote": "Managed policy CLAUDE.md files cannot be excluded. This ensures organization-wide instructions always apply regardless of individual settings.",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["managed-policy", "enterprise", "exclusion", "consensus"]
+    },
+    {
+      "id": "R2.C4",
+      "text": "Plugin CLAUDE.md NIE istnieje jako oficjalny komponent pluginow - dokumentacja pluginow wymienia skills/, commands/, agents/, hooks/, settings.json ale NIE CLAUDE.md. Plugin dostarcza instrukcje tylko przez Skills, Agents i Settings.",
+      "quote": "Plugin system w Claude Code [...] nie ma pierwszoklasowego CLAUDE.md jako komponentu. [...] Nie ma CLAUDE.md w tej liscie.",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["plugin", "consensus", "cross-confirm-R1", "no-plugin-md"]
+    },
+    {
+      "id": "R2.C5",
+      "text": "Subfolder descendant loading ma udokumentowany bug (GitHub issue #2571 closed not planned): subfolder CLAUDE.md czasem nie sa automatycznie ladowane gdy Claude czyta plik z subfolderu, zwlaszcza przez Edit a nie Read.",
+      "quote": "GitHub issue #2571: user zglaszal ze subfolder CLAUDE.md nie sa automatycznie ladowane gdy Claude czyta plik z subfolderu. Issue zamkniete not planned bez rozwiazania.",
+      "stance": "fact",
+      "confidence": "medium",
+      "tags": ["bug", "subfolder", "lazy-loading", "issue-2571", "unique-R2"]
+    },
+    {
+      "id": "R2.C6",
+      "text": "Plan mode i system prompt biją CLAUDE.md bez wzgledu na IMPORTANT: OVERRIDE naglowki - issue #30634 pokazuje ze system-level instructions sa przed CLAUDE.md w stack i CLAUDE.md nie ma mocy dyrektywnej wobec nich.",
+      "quote": "System prompt i plan mode instructions sa przed CLAUDE.md w stack. Plus plan mode zawiera This supercedes any other instructions jawnie. User CLAUDE.md nie ma zadnej mocy wobec system-level instructions w special modes.",
+      "stance": "fact",
+      "confidence": "medium",
+      "tags": ["bug", "plan-mode", "issue-30634", "system-prompt", "unique-R2"]
+    },
+    {
+      "id": "R2.C7",
+      "text": "Oficjalna tabela precedence ma 8 warstw ladowania: Managed policy -> User CLAUDE.md -> User rules -> Ancestors CLAUDE.md -> Project .claude/CLAUDE.md -> Project .claude/rules/ -> CLAUDE.local.md -> Subfolder CLAUDE.md (lazy).",
+      "quote": "1. Managed policy CLAUDE.md 2. User CLAUDE.md 3. User rules 4. Ancestors CLAUDE.md 5. Project .claude/CLAUDE.md 6. Project .claude/rules/*.md 7. CLAUDE.local.md 8. Subfolder CLAUDE.md (lazy, on-demand)",
+      "stance": "fact",
+      "confidence": "medium",
+      "tags": ["precedence", "8-layer", "loading-order", "consensus"]
+    },
+    {
+      "id": "R2.C8",
+      "text": "Konflikty miedzy regulami nie sa rozstrzygane deterministicznie - Claude widzi wszystkie sprzeczne instrukcje i sam decyduje, co potwierdza docs.",
+      "quote": "if two rules contradict each other, Claude may pick one arbitrarily",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["conflict", "arbitrary", "LLM-judgment", "consensus"]
+    },
+    {
+      "id": "R2.C9",
+      "text": "CLAUDE.md jest dostarczane jako user message po system prompt, nie jako czesc system promptu - to tlumaczy dlaczego special modes moga nadpisac instrukcje.",
+      "quote": "CLAUDE.md content is delivered as a user message after the system prompt, not as part of the system prompt itself.",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["delivery-mechanism", "user-message", "system-prompt", "consensus"]
+    },
+    {
+      "id": "R2.C10",
+      "text": "Ancestor CLAUDE.md sa ladowane immediate przy starcie sesji (walking up directory tree), a descendant CLAUDE.md sa ladowane lazy - tylko gdy Claude czyta plik z danego subfolderu.",
+      "quote": "Claude Code reads CLAUDE.md files by walking up the directory tree from your current working directory [...] Pliki CLAUDE.md w subfolderach ponizej current working directory: Odkrywane przy starcie (Claude wie ze istnieja) Nie ladowane, dopoki Claude nie czyta pliku z tego subfolderu",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["ancestor-immediate", "descendant-lazy", "hierarchy", "consensus"]
+    },
+    {
+      "id": "R2.C11",
+      "text": "Sibling isolation: pliki CLAUDE.md w siostrzanych pakietach monorepo nie sa ladowane do sesji - pracujac w packages/api/, CLAUDE.md z packages/web/ nie jest wstrzykiwany. Chroni przed cross-contamination i oszczedza kontekst.",
+      "quote": "Pracujesz w packages/api/. packages/web/CLAUDE.md nie jest ladowany do Twojej sesji - chyba ze jawnie czytasz plik z packages/web/. To oszczedza kontekst i chroni przed cross-contamination",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["sibling-isolation", "monorepo", "context-economy", "consensus"]
+    },
+    {
+      "id": "R2.C12",
+      "text": "Scenariusz konfliktu jezyk komunikacji: user polski vs project English wygrywa project przez tail bias, ale najlepsze rozwiazanie to precyzja w project (kod EN, rozmowa PL moze byc mieszana).",
+      "quote": "Project ladowany po user (tail bias). Claude typowo odpowiada po angielsku dla tego projektu. [...] Najlepsze rozwiazanie: precyzja - project powinien mowic Code, comments, and git commits in English, ale rozmowa z developerem moze byc po polsku",
+      "stance": "claim",
+      "confidence": "medium",
+      "tags": ["conflict-language", "scenario", "tail-bias-example"]
+    },
+    {
+      "id": "R2.C13",
+      "text": "Scenariusz konfliktu emojis: user NO vs project YES rozstrzyga kontekst + specificity - Claude uzyje emojis tylko tam gdzie project jawnie wymaga, w ogolnej konwersacji bedzie sie trzymal user preferencji.",
+      "quote": "Claude widzi oba, w specyficznym kontekscie (pisanie PR description) wygra project (recency + specificity). W ogolnej konwersacji wygra user. [...] w user napisz nigdy emojis, chyba ze project jawnie prosi",
+      "stance": "claim",
+      "confidence": "medium",
+      "tags": ["conflict-emojis", "scenario", "specificity"]
+    },
+    {
+      "id": "R2.C14",
+      "text": "Scenariusz package manager: user pnpm always vs project npm - project wygrywa przez tail bias + specificity (this repo). Best practice: user tier powinien formulowac preferencje jako defaulty, nie absoluts.",
+      "quote": "Project wygrywa (tail bias + specificity - this repo jest konkretne). Claude uzywa npm install. [...] Best practice: user tier formuluje preferencje jako defaulty (preferuj X gdy nic nie stoi na przeszkodzie), nie jako absoluts.",
+      "stance": "claim",
+      "confidence": "medium",
+      "tags": ["conflict-package-manager", "scenario", "defaults-vs-absolutes"]
+    },
+    {
+      "id": "R2.C15",
+      "text": "Scenariusz security managed vs project: managed CLAUDE.md jest behavioral (Claude moze ulec project), ale managed settings z permissions.deny blokuja tool call niezaleznie od Claude decyzji. Enterprise best practice: duplikuj kluczowe zasady w obu.",
+      "quote": "Managed CLAUDE.md nie jest hard enforcement - Claude moze ulec project. Ale jesli organizacja dodala managed-settings.json z permissions.deny dla patternu SQL concat, to settings blokuja tool call niezaleznie od Claude decyzji. [...] duplikuj kluczowe zasady w obu - CLAUDE.md dla guidance, settings dla enforcement.",
+      "stance": "recommendation",
+      "confidence": "high",
+      "tags": ["conflict-security", "managed-vs-settings", "enterprise", "enforcement-vs-guidance"]
+    },
+    {
+      "id": "R2.C16",
+      "text": "Scenariusz subfolder vs root: gdy Claude pracuje w packages/legacy-api/, subfolder CLAUDE.md (Yup) wygrywa z root (Zod) przez tail bias + specificity. Przy wyjsciu do innego packages/, root wraca do wladzy. To koronny use case hierarchii.",
+      "quote": "Gdy Claude pracuje w packages/legacy-api/, widzi root + subfolder. Tail bias + specificity: subfolder wygrywa. Claude zostawia Yup w starych endpointach, Zod w nowych. [...] To dziala dobrze - to wlasnie koronny use case hierarchii.",
+      "stance": "claim",
+      "confidence": "high",
+      "tags": ["conflict-subfolder", "scenario", "hierarchy-win"]
+    },
+    {
+      "id": "R2.C17",
+      "text": "Realistyczny worst-case token budget dla duzej firmy + duzego monorepo + user: ~9200 tokenow na start sesji (Managed 1600 + User 1600 + User rules 1200 + Project root 2400 + Project rules 2000 + Local 400).",
+      "quote": "TOTAL na start sesji: ~9200 tokenow [...] 9-12k startup budget = 10-12% czego z gory brak na zadanie",
+      "stance": "claim",
+      "confidence": "medium",
+      "tags": ["token-budget", "worst-case", "consensus", "optimization"]
+    },
+    {
+      "id": "R2.C18",
+      "text": "Effective compliance threshold dla LLM to ~150-200 instrukcji - system prompt zajmuje ~50, zostaje ~100-150 dla CLAUDE.md. Kazda slaba instrukcja dilutuje wszystkie pozostale rowno, wiec specyficznosc > dlugosc.",
+      "quote": "effective compliance threshold to ~150-200 instrukcji. System prompt zajmuje ~50, zostaje ~100-150 dla CLAUDE.md. Kazda dodana slabko instrukcja dilutuje wszystkie pozostale rowno.",
+      "stance": "claim",
+      "confidence": "medium",
+      "tags": ["compliance-threshold", "dilution", "specificity", "optimization"]
+    },
+    {
+      "id": "R2.C19",
+      "text": "Pliki CLAUDE.md nad 200 linii konsumuja wiecej kontekstu i redukuja adherence - oficjalny target Anthropic to <200 linii per plik.",
+      "quote": "Files over 200 lines consume more context and may reduce adherence.",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["200-lines", "adherence", "token-budget", "consensus"]
+    },
+    {
+      "id": "R2.C20",
+      "text": "Managed CLAUDE.md i managed settings to dwa rozne mechanizmy - settings to twarde enforcement (klient blokuje przed LLM), CLAUDE.md to miekkie guidance (LLM decyduje czy posluchac).",
+      "quote": "Settings = twarde enforcement (klient Claude Code blokuje przed LLM). CLAUDE.md = miekkie guidance (LLM decyduje czy posluchac).",
+      "stance": "claim",
+      "confidence": "high",
+      "tags": ["managed-split", "enforcement-vs-guidance", "architecture"]
+    },
+    {
+      "id": "R2.C21",
+      "text": "Po /compact tylko project-root CLAUDE.md przezywa (re-injected z dysku) i user CLAUDE.md. Nested CLAUDE.md w subfolderach nie sa automatycznie re-injected - ladowane ponownie dopiero gdy Claude zacznie czytac plik z tego subfolderu.",
+      "quote": "Tylko project-root CLAUDE.md przezywa /compact. Po kompakcji Claude ponownie czyta go z dysku i wstrzykuje do kontekstu. Nested CLAUDE.md w subfolderach nie sa re-injected automatycznie",
+      "stance": "fact",
+      "confidence": "medium",
+      "tags": ["compaction", "post-compact", "subfolder-reload"]
+    },
+    {
+      "id": "R2.C22",
+      "text": "Optymalizacje token budget: (1) @path imports zeby rozbic duzy plik, (2) path-scoped rules (paths frontmatter) laduja sie lazy tylko przy matching files, (3) claudeMdExcludes wyklucza inne teamy w monorepo, (4) HTML comments sa stripped przed injection.",
+      "quote": "Imports - @path/to/other.md [...] Path-scoped rules - rules z paths frontmatter laduja sie tylko gdy Claude pracuje z matching files [...] claudeMdExcludes - w monorepo mozesz wykluczyc CLAUDE.md innych teamow [...] HTML comments - <!-- --> block comments sa stripped przed injection",
+      "stance": "recommendation",
+      "confidence": "high",
+      "tags": ["optimization", "imports", "path-scoped", "exclusions"]
+    },
+    {
+      "id": "R2.C23",
+      "text": "Dwie akceptowane sciezki dla project CLAUDE.md: ./CLAUDE.md (root) lub ./.claude/CLAUDE.md - oficjalnie rownowazne. Dodatkowo CLAUDE.local.md (gitignored) ladowany po CLAUDE.md w tym samym folderze.",
+      "quote": "./CLAUDE.md (root repo) ./.claude/CLAUDE.md (wewnatrz .claude/ folder) Plus lokalny wariant: ./CLAUDE.local.md - identyczny format, ale gitignored, ladowany po CLAUDE.md w tym samym folderze",
+      "stance": "fact",
+      "confidence": "high",
+      "tags": ["locations", "project-tier", "local-variant", "consensus"]
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R2.G1",
+      "question": "Dokladna kolejnosc concat w pliku finalnym - czy managed jest pierwszy czy ostatni w user message? Docs nie mowi wprost, community raportuje mix. Empiryczna weryfikacja przez InstructionsLoaded hook."
+    },
+    {
+      "id": "R2.G2",
+      "question": "Czy user CLAUDE.md ma precedencje nad project przez jakis special flag? Issue #30634 sugeruje IMPORTANT: OVERRIDE naglowek, ale nie dziala wobec system prompt. Brak oficjalnego mechanizmu user > project."
+    },
+    {
+      "id": "R2.G3",
+      "question": "Subfolder CLAUDE.md vs @import w root - ktora strategia lepsza w monorepo? Docs nie daje oficjalnego zalecenia, community debatuje."
+    },
+    {
+      "id": "R2.G4",
+      "question": "Path-scoped rules trigger conditions - docs mowi when Claude reads files matching pattern, ale co z Edit, Write, Grep? Czy Grep na pliki matchujace triggeruje rule? Niejasne."
+    },
+    {
+      "id": "R2.G5",
+      "question": "Plugin CLAUDE.md - oficjalnie nie istnieje. Czy bedzie? Anthropic plugin roadmap nie adresuje tego."
+    },
+    {
+      "id": "R2.G6",
+      "question": "Konflikt miedzy .claude/CLAUDE.md a ./CLAUDE.md - docs mowi oba sa akceptowane, ale jesli oba istnieja w tym samym repo - ktory ladowany? Oba? W jakiej kolejnosci? Brak oficjalnego potwierdzenia."
+    },
+    {
+      "id": "R2.G7",
+      "question": "Interaction miedzy .claude/rules/* bez paths frontmatter vs z paths - dokladny order ladowania i merge niejasne."
+    },
+    {
+      "id": "R2.G8",
+      "question": "Czy auto memory (MEMORY.md, 200 lines/25KB budget) moze konfliktowac z CLAUDE.md? Pipelinuje ze CLAUDE.md, ale konflikt scenariusz nie dokumentowany."
+    }
+  ]
+}

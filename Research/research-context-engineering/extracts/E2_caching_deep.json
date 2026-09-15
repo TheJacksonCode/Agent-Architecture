@@ -1,0 +1,261 @@
+{
+  "source_report": "R2_caching_deep.md",
+  "report_words": 4518,
+  "extract_words": 580,
+  "extractor_version": "v1",
+  "campaign": "Context Engineering 2026",
+  "researcher": "R2 Tech (Archiwista oficjalnej prawdy)",
+  "date": "2026-04-17",
+  "confidence_score": 0.92,
+  "claims": [
+    {
+      "id": "R2.C1",
+      "claim": "Prompt caching in Claude API stores stable prompt prefixes on Anthropic servers, eliminating reprocessing costs for identical tokens on subsequent requests",
+      "citation": "Prompt caching w Claude API jest mechanizmem przechowywania stabilnych prefixow promptu na serwerze Anthropic, eliminujac koszt reprocessingu tych samych tokenow przy kolejnych requestach.",
+      "source_location": "Executive Summary, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-mechanics", "prompt-caching", "cost-reduction"]
+    },
+    {
+      "id": "R2.C2",
+      "claim": "Only 'ephemeral' cache type is supported, with maximum 4 breakpoints per request",
+      "citation": "`cache_control: {type: \"ephemeral\"}` - jedyny typ, max 4 breakpointy na request",
+      "source_location": "Executive Summary, glowne fakty",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-control", "api-schema", "limitations"]
+    },
+    {
+      "id": "R2.C3",
+      "claim": "Cache TTL options are 5 minutes (1.25x write cost) or 1 hour (2x write cost); read cost is always 0.1x base for both TTLs",
+      "citation": "TTL: 5 min (1.25x write) lub 1h (2x write), read zawsze 0.1x base",
+      "source_location": "Executive Summary, glowne fakty",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl", "pricing", "write-cost"]
+    },
+    {
+      "id": "R2.C4",
+      "claim": "Break-even point for 5-minute TTL is 2 cache hits (1 write + 2 reads = -16% vs no cache); for 1-hour TTL it is 3 hits",
+      "citation": "Break-even: 2 cache-hity dla 5m TTL, 3 hity dla 1h TTL",
+      "source_location": "Executive Summary, glowne fakty",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["economics", "break-even", "roi"]
+    },
+    {
+      "id": "R2.C5",
+      "claim": "Cache breakpoints can be placed on: tools[] arrays, system[] content blocks, or messages[].content[] blocks",
+      "citation": "Breakpoint mozna umiescic na: tools[] - ostatnie narzedzie w tablicy (cachuje caly prefix tools), system[] - content block w systemie, messages[].content[] - dowolny content block w wiadomosciach",
+      "source_location": "S1 JSON Schema, paragraph 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-control", "breakpoints", "api-schema"]
+    },
+    {
+      "id": "R2.C6",
+      "claim": "Dynamic content (timestamps, random IDs) placed in cache_control-marked blocks invalidate cache on every request",
+      "citation": "ZLE: breakpoint na zmiennej tresci - {\"type\": \"text\", \"text\": f\"Timestamp: {datetime.now()}\" ... invaliduje przy kazdym requeście",
+      "source_location": "S1, Lookback Window antipattern example",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["antipattern", "cache-invalidation", "best-practices"]
+    },
+    {
+      "id": "R2.C7",
+      "claim": "Cache breakpoint invalidation cascades hierarchically: modifying tools invalidates everything below (system + messages); modifying system invalidates messages only",
+      "citation": "Zmiana na wyzszym poziomie invaliduje wszystko ponizej: Modyfikacja tool definitions: invaliduje caly cache (tools + system + messages)",
+      "source_location": "S1, Hierarchia breakpointow i cascading",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["invalidation", "hierarchy", "cache-management"]
+    },
+    {
+      "id": "R2.C8",
+      "claim": "System searches back 20 blocks to find matching cache prefix; if no match found, creates new cache entry",
+      "citation": "System szuka cachu przez 20 blokow wstecz od breakpointu (najdluzszy pasujacy prefix). Jesli nie znajdzie - tworzy nowy wpis cache",
+      "source_location": "S1, Lookback Window paragraph",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["cache-lookup", "implementation-detail", "performance"]
+    },
+    {
+      "id": "R2.C9",
+      "claim": "1-hour TTL cache is Generally Available as of 2025 and does not require beta header or enterprise plan",
+      "citation": "1h TTL jest Generally Available (nie wymaga juz beta headera od 2025). Mozna mieszac TTL w jednym requeście",
+      "source_location": "S2, TTL 1h generalna dostepnosc",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-1h", "product-status", "availability"]
+    },
+    {
+      "id": "R2.C10",
+      "claim": "When mixing TTLs in one request, 1-hour cache blocks MUST appear BEFORE 5-minute blocks",
+      "citation": "Mozna mieszac TTL w jednym requeście: bloki 1h musza pojawiac sie PRZED blokami 5m.",
+      "source_location": "S2, Parametry TTL table note",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-mixing", "api-constraint", "ordering"]
+    },
+    {
+      "id": "R2.C11",
+      "claim": "In Claude Code CLI (1P Anthropic), cache uses 5-minute TTL; active sessions with exchanges every 1-2 minutes keep cache warm indefinitely",
+      "citation": "W Claude Code (Anthropic 1P): cache 5-minutowy, kazdy hit resetuje timer - aktywna sesja z wymiana co 1-2 minuty trzyma cache warm indefinitely.",
+      "source_location": "S2, Claude Code i TTL paragraph",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["claude-code", "ttl-5m", "session-management"]
+    },
+    {
+      "id": "R2.C12",
+      "claim": "On AWS Bedrock, Claude Code hardcodes 5-minute TTL despite Bedrock supporting 1 hour; undocumented env var ENABLE_PROMPT_CACHING_1H_BEDROCK exists but is not default",
+      "citation": "W Bedrock: istnieje nieudokumentowana zmienna srodowiskowa ENABLE_PROMPT_CACHING_1H_BEDROCK, ale 1h TTL NIE jest domyslne. Issue #32671 potwierdza ze CLI hardcoduje 5m na Bedrock.",
+      "source_location": "S2, Claude Code i TTL paragraph",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bedrock", "ttl-limitation", "github-issue"]
+    },
+    {
+      "id": "R2.C13",
+      "claim": "Model switching (/model command) invalidates entire cache and each model has isolated cache",
+      "citation": "Przelaczenie modelu (/model): CALY cache. Kazdy model ma izolowany cache",
+      "source_location": "S3, Kompletna tabela invalidacji",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["model-switching", "cache-invalidation", "isolation"]
+    },
+    {
+      "id": "R2.C14",
+      "claim": "Editing CLAUDE.md file requires session restart, which invalidates entire cache and forces rebuild",
+      "citation": "Zmiana CLAUDE.md: edycja pliku wymaga restartu sesji, co invaliduje caly cache i zaczyna budowac od nowa",
+      "source_location": "S3, W Claude Code CLI: specyficzne triggery invalidacji, point 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["claude-code-cli", "cache-invalidation", "CLAUDE.md"]
+    },
+    {
+      "id": "R2.C15",
+      "claim": "Installing a new MCP server changes tool definitions (highest invalidation level), invalidating all cache on next startup",
+      "citation": "Instalacja nowego MCP servera: zmienia tool definitions (najwyzszy poziom), invaliduje wszystko przy nastepnym starcie",
+      "source_location": "S3, punkt 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp-server", "cache-invalidation", "tool-definitions"]
+    },
+    {
+      "id": "R2.C16",
+      "claim": "Cache is isolated per workspace (not per organization); different workspaces in same organization do not share cache as of 2026-02-05",
+      "citation": "Cache izolowany per workspace (nie organizacja). Rozne workspace w tej samej organizacji nie dziela cache.",
+      "source_location": "S3, Workspace isolation (od 2026-02-05)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["workspace-isolation", "multi-tenant", "cache-boundaries"]
+    },
+    {
+      "id": "R2.C17",
+      "claim": "Break-even formula for 5m TTL: N_hits >= 1.25 / 0.9 = 1.39 (rounds to 2 hits minimum)",
+      "citation": "N_hits >= 1.25x / (1x - 0.1x) = 1.25 / 0.9 = 1.39. Zaokraglajac: 2 hity zeby sie oplacilo",
+      "source_location": "S4, Formula Break-Even, 5m TTL section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["economics", "pricing-formula", "cost-analysis"]
+    },
+    {
+      "id": "R2.C18",
+      "claim": "For 100k tokens with 5-minute cache across 10 requests, cost is 78.5% lower than without cache ($0.645 vs $3.00)",
+      "citation": "Bez cache: 100k * 10 * $3/M = $3.00. 5m cache: 1 write + 9 reads = $0.375 + $0.27 = $0.645. Oszczednosc: 78.5%",
+      "source_location": "S4, Przyklad konkrety (Sonnet 4.6, 100k tokenow)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-example", "cost-savings", "sonnet-4.6"]
+    },
+    {
+      "id": "R2.C19",
+      "claim": "In 100-turn coding session with 60k token prefix: 1h cache costs $2.38, 5m cache costs $8.94, no cache costs $18.00",
+      "citation": "5m: ~20 rewrites * 60k * $6.25/M + 80 reads * 60k * $0.30/M = $7.50 + $1.44 = $8.94. 1h: 1 write * 60k * $10/M + 99 reads * 60k * $0.30/M = $0.60 + $1.78 = $2.38. Bez cache: $18.00",
+      "source_location": "S4, Scenariusz: 100-turnowa sesja kodowania",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-example", "100-turn-session", "ttl-comparison"]
+    },
+    {
+      "id": "R2.C20",
+      "claim": "Batch API and caching multipliers stack: Batch (0.5x) * Cache read (0.1x) = 0.05x effective input cost (95% savings)",
+      "citation": "Batch + Cache read: 0.5x * 0.1x = 0.05x. Warunek: Batch API nie dotyczy sesji Managed Agents (stateful, interactive).",
+      "source_location": "S4, Batch API + Caching: czy sie mnozy?",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-api", "pricing-stacking", "cost-optimization"]
+    },
+    {
+      "id": "R2.C21",
+      "claim": "Claude Code auto-caches three layers: Layer 1 global stable (system prompt + 18 tools ~20k tokens), Layer 2 per-project (CLAUDE.md), Layer 3 per-session (history)",
+      "citation": "Warstwy cache: Layer 1 Global stable (~20k+ tokenow), Layer 2 Per-project CLAUDE.md, Layer 3 Per-session history",
+      "source_location": "S5, Automatyczna architektura cache w Claude Code",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["claude-code", "cache-layers", "architecture"]
+    },
+    {
+      "id": "R2.C22",
+      "claim": "System prompt core is cacheable and identical for all Claude Code users globally; tool definitions change invalidates entire cache",
+      "citation": "System prompt core - TAK - Wysoka (global) - Identyczny dla wszystkich userów. Zmiana = invalidacja calego cache",
+      "source_location": "S5, Co kwalifikuje sie jako stabilny blok, table row 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-content", "tool-definitions", "global-scope"]
+    },
+    {
+      "id": "R2.C23",
+      "claim": "Real Claude Code task (92 LLM calls, ~2M input tokens): prefix reuse rate was 92% overall (92-98% per phase), saving $6.00 to $1.152 (81% reduction)",
+      "citation": "Eksperyment: Explore subagents 92.06%, Plan 93.23%, Execution 97.83%. Oszczednosc: bez cache $6.00, z cache $1.152 = 81% reduction.",
+      "source_location": "S5, Prefix reuse w praktyce (dane empiryczne - LMCache blog)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["empirical-data", "claude-code", "performance-data"]
+    },
+    {
+      "id": "R2.C24",
+      "claim": "Cache hit latency is 3.3x faster than full recompute for 187k tokens (1.48s vs 4.89s measured)",
+      "citation": "Latency benefit: cache hit 3.3x szybszy niz full recompute (empiryk: 1.48s vs 4.89s dla 187k tokenow).",
+      "source_location": "S8, Response Usage interpretacja",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["latency", "performance", "empirical"]
+    },
+    {
+      "id": "R2.C25",
+      "claim": "Minimum token thresholds for cache vary by model: Opus 4.7/4.6/4.5 and Haiku 4.5 require 4096 tokens; Sonnet 4.6 and Haiku 3.5 require 2048 tokens",
+      "citation": "Claude Opus 4.7, 4.6, 4.5; Haiku 4.5: 4096 tokenow. Claude Sonnet 4.6; Haiku 3.5: 2048 tokenow.",
+      "source_location": "S7, Minimum Token Thresholds table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-threshold", "model-differences", "api-limits"]
+    }
+  ],
+  "gaps_flagged": [
+    "Dokladna liczba tokenow w Claude Code system prompt - zrodla wskazuja '20k+' ale brak precyzyjnego pomiaru w oficjalnej dokumentacji",
+    "Context editing + caching dokładne metryki - dokumentacja mowi o kosztach ale brak konkretnych przykladow numerycznych",
+    "Mechanizm 'global scope' cachowania - HarrisonSec opisuje scope: 'global' (wspoldzielony cache miedzy uzytkownikami) ale nie ma tego w oficjalnych docs",
+    "Subagents i cache isolation - czy subagenty w Claude Code wspoldziela cache z parentem - niejasne"
+  ],
+  "conflicts_flagged": [
+    {
+      "conflict_id": "CFT1",
+      "claim_id": "R2.C9",
+      "description": "TTL '1h enterprise only' vs GA status - Starsze zrodla twierdza ze 1h cache wymaga enterprise lub beta headera. Oficjalna dokumentacja pricing (kwiecien 2026) NIE wspomina enterprise-only.",
+      "resolution": "1h TTL jest Generally Available bez beta headera - stara informacja o enterprise jest bledna.",
+      "confidence": "high"
+    },
+    {
+      "conflict_id": "CFT2",
+      "claim_id": "R2.C12",
+      "description": "Bedrock 5m hardcode - Na Bedrock, Claude Code hardcoduje 5m TTL mimo ze Bedrock obslugiwa 1h. Zmienna ENABLE_PROMPT_CACHING_1H_BEDROCK istnieje w bundle ale nie jest udokumentowana.",
+      "resolution": "Status: open/duplicate issue - nie jest rozwiazane",
+      "confidence": "high"
+    }
+  ],
+  "top_tags": ["pricing-example", "cache-mechanics", "api-schema", "claudecode"],
+  "summary": "25 claims extracted covering cache mechanics (S1-S3), TTL economics (S4), Claude Code auto-caching (S5), context editing (S6), token thresholds (S7), response metrics (S8). 2 conflicts flagged (1h TTL GA status, Bedrock 5m hardcode). 4 gaps identified (system prompt size, context editing metrics, global scope mechanism, subagent isolation)."
+}

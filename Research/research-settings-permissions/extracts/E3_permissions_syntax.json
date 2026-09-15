@@ -1,0 +1,303 @@
+{
+  "extract_id": "E3",
+  "source_report": "R3_permissions_syntax.md",
+  "extractor_model": "claude-opus-4-7",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R3.C1",
+      "claim": "Permission rules follow three canonical forms: bare Tool name (Bash, Read), Tool with specifier (Bash(npm run test *), Read(./.env)), and MCP hierarchical names (mcp__server__tool, mcp__server__*, mcp__server).",
+      "quote": "Permission rules follow the format `Tool` or `Tool(specifier)`.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["syntax", "forms", "core"],
+      "source_section": "2. Formal Syntax"
+    },
+    {
+      "id": "R3.C2",
+      "claim": "Evaluation order is strict: deny -> ask -> allow, with first matching rule winning, so deny rules always take precedence.",
+      "quote": "Rules are evaluated in order: **deny -> ask -> allow**. The first matching rule wins, so deny rules always take precedence.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["evaluation", "priority", "deny-precedence"],
+      "source_section": "2. Formal Syntax"
+    },
+    {
+      "id": "R3.C3",
+      "claim": "Bash(*) is equivalent to bare Bash, and Tool(prefix:*) equals Tool(prefix *) only at the pattern's end; a middle-position colon is read literally, so Bash(git:* push) does NOT match git push origin main.",
+      "quote": "In a middle position, the colon is treated literally: `Bash(git:* push)` does NOT match `git push origin main`, because the colon is read as part of the command string, not as wildcard syntax.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["syntax", "bash", "colon-trap"],
+      "source_section": "2. Formal Syntax"
+    },
+    {
+      "id": "R3.C4",
+      "claim": "A single `*` in a Bash matcher matches any sequence of characters INCLUDING spaces, so one wildcard can span multiple arguments.",
+      "quote": "A single `*` matches any sequence of characters **including spaces**. One wildcard can therefore span multiple arguments.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash", "wildcard", "mechanics"],
+      "source_section": "4.1 Wildcard mechanics"
+    },
+    {
+      "id": "R3.C5",
+      "claim": "Trailing space-star enforces a word boundary: Bash(ls *) matches `ls -la` but NOT `lsof -i :80`, while Bash(ls*) matches both because it has no word-boundary constraint.",
+      "quote": "Rule: `Bash(ls *)` is equivalent to `Bash(ls:*)` (both require a space or end-of-string after `ls`). `Bash(ls*)` has no word-boundary constraint and matches any prefix extension.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["bash", "word-boundary", "trap"],
+      "source_section": "4.2 Word boundary"
+    },
+    {
+      "id": "R3.C6",
+      "claim": "Bash shell operators (&&, ||, ;, |, |&, &, newlines) are recognized: a rule must match each subcommand independently, so Bash(safe-cmd *) does not permit `safe-cmd && other-cmd`.",
+      "quote": "Claude Code is aware of shell operators, so a rule like `Bash(safe-cmd *)` won't give it permission to run the command `safe-cmd && other-cmd`. The recognized command separators are `&&`, `||`, `;`, `|`, `|&`, `&`, and newlines. A rule must match each subcommand independently.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash", "compound", "subcommand"],
+      "source_section": "4.3 Compound commands"
+    },
+    {
+      "id": "R3.C7",
+      "claim": "Fixed non-configurable allowlist of process wrappers is stripped before matching: timeout, time, nice, nohup, stdbuf, and bare xargs (without flags). Dev-env runners like direnv, devbox, mise, npx, docker exec are NOT stripped.",
+      "quote": "Dev-env runners like `direnv exec`, `devbox run`, `mise exec`, `npx`, `docker exec` are **NOT stripped**. That is deliberate - otherwise `Bash(devbox run *)` would implicitly grant execution of whatever the inner command turns out to be",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash", "wrapper", "stripping"],
+      "source_section": "4.4 Process wrapper stripping"
+    },
+    {
+      "id": "R3.C8",
+      "claim": "Bash patterns that try to constrain command arguments are fragile: Bash(curl http://github.com/ *) fails against options-before-URL, different protocols, URL redirects, env var wrappers, and extra spaces.",
+      "quote": "Bash permission patterns that try to constrain command arguments are fragile. For example, `Bash(curl http://github.com/ *)` intends to restrict curl to GitHub URLs, but won't match variations like: - Options before URL: `curl -X GET http://github.com/...` - Different protocol: `curl https://github.com/...` - Redirects: `curl -L http://bit.ly/xyz` (redirects to github)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash", "fragility", "antipattern"],
+      "source_section": "4.6 Fragility"
+    },
+    {
+      "id": "R3.C9",
+      "claim": "Flags Claude inserts mid-command break prefix rules: Bash(git status:*) fails when Claude runs `git -C /path status` because -C /path appears between git and status (dev.to Trap 6).",
+      "quote": "**Trap 6 - flags Claude adds that your pattern didn't predict**: `Bash(git status:*)` breaks when Claude runs `git -C /path status`, because `-C /path` appears between `git` and `status`.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["bash", "trap", "flags", "dev.to"],
+      "source_section": "4.6 Fragility"
+    },
+    {
+      "id": "R3.C10",
+      "claim": "WebFetch domain matching is exact: WebFetch(domain:example.com) does NOT cover api.example.com; subdomain wildcards work only in sandbox.network.allowedDomains, not in the WebFetch permission specifier.",
+      "quote": "Subdomain matching is exact: `WebFetch(domain:example.com)` does not cover `api.example.com`. For broader coverage, either list each subdomain explicitly or use the sandbox `allowedDomains` array, which supports `*.example.com` wildcards.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["webfetch", "domain", "subdomain-trap"],
+      "source_section": "5. WebFetch"
+    },
+    {
+      "id": "R3.C11",
+      "claim": "File-based tools use gitignore-style globs with FOUR path prefixes: `//path` = absolute from filesystem root, `~/path` = home-relative, `/path` = project-root-relative (NOT absolute), `path` or `./path` = cwd-relative.",
+      "quote": "A pattern like `/Users/alice/file` is NOT an absolute path. It's relative to the project root. Use `//Users/alice/file` for absolute paths.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["path-prefix", "file-tools", "critical-trap"],
+      "source_section": "6.1 Four path prefixes"
+    },
+    {
+      "id": "R3.C12",
+      "claim": "Windows paths are normalised to POSIX form before matching: C:\\Users\\alice becomes /c/Users/alice. To match .env anywhere on C: use //c/**/.env; to match across all drives use //**/.env.",
+      "quote": "Paths are normalised to POSIX form before matching: - `C:\\Users\\alice` becomes `/c/Users/alice`. - To match `.env` anywhere on `C:`, use `//c/**/.env`. - To match `.env` across all drives, use `//**/.env`.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["windows", "path-normalisation", "posix"],
+      "source_section": "6.2 Windows normalisation"
+    },
+    {
+      "id": "R3.C13",
+      "claim": "Read/Edit deny rules apply only to Claude's built-in file tools, NOT to Bash subprocesses: Read(./.env) deny blocks the Read tool but does NOT prevent `cat .env` in Bash. OS-level enforcement requires sandboxing.",
+      "quote": "Read and Edit deny rules apply to Claude's built-in file tools, not to Bash subprocesses. A `Read(./.env)` deny rule blocks the Read tool but does not prevent `cat .env` in Bash. For OS-level enforcement that blocks all processes from accessing a path, [enable the sandbox](/en/sandboxing).",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["bash-bypass", "security", "subprocess", "critical"],
+      "source_section": "6.5 Read/Edit subprocess gap"
+    },
+    {
+      "id": "R3.C14",
+      "claim": "Symlinks use asymmetric allow/deny semantics: ALLOW rules require BOTH symlink path and target to match; DENY rules fire if EITHER matches.",
+      "quote": "- **Allow rules**: apply only when **both** symlink path and target match. A symlink inside an allowed directory that points outside still prompts. - **Deny rules**: apply when **either** symlink path or target matches.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["symlink", "asymmetric", "defensive"],
+      "source_section": "6.6 Symlink semantics"
+    },
+    {
+      "id": "R3.C15",
+      "claim": "MCP permissions have three granularity levels: `mcp__puppeteer` (all tools), `mcp__puppeteer__*` (wildcard, equivalent), and `mcp__puppeteer__puppeteer_navigate` (specific tool). Server name is the one configured in Claude Code, not the vendor package name.",
+      "quote": "| `mcp__puppeteer` | any tool provided by the `puppeteer` server | | `mcp__puppeteer__*` | wildcard form - equivalent to above | | `mcp__puppeteer__puppeteer_navigate` | only the `puppeteer_navigate` tool |",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp", "granularity", "naming"],
+      "source_section": "7. MCP Permissions"
+    },
+    {
+      "id": "R3.C16",
+      "claim": "Array settings merge across scopes: permissions.allow/deny/ask from managed + user + project are concatenated and deduplicated (UNIONED), not replaced.",
+      "quote": "**Array settings merge across scopes.** When the same array-valued setting (such as `sandbox.filesystem.allowWrite` or `permissions.allow`) appears in multiple scopes, the arrays are concatenated and deduplicated, not replaced.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["merging", "precedence", "union"],
+      "source_section": "8.4 Settings precedence"
+    },
+    {
+      "id": "R3.C17",
+      "claim": "When `allow` and `ask` rules both match, `allow` wins silently and the prompt is suppressed (dev.to Trap 1); despite docs claiming deny -> ask -> allow priority, first-match-wins per-array means allow short-circuits ask.",
+      "quote": "**Auto-approved** per dev.to Trap 1: \"`allow` cancels `ask`; everything auto-approves.\" Deny -> ask -> allow is the literal order but first-match-wins means allow triggers in the final pass and ask is skipped",
+      "stance": "disputed",
+      "confidence": "medium",
+      "tags": ["allow-cancels-ask", "trap", "ambiguous"],
+      "source_section": "8.2 Conflict resolution"
+    },
+    {
+      "id": "R3.C18",
+      "claim": "Managed deny cannot be overridden by any flag including --allowedTools; managed settings have top precedence and cannot be overridden even by command line arguments.",
+      "quote": "Managed settings (server, MDM, file-based): cannot be overridden by any other level, including command line arguments.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["managed", "precedence", "enterprise"],
+      "source_section": "8.4 Settings precedence"
+    },
+    {
+      "id": "R3.C19",
+      "claim": "Hook decisions do not bypass deny/ask rules, but a blocking PreToolUse hook (exit code 2) takes precedence over allow rules, stopping the call before permission rules are evaluated.",
+      "quote": "A blocking hook also takes precedence over allow rules. A hook that exits with code 2 stops the tool call before permission rules are evaluated, so the block applies even when an allow rule would otherwise let the call proceed.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hooks", "exit-2", "pipeline"],
+      "source_section": "8.3 Hooks priority"
+    },
+    {
+      "id": "R3.C20",
+      "claim": "Managed-only setting `allowManagedPermissionRulesOnly: true` causes user and project permission rules to be ignored entirely; only managed rules apply.",
+      "quote": "`allowManagedPermissionRulesOnly: true` - when set in managed settings, **user and project permission rules are ignored entirely**. Only managed rules apply.",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["managed", "lockdown", "enterprise"],
+      "source_section": "8.4 Settings precedence"
+    },
+    {
+      "id": "R3.C21",
+      "claim": "Six permission modes exist: default (reads only), acceptEdits (reads+edits+filesystem bash within cwd), plan (reads only, no edits/shell), auto (classifier-reviewed everything), dontAsk (only pre-approved allow rules), bypassPermissions (everything except protected paths).",
+      "quote": "| `default` | Reads only | Sensitive work, getting started | | `acceptEdits` | Reads + file edits + common filesystem Bash | | `plan` | Reads only; file edits and shell commands denied | | `auto` | Everything, with a classifier model reviewing | | `dontAsk` | Only pre-approved allow rules and built-in read-only commands | | `bypassPermissions` | Everything except protected paths |",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["modes", "six-modes", "baseline"],
+      "source_section": "10. Permission Modes"
+    },
+    {
+      "id": "R3.C22",
+      "claim": "bypassPermissions still protects a hardcoded list of paths: .git, .vscode, .idea, .husky, parts of .claude (except commands/agents/skills/worktrees), plus config files like .bashrc, .zshrc, .mcp.json, .claude.json. Even --dangerously-skip-permissions cannot write these without a prompt.",
+      "quote": "Writes to `.git`, `.claude`, `.vscode`, `.idea`, and `.husky` directories still prompt for confirmation to prevent accidental corruption of repository state, editor configuration, and git hooks. Writes to `.claude/commands`, `.claude/agents`, and `.claude/skills` are exempt and do not prompt.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bypass", "protected-paths", "safety"],
+      "source_section": "10.5 Protected paths"
+    },
+    {
+      "id": "R3.C23",
+      "claim": "auto mode drops broad allow rules on entry: Bash(*), Bash(python*), package-manager run wildcards, and Agent allow rules are dropped; narrow rules like Bash(npm test) carry over. Rules are restored when leaving auto mode.",
+      "quote": "On entering auto mode, broad allow rules like `Bash(*)`, `Bash(python*)`, package-manager run commands, and `Agent` allow rules are **dropped**. Narrow rules like `Bash(npm test)` carry over. They're restored when leaving auto mode.",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["auto-mode", "broad-allow-drop", "classifier"],
+      "source_section": "10.3 Auto mode"
+    },
+    {
+      "id": "R3.C24",
+      "claim": "--disallowedTools removes tools from the model's context entirely (Claude cannot see them), which is stricter than a deny rule that still lets the model try before blocking.",
+      "quote": "Semantics differ from `--allowedTools`: disallowed tools are **removed from the model's tool list entirely** - Claude doesn't see they exist, so it can't call them. This is stricter than a deny rule, which still lets the model try before being blocked.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cli", "disallowedTools", "context-removal"],
+      "source_section": "11.2 --disallowedTools"
+    },
+    {
+      "id": "R3.C25",
+      "claim": "The Agent tool was renamed from Task in version 2.1.63; existing Task(...) references still work as aliases in settings and agent definitions.",
+      "quote": "In version 2.1.63, the Task tool was renamed to Agent. Existing `Task(...)` references in settings and agent definitions still work as aliases.",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["agent", "task", "rename", "backcompat"],
+      "source_section": "3. Tool Reference Table"
+    },
+    {
+      "id": "R3.C26",
+      "claim": "Trailing wildcards require at least one character: Bash(ssh * uptime *) does NOT match plain `ssh host uptime`; fix requires two rules (with and without trailing space-star).",
+      "quote": "**Trap 2 - trailing wildcards don't match zero arguments**: `Bash(ssh * uptime *)` requires at least one character after the wildcard, so plain `ssh host uptime` prompts.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["trap", "trailing-wildcard", "zero-args"],
+      "source_section": "12.3 Edge cases"
+    },
+    {
+      "id": "R3.C27",
+      "claim": "On Windows in VS Code, file-based Edit/Write rules have been reported to silently no-op in some versions (e.g. Edit(.claude/*) had no effect) while Bash rules still worked; community-reported but not acknowledged in official docs.",
+      "quote": "Community note (Trap 3 from dev.to): file-based Edit/Write rules have been reported to silently no-op on Windows in VS Code in some versions (`Edit(.claude/*)` had no effect), while Bash rules still worked.",
+      "stance": "disputed",
+      "confidence": "low",
+      "tags": ["windows", "silent-noop", "dev.to", "trap"],
+      "source_section": "6.2 Windows / 12.6"
+    },
+    {
+      "id": "R3.C28",
+      "claim": "Boundaries stated in chat ('don't push to main') decay after context compaction: auto mode re-reads the transcript on each classifier check, so compaction can remove the boundary; hard guarantees require a permissions.deny rule.",
+      "quote": "Auto mode respects boundaries you state in chat (\"don't push to main\") as block signals. But these boundaries are re-read from the transcript on each classifier check - context compaction can remove the message that stated them. For a hard guarantee, add a `permissions.deny` rule.",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["auto-mode", "compaction", "boundary-decay"],
+      "source_section": "12.13 Edge cases"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "gap_id": "R3.G1",
+      "issue": "Allow vs ask precedence: docs say 'deny -> ask -> allow' but community (dev.to Trap 1) reports allow silently cancels ask; reconciliation is plausible but not officially documented.",
+      "priority": "high"
+    },
+    {
+      "gap_id": "R3.G2",
+      "issue": "Windows Edit/Write silent no-op (Trap 3): community-reported but not acknowledged by official docs; unclear if it affects current or only old v2.x CLI versions.",
+      "priority": "medium"
+    },
+    {
+      "gap_id": "R3.G3",
+      "issue": "Deny bypass under bypassPermissions: docs confirm managed deny always applies, but unclear whether non-managed (user/project/local) deny rules fire outside protected paths when bypass is active.",
+      "priority": "high"
+    },
+    {
+      "gap_id": "R3.G4",
+      "issue": "Task -> Agent rename alias scope: docs say Task(...) still works but unclear whether alias applies to permissions.allow entries like Task(Explore) or only frontmatter.",
+      "priority": "low"
+    },
+    {
+      "gap_id": "R3.G5",
+      "issue": "MCP server name semantics with plugin namespacing (plugin:server@marketplace) vs .mcp.json entries vs inline subagent frontmatter - underspecified in permission rule context.",
+      "priority": "medium"
+    },
+    {
+      "gap_id": "R3.G6",
+      "issue": "additionalDirectories path semantics: docs give '../docs/' but do not state which of the four path prefixes apply; empirically shell-relative-to-cwd, but rule syntax differs from file-tool syntax.",
+      "priority": "medium"
+    },
+    {
+      "gap_id": "R3.G7",
+      "issue": "allowManagedPermissionRulesOnly + array merging interaction: does it drop user/project arrays entirely or evaluate but never grant what managed didn't? Docs are ambiguous.",
+      "priority": "medium"
+    },
+    {
+      "gap_id": "R3.G8",
+      "issue": "--tools '' semantics: disables all tools, but whether it also disables built-in read-only Bash commands (which normally bypass prompts) is unspecified.",
+      "priority": "low"
+    }
+  ],
+  "word_count_estimate": 420
+}

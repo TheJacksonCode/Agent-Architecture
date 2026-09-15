@@ -1,0 +1,277 @@
+{
+  "source_report": "R7_community_patterns.md",
+  "researcher": "R7",
+  "extractor": "E7",
+  "model": "Opus 4.7",
+  "date": "2026-04-17",
+  "scope": "Public community configs - GitHub, Reddit, HN, blogs, Twitter",
+  "claims": [
+    {
+      "id": "R7.C1",
+      "claim": "Real-world Claude Code settings+permissions configurations split into five clear archetypes in 2025-2026: Minimalist, Power user, Enterprise managed, Security-paranoid, and OSS maintainer, each driven by different trade-offs between security, velocity, and fatigue.",
+      "quote": "Real-world Claude Code settings+permissions configurations have split into five clear archetypes across 2025-2026, each driven by different trade-offs between security, velocity, and fatigue.",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["archetypes", "taxonomy", "community"]
+    },
+    {
+      "id": "R7.C2",
+      "claim": "The central tension in community practice is not deny-first vs allow-first but trust prompts vs trust sandboxes - power users have abandoned permission prompts entirely in favor of hooks or devcontainers as the real boundary.",
+      "quote": "The central tension in community practice is not 'deny-first vs allow-first' (the docs settled that) but 'trust prompts vs trust sandboxes': power users like Armin Ronacher and Trail of Bits have abandoned permission prompts entirely (running --dangerously-skip-permissions with either hooks or devcontainers as the real boundary)",
+      "stance": "interpretive",
+      "confidence": "high",
+      "tags": ["security-model", "bypass-mode", "tension"]
+    },
+    {
+      "id": "R7.C3",
+      "claim": "Wildcard matching in permission rules is structurally broken: Bash(git:*) fails to match compound commands like 'git add file && git commit' and Bash(ls *) mis-evaluates tilde expansion, per GitHub issues #18160, #27139, #41259, #6850.",
+      "quote": "wildcard matching is broken: Bash(git:*) does not match git add file && git commit and Bash(ls *) mis-evaluates tilde expansion (GitHub issues #18160, #27139, #41259, #6850)",
+      "stance": "critical",
+      "confidence": "high",
+      "tags": ["wildcards", "bugs", "permissions"]
+    },
+    {
+      "id": "R7.C4",
+      "claim": "Trail of Bits explicitly positions hooks as not a security boundary - they are 'structured prompt injection at opportune times' and can be bypassed by prompt injection.",
+      "quote": "Hooks are not a security boundary - a prompt injection can work around them. They are structured prompt injection at opportune times.",
+      "stance": "critical",
+      "confidence": "high",
+      "tags": ["hooks", "security-boundary", "trailofbits"]
+    },
+    {
+      "id": "R7.C5",
+      "claim": "Community settings evolution went through flat allowedTools (2024 Q1) -> structured permissions.allow/deny/ask (mid-2025) -> hook-gated bypass (late 2025) -> enterprise managed-settings.json with MDM (2026 Q1) -> Auto mode (2026 Q1 replacing --dangerously-skip-permissions).",
+      "quote": "The evolution from 2024 to 2026 has been: flat allowedTools arrays (2024 Q1 beta) -> structured permissions.allow/deny/ask (mid-2025) -> hook-gated bypass (late 2025) -> enterprise managed-settings.json with MDM (2026 Q1) -> Auto mode (2026 Q1, replacing --dangerously-skip-permissions semantics).",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["evolution", "timeline", "auto-mode"]
+    },
+    {
+      "id": "R7.C6",
+      "claim": "Top community repos by stars in 2026: davila7/claude-code-templates (24.7k), obra/superpowers (156k, Jesse Vincent), trailofbits/claude-code-config (1.9k, security gold standard), feiskyer (1.4k), citypaul/.dotfiles (629), centminmod (2.2k).",
+      "quote": "davila7/claude-code-templates (24.7k), obra/superpowers (156k, Jesse Vincent), hesreallyhim/awesome-claude-code (39.2k curated list), trailofbits/claude-code-config (1.9k, gold standard for security), citypaul/.dotfiles (629, most-forked individual config), centminmod/my-claude-code-setup (2.2k, memory bank pattern)",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["github", "star-counts", "top-repos"]
+    },
+    {
+      "id": "R7.C7",
+      "claim": "Trail of Bits deny rules include SSH/GPG, AWS/Azure/Kube/Docker creds, npmrc/pypirc/gem credentials, git-credentials, shell rc files, macOS Keychains, and crypto wallet data (metamask, electrum, exodus, phantom, solflare).",
+      "quote": "Deny rules (Read/Edit blocks): ~/.ssh/**, ~/.gnupg/**, ~/.aws/**, ~/.azure/**, ~/.kube/**, ~/.docker/config.json, ~/.npmrc, ~/.npm/**, ~/.pypirc, ~/.gem/credentials, ~/.git-credentials, ~/.config/gh/**, ~/.bashrc, ~/.zshrc (backdoor-planting prevention), ~/Library/Keychains/**, Crypto wallets: metamask, electrum, exodus, phantom, solflare app data",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["deny-list", "security-paranoid", "trailofbits"]
+    },
+    {
+      "id": "R7.C8",
+      "claim": "Trail of Bits sets enableAllProjectMcpServers: false because compromised project .mcp.json files in git could ship malicious MCP servers.",
+      "quote": "Critical setting: enableAllProjectMcpServers: false - prevents compromised repos from shipping malicious MCP servers.",
+      "stance": "prescriptive",
+      "confidence": "high",
+      "tags": ["mcp", "supply-chain", "trailofbits"]
+    },
+    {
+      "id": "R7.C9",
+      "claim": "Ian Nuttall popularized the minimalist global-allowlist archetype: use ~/.claude/settings.json to auto-allow safe tools, let agent ask only for destructive ops like removing files or committing to git.",
+      "quote": "Claude Code pro tip: Use the global ~/.claude/settings.json to keep a list of safe tools that are automatically allowed to run. The agent should only ask permission to do things you want to control (like removing files, committing to git, etc)",
+      "stance": "prescriptive",
+      "confidence": "high",
+      "tags": ["minimalist", "ian-nuttall", "global-allowlist"]
+    },
+    {
+      "id": "R7.C10",
+      "claim": "Armin Ronacher (Flask creator) runs Claude Code with --dangerously-skip-permissions, claiming it unlocks huge productivity; let Claude do almost all work building, testing, packaging and publishing a new Python library.",
+      "quote": "Armin runs Claude Code with the --dangerously-skip-permissions option, saying this unlocks a huge amount of productivity. Armin had Claude+CC do almost all of the work in building, testing, packaging and publishing a new Python library.",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["power-user", "armin-ronacher", "bypass-mode"]
+    },
+    {
+      "id": "R7.C11",
+      "claim": "Freek Van der Herten's public dotfiles philosophy: grants broad permissions because constant approval prompts break flow, and enables thinking mode permanently.",
+      "quote": "admits he gives Claude 'broad permissions to run commands and edit files' because 'constant approval prompts break my flow'. Also enables thinking mode permanently.",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["power-user", "freek", "thinking-mode"]
+    },
+    {
+      "id": "R7.C12",
+      "claim": "Top Reddit complaint early 2026 is the confusing file hierarchy: legacy ~/.claude.json, global user settings, project settings, and local settings, which leads to unexpected overrides.",
+      "quote": "The number one headache with settings.json Claude Code configuration involves a confusing hierarchy of files - legacy ~/.claude.json, global user ~/.claude/settings.json, project .claude/settings.json, local .claude/settings.local.json - which often leads to settings being unexpectedly overridden.",
+      "stance": "critical",
+      "confidence": "medium",
+      "tags": ["reddit", "complaint", "hierarchy"]
+    },
+    {
+      "id": "R7.C13",
+      "claim": "Deny rules are frequently reported as ignored by the AI despite explicit instructions, creating security risk (issue #18160 by @mieubrisse Jan 14 2026).",
+      "quote": "A significant challenge with settings.json Claude Code permissions is that 'deny' rules are frequently ignored, posing a security risk as the AI might access sensitive files despite explicit instructions.",
+      "stance": "critical",
+      "confidence": "medium",
+      "tags": ["deny-rules", "bugs", "reddit"]
+    },
+    {
+      "id": "R7.C14",
+      "claim": "In March 2026 Max subscribers reported 5-hour session windows depleted within 1-2 hours with same workloads; one Max 20x user saw usage jump from 21% to 100% in a single prompt; prompt cache bug silently inflated costs 10-20x.",
+      "quote": "Multiple Claude Max subscribers say their 5-hour session windows have been depleted within one to two hours using the same workloads that previously caused no problems. Max 5x users claim their rate was spent after roughly 90 minutes of normal agentic tasks, while one Max 20x subscriber witnessed their usage jump from 21% to 100% on a single prompt. found two independent bugs that cause prompt cache to break, silently inflating costs by 10-20x.",
+      "stance": "critical",
+      "confidence": "medium",
+      "tags": ["rate-limits", "prompt-cache", "march-2026"]
+    },
+    {
+      "id": "R7.C15",
+      "claim": "HN Show 'Ccperm' (item 47167242, author dongekon) introduced accumulated-permissions auditing as emerging practice: 'I use Claude Code across ~10 projects and had no idea what I'd been allowing over time.'",
+      "quote": "Letsur-dev/ccperm is the auditor (HN Show: news.ycombinator.com/item?id=47167242, author dongekon): scans home dir for all settings files, TUI showing accumulated permissions across projects. Author quote: 'I use Claude Code across ~10 projects and had no idea what I'd been allowing over time.'",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["hn", "ccperm", "auditing"]
+    },
+    {
+      "id": "R7.C16",
+      "claim": "HN item 47516808 (Apylon777) revealed a first-token-only parsing flaw: allow/deny lists permit dangerous actions like 'git cleanup' because only the first token is evaluated; filed issue #36637 + PR #36645.",
+      "quote": "Security vuln: 'Allow and deny lists allow DANGEROUS actions like git cleanup' due to first-token-only parsing. Author developed a bash-guard fix locally; filed GitHub issue #36637 + PR #36645. Criticism of HackerOne triage bot dismissing as 'informational'.",
+      "stance": "critical",
+      "confidence": "high",
+      "tags": ["hn", "first-token-flaw", "parsing-bug"]
+    },
+    {
+      "id": "R7.C17",
+      "claim": "HN item 44956002 established 'bypass mode + Docker container' as the canonical safe way to run YOLO, precursor to trailofbits/claude-code-devcontainer.",
+      "quote": "Canonical HN discussion establishing 'bypass mode + Docker container' as the safe way to run YOLO. Precursor to trailofbits/claude-code-devcontainer.",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["hn", "devcontainer", "bypass-mode"]
+    },
+    {
+      "id": "R7.C18",
+      "claim": "Klement Gunndu's 5 permission patterns: Deny-First Rules (deny always beats allow regardless of order or file), 4-Layer Settings Hierarchy, MCP+Subagent Controls, Sandbox for OS-Level Enforcement, Permission Modes with disableBypassPermissionsMode: 'disable'.",
+      "quote": "Five patterns: 1. Deny-First Rules - 'A deny rule always beats an allow rule, regardless of order in the JSON array or which settings file it lives in.' ... 2. 4-Layer Settings Hierarchy ... 3. MCP + Subagent Controls ... 4. Sandbox for OS-Level Enforcement ... 5. Permission Modes ... Critical: disableBypassPermissionsMode: 'disable' prevents circumvention.",
+      "stance": "prescriptive",
+      "confidence": "high",
+      "tags": ["klement-gunndu", "deny-first", "5-patterns"]
+    },
+    {
+      "id": "R7.C19",
+      "claim": "Klement Gunndu warns that each 'Yes, don't ask again' click writes a permanent allow rule to local settings, creating invisible security gaps over time.",
+      "quote": "One 'Yes, don't ask again' click saves a permanent allow rule to local settings, creating invisible security gaps over time.",
+      "stance": "critical",
+      "confidence": "high",
+      "tags": ["drift", "always-allow", "klement"]
+    },
+    {
+      "id": "R7.C20",
+      "claim": "Boucle's broken-permissions analysis documents four failures: compound command bypass via &&, 'Always Allow' drift saving exact strings, cross-level inconsistency where user-scope rules don't enforce at project level, and multi-line command bypass of deny rules.",
+      "quote": "Four specific failures: 1. Compound command bypass: Bash(git:*) fails to match git add file && git commit -m 'message' 2. 'Always Allow' drift: saves exact strings, never match again 3. Cross-level inconsistency: ~/.claude/settings.json rules don't enforce at project level 4. Deny rule failures: multi-line commands bypass",
+      "stance": "critical",
+      "confidence": "high",
+      "tags": ["boucle", "wildcards", "compound-commands"]
+    },
+    {
+      "id": "R7.C21",
+      "claim": "Hubert Sablonniere's security insight: never open Claude Code in the home directory (triggers safety warning for SSH/tokens); instead open it in a dotfiles folder to limit filesystem scope.",
+      "quote": "Security insight: never open Claude Code in home directory (triggers safety warning about SSH keys, tokens). Instead opens in dotfiles folder - 'a folder I can open with Claude Code without giving it access to everything else.'",
+      "stance": "prescriptive",
+      "confidence": "high",
+      "tags": ["sablonniere", "cwd-scope", "safety"]
+    },
+    {
+      "id": "R7.C22",
+      "claim": "Boris Cherny (Claude Code creator) ships 20-30 PRs/day by running 5 parallel Claude instances across terminal tabs, each starting in plan mode, iterating on the plan, then one-shotting implementation.",
+      "quote": "Boris ships '20-30 PRs a day by running 5 parallel Claude instances across five terminal tabs, starting Claude in plan mode, iterating on the plan, then letting it one-shot the implementation.' Plan mode workflow + markdown thinking files is the Anthropic-internal recommended pattern.",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["boris-cherny", "plan-mode", "parallel"]
+    },
+    {
+      "id": "R7.C23",
+      "claim": "Simon Willison confirmed Claude Code for web is 'effectively a sandboxed instance of claude --dangerously-skip-permissions running in Anthropic's container' - Anthropic's own cloud product is a sandboxed YOLO.",
+      "quote": "On Claude Code for web: 'effectively a sandboxed instance of claude --dangerously-skip-permissions running in Anthropic's container' - confirmed that Anthropic's own cloud product is a sandboxed YOLO.",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["simonw", "claude-web", "bypass-mode"]
+    },
+    {
+      "id": "R7.C24",
+      "claim": "Top 10 common deny rules across public configs: .env, ~/.ssh, cloud creds (aws/azure/kube), rm -rf, force push (both -f and --force positions), sudo, curl|sh piping, git-credentials and gh config, npmrc/pypirc/gem credentials, chmod 777 / dd / mkfs.",
+      "quote": "Top 10 'common deny list' (things everyone blocks): 1. Read(./.env) / Read(./.env.*) - secrets 2. Read(~/.ssh/**) - SSH keys 3. Read(~/.aws/**) / ~/.azure/** / ~/.kube/** - cloud creds 4. Bash(rm -rf *) / Bash(rm -rf /*) - filesystem destruction 5. Bash(git push --force *) / Bash(git push -f *) - force push (both flag positions) 6. Bash(sudo *) - privilege escalation 7. Bash(curl * | sh) / Bash(wget * | sh) - remote code exec 8. Read(~/.git-credentials) / ~/.config/gh/** - git auth 9. Read(~/.npmrc) / ~/.pypirc / ~/.gem/credentials - registry tokens 10. Bash(chmod 777 *) / Bash(dd if=*) / Bash(mkfs.*) - catastrophic ops",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["top10", "deny-list", "consensus"]
+    },
+    {
+      "id": "R7.C25",
+      "claim": "Top 10 common allow rules: read-only git (status/log/diff/blame), file inspection (ls/cat/tree/stat), search (grep/rg/find), test runs (npm test/pytest), linters (prettier/eslint), typecheckers (tsc/mypy), built-in Read/Grep/Glob, WebFetch with allowlisted domains, script exec (node/python/uv), MCP GitHub reads.",
+      "quote": "Top 10 'common allow list' (things everyone permits without prompt): 1. Bash(git status), Bash(git log), Bash(git diff), Bash(git blame) 2. Bash(ls *), Bash(cat *), Bash(tree *), Bash(stat *) 3. Bash(grep:*), Bash(rg:*), Bash(find:*) 4. Bash(npm test), Bash(npm run:*), Bash(pytest:*) 5. Bash(npx prettier --write *), Bash(npx eslint *) 6. Bash(npx tsc --noEmit), Bash(mypy *) 7. Read, Grep, Glob tools (built-in) 8. WebFetch (with domain allowlists in env.allowedDomains) 9. Bash(node *), Bash(python:*), Bash(uv run:*) 10. mcp__github__* read operations",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["top10", "allow-list", "consensus"]
+    },
+    {
+      "id": "R7.C26",
+      "claim": "Common hook patterns (prevalence %): PreToolUse block rm -rf/force push/sudo (70%+), PostToolUse auto-format (50%+), PostToolUse tests on test-file edit (30%+), PreToolUse block edits on main (30%+), Stop session-end (15%+), SessionStart memory bank load (15%+), UserPromptSubmit skill-eval (10%+).",
+      "quote": "1. PreToolUse block rm -rf / force push / sudo - 70%+ of public configs 2. PostToolUse auto-format (prettier, black, gofmt) - 50%+ 3. PostToolUse run tests on test-file edit - 30%+ 4. PreToolUse block edits on main branch - 30%+ 5. Stop hook for session-end verification - 15%+ 6. SessionStart for memory bank load / MEMORY.md - 15%+ 7. UserPromptSubmit for skill-eval.sh - 10%+",
+      "stance": "descriptive",
+      "confidence": "medium",
+      "tags": ["hooks", "prevalence", "patterns"]
+    },
+    {
+      "id": "R7.C27",
+      "claim": "The --dangerously-skip-permissions con camp cites Mike Wolak's October 2025 incident where Claude ran rm -rf / and destroyed every user-owned file; consensus is to only use with Docker/devcontainer, PreToolUse hooks, isolated machine, and git reset --hard ready.",
+      "quote": "Con camp: promptlayer.com, truefoundry.com/blog/claude-code-dangerously-skip-permissions, thomas-wiegold.com - all cite Mike Wolak's October 2025 incident where Claude ran rm -rf / and destroyed every user-owned file (thousands of 'Permission denied' for /bin, /boot, /etc). Consensus: only use if (a) in Docker/devcontainer, (b) with PreToolUse hooks as safety valve, (c) on isolated machine, (d) with git reset --hard ready.",
+      "stance": "critical",
+      "confidence": "high",
+      "tags": ["bypass-mode", "incident", "wolak"]
+    },
+    {
+      "id": "R7.C28",
+      "claim": "The zircote/.claude repo (ARCHIVED Feb 23 2026, 22 stars) exemplifies a pattern that died: large centralized personal .claude dotfiles with 100+ agents in one place; community prefers smaller composable plugins.",
+      "quote": "Included because it demonstrates a pattern that died: large centralized personal .claude dotfiles with 100+ agents in one place. Archived within a year, signaling that community prefers smaller composable plugins over monolithic dotfiles.",
+      "stance": "descriptive",
+      "confidence": "medium",
+      "tags": ["archived", "monolithic", "plugins"]
+    },
+    {
+      "id": "R7.C29",
+      "claim": "CLAUDE.md length has three camps: Short (Shimo, ~180 lines optimum), Long (citypaul/Metabase, 500+ lines), and Memory Bank (centminmod, split across multiple CLAUDE-*.md dynamically loaded).",
+      "quote": "Short camp (Shimo): 'Optimal length: ~180 lines' - anything longer bloats context. Long camp (citypaul, Metabase CLAUDE.md): comprehensive rules, decision frameworks, 500+ lines. Memory bank camp (centminmod): split across multiple CLAUDE-*.md files dynamically loaded.",
+      "stance": "descriptive",
+      "confidence": "medium",
+      "tags": ["claudemd", "length", "controversial"]
+    },
+    {
+      "id": "R7.C30",
+      "claim": "Anthropic's Auto mode (2026 Q1, anthropic.com/engineering/claude-code-auto-mode) is the official migration path away from --dangerously-skip-permissions, using an autoMode.environment classifier for trusted repos/buckets/domains.",
+      "quote": "Auto mode replaces --dangerously-skip-permissions semantically (anthropic.com/engineering/claude-code-auto-mode). autoMode.environment classifier for trusted repos/buckets/domains",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["auto-mode", "2026", "official"]
+    },
+    {
+      "id": "R7.C31",
+      "claim": "Reddit direct fetches failed (error) so extracts rely on aggregators (aitooldiscovery.com, morphllm.com/claude-code-reddit, DEV Community digests) - gap in raw upvoted comment data.",
+      "quote": "Reddit is difficult to scrape (fetcher returned errors), but synthesis from aggregators (aitooldiscovery.com, morphllm.com/claude-code-reddit, DEV Community digests) reveals... WebFetch returned errors on reddit.com; relied on aggregator coverage (aitooldiscovery, morphllm). A follow-up with direct API or JSON endpoint could surface raw upvoted comments.",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["gap", "reddit", "methodology"]
+    },
+    {
+      "id": "R7.C32",
+      "claim": "Community is splitting between settings.json-centric config vs Jesse Vincent's Superpowers plugin approach that bypasses settings.json entirely in favor of skill-based plugin config; outcome uncertain by EOY 2026.",
+      "quote": "Delta: plugin-system vs settings.json pattern competition: Community is splitting - Jesse Vincent's Superpowers bypasses settings.json entirely in favor of skill-based plugin config. Unclear which wins by EOY 2026.",
+      "stance": "interpretive",
+      "confidence": "medium",
+      "tags": ["plugins", "skills", "competition", "delta"]
+    },
+    {
+      "id": "R7.C33",
+      "claim": "Common env vars across public configs: BASH_DEFAULT_TIMEOUT_MS 420000 (7min, docs default too short), BASH_MAX_TIMEOUT_MS 7200000 (2h CI), DISABLE_TELEMETRY=1, DISABLE_ERROR_REPORTING=1, CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1, INSIDE_CLAUDE_CODE=1, enableAllProjectMcpServers: false.",
+      "quote": "BASH_DEFAULT_TIMEOUT_MS: 420000 (7 min) - ubiquitous, docs default too short. BASH_MAX_TIMEOUT_MS: 7200000 (2h) - CI/long tests. DISABLE_TELEMETRY: 1, DISABLE_ERROR_REPORTING: 1 - privacy. CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: 1 - noise reduction. INSIDE_CLAUDE_CODE: 1 - let scripts detect Claude Code context. enableAllProjectMcpServers: false - supply-chain defense.",
+      "stance": "descriptive",
+      "confidence": "high",
+      "tags": ["env-vars", "timeout", "telemetry"]
+    }
+  ],
+  "word_count_target_report": 4200,
+  "extract_word_count_est": 420,
+  "notes": "R7 covers community patterns 2024-2026. Strong coverage on GitHub repos, HN threads, and blog patterns; gap on direct Reddit data (aggregator-only). 5 archetypes crystallized. Key controversial patterns: bypass mode, thinking-mode-always-on, .mcp.json trust, broad wildcards, CLAUDE.md length, secrets location."
+}

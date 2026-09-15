@@ -1,0 +1,144 @@
+{
+  "extract_id": "E1",
+  "source_report": "research/R1_task_tool_api_spec.md",
+  "role": "res_extractor",
+  "topic": "Task/Agent tool API spec + YAML frontmatter",
+  "extract_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R1.C1",
+      "claim": "The Task tool was renamed to Agent tool in Claude Code v2.1.63; both names refer to the same underlying subagent spawn mechanism.",
+      "source": "Anthropic CHANGELOG + docs",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R1.C2",
+      "claim": "Subagent definitions live at ~/.claude/agents/ (user scope), .claude/agents/ (project scope), plugins, or via CLI flag; precedence is project > user > plugin > built-in.",
+      "source": "Anthropic docs /en/sub-agents",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R1.C3",
+      "claim": "Subagent frontmatter supports 17 fields: name, description, tools, disallowedTools, model, permissionMode, maxTurns, skills, mcpServers, hooks, memory, background, effort, isolation, color, initialPrompt, and the body content after YAML.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R1.C4",
+      "claim": "Five built-in subagent types exist: Explore (Haiku, read-only), Plan (inherit, read-only), general-purpose (inherit, all tools), statusline-setup (Sonnet, narrow tools), Claude Code Guide (Haiku, docs).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R1.C5",
+      "claim": "The description field is the most important routing signal - Claude uses it to auto-select which subagent to spawn; it should describe WHEN to run, not just WHAT.",
+      "source": "Anthropic docs + community consensus",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R1.C6",
+      "claim": "tools is an allowlist; disallowedTools is a denylist; if tools is omitted the subagent inherits all parent tools; both together filter the set.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R1.C7",
+      "claim": "permissionMode values: default, acceptEdits, plan, bypassPermissions; plan mode makes the subagent read-only until approval.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R1.C8",
+      "claim": "model frontmatter accepts: sonnet, opus, haiku, haiku-fast, inherit, or specific model IDs; defaults to inherit.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R1.C9",
+      "claim": "maxTurns caps the subagent's tool-call loop iterations; prevents runaway spend.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R1.C10",
+      "claim": "AgentDefinition is the programmatic SDK type (Python + TypeScript) that mirrors the YAML frontmatter for runtime-constructed subagents.",
+      "source": "Anthropic SDK docs",
+      "confidence": "high",
+      "category": "sdk"
+    },
+    {
+      "id": "R1.C11",
+      "claim": "Skills specified in frontmatter are loaded into the subagent's system prompt at spawn, but NOT applied when the same subagent definition runs as an Agent Teams teammate (documented asymmetry).",
+      "source": "Anthropic docs /en/agent-teams",
+      "confidence": "high",
+      "category": "gotcha"
+    },
+    {
+      "id": "R1.C12",
+      "claim": "mcpServers frontmatter overrides which MCP servers are available to the subagent; also NOT applied when running as a teammate.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "gotcha"
+    },
+    {
+      "id": "R1.C13",
+      "claim": "Invocation is natural-language via the main agent ('use the <name> subagent'), via explicit Agent tool call, or via slash command that references the subagent.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R1.C14",
+      "claim": "The isolation field controls context isolation between subagent and parent; defaults vary by spawn mode.",
+      "source": "Anthropic docs",
+      "confidence": "medium",
+      "category": "config"
+    },
+    {
+      "id": "R1.C15",
+      "claim": "background: true in frontmatter is the declarative equivalent of the run_in_background pattern for subagents that should run asynchronously.",
+      "source": "Anthropic docs",
+      "confidence": "medium",
+      "category": "config"
+    },
+    {
+      "id": "R1.C16",
+      "claim": "hooks frontmatter lets a subagent definition register its own lifecycle hooks (PreToolUse/PostToolUse/etc.) scoped to its invocations.",
+      "source": "Anthropic docs",
+      "confidence": "medium",
+      "category": "config"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT-E1-01",
+      "description": "Some community posts reference only a subset of frontmatter fields (older docs). v2.1.63+ canon is the 17-field set. Older tutorials may show 5-10 fields.",
+      "resolution_hint": "Default to v2.1.63+ canonical set; treat older posts as potentially stale."
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "GAP-E1-01",
+      "description": "isolation field semantics not fully documented - default behavior per spawn mode unclear."
+    },
+    {
+      "id": "GAP-E1-02",
+      "description": "background field schema relative to run_in_background Bash param not explicit."
+    },
+    {
+      "id": "GAP-E1-03",
+      "description": "Full payload of SubagentStart hook not published (SubagentStop is documented)."
+    }
+  ],
+  "claim_count": 16,
+  "status": "EXTRACT COMPLETE"
+}

@@ -1,0 +1,37 @@
+{
+  "source": "R1_protocol_spec.md",
+  "topic": "MCP Protocol Spec (JSON-RPC 2.0, primitives, lifecycle, transport)",
+  "date_accessed": "2026-04-17",
+  "claims": [
+    {"id": "R1.C1", "claim": "Aktualna wersja spec MCP na 2026-04-17 to 2025-11-25 (schema TypeScript).", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C2", "claim": "MCP uzywa JSON-RPC 2.0 jako base protocol. Wszystkie wiadomosci MUSZA byc zgodne z JSON-RPC 2.0.", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C3", "claim": "MCP definiuje trzy role: Host (aplikacja LLM), Client (konektor w hoscie), Server (dostarczyciel tools/resources/prompts).", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C4", "claim": "MCP ma trzy primitives po stronie serwera: Tools (model-controlled actions), Resources (application-controlled data), Prompts (user-controlled templates).", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C5", "claim": "Klient moze oferowac serwerowi: Sampling, Roots, Elicitation (opcjonalne capabilities).", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C6", "claim": "Lifecycle sesji MCP ma 3 fazy: Initialization (initialize->initialized), Operation, Shutdown.", "url": "https://spec.modelcontextprotocol.io/specification/basic/lifecycle/", "trust": 1},
+    {"id": "R1.C7", "claim": "Capability negotiation w fazie initialize - obie strony deklaruja co obsluguja (np. tools:{listChanged:true}).", "url": "https://www.stainless.com/mcp/mcp-specification", "trust": 2},
+    {"id": "R1.C8", "claim": "MCP obsluguje 3 transports: stdio (lokalne subprocesy), Streamable HTTP (rekomendowane dla remote), SSE (deprecated od poczatku 2026).", "url": "https://apigene.ai/blog/mcp-sse-vs-stdio", "trust": 2},
+    {"id": "R1.C9", "claim": "Praktyczne rozdzielenie 2026: ~30% stdio dla dev tools, ~70% Streamable HTTP dla shared infra/production.", "url": "https://particula.tech/blog/mcp-developer-guide", "trust": 2},
+    {"id": "R1.C10", "claim": "Streamable HTTP wymaga OAuth 2.1 + PKCE dla autoryzacji (mandate spec).", "url": "https://maurocanuto.medium.com/building-mcp-servers-the-right-way-a-production-ready-guide-in-typescript-8ceb9eae9c7f", "trust": 2},
+    {"id": "R1.C11", "claim": "Claude Code 2026 konsumuje tools pierwszoklasowo; resources i prompts sa dostepne ale rzadziej uzywane przez workflow.", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R1.C12", "claim": "Tool names maja schema JSON Schema generowany z type hints/Zod/Pydantic.", "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-11-25/schema.ts", "trust": 1},
+    {"id": "R1.C13", "claim": "Tool results zwracaja tablice content items (text, image, resource reference).", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C14", "claim": "MCP utilities: Progress tracking, Cancellation, Error reporting, Logging, Configuration - wszystko standaryzowane.", "url": "https://modelcontextprotocol.info/specification/", "trust": 2},
+    {"id": "R1.C15", "claim": "Spec MCP wymaga user consent dla tool calls i data access - ale nie moze wymusic protocol-side, odpowiedzialnosc hosta.", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C16", "claim": "Resources identyfikowane URI (file:///, postgres://db/table/row, itd.). Templates: file:///{path}.", "url": "https://github.com/cyanheads/model-context-protocol-resources/blob/main/guides/mcp-server-development-guide.md", "trust": 2},
+    {"id": "R1.C17", "claim": "Notifications (jednokierunkowe wiadomosci): progress, cancelled, tools/list_changed, message (log).", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C18", "claim": "Wersje spec: 2024-11-05 (launch), 2025-03-26, 2025-06-18, 2025-11-25 (current GA).", "url": "https://github.com/modelcontextprotocol/modelcontextprotocol", "trust": 1},
+    {"id": "R1.C19", "claim": "Tool descriptions/annotations powinny byc traktowane jako 'untrusted' od serwerow (prompt injection vector).", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R1.C20", "claim": "Error code `-32001: Request timeout` to MCP-specific error widoczny w Claude Desktop dla timeoutow.", "url": "https://github.com/anthropics/claude-code/issues/44032", "trust": 1},
+    {"id": "R1.C21", "claim": "MCP inspiruje sie Language Server Protocol (LSP) - jeden kontrakt zamiast 50 integracji.", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1}
+  ],
+  "conflicts_flagged": [
+    "R1.C11 vs potencjalnie R4 - R4 mowi o resources-heavy power-user patterns, R1 mowi ze Claude Code rzadziej uzywa resources. Rozstrzygnac w CRITIC: czy Claude Code pelnie wspiera resources 2026 albo czesciowo? Wymaga empirical test.",
+    "R1.C9 (30/70 split) vs R4 - R4 cytuje te same zrodla, spojnie. Brak konfliktu. Reference note."
+  ],
+  "gaps_flagged": [
+    "Brak potwierdzonej listy capabilities deklarowanych przez Claude Code 2026 (czy sampling on/off? roots? elicitation?). Wymaga empirical test lub oficjalne Anthropic docs deep-dive.",
+    "Version negotiation fallback behavior - co robi Claude Code jesli serwer deklaruje tylko 2024-11-05 (starsza wersja)? Backwards compatibility unclear.",
+    "MCP logging notifications - czy Claude Code eksponuje user-side w UI? Brak explicit docs."
+  ]
+}

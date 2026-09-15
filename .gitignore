@@ -5,8 +5,22 @@ live-monitor-research/
 ikony/
 podcast/
 v12/
-# v30/ and v31/ - NOT ignored, these are the current versions
 v30/AGENT_TEAMS_CONFIGURATOR_v30_backup.html
+
+# Development history between the two published versions (v32 and v41).
+# Only the shipped versions are public; the intermediate work (research drops,
+# in-progress redesigns, frozen fallbacks) stays local.
+v33/
+v34/
+v35/
+v36/
+v37/
+v38/
+v39/
+v40/
+
+# Local debug screenshots (used to verify a fix, not project content)
+screen/
 
 # Personal/local documents
 TRAINING_CURRICULUM_AI_ENGINEER.md

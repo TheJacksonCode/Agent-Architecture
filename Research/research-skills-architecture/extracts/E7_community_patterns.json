@@ -1,0 +1,169 @@
+{
+  "report_id": "R7",
+  "source_file": "research/R7_community_patterns.md",
+  "extractor_persona": "Haiku-equivalent (Orchestrator-run)",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R7.C1",
+      "claim": "Ecosystem exploded Oct 2025 (plugin launch) to April 2026: top repos reach 22k-33k+ stars, 1000+ skill collections common.",
+      "evidence": "GitHub repo metrics April 2026.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C2",
+      "claim": "4 characteristics of premium skills: (1) vendor ownership, (2) frontmatter discipline (trigger-rich description), (3) multi-file resources with progressive disclosure, (4) commitment-before-generation pattern.",
+      "evidence": "R7 premium skill case studies (Frontend Design, Remotion, Trail of Bits).",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C3",
+      "claim": "Top-10 community-consensus skills 2026: Frontend Design (Anthropic), Remotion, Trail of Bits Security, Agent Orchestrator/AgentSys, Book Factory, Memory Persistence, Structured Engineering Workflows, Web Extraction (Firecrawl-backed), Marketing Operations, Document Automation.",
+      "evidence": "Triangulation from 5+ curated lists (firecrawl, composio, medium, Snyk, blockchain-council).",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C4",
+      "claim": "Category distribution in curated lists: Engineering workflows 43%, Document automation 22%, Web+research 18%, Marketing/content 12%, Security 5%.",
+      "evidence": "R7 category analysis from top-50 lists.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R7.C5",
+      "claim": "Vendor-authored skills (highest trust tier): Anthropic (Frontend Design, commit-commands, code-review), Vercel, Stripe, Cloudflare, Netlify, Trail of Bits, Sentry, Expo, HuggingFace, Figma, Remotion.",
+      "evidence": "VoltAgent/awesome-agent-skills vendor list.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C6",
+      "claim": "Individual premium authors: Jeremy Longshore (CCPI), Travis Vann (awesome-claude-skills), sickn33, hesreallyhim (canonical awesome-claude-code).",
+      "evidence": "Author attribution in repos.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C7",
+      "claim": "Naming anti-patterns: generic names (my-skill, helper, utility, tools, assistant) prevent auto-invocation matching; specific names (programmatic-video-remotion, aesthetic-commitment-framework) trigger reliably.",
+      "evidence": "Community troubleshooting + R3.C3 path A dependency.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C8",
+      "claim": "Frontmatter anti-patterns: empty/generic description ('Helps with coding tasks'), missing when_to_use context, missing argument-hint for interactive skills, missing allowed-tools for shell-using skills (triggers permission prompt every call).",
+      "evidence": "R7 section 5 anti-patterns + frontmatter docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C9",
+      "claim": "Body bloat anti-pattern: monolithic SKILL.md >3000 tokens without resources; exceeds ~1500 token body budget; high ejection risk after compaction.",
+      "evidence": "R1.C9 compaction budget + community observations.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C10",
+      "claim": "Configuration anti-pattern: boolean prop proliferation (isCompact:true + showHeader:false + isRounded:true). Better: single enum variant field.",
+      "evidence": "Analog from UI design systems applied to skill config.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R7.C11",
+      "claim": "LLM-default-output anti-pattern: skill that doesn't force commitment gets statistical-mean output (Inter font, purple gradient, grid cards). Fix: explicit commit-before-generate (Frontend Design pattern).",
+      "evidence": "R7 section 2.3 + Frontend Design analysis.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C12",
+      "claim": "Over-chaining anti-pattern: chains >5 skills incur nonlinear token cost due to listing budget + pre-invocation reasoning per step. Optimal chain depth 2-3 skills.",
+      "evidence": "R4.C16 token economics + community reports.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C13",
+      "claim": "Testing debt: most community skills lack unit tests (golden outputs, expected behaviors); premium vendor skills (Anthropic, Remotion, Trail of Bits) include integration tests in repo.",
+      "evidence": "Repo observation + R7 testing section.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C14",
+      "claim": "Context pollution anti-pattern: skill loading 5000+ tokens of resources directly into main context instead of on-demand via Read; degrades compaction survival.",
+      "evidence": "Progressive disclosure docs + R1.C9.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C15",
+      "claim": "Hardcoded paths anti-pattern: absolute paths (C:\\Users\\macie\\...) instead of relative (~/.claude/); breaks cross-platform portability.",
+      "evidence": "Community cross-platform best practices.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C16",
+      "claim": "Reddit/forum signal: top 3 advice for new skill authors: (1) test auto-invocation empirically, (2) measure token footprint, (3) bundle MCP with plugin when skill requires external tools.",
+      "evidence": "Community forum synthesis.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R7.C17",
+      "claim": "H1->H2 2026 trends: (1) package manager consolidation toward official Anthropic marketplace, (2) vendor skills explosion, (3) signing standard emergence, (4) cross-agent compatibility, (5) localized (non-English) skills.",
+      "evidence": "R7 trend watch section + industry trajectory.",
+      "confidence": "low"
+    },
+    {
+      "id": "R7.C18",
+      "claim": "Underrepresented opportunity zones: multi-agent orchestration architecture, non-English (localized) skills, meta-skills (skills for designing skills). Maciej's system covers all 3.",
+      "evidence": "R7 gap analysis + Maciej project positioning.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R7.C19",
+      "claim": "Commitment-before-generation is the single highest-impact pattern for quality: forces explicit decision BEFORE output, breaking statistical-mean LLM tendency. Examples: Frontend Design (aesthetic direction), Trail of Bits (threat model).",
+      "evidence": "Premium skill analysis + pattern replication across top skills.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C20",
+      "claim": "Security audit gap: only premium vendor skills (Remotion via Socket+Agent Trust Hub) and community-vetted (Trail of Bits skills-curated) have audit; majority of ecosystem has zero audit infrastructure.",
+      "evidence": "R6.C18 + R7 security section.",
+      "confidence": "high"
+    },
+    {
+      "id": "R7.C21",
+      "claim": "Maciej positioning: 35 skills + 42 commands is rare orchestrator-architecture pattern, not typical skill-library pattern; unique value props are bilingual PL/EN coverage, design-first toolkit (HTML designer + encyclopedia), routing system (PRESET_CATALOG.md auto-match).",
+      "evidence": "CLAUDE.md project description + R7 positioning analysis.",
+      "confidence": "high"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "R7.CONFLICT1",
+      "description": "Popularity metric ambiguity: 'installs' vs 'weekly installs' vs 'stars' used interchangeably in community lists; no standardized engagement metric exists.",
+      "severity": "low"
+    },
+    {
+      "id": "R7.CONFLICT2",
+      "description": "Ecosystem trust gap: vendor-authored skills presumed high quality (Anthropic, Remotion) but third-party skills vary widely; users lack easy way to distinguish quality tier.",
+      "severity": "medium"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R7.GAP1",
+      "description": "Exact token footprint of premium skills (Frontend Design, Remotion) unknown; community infers from behavior, no public profiling.",
+      "severity": "low"
+    },
+    {
+      "id": "R7.GAP2",
+      "description": "Empirical auto-invocation reliability data: no A/B test comparing generic vs trigger-rich descriptions; advice is heuristic.",
+      "severity": "medium"
+    },
+    {
+      "id": "R7.GAP3",
+      "description": "No formalized community guidelines for 'good citizenship' (naming collisions, MCP bundling standards).",
+      "severity": "low"
+    },
+    {
+      "id": "R7.GAP4",
+      "description": "No benchmark distinguishing installed vs actively-used skills; install counts may overstate real engagement.",
+      "severity": "low"
+    }
+  ],
+  "summary": "R7 catalogs 2026 ecosystem (22k-33k star awesome lists, 1000+ skills), identifies 4 premium characteristics, top-10 consensus skills, 9 anti-patterns (naming, frontmatter, body bloat, LLM-default, over-chaining, testing debt, context pollution, hardcoded paths, boolean-prop), and positions Maciej as rare orchestrator-architecture pattern with bilingual/design-first advantages."
+}

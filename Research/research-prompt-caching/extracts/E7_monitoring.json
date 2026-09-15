@@ -1,0 +1,197 @@
+{
+  "source_report": "R7_monitoring_community.md",
+  "report_words": 2029,
+  "extract_words": 720,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R7.C1",
+      "claim": "Kluczowa metryka monitoring: cache_hit_ratio = cache_read / (cache_read + cache_creation + input). Zdrowa multi-turn: >80%, CCh: 96%",
+      "citation": "Kluczowa metryka zdrowia: cache_hit_ratio = cache_read / (cache_read + cache_creation + input). Zdrowa multi-turn konwersacja: >80%. Claude Code sessions: 96%.",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["metric", "hit-ratio", "health"]
+    },
+    {
+      "id": "R7.C2",
+      "claim": "Alert threshold: ratio <50% przez 3+ consecutive requestow w aktywnej sesji = prawdopodobny invalidation trigger",
+      "citation": "Alert threshold: ratio <50% przez 3+ consecutive requestow w aktywnej sesji. Spadek ponizej 50% przez 3+ requestow = alert (cos invalidates).",
+      "source_location": "section: Summary / 2. Hit ratio",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["alerting", "threshold", "3-consecutive"]
+    },
+    {
+      "id": "R7.C3",
+      "claim": "4 pola response.usage dla cachowania: input_tokens (po BP), cache_read_input_tokens, cache_creation_input_tokens, cache_creation.ephemeral_5m/1h",
+      "citation": "input_tokens: tokeny PO ostatnim breakpoincie. cache_read_input_tokens: tokeny odczytane z cache (0.1x base). cache_creation_input_tokens: tokeny nowo zapisane. cache_creation.ephemeral_5m_input_tokens / ephemeral_1h_input_tokens: breakdown per TTL.",
+      "source_location": "section: Details, 1. Response.usage fields",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["response-fields", "usage-anatomy", "api"]
+    },
+    {
+      "id": "R7.C4",
+      "claim": "Cost formula: input*base + cache_read*base*0.1 + cache_5m*base*1.25 + cache_1h*base*2.0 / 1M",
+      "citation": "Cost per request: effective_cost = input_tokens*base + cache_read*base*0.1 + cache_5m*base*1.25 + cache_1h*base*2.0 / 1_000_000.",
+      "source_location": "section: Details, 1. Response.usage fields",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cost-formula", "calculation", "monitoring"]
+    },
+    {
+      "id": "R7.C5",
+      "claim": "Benchmarki hit ratio per context: pierwszy request 0%, drugi 80-95%, multi-turn 85-95%, CCh 96%, Batch+priming 95-98%",
+      "citation": "Pierwszy request w sesji: 0%. Drugi request: 80-95%. Multi-turn conversation (normal): 85-95%. Claude Code session: 96%. Batch API + priming: 95-98%. Batch API bez priming: 30-70%. Po /compact: 50-80%. Po model switch: 0%.",
+      "source_location": "section: Details, 2. Hit ratio benchmarks",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["benchmarks", "context-specific", "ratios"]
+    },
+    {
+      "id": "R7.C6",
+      "claim": "Du'An Lightfoot case: 81251 token video metadata, 100 req/day, $720/m -> $72/m = 90% savings, $648/m",
+      "citation": "Du'An Lightfoot: System prompt 81251 tokens (video metadata). Requests: 100 per dzien. Pre-cache: $720/miesiac. Post-cache (5m TTL): $72/miesiac. Savings: 90%, $648/miesiac.",
+      "source_location": "section: Details, 4. Case 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "90-percent", "real-numbers"]
+    },
+    {
+      "id": "R7.C7",
+      "claim": "Claude Code dev session: 18k tokens static, 100 turn: $50-100 -> $10-19 = 80% savings dzieki 96% hit rate",
+      "citation": "Claude Code typical dev session: System + tools + CLAUDE.md ~18k tokens. Session 100 turnow. Pre-cache: $50-100. Post-cache (96% hit rate): $10-19. Savings: 80%.",
+      "source_location": "section: Details, 4. Case 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["claude-code", "80-percent", "economics"]
+    },
+    {
+      "id": "R7.C8",
+      "claim": "Anthropic support ticket example: Haiku 4.5, 10k ticketow, average 3700 tokens, $37 total = $0.0037 per ticket",
+      "citation": "Support ticket processing: Tickets: 10000. Model: Haiku 4.5. Average conversation: 3700 tokens. Koszt: $37 per 10000 tickets (~$0.0037 per ticket).",
+      "source_location": "section: Details, 4. Case 3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["haiku", "support-scale", "anthropic-example"]
+    },
+    {
+      "id": "R7.C9",
+      "claim": "Luong Nguyen bisection methodology: usun polowe CLAUDE.md -> test ratio -> znajdz trigger linii przez bipodzial",
+      "citation": "Luong Nguyen debug methodology: Run session z /status sprawdza cache metrics. Bisekcja: usuwamy polowe CLAUDE.md, testujemy; potem druga polowe. Zidentyfikuje single trigger.",
+      "source_location": "section: Details, 3. Luong Nguyen",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["bisection", "debugging", "methodology"]
+    },
+    {
+      "id": "R7.C10",
+      "claim": "Community tools: bokonon23/clawdbot-cost-monitor, sstklen/claude-api-cost-optimization, sagargupta16/claude-cost-optimizer, cnighswonger/claude-code-cache-fix",
+      "citation": "bokonon23/clawdbot-cost-monitor: Live dashboard Slack alerts. sstklen/claude-api-cost-optimization: Code examples. sagargupta16/claude-cost-optimizer: Guide collection. cnighswonger/claude-code-cache-fix: Fix patches.",
+      "source_location": "section: Details, 3. Dashboarding patterns / 9. Community tools",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["community-tools", "opensource", "ecosystem"]
+    },
+    {
+      "id": "R7.C11",
+      "claim": "Invalidation taxonomy: model switch / MCP add / CLAUDE.md edit / system prompt change / timestamp / capitalization / TTL expired / compact",
+      "citation": "Invalidation event taxonomy: Model switch, MCP tool add/remove, CLAUDE.md edit, System prompt change, Timestamp w static, Capitalization drift, TTL expired, Compact/clear.",
+      "source_location": "section: Details, 8. Taxonomy",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["taxonomy", "debugging", "causes"]
+    },
+    {
+      "id": "R7.C12",
+      "claim": "March 2026 sentiment negatywny: Max Plan exhaustion 70min, silent TTL change, Alex Volkov PSA, The Register defensive stance",
+      "citation": "Negatywny (marzec 2026): Max Plan quota exhaustion narrative. 'Silent TTL change' - brak transparentnosci. Alex Volkov's PSA post. The Register artykul zarzuca Anthropic defensive stance.",
+      "source_location": "section: Details, 5. X/Twitter sentiment",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["sentiment-negative", "march-2026", "controversy"]
+    },
+    {
+      "id": "R7.C13",
+      "claim": "Positive sentiment: 90% savings 'normal', 1h TTL announcement well-received, Claude Code Pro $20 viable dzieki cache",
+      "citation": "Pozytywny: Developerzy akceptuja 90% savings jako 'normal'. Anthropic 1h TTL announcement (czerwiec 2025) dobrze przyjety. Claude Code 96% hit rate szeroko chwalony.",
+      "source_location": "section: Details, 5. X/Twitter sentiment",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["sentiment-positive", "adoption", "community"]
+    },
+    {
+      "id": "R7.C14",
+      "claim": "Advanced monitoring metryki: cache_hit_ratio rolling, cost_per_turn, invalidation_events/hour, tokens_saved_vs_baseline",
+      "citation": "Minimalistyczny set: cache_hit_ratio (rolling 10-turn average). cost_per_turn. invalidation_events_per_hour. tokens_saved_vs_baseline.",
+      "source_location": "section: Details, 10. Dashboarding",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["dashboarding", "kpis", "production"]
+    },
+    {
+      "id": "R7.C15",
+      "claim": "Pattern C - cost-based alerting: alert if effective_cost > 30% base rate (cache not effective)",
+      "citation": "Alert jesli effective_cost_per_mtok > threshold: if effective_cost > base_rate * 0.3: alert('Cache not effective, cost spike').",
+      "source_location": "section: Details, 7. Pattern C",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["cost-alerting", "30-percent", "pattern"]
+    },
+    {
+      "id": "R7.C16",
+      "claim": "Gdy cache zawodzi tokens sa placone regular rate = 10-20x drozsze niz cached",
+      "citation": "Tokens placone regular rate (10-20x drozsze niz cached). Lekcja: ujemny case - bez cache, 10-20x drozej.",
+      "source_location": "section: Details, 4. Case 5",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cost-multiplier", "negative-case", "10x-20x"]
+    },
+    {
+      "id": "R7.C17",
+      "claim": "Reddit opinion: 'Cache invalidation is a minefield, tread carefully' - common community sentiment",
+      "citation": "Opinion patterns: '90% savings is insane, why didn't I use this sooner'. 'Burned hard by March TTL change'. 'Claude Code worth $20 thanks to cache'. 'Cache invalidation is a minefield, tread carefully'.",
+      "source_location": "section: Details, 6. Reddit",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["reddit", "community-voice", "quotes"]
+    },
+    {
+      "id": "R7.C18",
+      "claim": "ngrok blog twierdzi '100x cheaper' - exaggeration, faktycznie 10x (0.1x multiplier)",
+      "citation": "Niektore artykuly podaja cache_read_input_tokens jako '100x cheaper'. Faktycznie 10x (0.1x). 100x to exaggeration.",
+      "source_location": "section: Issues / Flags",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["misinformation", "10x-vs-100x", "fact-check"]
+    },
+    {
+      "id": "R7.C19",
+      "claim": "Brak oficjalnego Anthropic dashboard dla klientow API - trzeba budowac wlasny z Grafana/Datadog",
+      "citation": "Brak oficjalnego Anthropic dashboarda z cache metrics dla klientow API. Trzeba budowac wlasny. Brak oficjalnej integracji z Datadog/New Relic/PagerDuty.",
+      "source_location": "section: Issues / Flags / Gaps",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["gap", "no-official-dashboard", "diy"]
+    },
+    {
+      "id": "R7.C20",
+      "claim": "Brak SLA dla cache availability - jezeli cache Anthropic spadnie, placisz full rate bez incident response",
+      "citation": "Brak SLA dla cache availability. Jezeli cache system Anthropic spadnie (rare), API nadal dziala ale placisz full rate - oczywista degradacja kosztowa bez oficjalnego incident response.",
+      "source_location": "section: Issues / Flags / Gaps",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["no-sla", "availability", "cost-risk"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak oficjalnego Anthropic dashboarda z cache metrics dla klientow API - musisz budowac wlasny",
+    "Brak oficjalnej integracji z Datadog/New Relic/PagerDuty - community projekty wypelniaja luke",
+    "Brak SLA dla cache availability - jezeli system spadnie, placisz full rate bez oficjalnego incident response"
+  ],
+  "conflicts_flagged": [
+    "R7.C12 Anthropic zaprzecza ze TTL regression spowodowala quota drain vs community twierdzi przeciwnie - szczegolowa prawda prawdopodobnie gdzies posrodku (multi-cause incident).",
+    "R7.C18 niektore artykuly '100x cheaper' vs faktycznie 10x (0.1x) - exaggeration, docs podaja precyzyjnie 0.1x multiplier = 10x tanszy."
+  ]
+}

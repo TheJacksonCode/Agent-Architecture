@@ -1,0 +1,275 @@
+{
+  "extractor": "E4",
+  "source_report": "R4_managed_enterprise.md",
+  "topic": "Managed Layer + Enterprise Deployment",
+  "claims": [
+    {
+      "id": "R4.C1",
+      "claim": "Managed settings cannot be overridden by any other level, including command line arguments - highest layer in settings precedence hierarchy.",
+      "quote": "Managed settings: cannot be overridden by any other level, including command line arguments.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed", "precedence", "enforcement", "hierarchy"]
+    },
+    {
+      "id": "R4.C2",
+      "claim": "Claude Code supports four parallel mechanisms for delivering managed configuration: server-managed, MDM/OS-level, file-based, and HKCU registry (Windows).",
+      "quote": "Within the managed tier, precedence is: server-managed > MDM/OS-level policies > file-based (managed-settings.d/*.json + managed-settings.json) > HKCU registry (Windows only). Only one managed source is used; sources do not merge across tiers.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-sources", "precedence", "server-managed", "mdm", "hkcu", "unique"]
+    },
+    {
+      "id": "R4.C3",
+      "claim": "The legacy Windows path C:\\ProgramData\\ClaudeCode\\managed-settings.json is deprecated since v2.1.75; administrators must migrate to C:\\Program Files\\ClaudeCode\\managed-settings.json.",
+      "quote": "The legacy Windows path `C:\\ProgramData\\ClaudeCode\\managed-settings.json` is no longer supported as of v2.1.75. Administrators who deployed settings to that location must migrate files to `C:\\Program Files\\ClaudeCode\\managed-settings.json`",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["windows", "deprecated", "path-migration", "v2.1.75"]
+    },
+    {
+      "id": "R4.C4",
+      "claim": "Managed settings files live at OS-specific paths: /Library/Application Support/ClaudeCode on macOS, /etc/claude-code on Linux, C:\\Program Files\\ClaudeCode on Windows.",
+      "quote": "managed-settings.json is merged first as the base, then all `*.json` files in the drop-in directory are sorted alphabetically and merged on top.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["paths", "cross-platform", "managed-settings", "file-locations"]
+    },
+    {
+      "id": "R4.C5",
+      "claim": "Drop-in pattern managed-settings.d/*.json enables independent IT/SecOps/Compliance teams to deploy policy fragments without coordinating a single file - arrays concat/dedupe, scalars last wins.",
+      "quote": "Following the systemd convention, managed-settings.json is merged first as the base, then all `*.json` files in the drop-in directory are sorted alphabetically and merged on top. Later files override earlier ones for scalar values; arrays are concatenated and de-duplicated; objects are deep-merged.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["drop-in", "systemd-style", "merge-rules", "modular", "unique"]
+    },
+    {
+      "id": "R4.C6",
+      "claim": "allowManagedPermissionRulesOnly: true prevents user and project settings from defining allow, ask, or deny permission rules.",
+      "quote": "When true, prevents user and project settings from defining allow, ask, or deny permission rules. Only rules in managed settings apply",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-only-keys", "permissions", "lockdown"]
+    },
+    {
+      "id": "R4.C7",
+      "claim": "allowManagedHooksOnly: true blocks user/project/plugin hooks, loading only managed hooks and SDK hooks.",
+      "quote": "When true, only managed hooks, SDK hooks, and hooks from plugins force-enabled in managed settings `enabledPlugins` are loaded. User, project, and all other plugin hooks are blocked",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-only-keys", "hooks", "lockdown"]
+    },
+    {
+      "id": "R4.C8",
+      "claim": "allowManagedMcpServersOnly: true restricts allowed MCP servers to managed list; deniedMcpServers still merges across sources.",
+      "quote": "When true, only `allowedMcpServers` from managed settings are respected. `deniedMcpServers` still merges from all sources",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-only-keys", "mcp", "lockdown"]
+    },
+    {
+      "id": "R4.C9",
+      "claim": "sandbox.network.allowManagedDomainsOnly: true blocks non-allowed domains automatically without prompting user.",
+      "quote": "When true, only `allowedDomains` and `WebFetch(domain:...)` allow rules from managed settings are respected. Non-allowed domains are blocked automatically without prompting the user",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-only-keys", "sandbox", "network", "domains"]
+    },
+    {
+      "id": "R4.C10",
+      "claim": "forceRemoteSettingsRefresh: true blocks CLI startup until remote managed settings are fetched; exits if fetch fails (fail-closed behavior).",
+      "quote": "When this setting is active, the CLI blocks at startup until remote settings are freshly fetched. If the fetch fails, the CLI exits rather than proceeding without the policy. This setting self-perpetuates: once delivered from the server, it is also cached locally so that subsequent startups enforce the same behavior even before the first successful fetch of a new session.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-only-keys", "fail-closed", "remote-refresh", "enforcement"]
+    },
+    {
+      "id": "R4.C11",
+      "claim": "12 managed-only keys exist that only work from managed tier: allowManagedPermissionRulesOnly, allowManagedHooksOnly, allowManagedMcpServersOnly, allowManagedReadPathsOnly, allowManagedDomainsOnly, forceRemoteSettingsRefresh, strictKnownMarketplaces, blockedMarketplaces, allowedChannelPlugins, channelsEnabled, pluginTrustMessage, plus others.",
+      "quote": "Obie sciezki wspoldziela dokladnie ten sam format JSON i ten sam zestaw managed-only keys (`allowManagedPermissionRulesOnly`, `allowManagedHooksOnly`, `allowManagedMcpServersOnly`, `forceRemoteSettingsRefresh`, `strictKnownMarketplaces` i dziewiec innych",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-only-keys", "catalog", "enterprise"]
+    },
+    {
+      "id": "R4.C12",
+      "claim": "Tool deny at any level cannot be overridden - managed settings deny cannot be bypassed by --allowedTools CLI flag.",
+      "quote": "If a tool is denied at any level, no other level can allow it. For example, a managed settings deny cannot be overridden by `--allowedTools`, and `--disallowedTools` can add restrictions beyond what managed settings define.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["deny", "precedence", "enforcement", "security"]
+    },
+    {
+      "id": "R4.C13",
+      "claim": "Within managed tier, only the first non-empty source is used - sources do not merge. Server-managed fully overrides endpoint-managed if server delivers any keys.",
+      "quote": "Within the managed tier, the first source that delivers a non-empty configuration wins. Server-managed settings are checked first, then endpoint-managed settings. Sources do not merge: if server-managed settings deliver any keys at all, endpoint-managed settings are ignored entirely. If server-managed settings deliver nothing, endpoint-managed settings apply.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["managed-tier", "precedence", "non-merging", "migration"]
+    },
+    {
+      "id": "R4.C14",
+      "claim": "Array settings merge across scopes - permissions.deny from managed does not block user/project from adding additional deny rules, they concatenate and deduplicate.",
+      "quote": "Array settings merge across scopes. When the same array-valued setting (such as sandbox.filesystem.allowWrite or permissions.allow) appears in multiple scopes, the arrays are concatenated and deduplicated, not replaced. This means lower-priority scopes can add entries without overriding those set by higher-priority scopes, and vice versa.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["arrays", "merge", "permissions", "exception"]
+    },
+    {
+      "id": "R4.C15",
+      "claim": "Jamf Pro / Kandji deploy macOS managed settings via preference domain com.anthropic.claudecode using Custom Settings Payload with plist.",
+      "quote": "W Jamf: Computers > Configuration Profiles > New > Application & Custom Settings > Custom Settings > Preference Domain: `com.anthropic.claudecode`, Source: Upload PLIST. Kandji ma analogiczny flow pod \"Custom Profile\".",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["jamf", "kandji", "macos", "plist", "deployment"]
+    },
+    {
+      "id": "R4.C16",
+      "claim": "Microsoft Intune supports three deployment mechanisms: Platform Scripts (PowerShell writing JSON to C:\\Program Files\\ClaudeCode), ADMX import for Group Policy, and Custom Configuration Profiles for macOS .mobileconfig.",
+      "quote": "Deployment: Intune admin center > Devices > Scripts and remediations > Platform scripts > Add > Windows 10/11 > upload ps1, ustaw \"Run script in 64 bit PowerShell Host: Yes\", \"Run script using logged on credentials: No\".",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["intune", "windows", "admx", "powershell", "deployment"]
+    },
+    {
+      "id": "R4.C17",
+      "claim": "ADMX policy writes single-line JSON to HKLM\\SOFTWARE\\Policies\\ClaudeCode\\Settings REG_SZ value with maxLength 1000000 (1MB).",
+      "quote": "<text id=\"SettingsJson\" valueName=\"Settings\" maxLength=\"1000000\" required=\"true\" />",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["admx", "gpo", "windows", "registry", "hklm"]
+    },
+    {
+      "id": "R4.C18",
+      "claim": "No official Linux MDM templates from Anthropic - Puppet/Chef/Ansible patterns are community-derived using file-based managed settings only.",
+      "quote": "Brak oficjalnych templates od Anthropic dla Linux config management, ale wzorzec jest prosty - file based managed settings to tylko plik JSON.",
+      "stance": "speculative",
+      "confidence": "medium",
+      "tags": ["linux", "gap", "ansible", "puppet", "chef", "unofficial"]
+    },
+    {
+      "id": "R4.C19",
+      "claim": "apiKeyHelper is custom /bin/sh script generating auth value sent as X-Api-Key and Authorization: Bearer headers; called at startup then every 5 min or on HTTP 401.",
+      "quote": "Custom script, to be executed in /bin/sh, to generate an auth value. This value will be sent as X-Api-Key and Authorization: Bearer headers for model requests.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["apiKeyHelper", "secrets", "authentication", "enterprise"]
+    },
+    {
+      "id": "R4.C20",
+      "claim": "apiKeyHelper enables integration with AWS Secrets Manager, HashiCorp Vault, Azure Key Vault - secrets never stored on disk, only path to script; credentials rotate without editing settings.",
+      "quote": "Managed-deployed apiKeyHelper zapewnia: Secrets nie znajduja sie na dysku (tylko path do scriptu jest w settings); Credentials moga sie rotowac bez edytowania settings; Kazdy user uzywa wlasnych short-lived credentials z vault",
+      "stance": "definitive",
+      "confidence": "medium",
+      "tags": ["apiKeyHelper", "aws-secrets", "vault", "azure-keyvault", "secrets-rotation"]
+    },
+    {
+      "id": "R4.C21",
+      "claim": "Slow apiKeyHelper (>10s) displays warning in prompt bar showing elapsed time; TTL adjustable via CLAUDE_CODE_API_KEY_HELPER_TTL_MS.",
+      "quote": "If apiKeyHelper takes longer than 10 seconds to return a key, Claude Code displays a warning notice in the prompt bar showing the elapsed time.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["apiKeyHelper", "latency", "ttl", "performance"]
+    },
+    {
+      "id": "R4.C22",
+      "claim": "Server-managed hooks require explicit user approval via security dialog on first startup; file-based/MDM hooks load silently without dialog.",
+      "quote": "Because hooks execute shell commands, users see a security approval dialog before they're applied.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["hooks", "security-dialog", "server-managed", "user-approval"]
+    },
+    {
+      "id": "R4.C23",
+      "claim": "Invalid JSON in managed-settings.json has unreliable behavior - documented as '/status reports the issue' but community reports silent ignore, crashes, and variable error messages (issues #1506, #2835, #24823).",
+      "quote": "settings.json fails silently if malformed... any small problem with the JSON will cause Claude Code to silently ignore the settings",
+      "stance": "speculative",
+      "confidence": "medium",
+      "tags": ["invalid-json", "gap", "silent-fail", "crash", "edge-case"]
+    },
+    {
+      "id": "R4.C24",
+      "claim": "Non-interactive mode with -p flag skips security dialogs and applies settings without user approval - important for CI runners.",
+      "quote": "In non-interactive mode with the -p flag, Claude Code skips security dialogs and applies settings without user approval.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["non-interactive", "ci", "automation", "security-dialog"]
+    },
+    {
+      "id": "R4.C25",
+      "claim": "On unmanaged devices users with admin/sudo access can modify Claude Code binary, filesystem, or network configuration - server-managed operates as client-side control only.",
+      "quote": "Server-managed settings provide centralized policy enforcement, but they operate as a client-side control. On unmanaged devices, users with admin or sudo access can modify the Claude Code binary, filesystem, or network configuration.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["security-limitation", "sudo", "client-side", "tampering"]
+    },
+    {
+      "id": "R4.C26",
+      "claim": "MDM/endpoint-managed provides stronger security guarantees than server-managed because settings file can be protected from user modification at OS level.",
+      "quote": "If your devices are enrolled in an MDM or endpoint management solution, endpoint-managed settings provide stronger security guarantees because the settings file can be protected from user modification at the OS level.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["mdm", "endpoint-managed", "security-comparison", "hardening"]
+    },
+    {
+      "id": "R4.C27",
+      "claim": "Primary user discovery mechanism is /status command showing active settings sources labeled with origin: Enterprise managed settings (remote/plist/HKLM/file).",
+      "quote": "Run /status inside Claude Code to see which settings sources are active and where they come from. The output shows each configuration layer (managed, user, project) along with its origin, such as Enterprise managed settings (remote), Enterprise managed settings (plist), Enterprise managed settings (HKLM), or Enterprise managed settings (file).",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["status", "discovery", "verification", "diagnostics"]
+    },
+    {
+      "id": "R4.C28",
+      "claim": "Server-managed settings require Claude for Teams (v2.1.38+) or Claude for Enterprise (v2.1.30+) plans; configured via Claude.ai Admin Settings > Claude Code > Managed settings.",
+      "quote": "Server-managed settings - konfiguracja dostarczana z serwerow Anthropic, konfigurowana z Claude.ai admin console, wymaga planu Claude for Teams (v2.1.38+) lub Claude for Enterprise (v2.1.30+)",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["server-managed", "teams", "enterprise", "version-requirement"]
+    },
+    {
+      "id": "R4.C29",
+      "claim": "sandbox.failIfUnavailable: true with sandbox.enabled provides hard gate - CLI exits at startup if sandbox cannot start, intended for managed deployments requiring sandboxing.",
+      "quote": "Exit with an error at startup if sandbox.enabled is true but the sandbox cannot start... Intended for managed settings deployments that require sandboxing as a hard gate",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["sandbox", "hard-gate", "fail-closed", "enforcement"]
+    },
+    {
+      "id": "R4.C30",
+      "claim": "forceLoginOrgUUID restricts login to specified organizations - login fails if authenticated account does not belong to listed organization.",
+      "quote": "When set in managed settings, login fails if the authenticated account does not belong to a listed organization",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["forceLoginOrgUUID", "authentication", "org-enforcement", "enterprise"]
+    },
+    {
+      "id": "R4.C31",
+      "claim": "Cached server-managed settings persist on client machines after admin console clear until next successful fetch - server to endpoint migration must be flag-day.",
+      "quote": "If you clear your server-managed configuration in the admin console with the intent of falling back to an endpoint-managed plist or registry policy, be aware that cached settings persist on client machines until the next successful fetch.",
+      "stance": "definitive",
+      "confidence": "high",
+      "tags": ["caching", "migration", "edge-case", "server-managed"]
+    },
+    {
+      "id": "R4.C32",
+      "claim": "Healthcare HIPAA and Finance PCI-DSS profiles in R4 are unofficial constructions based on documented keys - not validated by Anthropic or compliance auditors; treat as starting point only.",
+      "quote": "Profile w sekcji 6.3-6.4 to **konstrukcja R4** na podstawie udokumentowanych kluczy. Nie sa zvalidowane przez Anthropic, compliance team, ani audytora HIPAA/PCI. Treat as starting point, not compliant configuration.",
+      "stance": "speculative",
+      "confidence": "low",
+      "tags": ["compliance", "hipaa", "pci-dss", "gap", "disclaimer"]
+    }
+  ],
+  "word_count": 412,
+  "priority_coverage": {
+    "4_parallel_managed_mechanisms": "R4.C2",
+    "windows_path_deprecated_v2.1.75": "R4.C3",
+    "12_managed_only_keys": "R4.C6, R4.C7, R4.C8, R4.C9, R4.C10, R4.C11",
+    "jamf_intune_admx_ansible_snippets": "R4.C15, R4.C16, R4.C17, R4.C18",
+    "apiKeyHelper_enterprise_secrets": "R4.C19, R4.C20, R4.C21",
+    "industry_profiles": "R4.C32",
+    "silent_fail_vs_crash": "R4.C23",
+    "no_linux_mdm_templates": "R4.C18",
+    "managed_settings_d_dropin": "R4.C5"
+  }
+}

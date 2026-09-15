@@ -1,0 +1,291 @@
+{
+  "source_report": "R2_ttl_invalidation.md",
+  "report_words": 2101,
+  "extract_words": 487,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R2.C1",
+      "claim": "Prompt caching offers two TTL values: 5 minutes (default) and 1 hour (extended)",
+      "citation": "Prompt caching w Claude API oferuje dwie wartosci TTL: **5 minut (default)** i **1 godzina (extended)**. Wybierasz przez pole `ttl` w `cache_control`: `\"ephemeral\"` (domyslnie 5m) lub `\"ephemeral\" + \"ttl\": \"1h\"`.",
+      "source_location": "Executive Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl", "default-value", "api-design"]
+    },
+    {
+      "id": "R2.C2",
+      "claim": "TTL resets on each cache hit with no additional cost, allowing active sessions to maintain 5m cache for hours if requests arrive within 5-minute intervals",
+      "citation": "TTL resetuje sie przy kazdym cache hit bez dodatkowego kosztu - aktywna sesja moze utrzymac 5m cache przez godziny o ile kolejne requesty ida co <5 min.",
+      "source_location": "Executive Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-reset", "pricing", "session-management"]
+    },
+    {
+      "id": "R2.C3",
+      "claim": "Two undisclosed TTL regressions occurred in 2026 (March 6 and April 9) causing users' bills to increase 17-53% due to fallback to 5m instead of 1h",
+      "citation": "dwie wykryte, nieoglaszane regressions TTL (March 6 i April 9), w wyniku ktorych tysiacom uzytkownikow wzrosly rachunki o 17-53% przez powrot do 5m zamiast 1h.",
+      "source_location": "Executive Summary",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["regression", "cost-impact", "incident"]
+    },
+    {
+      "id": "R2.C4",
+      "claim": "5-minute TTL write cost is 1.25x base input, while 1-hour TTL write cost is 2.0x base input for Claude Sonnet 4.6",
+      "citation": "| 5m cache write | $3.75 | 1.25x | | 1h cache write | $6.00 | 2.0x |",
+      "source_location": "Details, section 1: Pricing per TTL",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing", "write-cost", "sonnet-4.6"]
+    },
+    {
+      "id": "R2.C5",
+      "claim": "Cache write break-even point: 5m TTL breaks even after 1 cache read; 1h TTL breaks even after 2 cache reads",
+      "citation": "Break-even: 5m TTL po 1 odczycie; 1h TTL po 2 odczytach.",
+      "source_location": "Details, section 1: TTL reset on use",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["economics", "break-even", "pricing"]
+    },
+    {
+      "id": "R2.C6",
+      "claim": "Cache invalidation is hierarchical: changes to tools invalidate tool/system/messages caches; system changes invalidate system/messages caches",
+      "citation": "Inwalidacja cache jest hierarchiczna: tools -> system -> messages. Kazdazmiana na danym poziomie kasuje ten poziom i wszystkie ponizej.",
+      "source_location": "Executive Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["invalidation", "hierarchy", "architecture"]
+    },
+    {
+      "id": "R2.C7",
+      "claim": "Adding a single message at the end of a conversation does not invalidate the prefix when prefix matching is used correctly",
+      "citation": "Dodanie jednej wiadomosci na koncu konwersacji NIE invaliduje prefiksu (prefix matching backward).",
+      "source_location": "Executive Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["prefix-matching", "messages", "invalidation"]
+    },
+    {
+      "id": "R2.C8",
+      "claim": "Adding a single tool mid-session invalidates the entire cache",
+      "citation": "Dodanie jednego narzedzia MID-session kasuje CALY cache.",
+      "source_location": "Executive Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tools", "invalidation", "edge-case"]
+    },
+    {
+      "id": "R2.C9",
+      "claim": "Prefix caching writes cache entries only at explicit breakpoints, not at earlier positions",
+      "citation": "Marking a block with `cache_control` writes exactly one cache entry: a hash of the prefix ending at that block. The system does not write entries for any earlier position.",
+      "source_location": "Details, section 3: Prefix matching mechanics",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["prefix-matching", "cache-writes", "technical"]
+    },
+    {
+      "id": "R2.C10",
+      "claim": "Prefix caching lookback window is limited to 20 blocks per breakpoint; if no match is found within 20 blocks, lookback stops",
+      "citation": "The system checks at most 20 positions per breakpoint, counting the breakpoint itself as the first. If the system finds no matching entry in that window, checking stops.",
+      "source_location": "Details, section 3: Prefix matching mechanics",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["prefix-matching", "lookback-window", "technical"]
+    },
+    {
+      "id": "R2.C11",
+      "claim": "March 6, 2026 TTL regression affected 119,866 API calls across two machines and accounts, causing $949.08 overpayment (17.1% cost increase) for Sonnet 4.6",
+      "citation": "Actual cost: $5,561.17; Expected (1h TTL): $4,612.09; **Nadplatka: $949.08 (17.1% strata)**; Marzec osobno: 25.9% overpayment, $719.09 wasted",
+      "source_location": "Details, section 6: March 6 first silent TTL regression",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["regression", "march-2026", "cost-analysis"]
+    },
+    {
+      "id": "R2.C12",
+      "claim": "The March 2026 TTL regression was selective: main agents remained unaffected while sub-agents were downgraded to 5m TTL",
+      "citation": "main agent mial zero 5m writes przez caly okres analizy; KAZDA akcja TTL Anthropica dotyczyła wylacznie **sub-agentow**. To wskazuje ze downgrade byl serwerowy i selektywny, nie globalny.",
+      "source_location": "Details, section 6: March 6 first silent TTL regression",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["regression", "sub-agents", "architecture"]
+    },
+    {
+      "id": "R2.C13",
+      "claim": "Anthropic did not publicly confirm the TTL regressions; GitHub Issue #46829 was closed as 'not planned' without official explanation",
+      "citation": "Status Issue #46829: Zamkniety jako \"not planned\" bez oficjalnego komentarza Anthropica.",
+      "source_location": "Details, section 6: March 6 first silent TTL regression",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["regression", "transparency", "issue-handling"]
+    },
+    {
+      "id": "R2.C14",
+      "claim": "April 9, 2026 second regression affected sub-agents exclusively (100% 5m TTL for 5 days) while main agents remained on 1h TTL",
+      "citation": "Poczawszy od 9 kwietnia 2026, sub-agenty przeszly na **100% 5m TTL** przez 5 kolejnych dni (4,840 API calls zero 1h writes)... Kwiecien: TYLKO sub-agents (main agent pozostal na 100% 1h)",
+      "source_location": "Details, section 7: April 9 second silent TTL regression",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["regression", "april-2026", "sub-agents"]
+    },
+    {
+      "id": "R2.C15",
+      "claim": "Claude Code v2.1.108 (April 14, 2026) introduces ENABLE_PROMPT_CACHING_1H env var to force 1h TTL across Anthropic API, Bedrock, Vertex, and Azure Foundry",
+      "citation": "| `ENABLE_PROMPT_CACHING_1H=1` | Wymusza 1h TTL na Anthropic API, Bedrock, Vertex, Azure Foundry | **AKTYWNY** (od v2.1.108) |",
+      "source_location": "Details, section 8: Workaround env vars",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["workaround", "env-var", "v2.1.108"]
+    },
+    {
+      "id": "R2.C16",
+      "claim": "AWS Bedrock supports 1h TTL for Claude Opus 4.5, Haiku 4.5, and Sonnet 4.5, but older model series (3.7, 3.5 variants, 4.0, 4.1) only support 5m TTL",
+      "citation": "Claude Opus 4.5: TAK (1h); Claude Haiku 4.5: TAK (1h); Claude Sonnet 4.5: TAK (1h); Claude Opus 4.1, Opus 4, Sonnet 4, Claude 3.7 Sonnet, 3.5 Haiku, 3.5 Sonnet v2: **NIE (tylko 5m)**",
+      "source_location": "Details, section 9: Bedrock model support for 1h TTL",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bedrock", "models", "ttl-support"]
+    },
+    {
+      "id": "R2.C17",
+      "claim": "Google Vertex AI applies same prefix matching and invalidation rules as Anthropic native API but uses project-level isolation instead of workspace-level",
+      "citation": "Vertex zachowuje sie \"as described in Anthropic documentation\" dla prompt caching - te same zasady prefix matching, lookback 20 blokow, te same triggery invalidacji.",
+      "source_location": "Details, section 10: Vertex AI differences",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["vertex-ai", "prefix-matching", "isolation"]
+    },
+    {
+      "id": "R2.C18",
+      "claim": "Anthropic switched to workspace-level cache isolation starting February 5, 2026, replacing organization-level isolation",
+      "citation": "Starting February 5, 2026, prompt caching will use workspace-level isolation instead of organization-level isolation.",
+      "source_location": "Details, section 11: Workspace isolation change",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["isolation", "workspace", "february-2026"]
+    },
+    {
+      "id": "R2.C19",
+      "claim": "1-hour cache entries must appear before 5-minute entries in mixed-TTL requests; 1h/5m mismatch in automatic cache control causes 400 error",
+      "citation": "**1-hour cache entries MUSZA pojawiac sie PRZED 5-minute entries**... Konflikt TTL w automatycznym cache: jezeli ostatni blok ma explicite `cache_control` z innym TTL niz top-level automatic cache control -> API zwraca **400 error**.",
+      "source_location": "Details, section 12: Mixing TTL values",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mixing-ttl", "ordering", "error-handling"]
+    },
+    {
+      "id": "R2.C20",
+      "claim": "DISABLE_TELEMETRY flag caused fallback to 5m TTL in versions prior to v2.1.108 (Issue #45381)",
+      "citation": "Fixed subscribers who set DISABLE_TELEMETRY falling back to 5-minute prompt cache TTL instead of 1 hour",
+      "source_location": "Details, section 8: Workaround env vars",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["telemetry", "bug", "v2.1.108"]
+    },
+    {
+      "id": "R2.C21",
+      "claim": "Adding an image to a message mid-session invalidates both tools and system caches, preserving only messages cache",
+      "citation": "Jezeli nowa wiadomosc zawiera image -> tools + system cache INVALIDATED",
+      "source_location": "Details, section 4: Edge case - adding 1 message",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["images", "invalidation", "messages"]
+    },
+    {
+      "id": "R2.C22",
+      "claim": "Changing tool_choice mid-session invalidates all three cache levels (tools, system, messages)",
+      "citation": "Jezeli nowa wiadomosc zmienia tool_choice -> tools + system cache INVALIDATED",
+      "source_location": "Details, section 4: Edge case - adding 1 message",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tool-choice", "invalidation"]
+    },
+    {
+      "id": "R2.C23",
+      "claim": "Cache invalidation does not occur when increasing max_tokens, changing temperature, top_p, or top_k",
+      "citation": "Co NIE invaliduje cache (przy poprawnym prefix matching): Zwiekszenienie `max_tokens`; Zmiana `temperature`, `top_p`, `top_k`",
+      "source_location": "Details, section 2: Invalidation hierarchy",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["invalidation", "sampling-params"]
+    },
+    {
+      "id": "R2.C24",
+      "claim": "Web search toggle, citations toggle, and speed settings are cached at tools level; changes invalidate tools cache but not system/messages",
+      "citation": "| **Web search toggle** | INVALIDATED | OK | OK | | **Citations toggle** | INVALIDATED | OK | OK | | **Speed setting** (fast mode) | INVALIDATED | OK | OK |",
+      "source_location": "Details, section 2: Invalidation hierarchy table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["invalidation", "settings", "hierarchy"]
+    },
+    {
+      "id": "R2.C25",
+      "claim": "Thinking parameters (enable/disable/budget) affect tools and system caches but not messages cache when changed",
+      "citation": "| **Thinking parameters** (enable/disable/budget) | INVALIDATED | INVALIDATED | OK |",
+      "source_location": "Details, section 2: Invalidation hierarchy table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["thinking", "parameters", "invalidation"]
+    },
+    {
+      "id": "R2.C26",
+      "claim": "Anthropic stated 'cache TTL change should not increase costs' but empirical data shows 17.1-25.9% cost increases contradicting this claim",
+      "citation": "Anthropic oficjalnie (The Register) twierdzi ze \"cache TTL change should not increase costs.\" Empiryczne dane z Issue #46829 (119,866 calls) pokazuja 17.1-25.9% nadplatke.",
+      "source_location": "Issues/Flags: Konflikty zrodel - Konflikt 1",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["conflict", "cost-analysis", "anthropic-statement"]
+    },
+    {
+      "id": "R2.C27",
+      "claim": "Official Anthropic documentation does not define what constitutes a 'cache hit' for TTL reset purposes (per-call vs per-entry access unclear)",
+      "citation": "Brak oficjalnej definicji co Anthropic rozumie przez \"cache hit\" dla celow TTL reset. Czy reset nastepuje przy kazdym API call ktory uzyza cache, czy przy kazdym cache entry access wewnatrz jednego call?",
+      "source_location": "Issues/Flags: Gaps - Gap 1",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "cache-hit-semantics", "documentation"]
+    },
+    {
+      "id": "R2.C28",
+      "claim": "AWS Bedrock supports automatic caching but feature is 'COMING LATER' without defined ETA",
+      "citation": "| Automatic caching | TAK | COMING LATER |",
+      "source_location": "Details, section 9: Bedrock feature comparison",
+      "stance": "gap",
+      "confidence": "med",
+      "tags": ["gap", "bedrock", "automatic-caching"]
+    },
+    {
+      "id": "R2.C29",
+      "claim": "Bedrock Sonnet 4.6 model series 1h TTL support status remains unconfirmed in official documentation",
+      "citation": "Modele serii 4.6 (Sonnet 4.6, Opus 4.6): status niepotwierdzony w docs",
+      "source_location": "Issues/Flags: Konflikty - Konflikt 4",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "bedrock", "sonnet-4.6"]
+    },
+    {
+      "id": "R2.C30",
+      "claim": "April 9, 2026 TTL regression lacks official Anthropic confirmation; only reported by community auditor recca0120 without independent verification",
+      "citation": "Brak publicznej informacji o tej regression w momencie pisania raportu (2026-04-17).",
+      "source_location": "Details, section 7: April 9 second regression",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "april-regression", "verification"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak oficjalnej definicji 'cache hit' dla TTL reset (per-call vs per-entry access) - community wnioskuje z obserwacji (Gap 1)",
+    "Brak publicznego limitu cache entries per client/workspace i polityki ejectowania (FIFO? LRU?) (Gap 2)",
+    "April 9 regression: tylko jedno zrodlo (recca0120 blog) bez potwierdzenia Anthropica lub niezaleznej weryfikacji (Gap 3)",
+    "Vertex AI: brak explicitnej listy tokenow minimalnych per model dla 1h TTL support (Gap 4)",
+    "Bedrock + Vertex: 'Automatic caching coming later' bez publikowanej ETA (Gap 5)"
+  ],
+  "conflicts_flagged": [
+    "KONFLIKT 1: Anthropic claim ('TTL change is cost-neutral') vs empiryczne dane Issue #46829 (17-25.9% wzrost kosztow). Brak Anthropic response na Issue #46829.",
+    "KONFLIKT 2: Issue #45381 (DISABLE_TELEMETRY -> 5m TTL bug) fixed w v2.1.108 (14 kwietnia), ale April 9 regression (przed fixem?) nie ma wyjasnienia.",
+    "KONFLIKT 3: March regression (Issue #46829) dotyczy both main+sub agents vs recca0120 audit April (TYLKO sub-agents). Rozne metodologie, brak pewnosci.",
+    "KONFLIKT 4: Bedrock docs (AWS) listuje Opus/Sonnet/Haiku 4.5 dla 1h, ale wentuo.ai says '4.6 unconfirmed' - brak potwierdzenia czy 4.6 ma 1h na Bedrock."
+  ]
+}

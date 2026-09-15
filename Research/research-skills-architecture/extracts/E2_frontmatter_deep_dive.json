@@ -1,0 +1,164 @@
+{
+  "report_id": "R2",
+  "source_file": "research/R2_frontmatter_deep_dive.md",
+  "extractor_persona": "Haiku-equivalent (Orchestrator-run)",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R2.C1",
+      "claim": "Of 13 frontmatter fields, only description is recommended; all others optional. name defaults to directory name if omitted.",
+      "evidence": "Official table; field.required = 'No' for all except description (Recommended).",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C2",
+      "claim": "name validation (Agent Skills API): max 64 chars, [a-z0-9-] only (lowercase letters, digits, hyphens), no XML tags, reserved words 'anthropic' and 'claude' forbidden.",
+      "evidence": "Agent Skills spec validation.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C3",
+      "claim": "description validation: max 1024 chars per field (API), non-empty, no XML tags. Unicode allowed including emojis (but emoji discouraged for retrieval relevance).",
+      "evidence": "Agent Skills spec + community observation.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C4",
+      "claim": "Unofficial/emerging frontmatter fields observed in community: version (semver), license, mode. Not standard-enforced, ignored by Claude Code parser but useful for tooling.",
+      "evidence": "Community skill repos (VoltAgent, sickn33) observation.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R2.C5",
+      "claim": "argument-hint displays placeholder text in autocomplete (e.g., '[issue-number]'); has no functional effect beyond UX.",
+      "evidence": "Official docs argument-hint description.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C6",
+      "claim": "disable-model-invocation:true has dual effect: (a) removes skill description from system prompt saving ~100 tokens, (b) blocks automatic AND programmatic (Skill tool) invocation.",
+      "evidence": "Official behavior table + cross-reference R1.C11.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C7",
+      "claim": "user-invocable:false only hides skill from / menu; auto-invocation and Skill tool remain functional; description stays in context.",
+      "evidence": "Quote: 'user-invocable field only controls menu visibility'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C8",
+      "claim": "allowed-tools accepts either space-separated string or YAML list; syntax supports tool-name only (Bash) or tool-name with pattern (Bash(git *)).",
+      "evidence": "Format examples in docs: 'Bash(git add *) Bash(git commit *)'.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C9",
+      "claim": "model field overrides session model for skill invocation duration; accepts standard model IDs (e.g., claude-opus-4-5, claude-sonnet-4-5, claude-haiku-4-5).",
+      "evidence": "Official field definition + community examples.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C10",
+      "claim": "effort field accepts enum: low, medium, high, xhigh, max; overrides session effort level.",
+      "evidence": "Official field definition.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C11",
+      "claim": "context:fork is the only supported value (no other fork modes documented); requires companion agent field to specify subagent type.",
+      "evidence": "Docs subagent integration section.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C12",
+      "claim": "agent field accepts Explore, Plan, general-purpose (documented); community observes custom agent types may work if defined in ~/.claude/agents/.",
+      "evidence": "Official examples + community reports.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R2.C13",
+      "claim": "Bug #17283 (Jan 2026): context:fork and agent fields are ignored when skill is invoked via Skill tool (programmatic). Only affects automatic/manual invocation correctly.",
+      "evidence": "GitHub issue #17283 in anthropics/claude-code repo.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C14",
+      "claim": "hooks field scopes hooks to a single skill invocation (see /en/hooks docs for hook events supported).",
+      "evidence": "Official field definition + hooks docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C15",
+      "claim": "paths field accepts glob patterns; skill auto-loads only when Claude is editing files matching the globs.",
+      "evidence": "Official paths field definition.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C16",
+      "claim": "shell field accepts bash (default) or powershell; powershell is Windows-only option.",
+      "evidence": "Official field definition.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C17",
+      "claim": "Token overhead per skill disputed: Anthropic eng blog claims ~37 tokens/skill (from '40 skills = 1500 tokens' math), Lee Hanchung independent measurement reports ~100 tokens startup + ~1500 per turn (invocation).",
+      "evidence": "Anthropic eng blog + Lee Hanchung blog post triangulation.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R2.C18",
+      "claim": "Combinatorial frontmatter matrix: 2 (disable-model-invocation) x 2 (user-invocable) = 4 invocation states. State (true, false) = zombie skill unreachable via any path.",
+      "evidence": "Derived from R1.C11+R1.C12 combination.",
+      "confidence": "high"
+    },
+    {
+      "id": "R2.C19",
+      "claim": "isMeta message injection: Claude Code injects skill content as message with isMeta flag, distinguishing skill-origin from user-origin content in conversation trace.",
+      "evidence": "Claude Code internals observation.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R2.C20",
+      "claim": "SDK differences: Claude Agent SDK does NOT support allowed-tools field; field is Claude Code-specific.",
+      "evidence": "SDK docs vs Claude Code docs comparison.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R2.C21",
+      "claim": "Frontmatter YAML parser is strict: rejects XML tags in any string field, rejects empty required-equivalent fields (description), case-sensitive boolean values (true/false lowercase).",
+      "evidence": "Empirical observation + Agent Skills spec.",
+      "confidence": "high"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "R2.CONFLICT1",
+      "description": "Token overhead per skill: Anthropic (37 tokens) vs Lee Hanchung (100 tokens startup + 1500 per turn). Possible explanation: 37 covers name+description metadata only; 1500/turn includes skill body after invocation.",
+      "severity": "medium"
+    },
+    {
+      "id": "R2.CONFLICT2",
+      "description": "Bug #17283 creates silent failure mode: skills designed for context:fork isolation work via slash command but lose isolation via Skill tool. No error message, just unexpected shared-context behavior.",
+      "severity": "high"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R2.GAP1",
+      "description": "No official frontmatter validator tool published; users rely on empirical testing to verify field interactions.",
+      "severity": "medium"
+    },
+    {
+      "id": "R2.GAP2",
+      "description": "Missing schema definition for hooks field inside skill frontmatter vs global hooks config; unclear if same syntax applies.",
+      "severity": "low"
+    },
+    {
+      "id": "R2.GAP3",
+      "description": "Interaction of model field with session-level model override (e.g., /model command) not specified; which wins?",
+      "severity": "low"
+    }
+  ],
+  "summary": "R2 establishes complete frontmatter field matrix with validation rules, documents critical bug #17283 affecting context:fork via Skill tool, and resolves token overhead discrepancy via triangulation. Identifies zombie skill state (disable-model-invocation + user-invocable=false)."
+}

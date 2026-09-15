@@ -1,0 +1,272 @@
+{
+  "source_report": "R5_cache_first_design.md",
+  "report_words": 5247,
+  "extract_words": 487,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R5.C1",
+      "claim": "Cache efficacy depends on placing static content before dynamic content in request order",
+      "citation": "Cache dziala prefiksowo - wszystko od poczatku requesta do breakpointu wlacznie jest kandydatem do cache hit, wszystko po breakpoincie jest platne per request (regular input tokens).",
+      "source_location": "section: Summary, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-design", "static-first", "core-principle"]
+    },
+    {
+      "id": "R5.C2",
+      "claim": "Anthropic API natural request order (tools -> system -> messages) already aligns with cache optimization hierarchy",
+      "citation": "Naturalny porzadek Anthropic API (tools -> system -> messages) juz sprzyja temu patternowi - tools zmieniaja sie najrzadziej, system rzadko, messages najczesciej.",
+      "source_location": "section: Summary, paragraph 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["api-order", "hierarchy", "static-first"]
+    },
+    {
+      "id": "R5.C3",
+      "claim": "Single breakpoint at end of static content is recommended default pattern for 80% of use cases",
+      "citation": "Wzorzec 1: Single breakpoint (80% use cases) - Rekomendowany jako default. Jeden cache_control na ostatnim blokku statycznym",
+      "source_location": "section: Details / Wzorzec 1, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["breakpoint-pattern", "single-breakpoint", "recommendation"]
+    },
+    {
+      "id": "R5.C4",
+      "claim": "Two-breakpoint strategy suits systems with mixed freshness requirements (rules vs daily data)",
+      "citation": "Dla systemow z mieszana zmianami: rules_and_rarely_changing_content z 1h TTL + today_rag_documents z default 5m TTL",
+      "source_location": "section: Details / Wzorzec 2, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["breakpoint-pattern", "rag", "ttl"]
+    },
+    {
+      "id": "R5.C5",
+      "claim": "Automatic top-level cache_control moves breakpoint forward each turn in multi-turn conversations",
+      "citation": "Automatic caching z top-level flagiem - System sam umiesci breakpoint na ostatnim cacheable bloku w messages, w kolejnym requestcie automatycznie przesunie breakpoint do przodu",
+      "source_location": "section: Details / Wzorzec 3, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto-caching", "multi-turn", "breakpoint"]
+    },
+    {
+      "id": "R5.C6",
+      "claim": "Prefix promotion strategy amortizes cache write cost across many batch requests",
+      "citation": "Step 1: Wyslij jeden request z pelnym prefiksem, Step 2: Teraz WSZYSTKIE subsequent requests z tym samym prefix daja cache hit",
+      "source_location": "section: Details / Wzorzec 4, paragraph 1-3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch", "prefix", "amortization"]
+    },
+    {
+      "id": "R5.C7",
+      "claim": "Any change to tool definitions mid-session invalidates entire tools cache layer",
+      "citation": "Rejestruj wszystkie tools na starcie sesji... NIE edytuj tool description mid-session (nawet drobna zmiana = pelny rebuild)",
+      "source_location": "section: Details / Wzorzec 5, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tools-stability", "cache-invalidation", "anti-pattern"]
+    },
+    {
+      "id": "R5.C8",
+      "claim": "Few-shot examples must be placed in system prompt, never in messages, for cache efficiency",
+      "citation": "DOBRZE: system z examples + cache_control,Messages z current_query. Cache cleanly hits na examples",
+      "source_location": "section: Details / Wzorzec 6, paragraph 2-3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["few-shot", "system-prompt", "optimization"]
+    },
+    {
+      "id": "R5.C9",
+      "claim": "Timestamps in system prompt destroy cache on every request because they change per call",
+      "citation": "Anti-pattern: f'You are a helpful assistant. Today is {datetime.now()}... Ten timestamp na poczatku DESTROYS cache przy kazdym requestcie'",
+      "source_location": "section: Details / Zlota zasada, paragraph 4-5",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["timestamp", "anti-pattern", "invalidation"]
+    },
+    {
+      "id": "R5.C10",
+      "claim": "User-specific data in system prompt creates unique cache entry per user instead of shared cache",
+      "citation": "ZLE: system=f'Assistant for user {user_id}. Preferences: {user_prefs}... Kazdy user tworzy unique cache entry'",
+      "source_location": "section: Details / Wzorzec 7, paragraph 1-3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["multi-user", "anti-pattern", "cache-efficiency"]
+    },
+    {
+      "id": "R5.C11",
+      "claim": "Claude Code achieves 96% cache hit rate using <system-reminder> pattern for dynamic content in messages",
+      "citation": "Claude Code implementuje pattern <system-reminder>. Zamiast modyfikowac statyczny system prompt gdy kontekst sie zmienia, wstrzykuje dynamiczne dane jako tag w nastepnej wiadomosci uzytkownika. Cache hit rate: 96%",
+      "source_location": "section: Details / Claude Code architektura, paragraph 2-4",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["claude-code", "system-reminder", "empirical-data"]
+    },
+    {
+      "id": "R5.C12",
+      "claim": "Kern-ai achieved 10x input cost reduction using 3-breakpoint strategy with snapped boundaries",
+      "citation": "Kern-ai osiagnela 10x redukcje input token cost. BP1 (~75k tokens, 1h TTL), BP2 (snap co 20 wiadomosci), BP3 (turn breakpoint). Mierzone wyniki: ~590k cached tokens z 600k total = 10x redukcja",
+      "source_location": "section: Details / Kern-ai case study, paragraph 1-3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "cost-reduction", "empirical"]
+    },
+    {
+      "id": "R5.C13",
+      "claim": "Arxiv 2601.06007 empirical study shows 45-80% cost reduction is achievable across different strategies",
+      "citation": "Paper z arxiv.org (2601.06007): Cost reduction 45-80% w zaleznosci od strategii i providera, TTFT improvement 13-31% z optymalnych strategii",
+      "source_location": "section: Details / Arxiv paper, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["empirical-data", "arxiv", "cost-reduction"]
+    },
+    {
+      "id": "R5.C14",
+      "claim": "System-prompt-only caching consistently outperforms full-context caching for agentic tasks",
+      "citation": "System-prompt-only caching konsekwentnie LEPSZE niz full-context caching... Full-context (tool calls + results) moze degradowac latencje o 8.8%",
+      "source_location": "section: Details / Arxiv paper, paragraph 3-4",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["agentic-tasks", "caching-strategy", "performance"]
+    },
+    {
+      "id": "R5.C15",
+      "claim": "Automatic cache lookback window checks only 20 blocks backward from breakpoint",
+      "citation": "Automatyczny lookback sprawdza tylko 20 blokow wstecz od breakpointu. Jesli konwersacja ma >20 blokow przed breakpointem, bloki wczesniejsze nie beda sprawdzane pod katem cache hit",
+      "source_location": "section: Details / 20-block lookback window, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["lookback-window", "long-conversation", "limitation"]
+    },
+    {
+      "id": "R5.C16",
+      "claim": "Minimum token threshold for cache eligibility increased to 4096 for Opus 4.7, Sonnet 4.6, Haiku 4.5",
+      "citation": "Claude Opus 4.7: 4096, Claude Sonnet 4.6: 4096, Claude Haiku 4.5: 4096. Progi sa wyzsze niz wiele blogowych tutoriali zaklada",
+      "source_location": "section: Details / Aktualne minimalne progi tokenowe, table + paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["minimum-tokens", "model-versions", "2026-update"]
+    },
+    {
+      "id": "R5.C17",
+      "claim": "Cache write cost is 1.25x input token rate; break-even occurs after ~2-4 requests with same prefix",
+      "citation": "Cache bez reuse - single-shot request z cache_control placi 1.25x za nic... tylko gdy oczekujesz >=2 requestow z tym samym prefiksem",
+      "source_location": "section: Details / Anti-patterns, point 8",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["economics", "break-even", "cost-analysis"]
+    },
+    {
+      "id": "R5.C18",
+      "claim": "Dynamic tool generation via code interpreter preserves tools cache instead of invalidating it",
+      "citation": "Zamiast dodawac dynamiczne tools (ktore invaliduja cache), zaimplementuj generyczne 'code interpreter' tool i radzisz sobie z dynamika poprzez code generation. Cache narzedzia nigdy nie jest invalidowany",
+      "source_location": "section: Details / Arxiv paper, implication",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["dynamic-tools", "pattern", "arxiv"]
+    },
+    {
+      "id": "R5.C19",
+      "claim": "Snapped boundary strategy (multiple of 20) stabilizes breakpoint for 20 turns vs sliding window",
+      "citation": "Trick snapped boundaries: zamiast breakpoint = last_n_messages, uzyj breakpoint = (len(messages) // 20) * 20. Breakpoint stoi przez 20 tur - mniej invalidacji",
+      "source_location": "section: Details / Kern-ai case study, paragraph 3",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["breakpoint-strategy", "kern-ai", "optimization"]
+    },
+    {
+      "id": "R5.C20",
+      "claim": "Workspace-level isolation (since Feb 2026) means cache is shared within workspace but isolated between workspaces",
+      "citation": "Luty 2026 Anthropic wprowadzil workspace-level isolation... Cache jest shared wewnatrz workspace, ale nie miedzy workspaceami",
+      "source_location": "section: Details / Wzorzec 7, note",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["workspace", "isolation", "2026-change"]
+    },
+    {
+      "id": "R5.C21",
+      "claim": "Capitalization or whitespace drift in static content invalidates cache even if semantically identical",
+      "citation": "Capitalization drift - dwie literkowe zmiany kasuja cache. Zamiast tego: freeze text statycznych blokow, nie generuj ich dynamicznie",
+      "source_location": "section: Details / Anti-patterns, point 10",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-pattern", "text-freeze", "determinism"]
+    },
+    {
+      "id": "R5.C22",
+      "claim": "RAG systems should use dual breakpoint strategy: 1h TTL for rules, 5m TTL for document batches",
+      "citation": "Dwa breakpointy: Po system rules (1h TTL), Po RAG documents (5m TTL). 1h-cache entries musza appear BEFORE 5m-cache entries w requestcie",
+      "source_location": "section: Details / RAG pattern, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["rag", "dual-breakpoint", "freshness"]
+    },
+    {
+      "id": "R5.C23",
+      "claim": "Agentic workflows benefit from automatic caching with frozen tools to preserve tool-layer cache",
+      "citation": "Dla multi-step agentow: tools: full set (static), system: role + workflow rules (static), messages: tool_use + tool_result history (growing, auto cache)... automatic caching jest kluczowy",
+      "source_location": "section: Details / Agentic workflow pattern, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["agentic", "workflow", "auto-cache"]
+    },
+    {
+      "id": "R5.C24",
+      "claim": "Long conversations (>20 blocks) require additional breakpoints every ~15 blocks to avoid lookback misses",
+      "citation": "Rozwiazanie: Multi-breakpoint strategy dla dlugich konwersacji. Dodaj breakpoints co ~15-18 blokow (margin bezpieczenstwa przed limitem 20)",
+      "source_location": "section: Details / 20-block lookback window, paragraph 3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["long-conversation", "breakpoint", "strategy"]
+    },
+    {
+      "id": "R5.C25",
+      "claim": "OpenAI automatic caching achieves 50% read cost savings; Anthropic explicit caching achieves 90% savings",
+      "citation": "OpenAI: Automatic caching dla promptow >1024 tokenow, Savings 50% na read. Anthropic: Explicite cache_control, Savings 90% na read",
+      "source_location": "section: Details / Comparison, paragraph 1",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["provider-comparison", "openai", "anthropic"]
+    },
+    {
+      "id": "R5.C26",
+      "claim": "Tool array serialization order matters for cache; tools should be alphabetically ordered for consistency",
+      "citation": "Jezeli dzisiaj masz tools = [A, B, C] a jutro tools = [A, C, B], cache jest invalidated... Rekomendacja: alphabetyczny order tools (konsystentny serialization)",
+      "source_location": "section: Details / Tools best practice, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tools", "order", "determinism"]
+    },
+    {
+      "id": "R5.C27",
+      "claim": "TTL values should default to 5 minutes for interactive chats and 1 hour for rarely-changing content",
+      "citation": "9. 1h TTL dla krotkotrwalych konwersacji - placisz 2x write, nigdy nie dochodzisz do break-even. Zamiast tego: 5m default dla interaktywnych chatow",
+      "source_location": "section: Details / Anti-patterns, point 9",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["ttl", "defaults", "cost-optimization"]
+    },
+    {
+      "id": "R5.C28",
+      "claim": "Maximum 4 explicit cache_control blocks recommended to avoid API errors",
+      "citation": "Maksimum 4 explicit breakpointy... bez sensu trzymac 1 jesli potrzeba 3",
+      "source_location": "section: Details / Anti-patterns heading + Konflikt 11",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["limit", "breakpoint", "error-prevention"]
+    }
+  ],
+  "gaps_flagged": [
+    "Gap 15: Brak benchmarku dla 4 breakpointow vs 1 breakpoint dla zlozonych RAG - intuicyjnie 4 lepsze, ale empirical data brak",
+    "Gap 16: Brak wzorcow dla multi-modal (images + text + tools) - czy images na poczatku czy koncu messages?",
+    "Gap 17: Brak oficjalnej guidance jak obslugiwac burst workflow gdzie 100 userow jednoczesnie odpala identyczny prefix",
+    "Gap 20: Nie znaleziono publicznych case studies Notion/Canva o prompt caching"
+  ],
+  "conflicts_flagged": [
+    "Konflikt 11: DigitalOcean (max 4 breakpointy) vs inne blogi (additional breakpoints don't cost extra) - obydwa prawe, chodzi o explicit vs cost",
+    "Konflikt 12: LangChain defaults (cache_control na system block) vs raw API (top-level automatic) - zaleza od single/multi-turn",
+    "Konflikt 18: Stare blogi (2024) podaja 1024 jako minimum vs aktualne docs (2026) 4096 dla nowych modeli - zawsze uzyj oficjalnych docs",
+    "Konflikt 19: Arxiv 'system-prompt-only' vs Kern-ai 'message history cache' - nie sa sprzecznosci, roznica sesja vs cross-sesja"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "report_id": "R5",
+  "source_file": "research/R5_skill_vs_command_vs_agent.md",
+  "extractor_persona": "Haiku-equivalent (Orchestrator-run)",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R5.C1",
+      "claim": "4-tier extensibility hierarchy in Claude Code: MCP (external tools) / Skills (instructions + resources) / Subagents (isolated task runners) / Hooks (lifecycle triggers). Each tier solves different problem.",
+      "evidence": "Official docs architecture overview; community consensus (Dean Blank mental model March 2026).",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C2",
+      "claim": "MCP is for external tool/data integration (API calls, DB queries, external services); Skills is for reusable instruction patterns; Subagents is for context isolation; Hooks is for event-triggered automation.",
+      "evidence": "Official MCP docs + skills docs + subagents docs + hooks docs mapping.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C3",
+      "claim": "Decision tree for selection: (1) Do I need external state/API? -> MCP. (2) Reusable prompt logic? -> Skill. (3) Context isolation needed? -> Subagent. (4) Lifecycle event hook? -> Hook.",
+      "evidence": "Derived from official docs; simplified from community decision trees.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C4",
+      "claim": "Skills + Hooks overlap: can implement auto-triggered workflows (e.g., pre-commit quality check). Difference: Hook is OS-level event, Skill auto-invoke is LLM-decided.",
+      "evidence": "Hooks docs + skill paths field overlap analysis.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C5",
+      "claim": "Skills + Subagents overlap: skill with context:fork becomes de-facto subagent invocation; difference is skill provides instructions while subagent provides environment.",
+      "evidence": "R1.C16 + docs subagent-vs-skill comparison.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C6",
+      "claim": "Skills + MCP overlap: skill with allowed-tools: [mcp-server__tool] can bundle MCP invocation. Difference: MCP is data layer, skill with MCP is workflow wrapping data layer.",
+      "evidence": "Community hybrid pattern examples.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C7",
+      "claim": "Token economics by tier (for 100 invocations, approximate): Skills ~$4.80-90 depending on model (Haiku-Opus); Subagent adds ~$2 per invocation for context-fork overhead; MCP call adds API fees not tokens.",
+      "evidence": "Derived from Anthropic pricing + skill size assumptions.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R5.C8",
+      "claim": "Model routing via skill model: field enables per-skill cost optimization: Haiku for simple tasks, Sonnet default, Opus for complex synthesis.",
+      "evidence": "R2.C9 model field + community cost optimization patterns.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C9",
+      "claim": "Use case -> tier mapping examples: GitHub PR review (Skill for logic + MCP for GH API + Subagent for isolated review), Deploy pipeline (Hook pre-commit + Skill for deploy steps), Research gathering (Subagent fan-out with shared skill).",
+      "evidence": "Community patterns + Anthropic official plugin examples.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C10",
+      "claim": "Decision matrix priorities: start with Skills (lowest overhead) -> escalate to Subagent for context isolation -> add MCP only for external integration -> add Hook only for lifecycle automation. Prefer simplest tier that solves the problem.",
+      "evidence": "Community best-practices consensus.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C11",
+      "claim": "Commands (Claude Code 2.1+ merged with skills) are a UX-level abstraction, not a distinct tier; a command is a slash-invocable skill.",
+      "evidence": "R1.C3 merge + R3.C5.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C12",
+      "claim": "Maciej's system analysis: 35 skills are agent definitions (individual roles), 42 commands are orchestrator skills that invoke preset ensembles. Architecturally: orchestrator-skill pattern at command layer + agent-skill pattern at skill layer.",
+      "evidence": "Project CLAUDE.md + generate_skills.js + generate_commands.js.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C13",
+      "claim": "Cost optimization: Haiku for extractor roles (R5's Deep Research v2 uses Haiku for E1-E7 extracts), Sonnet for researcher roles, Opus for orchestrator/critic/synthesis.",
+      "evidence": "Maciej's /deep-research-v2 preset routing spec.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C14",
+      "claim": "Subagent with skills preload field: enables skills to be loaded into subagent system prompt at startup (vs lazy on-invoke in main session). Rationale: subagent has short lifespan, no time for lazy load.",
+      "evidence": "R1.C10 subagent-vs-skill table (skills field).",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C15",
+      "claim": "Anti-pattern: using MCP where skill suffices. Example: wrapping a pure text transformation as MCP server adds I/O overhead + deployment complexity when a skill could do it in context.",
+      "evidence": "Community anti-pattern reports.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C16",
+      "claim": "Anti-pattern: subagent for simple lookups. context:fork has startup cost (~2k tokens); not justified for 1-shot queries that fit in main context.",
+      "evidence": "R5.C7 cost breakdown + community perf reports.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C17",
+      "claim": "Scoping decision: Skills at Personal scope for user-wide reuse (Maciej's 35), Project scope for team conventions, Plugin scope for shareable distribution.",
+      "evidence": "R1.C1 scope priority + plugin distribution rationale.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C18",
+      "claim": "Hooks run OUTSIDE Claude reasoning (pre/post tool use, pre/post edit, etc.) and can gate or augment skill execution; useful for policy enforcement.",
+      "evidence": "Hooks docs events + policy use case.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C19",
+      "claim": "Subagent lifespan: one-shot (ephemeral) by default; stateful multi-turn subagent requires explicit design. Context fork does not persist state beyond the single invocation.",
+      "evidence": "Subagent docs lifecycle section.",
+      "confidence": "high"
+    },
+    {
+      "id": "R5.C20",
+      "claim": "When all four tiers combine: complex workflows use Hook (trigger) -> Skill (orchestrator) -> Subagent (isolated task) -> MCP (external data). This is the 'full-stack' agent architecture pattern.",
+      "evidence": "Community advanced patterns + Anthropic enterprise use cases.",
+      "confidence": "medium"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "R5.CONFLICT1",
+      "description": "Skill with context:fork blurs line between Skill and Subagent; some community guides treat them as same tier, others as distinct. Documentation ambiguity.",
+      "severity": "medium"
+    },
+    {
+      "id": "R5.CONFLICT2",
+      "description": "Cost trade-off: Opus orchestrator with Haiku workers saves money but coordination complexity rises; Sonnet-only is simpler but 5x more expensive. No consensus on sweet spot.",
+      "severity": "low"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R5.GAP1",
+      "description": "No official benchmark comparing 4-tier hybrid vs skill-only workflow for same task (e.g., end-to-end PR review).",
+      "severity": "medium"
+    },
+    {
+      "id": "R5.GAP2",
+      "description": "Interaction of Hook triggering Skill with context:fork: does fork isolation apply? Empirical test needed.",
+      "severity": "low"
+    }
+  ],
+  "summary": "R5 systematizes the 4-tier hierarchy (MCP/Skills/Subagents/Hooks) with decision tree, overlap zones with hybrid examples, token economics breakdown, and maps Maciej's system (35 skills = agent defs, 42 commands = orchestrators). Core principle: start with simplest tier."
+}

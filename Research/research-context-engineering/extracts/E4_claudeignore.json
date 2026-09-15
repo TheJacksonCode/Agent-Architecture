@@ -1,0 +1,294 @@
+{
+  "source_report": "R4_claudeignore.md",
+  "report_words": 3800,
+  "extract_words": 485,
+  "extractor_version": "v1",
+  "campaign": "Claude Code Context Engineering 2026",
+  "extraction_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R4.C1",
+      "claim": ".claudeignore is a soft-ignore mechanism that prevents automatic context loading but does NOT provide hard file access control",
+      "citation": ".claudeignore is a **soft-ignore mechanism** for Claude Code that prevents files from being automatically loaded into context. It is NOT a security boundary.",
+      "source_location": "Executive Summary, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mechanism", "soft-vs-hard", "context-loading"]
+    },
+    {
+      "id": "R4.C2",
+      "claim": "Official Anthropic documentation lacks dedicated .claudeignore page on code.claude.com/docs",
+      "citation": "The official Claude Code documentation at `code.claude.com/docs` does NOT have a dedicated `.claudeignore` page. The `.claude/` directory explorer lists 10+ configuration files but does not list `.claudeignore` as a named file type.",
+      "source_location": "PRIMARY SOURCE GAP section, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["documentation", "gap", "official-docs"]
+    },
+    {
+      "id": "R4.C3",
+      "claim": ".claudeignore uses gitignore specification syntax for pattern matching",
+      "citation": ".claudeignore uses **gitignore specification syntax** - the same parser rules as `.gitignore`. Confirmed by: Official permissions docs: 'Read and Edit rules both follow the gitignore specification'",
+      "source_location": "Section 1: Syntax and Format, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["syntax", "gitignore-compat", "patterns"]
+    },
+    {
+      "id": "R4.C4",
+      "claim": "Negation patterns (!pattern) are supported by gitignore spec but pg-creative/claudeignore tool explicitly states they are unsupported",
+      "citation": "**Negation patterns (`!pattern`):** Supported by gitignore spec and described in community proposals, but the `pg-creative/claudeignore` NPM tool explicitly states 'Negation patterns unsupported.'",
+      "source_location": "Section 1: Pattern Syntax subsection, paragraph 3",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["negation", "tool-variation", "pattern-limitations"]
+    },
+    {
+      "id": "R4.C5",
+      "claim": "ignorePatterns in settings.json was deprecated circa v2.0.8 (~October 2025)",
+      "citation": "**v2.0.8 (~Oct 2025)** - `ignorePatterns` deprecated in .claude.json",
+      "source_location": "Section 2: The ignorePatterns Predecessor, Timeline",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["deprecation", "timeline", "ignorePatterns", "settings"]
+    },
+    {
+      "id": "R4.C6",
+      "claim": ".claudeignore files can exist in subdirectories and patterns apply to their subtree",
+      "citation": "**Hierarchical:** `.claudeignore` files can exist in subdirectories; patterns apply to their subtree",
+      "source_location": "Section 1: File Location, paragraph 2",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["hierarchy", "file-location", "subdirectories"]
+    },
+    {
+      "id": "R4.C7",
+      "claim": "Read tool is NOT blocked by .claudeignore patterns - files remain accessible if explicitly requested",
+      "citation": "**Behavior:** Files matching .claudeignore patterns are excluded from **automatic context loading**. They still exist on the filesystem and remain discoverable. Per CodeSignal documentation: '.claudeignore doesn't make files invisible to Claude's filesystem tools.'",
+      "source_location": "Section 3a: .claudeignore (soft mechanism), paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["read-tool", "accessibility", "soft-block"]
+    },
+    {
+      "id": "R4.C8",
+      "claim": "Glob and Grep tools are NOT blocked by .claudeignore patterns",
+      "citation": "| Tool | .claudeignore effect | | Grep | NOT blocked | | Glob | NOT blocked |",
+      "source_location": "Section 3a: Tool behavior table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["glob-tool", "grep-tool", "tool-behavior"]
+    },
+    {
+      "id": "R4.C9",
+      "claim": "permissions.deny in settings.json provides hard enforcement but uses 'best-effort' approach for Read/Grep/Glob tools",
+      "citation": "Per official docs: 'Claude makes a best-effort attempt to apply Read rules to all built-in tools that read files like Grep and Glob.' **The keyword is 'best-effort'** - this is NOT guaranteed. Multiple bug reports confirm inconsistency.",
+      "source_location": "Section 3b: permissions.deny (hard mechanism), paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["permissions", "hard-block", "inconsistency"]
+    },
+    {
+      "id": "R4.C10",
+      "claim": "Bash tool bypasses permissions.deny - 'cat .env' via bash is not blocked even if .env is denied",
+      "citation": "Does NOT block `cat .env` via Bash tool (separate deny rule needed)",
+      "source_location": "Section 3b: What permissions.deny does block, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash-bypass", "security", "tool-bypass"]
+    },
+    {
+      "id": "R4.C11",
+      "claim": ".gitignore patterns are only respected in initial context snapshot, not in tool-level calls",
+      "citation": "Per reverse-engineered internals (kirshatrov.com): The initial directory snapshot 'skips over .gitignore patterns' - so gitignored files don't appear in the startup context. However, **Read/Grep/Glob tools do NOT reliably respect .gitignore**",
+      "source_location": "Section 3c: .gitignore interaction, paragraph 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["gitignore", "initial-snapshot", "tool-inconsistency"]
+    },
+    {
+      "id": "R4.C12",
+      "claim": "Node.js node_modules directory is NOT reliably auto-excluded by default without explicit configuration",
+      "citation": "**node_modules** - **partially, not reliably** (Issues #166, #187 show this was not excluded by default in early versions and behavior is inconsistent)",
+      "source_location": "Section 6: Default Auto-Ignored Paths, paragraph 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["node_modules", "defaults", "auto-exclusion"]
+    },
+    {
+      "id": "R4.C13",
+      "claim": "Paths in permissions rules use POSIX form on Windows; C:\\Users\\alice becomes /c/Users/alice",
+      "citation": "**Windows note:** Paths normalized to POSIX form. `C:\\Users\\alice` becomes `/c/Users/alice`. Use `//c/**/.env` for drive-absolute paths.",
+      "source_location": "Section 4: Permission Rule Syntax, paragraph 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["windows", "path-syntax", "permissions"]
+    },
+    {
+      "id": "R4.C14",
+      "claim": "li-zhixin/claude-ignore implements hard block on Read via PreToolUse hook but does not cover Grep/Glob",
+      "citation": "**Blocking:** Hard block on Read only (Grep/Glob not covered unless separately hooked).",
+      "source_location": "Section 5a: li-zhixin/claude-ignore (PreToolUse Hook)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hook", "implementation", "read-only", "coverage-gap"]
+    },
+    {
+      "id": "R4.C15",
+      "claim": "pg-creative/claudeignore converts .claudeignore patterns to permissions.deny rules, managing Read + Glob + Grep simultaneously",
+      "citation": "**Approach:** Converts .claudeignore patterns to permissions.deny rules in settings.json. Each pattern generates 3 deny rules: Read, Glob, Grep.",
+      "source_location": "Section 5b: pg-creative/claudeignore (Pattern Converter)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["implementation", "converter", "scope"]
+    },
+    {
+      "id": "R4.C16",
+      "claim": "yurekami/claude-agentignore implements @ban (stealth block) and @exclude (implicit 'File not found' response) tiers",
+      "citation": "**`@ban`**: blocks read AND write, agent gets explicit 'banned' message | **`@exclude`**: blocks read AND write, agent gets 'File not found' - stealth protection",
+      "source_location": "Section 5c: yurekami/claude-agentignore (3-Tier Enforcement), paragraph 2",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["implementation", "stealth", "ux-variation"]
+    },
+    {
+      "id": "R4.C17",
+      "claim": "The Register reported in January 2026 that Claude Code ignore rules fail to protect secrets despite .claudeignore and .gitignore",
+      "citation": "The Register reported (2026-01-28) that Claude Code's ignore rules fail for secrets... **Failed mechanisms:** 1. `.claudeignore` - Claude claimed it worked 'like .gitignore' but read .env files anyway",
+      "source_location": "Section 9: Security Concerns (The Register Report, Jan 2026)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["security", "empirical-testing", "vulnerability"]
+    },
+    {
+      "id": "R4.C18",
+      "claim": ".claudeignore is a hint to the model, not system-level enforcement; model can be prompted to override instructions",
+      "citation": "**Root cause:** Claude Code's permission system applies to tool calls from the model, but the model can be prompted to override its own context instructions. `.claudeignore` is a hint to the model, not a system-level enforcement.",
+      "source_location": "Section 9: Security Concerns, paragraph 3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["security", "model-prompt-override", "arch"]
+    },
+    {
+      "id": "R4.C19",
+      "claim": "ignorePatterns CLI command 'claude config add ignorePatterns' is still functional as of 2026",
+      "citation": "**CLI command (still functional):** ```bash claude config add ignorePatterns node_modules claude config set ignorePatterns \"tests/**\" ```",
+      "source_location": "Section 2: The ignorePatterns Predecessor, paragraph 2",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["cli", "backwards-compat", "settings"]
+    },
+    {
+      "id": "R4.C20",
+      "claim": "Issue #620 'Make .claudeignore set ignorePatterns by default' was CLOSED AS NOT PLANNED",
+      "citation": "**Mar 2025** - Issue #620: Request to make .claudeignore set ignorePatterns by default - **CLOSED AS NOT PLANNED**",
+      "source_location": "Section 2: Timeline, paragraph 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["feature-decision", "roadmap", "decision-signal"]
+    },
+    {
+      "id": "R4.C21",
+      "claim": "Sandboxing is the most restrictive enforcement mechanism, blocking all file access including Bash",
+      "source_location": "Section 8: Conflicts section, Priority hierarchy",
+      "claim": "OS-level sandbox blocks everything including Bash; most restrictive mechanism in priority hierarchy",
+      "citation": "1. Sandbox (OS-level) - blocks everything including Bash",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["sandbox", "security", "enforcement-hierarchy"]
+    },
+    {
+      "id": "R4.C22",
+      "claim": "Exact version and date of ignorePatterns deprecation is unclear; 'v2.0.8' cited but unverified from primary source",
+      "citation": "**`ignorePatterns` deprecation details:** Exact version and date of deprecation unclear; 'v2.0.8' cited but unverified from primary source.",
+      "source_location": "Gaps and Unresolved Questions section, paragraph 5",
+      "stance": "gap",
+      "confidence": "medium",
+      "tags": ["gap", "unverified", "timeline"]
+    },
+    {
+      "id": "R4.C23",
+      "claim": "Subdirectory .claudeignore is described as supported by community tools but not officially tested or documented",
+      "citation": "**Subdirectory .claudeignore:** Described as supported by community tools but not tested/documented officially.",
+      "source_location": "Gaps and Unresolved Questions section, paragraph 6",
+      "stance": "gap",
+      "confidence": "medium",
+      "tags": ["gap", "untested", "hierarchy"]
+    },
+    {
+      "id": "R4.C24",
+      "claim": "It is unclear whether .claudeignore has native parser in Claude Code binary or only works via community hooks",
+      "citation": "**Native vs hook-based:** Unclear if `.claudeignore` has any native parser in Claude Code binary, or if it only works when a community hook is installed.",
+      "source_location": "Gaps and Unresolved Questions section, paragraph 2",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "arch-unknown", "native-vs-hook"]
+    },
+    {
+      "id": "R4.C25",
+      "claim": "Whether .claudeignore natively affects Glob/Grep is undocumented; li-zhixin hook only hooks Read tool",
+      "citation": "**Glob/Grep coverage:** The li-zhixin hook only hooks `Read`. Whether `.claudeignore` affects Glob/Grep natively is undocumented.",
+      "source_location": "Gaps and Unresolved Questions section, paragraph 3",
+      "stance": "gap",
+      "confidence": "medium",
+      "tags": ["gap", "tool-coverage", "undocumented"]
+    },
+    {
+      "id": "R4.C26",
+      "claim": "When file is in .gitignore but NOT in .claudeignore, it remains accessible via Read/Grep/Glob tools despite @ autocomplete exclusion",
+      "citation": "**Scenario A:** File in .gitignore but NOT in .claudeignore | File NOT excluded from Read/Grep/Glob tool access | File NOT in initial context snapshot",
+      "source_location": "Section 8: Conflicts / Scenario A",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["conflict", "tool-behavior", "precedence"]
+    },
+    {
+      "id": "R4.C27",
+      "claim": "Files in permissions.deny are still visible in file listings but blocked from Read/Grep/Glob",
+      "citation": "**Scenario D:** File in permissions.deny but NOT in .claudeignore | Hard blocked from Read/Grep/Glob (best-effort) | Still visible in file listings",
+      "source_location": "Section 8: Conflicts / Scenario D",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["conflict", "visibility", "permissions"]
+    },
+    {
+      "id": "R4.C28",
+      "claim": "Issue #2305 proposes negation patterns (!tasks/) to whitelist gitignored files, but NOT IMPLEMENTED as of April 2026",
+      "citation": "**Feature Request Gap (Issue #2305)** Developers want `.claudeignore` to **override** `.gitignore` negatively... **NOT IMPLEMENTED as of April 2026.**",
+      "source_location": "Section 8: Conflicts, Feature Request Gap",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["feature-gap", "negation", "request"]
+    },
+    {
+      "id": "R4.C29",
+      "claim": "Community confidence scores for three main implementations: li-zhixin 0.85, pg-creative 0.85, yurekami 0.80",
+      "citation": "li-zhixin/claude-ignore... Confidence: 0.85 | pg-creative/claudeignore... Confidence: 0.85 | yurekami/claude-agentignore... Confidence: 0.80",
+      "source_location": "Citations section, entries 4-6",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["community-tools", "reliability", "meta"]
+    }
+  ],
+  "gaps_flagged": [
+    "Primary documentation gap: Official .claudeignore page does not exist on code.claude.com/docs (C2); community tools fill the void empirically",
+    "Native implementation unclear: No definitive source confirming whether Claude Code has native .claudeignore parser vs. hook-only (C24)",
+    "Tool coverage inconsistency: Whether .claudeignore natively affects Glob/Grep tools is undocumented; only li-zhixin hook coverage is documented (C25)",
+    "Negation pattern support varies by tool: pg-creative explicitly unsupported (C4), but gitignore spec allows it - implementation dependent (C4)",
+    "ignorePatterns deprecation unverified: Timeline 'v2.0.8 Oct 2025' cited but no primary source confirmation (C22)",
+    "Subdirectory .claudeignore behavior untested: Community tools claim support but no official testing/docs (C23)"
+  ],
+  "conflicts_flagged": [
+    "CONFLICT: node_modules auto-exclusion - C12 states NOT reliably auto-excluded, contradicting common assumption. Issues #166, #187 confirm inconsistency across versions",
+    "CONFLICT: Negation pattern support - C4 shows gitignore spec supports !pattern but pg-creative/claudeignore explicitly rejects it. Behavior implementation-dependent",
+    "CONFLICT: .claudeignore soft vs hard - Executive Summary describes as 'soft-ignore' (C1) but li-zhixin hook provides hard block (C14). Depends on what's installed",
+    "CONFLICT: permissions.deny reliability - C9 states 'best-effort' with 'multiple bug reports confirm inconsistency', yet official docs claim it applies. Gap between promised and actual enforcement",
+    "CROSS-REPORT FLAG: C2 (no official docs) may conflict with R3 findings if R3 cited official .claudeignore page; requires Critic review"
+  ],
+  "notes": {
+    "topTags": ["security", "permissions", "tool-behavior", "documentation-gap", "implementation"],
+    "lowConfidenceClaims": ["R4.C24"],
+    "gapClaimsCount": 4,
+    "conflictClaimsCount": 5,
+    "communityImplementationsCovered": 3
+  }
+}

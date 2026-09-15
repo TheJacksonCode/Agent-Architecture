@@ -1,0 +1,275 @@
+{
+  "source_report": "R2_precedence_semantics.md",
+  "report_words": 3600,
+  "extract_words": 420,
+  "extractor_version": "v1",
+  "campaign": "settings-permissions-2026",
+  "claims": [
+    {
+      "id": "R2.C1",
+      "claim": "Oficjalna hierarchia piec warstw od najwyzszego do najnizszego priorytetu: Managed > Command-line arguments > Local project (.claude/settings.local.json) > Shared project (.claude/settings.json) > User (~/.claude/settings.json).",
+      "citation": "1. Managed settings, 2. Command line arguments, 3. Local project settings, 4. Shared project settings, 5. User settings",
+      "source_location": "R2 sec 2, docs settings#settings-precedence",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["precedence", "layers", "hierarchy"]
+    },
+    {
+      "id": "R2.C2",
+      "claim": "Deny dominuje absolutnie: jesli tool jest denied na dowolnym poziomie, zadna inna warstwa nie moze go dozwolic.",
+      "citation": "If a tool is denied at any level, no other level can allow it",
+      "source_location": "R2 sec 1, permissions#settings-precedence",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["deny", "precedence", "rule-evaluation"]
+    },
+    {
+      "id": "R2.C3",
+      "claim": "Scalary (string/bool/number) sa nadpisywane przez wyzsza warstwe, obiekty sa deep-merged, a tablice sa concatenated + deduplicated cross-scope.",
+      "citation": "arrays are concatenated and deduplicated, not replaced. Lower-priority scopes can add entries without overriding those set by higher-priority scopes",
+      "source_location": "R2 sec 3, docs settings#settings-precedence Note block",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["merge-semantics", "arrays", "objects"]
+    },
+    {
+      "id": "R2.C4",
+      "claim": "Managed ma 11 locked managed-only pol (m.in. allowManagedHooksOnly, allowManagedMcpServersOnly, allowManagedPermissionRulesOnly, sandbox.filesystem.allowManagedReadPathsOnly, forceRemoteSettingsRefresh, channelsEnabled) ignorowanych gdy ustawione w warstwach nizszych.",
+      "citation": "Wylicza 11 pol ktore sa czytane wylacznie z Managed ... gdy set w non-managed: Ignorowane",
+      "source_location": "R2 sec 4.1 Tabela 4.1, permissions#managed-only-settings",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["managed-only", "locked-fields", "enterprise"]
+    },
+    {
+      "id": "R2.C5",
+      "claim": "Bug #17299: mcpServers w project settings REPLACE zamiast deep-merge z user settings - cloudflare-dns z user'a znika po dodaniu project-server w .claude/settings.json.",
+      "citation": "Rzeczywistosc (R2.C2 issue #17299): Merged: { 'project-server': {...} } - cloudflare-dns zniknal. Issue zamkniete jako duplicate (nie naprawione)",
+      "source_location": "R2 sec 5 Konflikt #4, GitHub #17299",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["bug", "mcpServers", "merge-violation"]
+    },
+    {
+      "id": "R2.C6",
+      "claim": "Bug #17017 (OPEN): permissions.allow zglasza REPLACE zamiast concat+dedup, wbrew oficjalnej doc'owej zasadzie merge'owania tablic.",
+      "citation": "Issue #17017 'Project-level permissions replace global permissions instead of merging', opened 2026-01-09, OPEN ... zachowanie rzeczywiste: Zgodne dla allowWrite, ale #17017 opisuje project REPLACE dla permissions.allow",
+      "source_location": "R2 sec 3 Tabela 3.1 + sec 8.3 + GitHub #17017",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["bug", "permissions", "merge-violation"]
+    },
+    {
+      "id": "R2.C7",
+      "claim": "settings.local.json NIE jest deprecated w 2026 - aktualne docs opisuja ja jako warstwe nr 3, autoMode jest czytany explicitely z tego pliku, aktywne issue (#41259, #24657, #16301) implikuja aktywne uzycie.",
+      "citation": "Status deprecation w 2026: NIE jest deprecated ... Aktywne dowody: Docs z 2026 explicite opisuja Local jako warstwe nr 3; Feature autoMode klasifikator czyta z settings.local.json explicitely",
+      "source_location": "R2 sec 2.3 + sec 6.2",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["local-settings", "deprecation-status", "2026"]
+    },
+    {
+      "id": "R2.C8",
+      "claim": "Bug #2835: invalid JSON na dowolnej warstwie powoduje silent skip calej warstwy - brak stack trace, brak warningu z --debug, startup kontynuuje z pozostalymi warstwami.",
+      "citation": "Claude Code probuje parsowac warstwe X. JSON.parse rzuca wyjatek. Claude Code nie wywala stack trace'u, nie ma warnu z --debug. Layer X jest pominiete calosciowo",
+      "source_location": "R2 sec 6.1, GitHub #2835",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["silent-failure", "json-parsing", "risk"]
+    },
+    {
+      "id": "R2.C9",
+      "claim": "Managed nie mozna nadpisac z CLI - nawet --allowedTools nie odblokuje WebFetch jesli Managed ma deny. Ale --disallowedTools moze dodawac restrykcje additively.",
+      "citation": "Managed settings cannot be overridden by any other level, including command line arguments ... --disallowedTools can add restrictions beyond what managed settings define",
+      "source_location": "R2 sec 2.2, permissions#settings-precedence",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["managed", "cli-args", "asymmetry"]
+    },
+    {
+      "id": "R2.C10",
+      "claim": "Wewnatrz tier Managed precedence: server-managed > MDM/OS > file-based > HKCU registry; tylko jeden managed source jest uzywany, zrodla nie merguja sie cross-tier.",
+      "citation": "Within the managed tier, precedence is: server-managed > MDM/OS-level policies > file-based > HKCU registry. Only one managed source is used; sources do not merge across tiers",
+      "source_location": "R2 sec 2.1, docs settings precedence",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["managed-tier", "mdm", "server-managed"]
+    },
+    {
+      "id": "R2.C11",
+      "claim": "Windows legacy managed path C:\\ProgramData\\ClaudeCode\\ NIE jest juz wspierany od v2.1.75, wymagana migracja do C:\\Program Files\\ClaudeCode\\.",
+      "citation": "Windows: C:\\Program Files\\ClaudeCode\\ (UWAGA: legacy C:\\ProgramData\\ClaudeCode\\ nie jest juz wspierany od v2.1.75, wymagana migracja)",
+      "source_location": "R2 sec 2.1",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["windows", "migration", "managed-paths"]
+    },
+    {
+      "id": "R2.C12",
+      "claim": "Shared project settings (.claude/settings.json) swiadomie nie sa czytane dla anti-TOCTOU pol: autoMemoryDirectory, autoMode, skipDangerousModePermissionPrompt, useAutoModeDuringPlan.",
+      "citation": "Not accepted in project settings to prevent shared repos from redirecting memory writes ... Ignored when set in project settings to prevent untrusted repositories from auto-bypassing the prompt",
+      "source_location": "R2 sec 2.4",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["security", "anti-injection", "shared-project"]
+    },
+    {
+      "id": "R2.C13",
+      "claim": "Managed-settings.d drop-in uses systemd convention: base managed-settings.json merged first, then *.json files sorted alphabetically, later files win for scalars, arrays concat+dedup, objects deep-merge.",
+      "citation": "Following the systemd convention, managed-settings.json is merged first as the base, then all *.json files in the drop-in directory are sorted alphabetically and merged on top. Later files override earlier ones for scalar values",
+      "source_location": "R2 sec 2.1, settings#settings-files",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["systemd", "drop-in", "managed-merge"]
+    },
+    {
+      "id": "R2.C14",
+      "claim": "Asymetria managed-only-X-only flag: tylko ALLOW side jest zamykana, DENY side zawsze merguje z wszystkich warstw (deniedMcpServers still merges from all sources).",
+      "citation": "When true, only allowedMcpServers from managed settings are respected. deniedMcpServers still merges from all sources",
+      "source_location": "R2 sec 4.1, permissions#managed-only-settings",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["asymmetry", "deny-merge", "managed-only"]
+    },
+    {
+      "id": "R2.C15",
+      "claim": "~/.claude.json NIE jest settings file - przechowuje preferences, OAuth session, MCP server configs user/local scope, per-project state i caches; niektore pola nie przechodza przez settings.json merge precedence w ogole.",
+      "citation": "Other configuration is stored in ~/.claude.json. This file contains your preferences (theme, notification settings, editor mode), OAuth session, MCP server configurations for user and local scopes, per-project state",
+      "source_location": "R2 sec 2.5, settings#settings-files",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["claude-json", "mcp-storage", "per-project"]
+    },
+    {
+      "id": "R2.C16",
+      "claim": "Bug #24657: enabledMcpjsonServers w .claude/settings.local.json jest ignorowany - odczyt idzie przez ~/.claude.json zamiast settings merge precedence.",
+      "citation": "enabledMcpjsonServers - W praktyce ignorowany z settings.local.json, odczyt z ~/.claude.json",
+      "source_location": "R2 sec 3 Tabela 3.1, GitHub #24657",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["bug", "mcp", "local-settings"]
+    },
+    {
+      "id": "R2.C17",
+      "claim": "Dedup arrays dziala na poziomie string equality: Bash(ls *) i Bash(ls:*) traktowane jako rozne entries mimo semantycznej ekwiwalencji wzorcow.",
+      "citation": "Dedup dziala na poziomie string equality, co oznacza ze Bash(ls *) i Bash(ls:*) beda traktowane jako rozne entries, mimo ze wg dokumentacji wzorce sa ekwiwalentne",
+      "source_location": "R2 sec 3.3",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["dedup", "wildcards", "redundancy"]
+    },
+    {
+      "id": "R2.C18",
+      "claim": "Konflikt klasyczny: Project deny vs User allow - project setting wins, permission blocked (kombinacja precedence + deny>ask>allow rule evaluation).",
+      "citation": "If a permission is allowed in user settings but denied in project settings, the project setting takes precedence and the permission is blocked",
+      "source_location": "R2 sec 5 Konflikt #1, settings#settings-precedence",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["conflict-resolution", "project-vs-user", "deny"]
+    },
+    {
+      "id": "R2.C19",
+      "claim": "Foot-gun IT admin: allowManagedPermissionRulesOnly:true z pustym allow/deny w Managed silently ignoruje user rules - kazde Bash dostaje default prompt, sesja nieuzywalna.",
+      "citation": "User'a rules sa silently ignored. Efekt: kazde Bash command dostaje default permission prompt (bo Managed nie zdefiniowala zadnego allow). Efektywnie 'allow-only nothing' - sesja nieuzywalna dla Bash",
+      "source_location": "R2 sec 4.3 Scenariusz B",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["foot-gun", "enterprise-risk", "silent-ignore"]
+    },
+    {
+      "id": "R2.C20",
+      "claim": "Hooks all-matching uruchamiane parallel bez deterministycznego orderingu; precedence dotyczy decyzji (deny > defer > ask > allow), nie kolejnosci odpalenia.",
+      "citation": "All matching hooks run in parallel, and identical handlers are deduplicated automatically. Command hooks are deduplicated by command string, and HTTP hooks are deduplicated by URL",
+      "source_location": "R2 sec 7.3, docs hooks",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hooks", "parallel", "execution"]
+    },
+    {
+      "id": "R2.C21",
+      "claim": "disableAllHooks jest scope-aware: user/project/local ustawienie true nie wylaczy managed hooks - tylko managed-level disableAllHooks moze wylaczyc managed hooks.",
+      "citation": "Only disableAllHooks set at the managed settings level can disable managed hooks",
+      "source_location": "R2 sec 7.4, settings#hook-configuration",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["hooks", "scope-aware", "managed-override"]
+    },
+    {
+      "id": "R2.C22",
+      "claim": "disableBypassPermissionsMode NIE jest managed-only mimo ze typowo ustawiane przez IT - dziala z dowolnego scope, user moze sam sobie zablokowac bypass mode.",
+      "citation": "disableBypassPermissionsMode is typically placed in managed settings to enforce organizational policy, but it works from any scope. A user can set it in their own settings to lock themselves out of bypass mode",
+      "source_location": "R2 sec 4.2, permissions#managed-only-settings",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["bypass-mode", "self-restriction", "scope"]
+    },
+    {
+      "id": "R2.C23",
+      "claim": "env top-level field deep-merge NIE jest udokumentowany explicitely - wyprowadzone z analogii managed-settings.d i community cytatow, wymaga empirycznej weryfikacji.",
+      "citation": "Docs nigdzie wprost nie mowia ze env jest deep merge'owany. Wyciagnalem to z: Analogicznej zasady dla managed-settings.d ... Community cytatu o env merge z shell environment",
+      "source_location": "R2 sec 8.2",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["env", "undocumented", "gap"]
+    },
+    {
+      "id": "R2.C24",
+      "claim": "/status (nie startup) zglasza bledy settings - oznacza ze CI scripts (non-interactive -p) nie zauwaza bledu i beda dzialaly z niezaaplikowanymi settings.",
+      "citation": "If a settings file contains errors, /status reports the issue so you can fix it ... Oznacza to ze script'y CI (non-interactive -p) nie zglosza bledu",
+      "source_location": "R2 sec 6.1, settings#verify-active-settings",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["ci-risk", "status-command", "silent-failure"]
+    },
+    {
+      "id": "R2.C25",
+      "claim": "JSON schema walidator dostepny publicznie pod json.schemastore.org/claude-code-settings.json - rekomendowany workaround dla silent skip na invalid JSON.",
+      "citation": "Zawsze walidowac settings.json przed commitem przez JSON schema (oficjalne: https://json.schemastore.org/claude-code-settings.json)",
+      "source_location": "R2 sec 6.1",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["json-schema", "validation", "workaround"]
+    },
+    {
+      "id": "R2.C26",
+      "claim": "Issue #16301: 'Yes don't ask again' zapisuje do settings.local.json invalid entries (regex-style patterns nie w format permission rule) - pozniejsze sesje skipuja regule bez notyfikacji usera.",
+      "citation": "Gdy user klika 'Yes, don't ask again' dla Bash command, Claude Code pisze do settings.local.json entry w formacie ktory czasem jest syntactically ok ale semantically invalid",
+      "source_location": "R2 sec 6.3, GitHub #16301",
+      "stance": "gap",
+      "confidence": "med",
+      "tags": ["silent-bug", "local-settings", "invalid-entries"]
+    },
+    {
+      "id": "R2.C27",
+      "claim": "additionalDirectories w permissions jest additive concat cross-scope - User + Project + Managed wszystkie katalogi dostepne zgodnie z zasada lower-priority scopes can add entries.",
+      "citation": "Rozwiazanie: Concat + dedup. Wszystkie trzy katalogi sa dostepne. Additive, nie replace",
+      "source_location": "R2 sec 5 Konflikt #6",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["additionalDirectories", "concat", "additive"]
+    },
+    {
+      "id": "R2.C28",
+      "claim": "Deny MCP servers maja absolute precedence: jesli server pasuje do denylist (name/command/URL), jest zablokowany nawet gdy jest na allowlist.",
+      "citation": "If a server matches a denylist entry (by name, command, or URL), it will be blocked even if it's on the allowlist",
+      "source_location": "R2 sec 5 Konflikt #5, docs mcp managed",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp", "denylist", "precedence"]
+    }
+  ],
+  "gaps_flagged": [
+    "env top-level deep-merge semantyka nieudokumentowana - wymaga empirical test (R2 sec 8.2)",
+    "mcpServers w settings.json vs ~/.claude.json vs .mcp.json - ktore jest kanoniczne, czy settings.json mcpServers to legacy path (R2 sec 8.1)",
+    "--settings <path> CLI flag opisany przez Vincent Qiao ale nie w oficjalnych docs precedence - osobna warstwa czy subset CLI args (R2 sec 8.4)",
+    "Silent skip invalid JSON (#2835) - brak warningu przy startup, CI non-interactive nie zauwaza; workaround tylko /status i JSON schema",
+    "Silent invalid entries w settings.local.json (#16301) - 'don't ask again' zapisuje nieprawidlowe regex patterns ktore potem sa skipowane bez notyfikacji",
+    "Hook execution source identification - czy hook script wie z ktorego scope zostal zarejestrowany (env var CLAUDE_HOOK_SOURCE?) - niejasne (R2 sec 8.6)"
+  ],
+  "conflicts_flagged": [
+    "Docs (R2.C3) mowia arrays concat+dedup, ale issue #17017 (OPEN) zglasza REPLACE dla permissions.allow - bug vs docs lub wrong file path confusion z settings.local.json",
+    "Docs implikuja deep-merge dla top-level objects, ale issue #17299 pokazuje REPLACE semantyke dla mcpServers cross-scope - zamkniete jako duplicate, nie naprawione",
+    "Vincent Qiao wymienia --settings jako 5. CLI kanal nadpisujacy wszystko, ale oficjalne docs Settings precedence go nie wymieniaja - niezgodnosc co do istnienia/statusu flagi",
+    "Dedup dziala cross-scope po string equality, ale Bash(ls *) i Bash(ls:*) sa semantycznie ekwiwalentne (wg wildcard docs) a jednak traktowane jako rozne entries - redundancja nie bug"
+  ]
+}

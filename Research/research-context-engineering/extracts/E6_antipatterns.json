@@ -1,0 +1,290 @@
+{
+  "source_report": "R6_antipatterns.md",
+  "report_words": 3800,
+  "extract_words": 487,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R6.C1",
+      "claim": "CLAUDE.md files exceeding 40 KB cause Claude to display degradation warnings and context mismanagement",
+      "citation": "Officialny limit: 40 KB / ~40,000 znakow - po przekroczeniu ClaudeCode wyswietla ostrzezenie o degradacji",
+      "source_location": "AP-01: Bloated CLAUDE.md, paragraph 4",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["CLAUDE.md", "context_budget", "limits"]
+    },
+    {
+      "id": "R6.C2",
+      "claim": "Only 7.4% of typical CLAUDE.md content (4,847+ lines, 10,847 tokens) proves relevant per session",
+      "citation": "Typowy przegladany plik: 4,847+ linii, zuzywa 10,847 tokenow. Tylko 7.4% tej zawartosci okazuje sie relewantna per sesja",
+      "source_location": "AP-01: Bloated CLAUDE.md, Real-world numbers section",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["CLAUDE.md", "token_waste", "metrics"]
+    },
+    {
+      "id": "R6.C3",
+      "claim": "A 10,000-token CLAUDE.md wastes approximately 5,000 tokens per turn due to duplication and obsolete rules",
+      "citation": "10,000-tokenowy CLAUDE.md = 5,000 tokenow zmarnowanych per kazda kolejka (duplikaty, stare zasady)",
+      "source_location": "AP-01: Bloated CLAUDE.md, Real-world numbers section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["token_waste", "efficiency", "CLAUDE.md"]
+    },
+    {
+      "id": "R6.C4",
+      "claim": "Claude's quality degrades at 20-40% context fill, not 80-90% as conventionally assumed",
+      "citation": "Claude's quality starts slipping at 20-40% of context capacity. Not at 100%. Not at 80%.",
+      "source_location": "AP-06: Context Rot, CRITICAL FINDING section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["context_rot", "degradation", "thresholds"]
+    },
+    {
+      "id": "R6.C5",
+      "claim": "Peak performance occurs at 0-20% context fill; significant degradation begins above 40% fill",
+      "citation": "0-20% fill: peak performance. 20-40% fill: quality begins slipping (40k-80k tokens dla 200k okna). 40%+ fill: significant degradation",
+      "source_location": "AP-06: Context Rot, Thresholds section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["context_rot", "performance", "thresholds"]
+    },
+    {
+      "id": "R6.C6",
+      "claim": "Circular skill imports create infinite recursion or loader crashes with messages like 'Circular dependency detected'",
+      "citation": "Loader wykrywa cykl (zbior 'currently loading') i rzuca komunikat: 'Circular dependency detected while loading skill: pdf -> tdd -> pdf'",
+      "source_location": "AP-02: Recursive Circular @imports, Objaw section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["skills", "architecture", "circular_dependencies"]
+    },
+    {
+      "id": "R6.C7",
+      "claim": "MCP tools can generate 191,300 tokens of overhead before the first user prompt in a 167-tool setup",
+      "citation": "167 narzedzi MCP = 191,300 tokenow overheadu przed pierwszym promptem",
+      "source_location": "Exec Summary, Key numbers section",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["MCP", "tools", "overhead"]
+    },
+    {
+      "id": "R6.C8",
+      "claim": "MCP Docker with 135 tools generated 144,802 tokens of tool definition overhead alone (GitHub Issue #12241)",
+      "citation": "MCP_DOCKER = 135 narzedzi, 125,964 tokenow; chrome-devtools = 26 narzedzi, 17,512 tokenow. Lacznie 144,802 tokenow",
+      "source_location": "AP-03: MCP Response Size Bomb, Udokumentowane przypadki section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["MCP", "Docker", "overhead", "case_study"]
+    },
+    {
+      "id": "R6.C9",
+      "claim": "Read tool without offset/limit parameters on large files causes content to remain permanently in context for all subsequent turns",
+      "citation": "A 10,000-line log file stays in context for every subsequent message in that session. Reduntantne wczytanie tego samego pliku: worst case = 33 wczytania jednego pliku = 561K tokenow zmarnowanych",
+      "source_location": "AP-04: Read Bez head_limit, Kosztowy wzorzec section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["Read_tool", "efficiency", "context_bloat"]
+    },
+    {
+      "id": "R6.C10",
+      "claim": "Reading an 8.5 MB file via Read tool permanently corrupted the session and all subsequent sessions in the project (Issue #6780)",
+      "citation": "Uzytkownik wczytal plik obrazu 8.5 MB. Sesja zostala zatruta i uploadowana do chmury Anthropic. WSZYSTKIE nowe sesje w tym projekcie dziedziczyly zatrute dane.",
+      "source_location": "CS-03: Read Tool Session Corruption",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["Read_tool", "bugs", "session_corruption", "case_study"]
+    },
+    {
+      "id": "R6.C11",
+      "claim": "Resume and continue flags cause 652,069 phantom output tokens to be generated without user input (GitHub Issue #41930)",
+      "citation": "652,069 output tokenow wygenerowanych bez promptow uzytkownika podczas session resume. Pojedynczy 'morning' = 15% limitu Max 5x",
+      "source_location": "AP-08: Invisible Token Inflation, Resume/Continue flag bug section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["phantom_tokens", "bugs", "session_resume"]
+    },
+    {
+      "id": "R6.C12",
+      "claim": "MCP Docker / chrome-devtools response sizes and schema overhead create 72,000 tokens of overhead before first user prompt in 50-tool setup",
+      "citation": "50-tool setup = 72,000 tokenow schema overhead na starcie sesji (PRZED jakimkolwiek userem promptem)",
+      "source_location": "AP-03: MCP Response Size Bomb, Tool schema overhead section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["MCP", "schema", "overhead", "tool_limitation"]
+    },
+    {
+      "id": "R6.C13",
+      "claim": "Tool Search feature in settings reduces MCP overhead by 46.9% (from 51K to 8.5K tokens)",
+      "citation": "Tool Search feature: redukcja 46.9% (51K -> 8.5K tokenow) wedlug raportow uzytkownikow",
+      "source_location": "AP-03: MCP Response Size Bomb, Remedium section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["MCP", "optimization", "tool_search"]
+    },
+    {
+      "id": "R6.C14",
+      "claim": "Sessions running uncontrolled Bash commands (rg, find, cat, npm install) without limits produce 30,000+ character outputs that waste tokens",
+      "citation": "Agent lub uzytkownik uruchamia komendy Bash ktore produkuja ogromny output: rg pattern . bez --max-count, find / bez -maxdepth, cat large_file, npm install (verbose), docker logs container (full history). Output przekracza 30,000 znakow",
+      "source_location": "AP-05: Niekontrolowany Bash Output, Objaw section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash", "token_waste", "uncontrolled_output"]
+    },
+    {
+      "id": "R6.C15",
+      "claim": "A 4.5-minute manual Claude Chat task took 18 minutes in a degraded 50-turn Claude Code session with 134,800 tokens and only 25,000 relevant",
+      "citation": "Task ktory zajmuje 4.5 minuty przez manual Claude Chat: 18 minut w zdegradowanej dlugiej sesji Claude Code. Sesja turn 50: 134,800 tokenow, tylko 25,000 relewantnych (18.5%) - 81.5% to 'dead weight'",
+      "source_location": "AP-06: Context Rot, Real-world benchmark section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["context_rot", "performance", "session_length"]
+    },
+    {
+      "id": "R6.C16",
+      "claim": "Autocompact can enter infinite loops when tool output exceeds context window size (Issues #2283, #34363, #9579, #42647)",
+      "citation": "Claude Code wchodzi w petle kompakcji: kompaktuje -> kontekst natychmiast przepelnia sie ponownie -> kompaktuje znow. Udokumentowane przypadki: Issue #2283, #34363, #9579, #42647",
+      "source_location": "AP-07: Autocompact Thrashing, Udokumentowane przypadki section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["autocompact", "bugs", "loops", "context_management"]
+    },
+    {
+      "id": "R6.C17",
+      "claim": "Claude Code v2.1.100 injects invisible 20,000 tokens per request compared to v2.1.98 (40% consumption increase)",
+      "citation": "Invisible 20,000 tokenow per request od wersji v2.1.100. Analiza HTTP proxy: v2.1.98 = 49,726 tokenow; v2.1.100 = 69,922 tokenow. Delta: ~40% faster consumption",
+      "source_location": "AP-08: Invisible Token Inflation, Bug v2.1.100 section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["phantom_tokens", "bugs", "version_regression"]
+    },
+    {
+      "id": "R6.C18",
+      "claim": "Kitchen Sink Sessions mixing unrelated tasks cause attention diffusion and context pollution across tasks",
+      "citation": "Uzytkownik zaczyna od jednego zadania ('dodaj feature X'), pozniej pyta o cos niespokrewnionego ('jak sie robi Y?'), wraca do feature X, pozniej pyta o debugowanie ('czemu Z sie psuje?'). Sesja akumuluje niepowiazany kontekst ktory zmienia sie w szum dla modelu.",
+      "source_location": "AP-09: Kitchen Sink Session, Objaw section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["session_design", "context_pollution", "best_practices"]
+    },
+    {
+      "id": "R6.C19",
+      "claim": "Cache prompt expiry occurs after ~5 minutes of idle time, forcing full context rebuild with 10x cost multiplier on resume",
+      "citation": "Cache promptow wygasa po ~5 minutach bezczynnosci. Po powrocie uzytkownika: pelny rebuild kontekstu zamiast taniego cache-read. Mnoznik kosztu: 10x (cache miss vs cache hit)",
+      "source_location": "AP-10: Cache Expiry z Idle Gap, Objaw section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["cache", "idle_time", "cost_optimization"]
+    },
+    {
+      "id": "R6.C20",
+      "claim": "In 858 analyzed sessions, 54% of turns occurred after idle gaps longer than 5 minutes, wasting ~12.3 million tokens total",
+      "citation": "54% kolejek nastepowalo po idle gap dluzszym niz 5 minut. Mnoznik kosztu: 10x (cache miss vs cache hit). ~12.3 milionow zmarnowanych tokenow w jednym zbiorze sesji",
+      "source_location": "AP-10: Cache Expiry, Udokumentowane liczby section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["cache", "idle_gap", "metrics"]
+    },
+    {
+      "id": "R6.C21",
+      "claim": "Anthropic's custom Bun fork performs string replacement on all API requests, breaking cache when billing-related strings appear in conversation",
+      "citation": "Anthropic custom Bun fork robi string replacement na wszystkich requestach API. Gdy historia konwersacji zawiera billing-related slowa: replacement trafia w zle miejsce. Psuje cache prefix = pelny rebuild = 10-20x inflacja kosztow",
+      "source_location": "AP-08: Invisible Token Inflation, Billing sentinel string bug section",
+      "stance": "disputed",
+      "confidence": "low",
+      "tags": ["billing", "bugs", "cache_invalidation"]
+    },
+    {
+      "id": "R6.C22",
+      "claim": "Circular dependencies in skill files create transitive bloat through import chains (A->B->C->D) beyond simple cycles",
+      "citation": "Nawet bez cyklu, lancuchy importow A -> B -> C -> D -> ... laduja ogromne ilosci kontekstu ktore uzytkownik nie zamierzal zaladowac. Kazdy wezzel lancucha to dodatkowe tokeny.",
+      "source_location": "AP-02: Recursive Circular @imports, Subtypowy problem: transitive bloat section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["skills", "circular_dependencies", "architecture"]
+    },
+    {
+      "id": "R6.C23",
+      "claim": "A developer's $1,600 billing incident resulted from architecture costs: bloated CLAUDE.md (93% wasted), extended thinking without limits, and March 2026 caching bugs",
+      "citation": "Deweloper opisuje bill $1,600 od Claude Code API. Przyczyny: (1) pelne wczytywanie repo bez .claudeignore (93% tokenow na nierelewantny kod), (2) extended thinking bez ustawionego MAX_THINKING_TOKENS, (3) caching bugs marca 2026 z 10-20x inflacja",
+      "source_location": "CS-05: $1,600 Billing Incident",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["billing", "case_study", "optimization"]
+    },
+    {
+      "id": "R6.C24",
+      "claim": "Conflicts exist between sources on when context degradation begins: 20-40% (bswen.com) vs 70-75% (MindStudio) vs practical threshold 147-152K tokens",
+      "citation": "Zrodlo A (docs.bswen.com): degradacja przy 20-40% kontekstu. Zrodlo B (MindStudio): degradacja przy 70-75% kontekstu. Zrodlo C: praktyczna granica = 147,000-152,000 tokenow",
+      "source_location": "Controversies i Konflikty, KONFLIKT 1 section",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["context_rot", "conflicts", "thresholds"]
+    },
+    {
+      "id": "R6.C25",
+      "claim": "Autocompact is effective as a safety net only when tool outputs are small; with large outputs it enters thrashing loops",
+      "citation": "Autocompact jest bezpieczny gdy tool outputs sa male. Przy duzych outputach (MCP, log files) - staje sie petla. Blad lezacy po obu stronach: zly tool output rozmiar + brak configurowalnego thresholds.",
+      "source_location": "Controversies i Konflikty, KONFLIKT 2 section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["autocompact", "tool_outputs", "context_management"]
+    },
+    {
+      "id": "R6.C26",
+      "claim": "The resume/continue flags are unsafe as of March 2026 due to cache invalidation bugs; safer alternative is /clear + fresh session with memory injection",
+      "citation": "Oficjalna dokumentacja: polecany dla kontynuacji pracy. GitHub Issue #41930: glowna przyczyna 652K phantom tokens w marcu 2026. Ocena (April 2026): Tymczasowo unsafe",
+      "source_location": "Controversies i Konflikty, KONFLIKT 3 section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["session_resume", "bugs", "recommendations"]
+    },
+    {
+      "id": "R6.C27",
+      "claim": "Community-aggregated Reddit data shows 'Claude Code is usable for ~45 minutes daily' before quota exhaustion in Kitchen Sink sessions",
+      "citation": "Claude Code is the best coding tool I've ever used, for the 45 minutes a day I can actually use it.",
+      "source_location": "AP-09: Kitchen Sink Session, Cytaty Reddit section",
+      "stance": "unique",
+      "confidence": "low",
+      "tags": ["session_design", "quota", "anecdotal"]
+    },
+    {
+      "id": "R6.C28",
+      "claim": "Most agent token waste comes from uncontrolled discovery (directory listing, speculative file opens, vague grepping) rather than intentional processing",
+      "citation": "Most agent token waste comes from uncontrolled discovery. Claude lists directories, opens files speculatively, greps vaguely, then repeats.",
+      "source_location": "AP-05: Niekontrolowany Bash Output, Cytaty spolecznosci section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["token_waste", "agent_behavior", "efficiency"]
+    },
+    {
+      "id": "R6.C29",
+      "claim": "93-99% of starting tokens can be wasted loading irrelevant code without .claudeignore configuration",
+      "citation": "93-99% tokenow startowych moze byc zmarnowanych na nierelewantny kod bez .claudeignore",
+      "source_location": "Exec Summary, Key numbers section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": [".claudeignore", "context_bloat", "initialization"]
+    },
+    {
+      "id": "R6.C30",
+      "claim": "Official Anthropic best-practices docs list Kitchen Sink Sessions as the #1 common error, with /clear being the recommended remedium",
+      "citation": "Oficjalny Anthropic naming (best-practices docs): 'The Kitchen Sink Session' - punkt 1 na liscie typowych bledow. Remedium: /clear miedzy niezwiazanymi zadaniami.",
+      "source_location": "AP-09: Kitchen Sink Session, Oficjalny Anthropic naming section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["best_practices", "official_guidance", "session_management"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak konkretnych linkow do Reddit postow - zrodla agregowane przez morphllm.com, aitooldiscovery.com bez bezposrednich URL",
+    "Brak danych empirycznych na temat nadmiernej specjalizacji w skill files (tysiace linii) - tylko anegdotalne wzmianka",
+    "Context pollution ze zwracajacych sie parallel subagentow - brak szczegolowych metryk, tylko ogolne zalecenie 2-4 subagents",
+    "Invisible token inflation z v2.1.100 - brak potwierdzenia czy zostala naprawiona w pozniejszych wersjach po marcu 2026",
+    "Brak danych na temat interakcji miedzy autocompact a MCP tool schemas - czy autocompact zmniejsza schemat czy tylko kontekst"
+  ],
+  "conflicts_flagged": [
+    "R6.C4 vs R6.C24: Degradation threshold - bswen.com mowi 20-40%, MindStudio 70-75%, inni 147-152K tokens. Probable roznica w typach zadan.",
+    "R6.C13 vs AP-03: Tool Search feature (46.9% reduction) a MCP Docker bomb (144K tokens) - Tool Search wplywa na schemat czy response size?",
+    "R6.C26 (unsafe resume flag) kontra oficjalne Anthropic docs - status czy jest to znane i naprawione w wersjach po marcu 2026?"
+  ]
+}

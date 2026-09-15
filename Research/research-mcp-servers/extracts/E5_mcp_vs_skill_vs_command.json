@@ -1,0 +1,38 @@
+{
+  "source": "R5_mcp_vs_skill_vs_command.md",
+  "topic": "MCP vs Skill vs Command vs Hook Decision Tree",
+  "date_accessed": "2026-04-17",
+  "claims": [
+    {"id": "R5.C1", "claim": "Claude Code 2026 ma 4 extension types: MCP Server, Skill, Slash Command, Hook.", "url": "https://alexop.dev/posts/understanding-claude-code-full-stack/", "trust": 2},
+    {"id": "R5.C2", "claim": "MCP Server - model-controlled, LLM decyduje o triggeru, dla external tool/API/data access.", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R5.C3", "claim": "Skill - auto-invoke na keywords/context match, zmienia JAK Claude pracuje (workflow/domain knowledge).", "url": "https://code.claude.com/docs/en/skills", "trust": 1},
+    {"id": "R5.C4", "claim": "Slash Command - user-controlled explicit trigger `/name [args]`, prompt shortcut.", "url": "https://www.mindstudio.ai/blog/claude-skills-vs-slash-commands", "trust": 2},
+    {"id": "R5.C5", "claim": "Hook - event-triggered (PreToolUse, PostToolUse, Stop), automatic shell commands, zero LLM decision.", "url": "https://code.claude.com/docs/en/hooks", "trust": 1},
+    {"id": "R5.C6", "claim": "Decision tree: external system -> MCP; workflow/mind-model -> Skill; reusable shortcut -> Command; automation on event -> Hook.", "url": "https://www.morphllm.com/claude-code-skills-mcp-plugins", "trust": 2},
+    {"id": "R5.C7", "claim": "Kluczowa roznica Skill vs Command: Skill auto-invoke na context match; Command = explicit user trigger.", "url": "https://www.mindstudio.ai/blog/claude-skills-vs-slash-commands", "trust": 2},
+    {"id": "R5.C8", "claim": "Token cost MCP: kazdy server ~8-15k tokens tool definitions upfront, doklada do KAZDEGO API call.", "url": "https://www.mindstudio.ai/blog/claude-code-mcp-server-token-overhead", "trust": 2},
+    {"id": "R5.C9", "claim": "Token cost Skill: YAML header + description (<500 tokens) upfront, body on-demand gdy wybrane.", "url": "https://code.claude.com/docs/en/skills", "trust": 1},
+    {"id": "R5.C10", "claim": "Token cost Command: zero do invocation (lazy load z ~/.claude/commands/*.md).", "url": "https://code.claude.com/docs/en/slash-commands", "trust": 1},
+    {"id": "R5.C11", "claim": "Token cost Hook: zero (shell commands transparent, nie trafiaja do LLM).", "url": "https://code.claude.com/docs/en/hooks", "trust": 1},
+    {"id": "R5.C12", "claim": "Overlap MCP+Skill pattern: MCP jako executor (Slack send_message), Skill jako mind-model (style guide).", "url": "https://alexop.dev/posts/understanding-claude-code-full-stack/", "trust": 2},
+    {"id": "R5.C13", "claim": "Overlap MCP vs Bash: Bash tanszy tokens-wise (brak tool definitions overhead), MCP better dla structured responses. Rzadkie use -> Bash. Ciezkie use -> MCP.", "url": "https://alexop.dev/posts/understanding-claude-code-full-stack/", "trust": 2},
+    {"id": "R5.C14", "claim": "Empiryczne koszty: MCP-heavy (5 servers) ~60k tokens upfront, Skill approach ~2k tokens, Hybrid (2 MCP + Skill) ~20k tokens.", "url": "https://www.mindstudio.ai/blog/claude-code-mcp-server-token-overhead", "trust": 2},
+    {"id": "R5.C15", "claim": "Tool Search Tool redukcja: z 51k tokens -> 8.5k (46.9% redukcja dla tool defs).", "url": "https://medium.com/@joe.njenga/claude-code-just-cut-mcp-context-bloat-by-46-9-51k-tokens-down-to-8-5k-with-new-tool-search-ddf9e905f734", "trust": 2},
+    {"id": "R5.C16", "claim": "Typowa topologia team-user 2026: 3 MCPs + 5-10 Skills + 10-20 Commands + 3-5 Hooks.", "url": "https://www.mindstudio.ai/blog/claude-skills-vs-slash-commands", "trust": 2},
+    {"id": "R5.C17", "claim": "Power-user pattern: personal MCP per projekt z domain context (shop schema, team rules). Koszt ~5-10k tokens.", "url": "https://alexop.dev/posts/understanding-claude-code-full-stack/", "trust": 2},
+    {"id": "R5.C18", "claim": "MCP jako config vector (Skill better alternative) - 90% cases Skill wystarczy; MCP tylko dla live, external, dynamic data.", "url": "https://alexop.dev/posts/understanding-claude-code-full-stack/", "trust": 2},
+    {"id": "R5.C19", "claim": "Plugins (nowosc 2026) - wrapper dla 1+ extensions (MCP + Skill + Command + Hook) jako distributable package (/plugin install).", "url": "https://www.openaitoolshub.org/en/blog/claude-code-skills-vs-plugins", "trust": 2},
+    {"id": "R5.C20", "claim": "Skill format: markdown z YAML frontmatter (name, description, auto-trigger), optional files/ subfolder, body jako Anthropic-style instruction.", "url": "https://code.claude.com/docs/en/skills", "trust": 1},
+    {"id": "R5.C21", "claim": "Command format: markdown z frontmatter (argument-hint, description) i prompt body z $ARGUMENTS substitution.", "url": "https://code.claude.com/docs/en/slash-commands", "trust": 1},
+    {"id": "R5.C22", "claim": "Hook format w settings.json: hooks.<event>[].matcher + hooks.<event>[].hooks[].command.", "url": "https://code.claude.com/docs/en/hooks", "trust": 1}
+  ],
+  "conflicts_flagged": [
+    "R5.C8 (8-15k/server) vs R6 (67k dla 7 servers = ~9.5k avg) - spojne. Flag: numbers orientacyjne, dependent na serwerze.",
+    "R5.C16 (3 MCP + 5-10 Skills typical) vs R4.C12 (minimalist trio 75% uzytkownikow) - spojne. Trio to rdzen, 5-10 skills to workflow layer."
+  ],
+  "gaps_flagged": [
+    "Plugins adoption metrics 2026 - za wczesnie na ewaluacje (launched 2026 wczesnym).",
+    "Exact thresholds where Tool Search Tool aktywuje sie automatically vs manual enable - unclear.",
+    "Hook security patterns post-CVE - community ewoluuje rekomendacje, gap w formalnej dokumentacji."
+  ]
+}

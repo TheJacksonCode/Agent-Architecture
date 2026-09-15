@@ -1,0 +1,40 @@
+{
+  "source": "R4_ecosystem_2026.md",
+  "topic": "Ecosystem MCP 2026 (registry, awesome repos, popularne serwery)",
+  "date_accessed": "2026-04-17",
+  "claims": [
+    {"id": "R4.C1", "claim": "Na 2026-04-17 istnieje ~5,000+ community MCP servers.", "url": "https://apidog.com/blog/top-10-mcp-servers/", "trust": 2},
+    {"id": "R4.C2", "claim": "Oficjalny Anthropic MCP Registry endpoint: https://api.anthropic.com/mcp-registry/v0/servers z filtrem worksWith (claude-code/claude-api/claude-desktop).", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R4.C3", "claim": "Anthropic Registry ma 'commercial visibility' flag - verified quality. OSS servers partially self-publish.", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R4.C4", "claim": "Oficjalny repo reference implementations: https://github.com/modelcontextprotocol/servers (filesystem, memory, sqlite, time, fetch, puppeteer DEPRECATED, sequential-thinking).", "url": "https://github.com/modelcontextprotocol/servers", "trust": 1},
+    {"id": "R4.C5", "claim": "Top community awesome-mcp repos: wong2/awesome-mcp-servers (najwiekszy), appcypher/awesome-mcp-servers, punkpeye/awesome-mcp-servers, YuzeHao2023/Awesome-MCP-Servers.", "url": "https://github.com/wong2/awesome-mcp-servers", "trust": 2},
+    {"id": "R4.C6", "claim": "Top 15 servers 2026 (core utilities): Filesystem, Memory, Sequential Thinking, Fetch.", "url": "https://dev.to/jangwook_kim_e31e7291ad98/top-15-mcp-servers-every-developer-should-install-in-2026-n1h", "trust": 2},
+    {"id": "R4.C7", "claim": "Top 15 developer tools: GitHub, Git, Playwright (zastepuje DEPRECATED Puppeteer), Docker.", "url": "https://use-apify.com/blog/best-mcp-servers-2026", "trust": 2},
+    {"id": "R4.C8", "claim": "Top 15 data sources: Postgres (top-3 enterprise), SQLite, Brave Search, Firecrawl.", "url": "https://blog.skyvia.com/best-mcp-servers/", "trust": 2},
+    {"id": "R4.C9", "claim": "Top 15 productivity/SaaS: Slack, Gmail (via Rube), Google Drive (via Rube albo bezposredni).", "url": "https://www.k2view.com/blog/awesome-mcp-servers", "trust": 2},
+    {"id": "R4.C10", "claim": "Puppeteer MCP DEPRECATED - oficjalne migracja do Playwright MCP (Microsoft-managed) - cross-browser support.", "url": "https://use-apify.com/blog/best-mcp-servers-2026", "trust": 2},
+    {"id": "R4.C11", "claim": "Aggregatory 2026: Rube (500+ apps), Apify Actors MCP (2000+ scrapers), Bright Data.", "url": "https://rube.app", "trust": 2},
+    {"id": "R4.C12", "claim": "Minimalist trio 75% uzytkownikow: GitHub + Filesystem + Memory.", "url": "https://dev.to/jangwook_kim_e31e7291ad98/top-15-mcp-servers-every-developer-should-install-in-2026-n1h", "trust": 2},
+    {"id": "R4.C13", "claim": "Research/Content trio: Brave Search or Firecrawl + Memory + GitHub.", "url": "https://www.k2view.com/blog/awesome-mcp-servers", "trust": 2},
+    {"id": "R4.C14", "claim": "Data analyst trio: Postgres/SQLite + Memory + Filesystem.", "url": "https://blog.skyvia.com/best-mcp-servers/", "trust": 2},
+    {"id": "R4.C15", "claim": "Full-stack combo (5-7 servers): GitHub + Filesystem + Playwright + Postgres + Vercel + Slack + Memory.", "url": "https://apidog.com/blog/top-10-mcp-servers/", "trust": 2},
+    {"id": "R4.C16", "claim": "Quality signals: stars (1k+ oficjalne, 100+ community high-quality), last commit recency (<6mo), tests w CI, Docker support, OAuth 2.1, OpenTelemetry, official SDK use.", "url": "https://www.k2view.com/blog/awesome-mcp-servers", "trust": 2},
+    {"id": "R4.C17", "claim": "Trust hierarchy: official Anthropic > Microsoft/HashiCorp/commercial > individual maintainer.", "url": "https://www.backslash.security/blog/claude-code-security-best-practices", "trust": 2},
+    {"id": "R4.C18", "claim": "Gdzie odkrywac: mcp.so, mcpservers.org, glama.ai, r/mcp Reddit, Twitter #MCP, Anthropic blog, HN 'Show HN: MCP X'.", "url": "https://github.com/wong2/awesome-mcp-servers", "trust": 2},
+    {"id": "R4.C19", "claim": "Trendy 2026: aggregators dominuja new installs, remote > local shift, OAuth 2.1 standardyzacja, multi-tenant servers dla enterprise, OpenTelemetry adoption, post-CVE security audyty.", "url": "https://use-apify.com/blog/best-mcp-servers-2026", "trust": 2},
+    {"id": "R4.C20", "claim": "Instalacja patterns: npx (TS), pip (Python), docker run (containerized), claude mcp add --transport http (remote).", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R4.C21", "claim": "Enterprise recommendation: tylko z Anthropic Registry + internal gateway. Personal: awesome-mcp ok, z scrutiny.", "url": "https://www.backslash.security/blog/claude-code-security-best-practices", "trust": 2},
+    {"id": "R4.C22", "claim": "Categorizacja use-case: Code (GitHub, Filesystem), Data (Postgres, MongoDB), Comm (Slack, Gmail), Calendar (Linear, Jira), Web (Brave, Firecrawl), Browser (Playwright), DevOps (Docker, K8s), Enterprise agg (Rube, Apify).", "url": "https://apidog.com/blog/top-10-mcp-servers/", "trust": 2}
+  ],
+  "conflicts_flagged": [
+    "R4.C1 (~5000 community servers) - szacowanie oparte na wielu sources, exact number nieweryfikowalne bez formalnego count. Flag 'approximate 2026-04-17'.",
+    "R4.C11 (Rube/Apify aggregatory) vs R6 token budget - aggregatory mogą eksplodować tool definitions jesli nie maja Tool Search Tool. Brak konfliktu ale interakcja wazna.",
+    "R4.C10 (Puppeteer deprecated, migracja na Playwright) - mowią sources, ale dokladna data deprecacji + exact comm nie w disclosure. Worth naming 'recommended migration' not 'mandatory'."
+  ],
+  "gaps_flagged": [
+    "Exact stars/contributors count per server wymaga gh API checks (nie robiony w tym raporcie).",
+    "Lista server deprecations na 2026-04-17 wymaga per-server audit - mozliwe ze wiecej niz tylko Puppeteer.",
+    "Managed MCP enterprise deploy case studies rzadkie publicznie - enterprise podejrzewa sa ale nie publikowane.",
+    "Anthropic Registry submission process dla OSS servers unclear."
+  ]
+}

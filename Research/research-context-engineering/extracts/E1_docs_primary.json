@@ -1,0 +1,257 @@
+{
+  "source_report": "R1_docs_primary.md",
+  "report_words": 5847,
+  "extract_words": 487,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R1.C1",
+      "claim": "Claude Opus 4.7 has 1M token context window with new tokenizer",
+      "citation": "Claude Opus 4.7, Claude Opus 4.6, and Claude Sonnet 4.6 have a 1M-token context window. Opus 4.7 uses a new tokenizer compared to previous models, contributing to its improved performance on a wide range of tasks.",
+      "source_location": "Section 2.1, models overview table + tokenizer note",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["opus-4-7", "context-window", "tokenizer"]
+    },
+    {
+      "id": "R1.C2",
+      "claim": "Claude Sonnet 4.6 has 1M token context window at standard pricing",
+      "citation": "Claude Sonnet 4.6 have a 1M-token context window... from 2026-03-13 (GA 1M dla Opus 4.6 i Sonnet 4.6) - standard pricing without surcharge.",
+      "source_location": "Section 2.1, section 2.10, pricing section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["sonnet-4-6", "context-window", "pricing"]
+    },
+    {
+      "id": "R1.C3",
+      "claim": "Claude Haiku 4.5 has only 200k token context window, not 1M",
+      "citation": "Claude Haiku 4.5 = 200k tokens max. Only Opus 4.7, Opus 4.6 and Sonnet 4.6 have 1M.",
+      "source_location": "Section 1 Executive Summary claim 8, section 2.1 models table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["haiku-4-5", "context-window", "limitations"]
+    },
+    {
+      "id": "R1.C4",
+      "claim": "Claude Code auto-compact triggers at approximately 95% context capacity by default",
+      "citation": "Default behavior: Auto-compaction triggers at approximately 95% capacity... Aligns with context_window.used_percentage field available in status line",
+      "source_location": "Section 2.2, env vars docs",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto-compact", "claude-code", "context-management"]
+    },
+    {
+      "id": "R1.C5",
+      "claim": "Claude Code compact trigger is configurable via CLAUDE_AUTOCOMPACT_PCT_OVERRIDE (1-100 range)",
+      "citation": "Values above the default threshold (95%) have no effect... Applies to both main conversations and subagents",
+      "source_location": "Section 2.2, CLAUDE_AUTOCOMPACT_PCT_OVERRIDE details",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto-compact", "env-var", "claude-code"]
+    },
+    {
+      "id": "R1.C6",
+      "claim": "Compaction API server-side trigger defaults to 150k input tokens (minimum 50k)",
+      "citation": "Trigger conditions... trigger.value: 150,000 tokens (minimum: 50,000)",
+      "source_location": "Section 2.3, Compaction API trigger table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compaction-api", "context-management", "server-side"]
+    },
+    {
+      "id": "R1.C7",
+      "claim": "Claude Code preserves requests and key code snippets during compaction",
+      "citation": "Claude Code manages context automatically... It clears older tool outputs first, then summarizes the conversation if needed. Your requests and key code snippets are preserved; detailed instructions from early in the conversation may be lost.",
+      "source_location": "Section 2.2, algo compact section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto-compact", "preservation", "claude-code"]
+    },
+    {
+      "id": "R1.C8",
+      "claim": "Claude Code stops auto-compacting after a few attempts to prevent thrashing loops",
+      "citation": "If a single file or tool output is so large that context refills immediately after each summary, Claude Code stops auto-compacting after a few attempts and shows an error instead of looping.",
+      "source_location": "Section 2.2, thrashing protection subsection",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto-compact", "thrashing", "error-handling"]
+    },
+    {
+      "id": "R1.C9",
+      "claim": "Extended thinking blocks are automatically stripped from context on subsequent turns",
+      "citation": "Previous thinking blocks are automatically stripped from the context window calculation by the Claude API and are not part of the conversation history that the model 'sees' for subsequent turns, preserving token capacity for actual conversation content.",
+      "source_location": "Section 2.5, extended thinking section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["thinking", "context-window", "api-behavior"]
+    },
+    {
+      "id": "R1.C10",
+      "claim": "1M context window became GA for Opus 4.6 and Sonnet 4.6 on 2026-03-13 without surcharge",
+      "citation": "From 2026-03-13 (GA 1M dla Opus 4.6 i Sonnet 4.6) - standard pricing (bez surcharge). Dla Opus 4.6 przy requestach >200k tokenów był Long context pricing ($10/$37.50 per MTok).",
+      "source_location": "Section 3 Timeline, 2026-03-13 entry",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing", "ga", "1m-context"]
+    },
+    {
+      "id": "R1.C11",
+      "claim": "Opus 4.7 tokenizer uses up to 35% more tokens for same text compared to previous models",
+      "citation": "Opus 4.7 uses a new tokenizer compared to previous models... This new tokenizer may use up to 35% more tokens for the same fixed text.",
+      "source_location": "Section 2.1, tokenizer note",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["opus-4-7", "tokenizer", "token-efficiency"]
+    },
+    {
+      "id": "R1.C12",
+      "claim": "Sonnet 4.5 and Sonnet 4 lose 1M beta support on 2026-04-30",
+      "citation": "Sonnet 4.5 i Sonnet 4 tracą beta 1M context window (context-1m-2025-08-07 header przestaje działać). Po tym requesty >200k zwrócą błąd.",
+      "source_location": "Section 1 Executive Summary claim 10, section 3 timeline",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["sonnet-4-5", "deprecation", "1m-context"]
+    },
+    {
+      "id": "R1.C13",
+      "claim": "Context awareness available for Sonnet 4.6, Sonnet 4.5, and Haiku 4.5 models",
+      "citation": "Claude Sonnet 4.6, Claude Sonnet 4.5, and Claude Haiku 4.5 feature context awareness. This capability lets these models track their remaining context window (i.e. 'token budget') throughout a conversation.",
+      "source_location": "Section 2.4, context awareness section",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["context-awareness", "sonnet", "haiku"]
+    },
+    {
+      "id": "R1.C14",
+      "claim": "Models receive budget token XML at start and token usage update after each tool call",
+      "citation": "Na starcie konwersacji model dostaje <budget:token_budget>1000000</budget:token_budget>... Po każdym tool call: <system_warning>Token usage: 35000/1000000; 965000 remaining</system_warning>",
+      "source_location": "Section 2.4, context awareness mechanics",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["context-awareness", "xml", "token-tracking"]
+    },
+    {
+      "id": "R1.C15",
+      "claim": "Compaction API requires beta header anthropic-beta: compact-2026-01-12",
+      "citation": "Beta header wymagany: anthropic-beta: compact-2026-01-12",
+      "source_location": "Section 2.3, beta header requirement",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compaction-api", "beta", "api-header"]
+    },
+    {
+      "id": "R1.C16",
+      "claim": "Startup context overhead in Claude Code is approximately 7,850 tokens",
+      "citation": "System prompt: 4,200 tokens; Auto memory: 680; Environment info: 280; MCP tools: 120; Skill descriptions: 450; CLAUDE.md: 320; Project CLAUDE.md: 1,800; Razem startup overhead: ~7,850",
+      "source_location": "Section 2.7, startup overhead table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["context-window", "claude-code", "overhead"]
+    },
+    {
+      "id": "R1.C17",
+      "claim": "Claude Code can set virtual context window via CLAUDE_CODE_AUTO_COMPACT_WINDOW env var",
+      "citation": "On a 1M model, set to 500000 to treat the window as 500K for compaction purposes... Setting this variable decouples the compaction threshold from the status line's used_percentage",
+      "source_location": "Section 2.2, CLAUDE_CODE_AUTO_COMPACT_WINDOW details",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["env-var", "auto-compact", "context-window"]
+    },
+    {
+      "id": "R1.C18",
+      "claim": "Media limit increased from 100 to 600 images/PDF per request as of 2026-03-13",
+      "citation": "Media limit wzrósł z 100 do 600 images/PDF per request... A single request can include up to 600 images or PDF pages (100 for models with a 200k-token context window).",
+      "source_location": "Section 2.1, images/PDF section; Section 3 Timeline",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["api-limits", "media", "2026"]
+    },
+    {
+      "id": "R1.C19",
+      "claim": "Token counting API is GA as of 2024-12-17 for estimating token usage before sending messages",
+      "citation": "Use the token counting API to estimate token usage before sending messages to Claude. This helps you plan and stay within context window limits.",
+      "source_location": "Section 2.9, token counting API",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["token-counting", "api", "ga"]
+    },
+    {
+      "id": "R1.C20",
+      "claim": "Compaction API supports pause_after_compaction flag to stop after summary with stop_reason compaction",
+      "citation": "pause_after_compaction: boolean, false = Zatrzymaj po summary, zwróć stop_reason: compaction",
+      "source_location": "Section 2.3, Compaction API parameters table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compaction-api", "api-feature", "pause"]
+    },
+    {
+      "id": "R1.C21",
+      "claim": "The algorithm determining what to preserve during compaction is undocumented (black box)",
+      "citation": "Docs mówią 'requests i key code snippets są zachowane' ale nie dają żadnej specyfikacji algorytmu selekcji. Czarny box.",
+      "source_location": "Section 5, Gaps item 1",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["gap", "compaction", "undocumented"]
+    },
+    {
+      "id": "R1.C22",
+      "claim": "System does not document exact token buffer reserved for output before compact trigger",
+      "citation": "Ile tokenów rezerwuje system na output buffer: Docs nie podają ile tokenów jest zarezerwowane dla odpowiedzi przed triggerem compact. Third-party sources mówią o buffer 33k-45k tokenów ale brak oficjalnego potwierdzenia.",
+      "source_location": "Section 5, Gaps item 2",
+      "stance": "gap",
+      "confidence": "medium",
+      "tags": ["gap", "output-buffer", "undocumented"]
+    },
+    {
+      "id": "R1.C23",
+      "claim": "Docs do not specify exact threshold of how many thrashing attempts before error",
+      "citation": "Docs mówią 'stops after a few attempts' bez podania liczby.",
+      "source_location": "Section 5, Gaps item 3",
+      "stance": "gap",
+      "confidence": "medium",
+      "tags": ["gap", "thrashing", "undocumented"]
+    },
+    {
+      "id": "R1.C24",
+      "claim": "Default compaction summary instruction aims to preserve state, next steps, and learnings",
+      "citation": "Write down anything that would be helpful, including the state, next steps, learnings etc. You must wrap your summary in a <summary></summary> block.",
+      "source_location": "Section 2.3, default summarization instruction",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compaction-api", "summary", "instructions"]
+    }
+  ],
+  "gaps_flagged": [
+    "Exact algorithm for 'requests and key code snippets' selection during compaction is undocumented - only called 'black box' in engineering blog",
+    "Output token buffer size before auto-compact trigger is not officially specified (third-party sources suggest 33k-45k but unverified)",
+    "Number of thrashing attempts threshold before error is stated only as 'a few attempts' without exact count",
+    "Lifespan and reuse limits of compaction blocks not documented (can previous summaries be re-applied infinitely?)",
+    "Context window size and auto-compaction behavior for Claude Managed Agents not technically specified",
+    "Interaction model for multi-compact cascades (whether previous compact blocks are re-summarized) not documented",
+    "Interpretation of status line used_percentage when CLAUDE_CODE_AUTO_COMPACT_WINDOW overrides actual window size",
+    "Hardcoded cap preventing CLAUDE_AUTOCOMPACT_PCT_OVERRIDE values above 95% not justified in documentation"
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT_1",
+      "description": "Auto-compact trigger percentage differs from community sources",
+      "details": "Official docs state 95% but community forums report different thresholds (83.5%, 77%). Verdict: Using 95% as source of truth (official docs).",
+      "severity": "medium",
+      "claim_ids": ["R1.C4"]
+    },
+    {
+      "id": "CONFLICT_2",
+      "description": "Env var naming inconsistency: DISABLE_COMPACT vs DISABLE_AUTO_COMPACT",
+      "details": "Docs use DISABLE_COMPACT in some places and DISABLE_AUTO_COMPACT in others. Unclear if both names work or if one is deprecated.",
+      "severity": "medium",
+      "claim_ids": ["R1.C5"]
+    },
+    {
+      "id": "CONFLICT_3",
+      "description": "Haiku context awareness XML not shown in examples",
+      "details": "Docs show XML with 1000000 budget but Haiku 4.5 has only 200k tokens. What XML does Haiku receive? Docs mention '(200k for models with smaller window)' but no concrete example.",
+      "severity": "low",
+      "claim_ids": ["R1.C3", "R1.C13", "R1.C14"]
+    }
+  ]
+}

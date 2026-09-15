@@ -1,0 +1,277 @@
+{
+  "source_report": "R1_official_docs.md",
+  "report_words": 3850,
+  "extract_words": 420,
+  "extractor_version": "v1",
+  "campaign": "claude-md-patterns-2026",
+  "claims": [
+    {
+      "id": "R1.C1",
+      "claim": "CLAUDE.md ma 4 oficjalne tiery ladowania (Managed, User, Project, Local), nie 3 jak sie czesto podaje.",
+      "citation": "Docs dokumentuja cztery scope'y CLAUDE.md, nie trzy. Piaty kandydat - plugin CLAUDE.md - nie istnieje.",
+      "source_location": "memory.md > 'Choose where to put CLAUDE.md files'",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["tiers", "hierarchy", "architecture"]
+    },
+    {
+      "id": "R1.C2",
+      "claim": "Plugin CLAUDE.md NIE istnieje jako koncept - pluginy maja tylko skills/commands/agents/hooks/.mcp.json/.lsp.json/settings.json.",
+      "citation": "Pluginy nie ladauja wlasnych CLAUDE.md. Plugin directory structure obejmuje: .claude-plugin/plugin.json, skills/, commands/, agents/, hooks/hooks.json, .mcp.json, .lsp.json, monitors/, bin/, settings.json - bez slotu na CLAUDE.md.",
+      "source_location": "plugins.md > 'Plugin structure overview'",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["plugins", "architecture"]
+    },
+    {
+      "id": "R1.C3",
+      "claim": "CLAUDE.md jest dostarczany jako USER MESSAGE po system prompt, NIE jako czesc system prompt - krytyczne dla mental model.",
+      "citation": "CLAUDE.md content is delivered as a user message after the system prompt, not as part of the system prompt itself. Claude reads it and tries to follow it, but there's no guarantee of strict compliance, especially for vague or conflicting instructions.",
+      "source_location": "memory.md > \"Claude isn't following my CLAUDE.md\"",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["mental-model", "prompt-architecture"]
+    },
+    {
+      "id": "R1.C4",
+      "claim": "Docs URL redirect: docs.claude.com/en/docs/claude-code/* zwraca HTTP 301 do code.claude.com/docs/en/*.",
+      "citation": "URLs docs.claude.com/en/docs/claude-code/* zwracaja HTTP 301 do code.claude.com/docs/en/*. Stare URLs nadal dzialaja przez redirect.",
+      "source_location": "R1 redirect_note + bibliography",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["docs-url", "infrastructure"]
+    },
+    {
+      "id": "R1.C5",
+      "claim": "Project-root CLAUDE.md jest re-injected z disku po /compact, ale rules z paths: frontmatter i nested CLAUDE.md NIE sa re-injected.",
+      "citation": "Project-root CLAUDE.md and unscoped rules: Re-injected from disk. Rules with paths: frontmatter: Lost until a matching file is read again. Nested CLAUDE.md in subdirectories: Lost until a file in that subdirectory is read again.",
+      "source_location": "context-window.md > 'What survives compaction' table",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["compaction", "persistence", "lifecycle"]
+    },
+    {
+      "id": "R1.C6",
+      "claim": "@import ma maksymalna glebokosc 5 hopow (recursive). Obsluguje relative, absolute i home ~/ paths.",
+      "citation": "Imported files can recursively import other files, with a maximum depth of five hops. Both relative and absolute paths are allowed. Relative paths resolve relative to the file containing the import, not the working directory.",
+      "source_location": "memory.md > 'Import additional files'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["import", "syntax"]
+    },
+    {
+      "id": "R1.C7",
+      "claim": "Remote URLs w @import sa NIEWSPIERANE - docs wspominaja tylko o relative/absolute/home paths.",
+      "citation": "Docs nie mowia nic o URL-ach jako target @import. Tylko paths (relative, absolute, ~/). Remote @https://example.com/shared.md jest najprawdopodobniej niewspierane.",
+      "source_location": "R1 sekcja 4.5 + memory.md 'Import additional files'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["import", "limitations"]
+    },
+    {
+      "id": "R1.C8",
+      "claim": ".claude/rules/ to oficjalny system splittingu z YAML paths: frontmatter do lazy-loadowania regul per-scope.",
+      "citation": "Path-scoped rules trigger when Claude reads files matching the pattern, not on every tool use. Rules bez paths: sa loaded at launch with the same priority as .claude/CLAUDE.md.",
+      "source_location": "memory.md > 'Organize rules with .claude/rules/' + 'Path-specific rules'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["rules", "splitting", "frontmatter"]
+    },
+    {
+      "id": "R1.C9",
+      "claim": "InstructionsLoaded hook daje pelna observability z load_reason: session_start/nested_traversal/path_glob_match/include/compact.",
+      "citation": "Fires when a CLAUDE.md or .claude/rules/*.md file is loaded into context. Payload: memory_type in [User/Project/Local/Managed], load_reason in [session_start/nested_traversal/path_glob_match/include/compact]. Decision control: none - audit only.",
+      "source_location": "hooks.md > InstructionsLoaded event",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["hooks", "observability", "audit"]
+    },
+    {
+      "id": "R1.C10",
+      "claim": "AGENTS.md nie jest czytany natywnie przez Claude Code - oficjalny pattern to @AGENTS.md import wewnatrz CLAUDE.md.",
+      "citation": "Claude Code reads CLAUDE.md, not AGENTS.md. If your repository already uses AGENTS.md for other coding agents, create a CLAUDE.md that imports it so both tools read the same instructions without duplicating them.",
+      "source_location": "memory.md > 'AGENTS.md'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["agents-md", "coexistence", "pattern"]
+    },
+    {
+      "id": "R1.C11",
+      "claim": "CLAUDE.local.md jest pierwszo-klasowym obywatelem, NIE deprecated - oficjalnie dokumentowany tier Local, appendowany po CLAUDE.md w kazdym katalogu.",
+      "citation": "For private per-project preferences that shouldn't be checked into version control, create a CLAUDE.local.md at the project root. It loads alongside CLAUDE.md and is treated the same way. Within each directory, CLAUDE.local.md is appended after CLAUDE.md, so when instructions conflict, your personal notes are the last thing Claude reads at that level.",
+      "source_location": "memory.md > 'Import additional files' + 'How CLAUDE.md files load'",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["local", "gitignore", "tier"]
+    },
+    {
+      "id": "R1.C12",
+      "claim": "CLAUDE.md soft target 200 linii, ale brak hard cap udokumentowanego - loaded in full regardless of length.",
+      "citation": "CLAUDE.md files are loaded in full regardless of length, though shorter files produce better adherence. Target under 200 lines per CLAUDE.md file. Longer files consume more context and reduce adherence.",
+      "source_location": "memory.md > 'Write effective instructions' + 'My CLAUDE.md is too large'",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["limits", "size", "best-practice"]
+    },
+    {
+      "id": "R1.C13",
+      "claim": "claudeMdExcludes to glob-based patterns dla absolute paths, configurable na kazdej warstwie settings (user/project/local/managed), arrays merge across layers.",
+      "citation": "Patterns are matched against absolute file paths using glob syntax. You can configure claudeMdExcludes at any settings layer: user, project, local, or managed policy. Arrays merge across layers. Managed policy CLAUDE.md files cannot be excluded.",
+      "source_location": "memory.md > 'Exclude specific CLAUDE.md files'",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["excludes", "monorepo", "glob"]
+    },
+    {
+      "id": "R1.C14",
+      "claim": "Managed policy CLAUDE.md NIE MOZE byc wykluczony przez claudeMdExcludes - organization-wide guarantee.",
+      "citation": "Managed policy CLAUDE.md files cannot be excluded. This ensures organization-wide instructions always apply regardless of individual settings.",
+      "source_location": "memory.md > 'Exclude specific CLAUDE.md files'",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["managed", "policy", "enforcement"]
+    },
+    {
+      "id": "R1.C15",
+      "claim": "CLAUDE.md to miekka warstwa wplywu ('context, not enforced configuration'), dla hard policy sluzy settings (permissions.deny, sandbox.enabled, forceLoginMethod).",
+      "citation": "Claude treats them as context, not enforced configuration. The more specific and concise your instructions, the more consistently Claude follows them.",
+      "source_location": "memory.md > 'CLAUDE.md vs auto memory'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["semantics", "enforcement", "mental-model"]
+    },
+    {
+      "id": "R1.C16",
+      "claim": "Hierarchical loading: walk-up od cwd (rodzice laduja sie na starcie) + lazy-load w dol (subfoldery on-demand przez Read/Grep/Glob).",
+      "citation": "Claude Code reads CLAUDE.md files by walking up the directory tree from your current working directory. Claude also discovers CLAUDE.md and CLAUDE.local.md files in subdirectories under your current working directory. Instead of loading them at launch, they are included when Claude reads files in those subdirectories.",
+      "source_location": "memory.md > 'How CLAUDE.md files load'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["discovery", "lazy-load", "hierarchy"]
+    },
+    {
+      "id": "R1.C17",
+      "claim": "Additional directories (--add-dir) domyslnie NIE laduja CLAUDE.md - wymagana env var CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1.",
+      "citation": "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config. Wtedy laduje CLAUDE.md, .claude/CLAUDE.md, .claude/rules/*.md, i CLAUDE.local.md z dodatkowych sciezek.",
+      "source_location": "memory.md > 'Load from additional directories'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["add-dir", "env-var", "cli"]
+    },
+    {
+      "id": "R1.C18",
+      "claim": "HTML block-level comments w CLAUDE.md sa strip-owane przed injekcja do kontekstu (oszczedzaja tokeny), ale comments w code blocks sa zachowane.",
+      "citation": "Block-level HTML comments (<!-- maintainer notes -->) in CLAUDE.md files are stripped before the content is injected into Claude's context. Comments inside code blocks are preserved. When you open a CLAUDE.md file directly with the Read tool, comments remain visible.",
+      "source_location": "memory.md > 'How CLAUDE.md files load'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["comments", "format", "tokens"]
+    },
+    {
+      "id": "R1.C19",
+      "claim": "Managed policy paths per-OS: macOS /Library/Application Support/ClaudeCode/CLAUDE.md, Linux/WSL /etc/claude-code/CLAUDE.md, Windows C:\\Program Files\\ClaudeCode\\CLAUDE.md.",
+      "citation": "Tabela paths per-OS dla Managed CLAUDE.md. Deploy przez MDM, Group Policy, Ansible.",
+      "source_location": "memory.md > 'Choose where to put CLAUDE.md files' + 'Deploy organization-wide CLAUDE.md'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["managed", "paths", "deployment"]
+    },
+    {
+      "id": "R1.C20",
+      "claim": "Import approval dialog: pierwszy raz gdy Claude widzi @imports w projekcie pyta, po odmowie imports stale wylaczone (dialog sie nie pokazuje ponownie).",
+      "citation": "The first time Claude Code encounters external imports in a project, it shows an approval dialog listing the files. If you decline, the imports stay disabled and the dialog does not appear again.",
+      "source_location": "memory.md Warning callout",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["security", "approval", "imports"]
+    },
+    {
+      "id": "R1.C21",
+      "claim": "Concatenation NOT override: wszystkie discovered CLAUDE.md pliki sa concatenated do kontekstu, 'precedencja' jest emergent bo Local czytane ostatnie w danym katalogu.",
+      "citation": "All discovered files are concatenated into context rather than overriding each other. Within each directory, CLAUDE.local.md is appended after CLAUDE.md, so when instructions conflict, your personal notes are the last thing Claude reads at that level.",
+      "source_location": "memory.md > 'How CLAUDE.md files load'",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["precedence", "concatenation", "semantics"]
+    },
+    {
+      "id": "R1.C22",
+      "claim": ".claude/rules/ user-level (~/.claude/rules/) maja NIZSZY priorytet niz project-level - loaded first.",
+      "citation": "User-level rules are loaded before project rules, giving project rules higher priority.",
+      "source_location": "memory.md > 'User-level rules'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["rules", "precedence", "priority"]
+    },
+    {
+      "id": "R1.C23",
+      "claim": "claude --bare flag pomija auto-discovery hooks/skills/plugins/MCP/auto memory/CLAUDE.md dla scripted szybkich wywolan.",
+      "citation": "Minimal mode: skip auto-discovery of hooks, skills, plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls start faster. Ustawia tez env var CLAUDE_CODE_SIMPLE.",
+      "source_location": "cli-reference.md > --bare",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cli", "bare", "scripting"]
+    },
+    {
+      "id": "R1.C24",
+      "claim": "Skills bodies po compact sa re-injected z hard cap: 5K tokens per skill, 25K tokens total, oldest dropped first (LRU).",
+      "citation": "Invoked skill bodies: Re-injected, capped at 5,000 tokens per skill and 25,000 tokens total; oldest dropped first.",
+      "source_location": "context-window.md > 'What survives compaction'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["skills", "compaction", "limits"]
+    },
+    {
+      "id": "R1.C25",
+      "claim": "SessionStart hook to alternatywa dla CLAUDE.md dla dynamicznego kontekstu: git status, open issues, env-specific. Static -> CLAUDE.md.",
+      "citation": "Useful for loading development context like existing issues or recent changes to your codebase, or setting up environment variables. For static context that does not require a script, use CLAUDE.md instead.",
+      "source_location": "hooks.md > SessionStart event",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hooks", "session-start", "dynamic-context"]
+    },
+    {
+      "id": "R1.C26",
+      "claim": "Changelog v2.1.89 bugfix: 'Nested CLAUDE.md files being re-injected dozens of times in long sessions that read many files' - historia bugow potwierdza re-inject mechanics.",
+      "citation": "v2.1.89: Nested CLAUDE.md files being re-injected dozens of times in long sessions that read many files (bugfix).",
+      "source_location": "CHANGELOG.md (anthropics/claude-code main branch)",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["changelog", "bugfix", "nested"]
+    },
+    {
+      "id": "R1.C27",
+      "claim": "Token budget reprezentatywne: ~/.claude/CLAUDE.md ~320 tok, Project CLAUDE.md ~1800 tok, skill description ~450 tok, path-scoped rule ~380 tok.",
+      "citation": "Pelny ~/.claude/CLAUDE.md ~320 tok, Project CLAUDE.md ~1800 tok, Skill description ~450 tok (jedna skill), Path-scoped rule ~380 tok. Heurystyka: ~4 char/tok, ~0.75 word/tok dla angielskiego.",
+      "source_location": "context-window.md ContextWindow EVENTS table",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["tokens", "budget", "sizing"]
+    },
+    {
+      "id": "R1.C28",
+      "claim": "Plugin settings.json oficjalnie obsluguje TYLKO keys 'agent' i 'subagentStatusLine' - pluginy nie rozszerzaja kontekstu przez settings.",
+      "citation": "Plugin settings.json oficjalnie 'supports only agent and subagentStatusLine keys'.",
+      "source_location": "plugins.md > 'Ship default settings with your plugin'",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["plugins", "settings", "limitations"]
+    }
+  ],
+  "gaps_flagged": [
+    "G1: Hard size limit CLAUDE.md - docs mowia 'loaded in full regardless of length' ale musi istniec jakis limit cache/token budget. Niepotwierdzony.",
+    "G2: Circular reference detection w @import - max 5 hops udokumentowane, ale brak explicit wzmianki o circular detection (w przeciwienstwie do symlinks w .claude/rules/).",
+    "G3: Remote URLs w @import - niewspierane implicit, ale brak wprost stwierdzenia 'no remote URLs' ani flagi wlaczajacej.",
+    "G4: @foo wewnatrz code blocka - czy jest expanded czy traktowany jako text? Docs milcza.",
+    "G5: Discovery po cd przez Bash tool - co sie dzieje z CLAUDE.md z nowego cwd? Brak explicit tooling event.",
+    "G6: YAML frontmatter w CLAUDE.md - ignorowany? Rendered jako text? Parsed? Docs nie wspominaja (frontmatter zarezerwowany dla .claude/rules/).",
+    "G7: Plik CLAUDE.md w katalogu plugina - plugin structure go nie wymienia, zakladane ignorowany ale niepotwierdzone.",
+    "G8: Precedencja Managed vs Project przy konflikcie tresci - docs mowia 'concatenated not overriding' + 'picks arbitrarily', brak bias-documentation dla Managed.",
+    "G9: State 'declined imports' storage - gdzie jest zapisany fakt odrzucenia approval dialog? .claude/settings.local.json? Niepotwierdzone."
+  ],
+  "conflicts_flagged": [
+    "CONFLICT-1: 'More specific wins' (memory.md) vs 'All discovered files are concatenated into context rather than overriding' (memory.md) - dwie rozne mental models precedencji w tym samym dokumencie. R1 rozwiazuje to jako 'emergent precedence' (Local last = freshest in memory), ale docs nie sa explicit.",
+    "CONFLICT-2: 'Loaded in full regardless of length' (memory.md) vs 'Files over 200 lines consume more context and may reduce adherence' (memory.md troubleshoot) - technicznie nie sprzeczne ale mozna odczytac jako zagubienie mental model (fizyczny load vs adherence).",
+    "CONFLICT-3: .claude/rules/ user-level 'loaded before project rules, giving project rules higher priority' (memory.md) vs CLAUDE.md 'concatenated not overriding' - rules maja explicit priority, CLAUDE.md nie. Asymetria semantyczna miedzy dwoma feature'ami."
+  ]
+}

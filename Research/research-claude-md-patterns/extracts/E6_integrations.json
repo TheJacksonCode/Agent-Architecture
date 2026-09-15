@@ -1,0 +1,266 @@
+{
+  "source": "R6_integrations.md",
+  "researcher": "E6 Extractor (Opus 4.7)",
+  "date": "2026-04-17",
+  "scope": "CLAUDE.md interactions with skills, commands, hooks, MCP, subagents, plugins, competing systems, prompt cache",
+  "word_count_source": 4100,
+  "claims_total": 28,
+  "claims": [
+    {
+      "id": "R6.C1",
+      "stance": "Project-root CLAUDE.md is loaded in full at session start and re-injected from disk after /compact; managed policy CLAUDE.md cannot be excluded via claudeMdExcludes.",
+      "quote": "Project-root `CLAUDE.md` is loaded in full at session start, and re-injected from disk after `/compact`.",
+      "confidence": "high",
+      "tags": ["claude-md", "lifecycle", "compact", "re-injection"]
+    },
+    {
+      "id": "R6.C2",
+      "stance": "@path/to/file.md imports are recursive up to five hops, enabling cheap cross-references from CLAUDE.md to any markdown.",
+      "quote": "`@path/to/file.md` imports (recursive up to five hops) let CLAUDE.md pull in any other markdown.",
+      "confidence": "high",
+      "tags": ["imports", "at-syntax", "max-depth"]
+    },
+    {
+      "id": "R6.C3",
+      "stance": "CLAUDE.md is for facts that must be in every session; skills/commands/rules load on demand. Fact-vs-procedure is the unifying integration principle.",
+      "quote": "CLAUDE.md is for facts that must be in every session; everything else loads on demand.",
+      "confidence": "high",
+      "tags": ["fact-vs-procedure", "eager-vs-lazy", "design-principle"]
+    },
+    {
+      "id": "R6.C4",
+      "stance": "Skills are the explicit escape hatch when a CLAUDE.md section has grown into a procedure rather than a fact; body loads lazily so reference material costs nothing until needed.",
+      "quote": "Create a skill when you keep pasting the same playbook, checklist, or multi-step procedure into chat, or when a section of CLAUDE.md has grown into a procedure rather than a fact. Unlike CLAUDE.md content, a skill's body loads only when it's used, so long reference material costs almost nothing until you need it.",
+      "confidence": "high",
+      "tags": ["skills", "claude-md", "escape-hatch", "lazy-loading"]
+    },
+    {
+      "id": "R6.C5",
+      "stance": "Skills load descriptions eagerly (1536-char cap) and bodies lazily on invocation; disable-model-invocation removes skill from description index entirely.",
+      "quote": "skill descriptions are loaded into context so Claude knows what's available, but full skill content only loads when invoked.",
+      "confidence": "high",
+      "tags": ["skills", "description", "lazy-body", "token-cost"]
+    },
+    {
+      "id": "R6.C13",
+      "stance": "Custom commands have been merged into skills in 2026. .claude/commands/deploy.md and .claude/skills/deploy/SKILL.md both create /deploy and work the same way - same mechanism.",
+      "quote": "Custom commands have been merged into skills. A file at `.claude/commands/deploy.md` and a skill at `.claude/skills/deploy/SKILL.md` both create `/deploy` and work the same way.",
+      "confidence": "high",
+      "tags": ["commands", "skills", "merge", "2026", "unified-mechanism"]
+    },
+    {
+      "id": "R6.C15",
+      "stance": "CLAUDE.md is advisory, not a hard enforcement layer. Settings.json/hooks/allowed-tools are enforcement; allowed-tools in a skill can bypass CLAUDE.md guidance.",
+      "quote": "CLAUDE.md instructions shape Claude's behavior but are not a hard enforcement layer.",
+      "confidence": "high",
+      "tags": ["advisory", "enforcement-gap", "allowed-tools", "hooks"]
+    },
+    {
+      "id": "R6.C19",
+      "stance": "InstructionsLoaded hook is the golden observability surface for CLAUDE.md loads - receives file_path, memory_type, and load_reason (session_start|nested_traversal|path_glob_match|include|compact), globs, trigger_file_path, parent_file_path.",
+      "quote": "Use the `InstructionsLoaded` hook to log exactly which instruction files are loaded, when they load, and why. This is useful for debugging path-specific rules or lazy-loaded files in subdirectories.",
+      "confidence": "high",
+      "tags": ["hooks", "instructions-loaded", "observability", "debugging", "load-reason"]
+    },
+    {
+      "id": "R6.C20",
+      "stance": "Hooks complement CLAUDE.md by injecting dynamic state that CLAUDE.md cannot carry (git branch, build status, open PR count) via hookSpecificOutput.additionalContext.",
+      "quote": "Inject dynamic state that CLAUDE.md cannot carry (current git branch, build status, open PR count).",
+      "confidence": "high",
+      "tags": ["hooks", "session-start", "dynamic-context", "additional-context"]
+    },
+    {
+      "id": "R6.C22",
+      "stance": "Division of labor: CLAUDE.md is advisory and always re-reads cleanly; hooks/settings are imperative and run regardless of model judgment.",
+      "quote": "Settings rules are enforced by the client regardless of what Claude decides to do. CLAUDE.md instructions shape Claude's behavior but are not a hard enforcement layer.",
+      "confidence": "high",
+      "tags": ["enforcement", "settings", "advisory", "hooks"]
+    },
+    {
+      "id": "R6.C24",
+      "stance": "MCP tool schemas are deferred at startup by default in 2026; set ENABLE_TOOL_SEARCH=auto to load upfront if they fit 10% of context, or =false to load everything.",
+      "quote": "By default, full schemas stay deferred and Claude loads specific ones on demand via tool search when a task needs them. Set `ENABLE_TOOL_SEARCH=auto` to load schemas upfront when they fit within 10% of the context window, or `ENABLE_TOOL_SEARCH=false` to load everything.",
+      "confidence": "high",
+      "tags": ["mcp", "deferred-schemas", "tool-search", "2026-change"]
+    },
+    {
+      "id": "R6.C28",
+      "stance": "Subagents DO auto-load CLAUDE.md via cwd walk (counts against subagent's context not parent's). Built-in Explore and Plan agents explicitly skip CLAUDE.md for smaller context. This contradicts the common misconception that subagents don't see CLAUDE.md.",
+      "quote": "loads CLAUDE.md too. Same file, same content, but it counts against the subagent's context, not yours. The built-in Explore and Plan agents skip this for a smaller context.",
+      "confidence": "high",
+      "tags": ["subagents", "claude-md-inheritance", "explore-plan-skip", "disputed-prior", "cwd-walk"]
+    },
+    {
+      "id": "R6.C29",
+      "stance": "Subagents do NOT inherit parent conversation history, parent auto-memory, or parent skill descriptions - but they do load CLAUDE.md, MCP, and skill setup fresh in their own context.",
+      "quote": "The subagent does the work in its own context and returns only the summary... It loads CLAUDE.md and the same MCP and skill setup, but starts without your conversation history or the main session's auto memory.",
+      "confidence": "high",
+      "tags": ["subagents", "no-parent-inheritance", "fresh-context", "briefing-required"]
+    },
+    {
+      "id": "R6.C30",
+      "stance": "Skills with context: fork run in a subagent that loads CLAUDE.md; subagents with skills: frontmatter field preload FULL skill content (not just description) plus CLAUDE.md - bypassing the normal lazy contract.",
+      "quote": "Skill with `context: fork` | From agent type (`Explore`, `Plan`, etc.) | SKILL.md content | CLAUDE.md. Subagent with `skills` field | Subagent's markdown body | Claude's delegation message | Preloaded skills + CLAUDE.md.",
+      "confidence": "high",
+      "tags": ["subagents", "skills-preload", "context-fork", "full-body"]
+    },
+    {
+      "id": "R6.C35",
+      "stance": "Plugins have NO native CLAUDE.md slot. Plugin documentation does not list a CLAUDE.md slot; plugins contribute behavioral guidance via skills/agents/hooks/MCP instead.",
+      "quote": "There is no documented `plugin/CLAUDE.md` or equivalent. Plugin documentation does not list a \"CLAUDE.md\" slot.",
+      "confidence": "high",
+      "tags": ["plugins", "no-claude-md", "consensus-cross-r1-r2-r5"]
+    },
+    {
+      "id": "R6.C37",
+      "stance": "Plugin skills are ALWAYS namespaced as plugin-name:skill-name and cannot shadow project/user skills. CLAUDE.md referencing /deploy gets project/user skill; to force plugin version must write /acme:deploy.",
+      "quote": "Plugin skills are always namespaced as `plugin-name:skill-name`, so they cannot shadow a project or user skill with the same unqualified name.",
+      "confidence": "high",
+      "tags": ["plugins", "namespacing", "skill-resolution", "slash-commands"]
+    },
+    {
+      "id": "R6.C40",
+      "stance": "Decision matrix: CLAUDE.md is you-written (instructions/rules, project scope, loaded every session, coding standards), auto memory is Claude-written (learnings/patterns, per-worktree, first 200 lines or 25KB, build commands/preferences).",
+      "quote": "CLAUDE.md files | You | Instructions and rules | Project, user, or org | Every session | Coding standards, workflows, project architecture. Auto memory | Claude | Learnings and patterns | Per working tree | Every session (first 200 lines or 25KB) | Build commands, debugging insights, preferences.",
+      "confidence": "high",
+      "tags": ["auto-memory", "claude-md", "decision-matrix", "memory-md"]
+    },
+    {
+      "id": "R6.C44",
+      "stance": "AGENTS.md bridge is sanctioned: write @AGENTS.md as first line of CLAUDE.md, add Claude-specific additions below. Recommended pattern for multi-tool workflows.",
+      "quote": "Claude Code reads `CLAUDE.md`, not `AGENTS.md`. If your repository already uses `AGENTS.md` for other coding agents, create a `CLAUDE.md` that imports it so both tools read the same instructions without duplicating them.",
+      "confidence": "high",
+      "tags": ["agents-md", "bridge-pattern", "interop", "recommended"]
+    },
+    {
+      "id": "R6.C43",
+      "stance": "Claude Code does NOT natively read .cursorrules, .cursor/rules/*.mdc, .continuerules, or .github/copilot-instructions.md. Only CLAUDE.md, CLAUDE.local.md, .claude/rules/, .claude-plugin/plugin.json, .mcp.json are native.",
+      "quote": "Claude Code natively recognizes only CLAUDE.md and CLAUDE.local.md (plus the `.claude/rules/` directory and `.claude-plugin/plugin.json` for plugins, and `.mcp.json` for MCP). It does not natively read: AGENTS.md, .cursorrules, .continuerules, .github/copilot-instructions.md.",
+      "confidence": "high",
+      "tags": ["competing-systems", "cursor", "continue", "copilot", "not-recognized"]
+    },
+    {
+      "id": "R6.C45",
+      "stance": "Prompt cache hierarchy is tools -> system -> messages; CLAUDE.md sits in cacheable prefix and any edit invalidates the cache from that breakpoint forward, costing a fresh cache write.",
+      "quote": "The hierarchy is `tools -> system -> messages`, with changes at each level invalidating that level and all subsequent levels.",
+      "confidence": "high",
+      "tags": ["prompt-cache", "cacheable-prefix", "invalidation", "cost"]
+    },
+    {
+      "id": "R6.C46",
+      "stance": "CLAUDE.md is delivered as a USER MESSAGE after the system prompt, not as part of the system prompt itself - cache breakpoint sits at boundary between system prompt and conversation.",
+      "quote": "CLAUDE.md content is delivered as a user message after the system prompt, not as part of the system prompt itself.",
+      "confidence": "high",
+      "tags": ["prompt-cache", "user-message", "delivery-position", "cache-breakpoint"]
+    },
+    {
+      "id": "R6.C47",
+      "stance": "Claude Code v2.1.62 regression: sessions that undergo context compaction exhibit silent prompt cache break on --resume, rebuilding tokens from scratch (up to 20x cost). Feb 5 2026 also moved caching to workspace-level isolation from org-level.",
+      "quote": "starting with Claude Code v2.1.62, sessions that have undergone context compaction exhibit a regression where the prompt cache breaks silently on resume. Instead of reading cached tokens, the API rebuilds them from scratch on every turn, up to 20x cost increase.",
+      "confidence": "medium",
+      "tags": ["regression", "v2.1.62", "resume-bug", "cache-break", "workspace-isolation"]
+    },
+    {
+      "id": "R6.C48",
+      "stance": "After /compact Claude Code re-attaches most recent invocation of each skill with first 5000 tokens kept; re-attached skills share combined 25000-token budget. Skill compaction is token-capped unlike CLAUDE.md which re-reads in full.",
+      "quote": "Claude Code re-attaches the most recent invocation of each skill after the summary, keeping the first 5,000 tokens of each. Re-attached skills share a combined budget of 25,000 tokens.",
+      "confidence": "high",
+      "tags": ["compact", "skills", "token-budget", "truncation", "5k-25k"]
+    },
+    {
+      "id": "R6.C50",
+      "stance": "Docs recommend CLAUDE.md under 200 lines. No hard truncation limit documented - whether 10000-line CLAUDE.md would be truncated is unspecified (GAP).",
+      "quote": "Keep CLAUDE.md under 200 lines (the docs' own guidance).",
+      "confidence": "high",
+      "tags": ["size-guidance", "200-lines", "claude-md", "recommendation"]
+    },
+    {
+      "id": "R6.C52",
+      "stance": "--add-dir requires CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 for CLAUDE.md to opt-in from additional dirs; skills auto-load from them but CLAUDE.md does not by default.",
+      "quote": "`CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` required; skills auto-load, CLAUDE.md does not.",
+      "confidence": "high",
+      "tags": ["add-dir", "opt-in", "env-var", "additional-directories"]
+    },
+    {
+      "id": "R6.C53",
+      "stance": "Nested CLAUDE.md files are concatenated; when instructions conflict, personal notes are last read at that level. Cross-directory ordering for conflicting non-personal files is underspecified (GAP).",
+      "quote": "all discovered files are concatenated... when instructions conflict, your personal notes are the last thing Claude reads at that level.",
+      "confidence": "medium",
+      "tags": ["nested-claude-md", "concatenation", "precedence", "local-override"]
+    },
+    {
+      "id": "R6.C_PRESET_CATALOG",
+      "stance": "PRESET_CATALOG.md pattern validated: three-tier lazy load (CLAUDE.md 7-line routing eager tiny -> PRESET_CATALOG.md loaded on first routing decision -> preset prompt loaded on invocation). Cheaper than monolithic CLAUDE.md and survives /compact.",
+      "quote": "~/.claude/CLAUDE.md carries a 7-line routing instruction... ~/.claude/PRESET_CATALOG.md carries the catalog of 42 preset names... This is a three-tier lazy load... cheaper than any single-file CLAUDE.md containing all 42 preset prompts, and it survives /compact gracefully.",
+      "confidence": "high",
+      "tags": ["preset-catalog", "routing-index", "three-tier-lazy", "user-specific", "compact-resilient"]
+    },
+    {
+      "id": "R6.C_TOOL_PREFS",
+      "stance": "CLAUDE.md is the idiomatic place to hint MCP tool preference (mcp__server__tool convention, doubled underscore). Because schemas are deferred, CLAUDE.md nudges Claude toward project-specific MCP tools over generic built-ins. Advisory only - for hard enforcement use permissions.deny.",
+      "quote": "For files under `docs/private/`, prefer `mcp__filesystem__read_file` (handles auth). For GitHub issues/PRs, use `mcp__github__*` rather than raw `gh` CLI... this is a hint, not enforcement.",
+      "confidence": "high",
+      "tags": ["mcp", "tool-preference", "hinting", "claude-md", "naming-convention"]
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "G1",
+      "topic": "Maximum CLAUDE.md size / truncation behavior",
+      "detail": "Docs recommend under 200 lines but provide no hard limit. Whether a 10000-line CLAUDE.md is fully loaded or silently truncated is not stated."
+    },
+    {
+      "id": "G2",
+      "topic": "@import for remote URLs",
+      "detail": "Docs say both relative and absolute paths allowed but do not confirm whether @https://example.com/file.md resolves. Behavior unverified."
+    },
+    {
+      "id": "G3",
+      "topic": "Circular @import handling",
+      "detail": "Max depth is five hops but docs don't state whether cycles are detected, errored, or silently cut at depth five."
+    },
+    {
+      "id": "G4",
+      "topic": "No plugin CLAUDE.md slot",
+      "detail": "Despite plugin subagents, skills, hooks, and MCP being first-class, no plugin CLAUDE.md exists. Likely intentional but no official statement."
+    },
+    {
+      "id": "G5",
+      "topic": "--resume + CLAUDE.md edit interaction under v2.1.62 regression",
+      "detail": "Whether editing CLAUDE.md between resume and next turn cleanly re-invalidates cache or compounds stale-context bug is unknown."
+    },
+    {
+      "id": "G6",
+      "topic": "Nested CLAUDE.md collision rules across directories",
+      "detail": "Concatenation order across directories for conflicting non-personal files is underspecified in docs."
+    },
+    {
+      "id": "G7",
+      "topic": "Hook access to CLAUDE.md content",
+      "detail": "InstructionsLoaded receives file_path but not file content. Hook must cat file itself - no direct content injection API."
+    },
+    {
+      "id": "G8",
+      "topic": "Subagent memory vs main session auto memory merging",
+      "detail": "If subagent with memory: project writes an insight, whether it merges into main MEMORY.md or stays separate on /compact/resume is not traced in docs."
+    }
+  ],
+  "disputed_claims": [
+    {
+      "id": "R6.C28",
+      "note": "Subagents DOES auto-load CLAUDE.md via cwd walk. This CONTRADICTS the common prior assumption that subagents don't see CLAUDE.md and must be briefed from scratch. Explore/Plan are the specific exceptions that skip CLAUDE.md for smaller context. Flag for CRITIC cross-check against R1/R2/R5."
+    }
+  ],
+  "top_integration_points": [
+    "Skills (descriptions eager, bodies lazy, CLAUDE.md is index)",
+    "Commands merged into skills (unified mechanism 2026)",
+    "Subagents auto-load CLAUDE.md but skip parent context",
+    "InstructionsLoaded hook observability (5 load_reasons)",
+    "SessionStart/PreCompact/PostCompact hooks bracket CLAUDE.md",
+    "MCP tools deferred schemas + CLAUDE.md hinting convention",
+    "Plugins contribute via skills/agents/hooks/MCP (no CLAUDE.md slot)",
+    "Plugin skill namespacing (plugin-name:skill-name)",
+    "AGENTS.md bridge via @AGENTS.md import (sanctioned)",
+    "Prompt cache: CLAUDE.md as user message post-system, edits invalidate prefix"
+  ]
+}

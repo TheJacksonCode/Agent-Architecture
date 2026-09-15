@@ -1,0 +1,293 @@
+{
+  "source_report": "R7_monitoring_community.md",
+  "report_words": 4512,
+  "extract_words": 523,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R7.C1",
+      "claim": "Cache hit health metric is cache_read_input_tokens / (cache_read + cache_creation + input_tokens), with >80% being healthy",
+      "citation": "cache_hit_ratio = cache_read_input_tokens / (cache_read_input_tokens + cache_creation_input_tokens + input_tokens). Zdrowa multi-turn konwersacja: >80%. Claude Code sessions: 96%.",
+      "source_location": "section: Summary, para 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-health", "metrics", "monitoring"]
+    },
+    {
+      "id": "R7.C2",
+      "claim": "Cache hit ratio below 50% for 3+ consecutive requests indicates alertable anomaly requiring investigation",
+      "citation": "Spadek ponizej 50% przez 3+ requestow = alert (cos invalidates).",
+      "source_location": "section: Cache hit ratio (2.1), para 3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["alerting", "thresholds", "anomaly-detection"]
+    },
+    {
+      "id": "R7.C3",
+      "claim": "API response.usage contains 4 cache-specific fields: input_tokens, cache_read_input_tokens, cache_creation_input_tokens, and cache_creation (TTL breakdown)",
+      "citation": "Kazda odpowiedz Anthropic API zawiera `usage` obiekt... 4 pola: input_tokens, cache_read_input_tokens, cache_creation_input_tokens, cache_creation",
+      "source_location": "section: Response.usage fields (1.1), para 1-2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["api-response", "usage-fields", "architecture"]
+    },
+    {
+      "id": "R7.C4",
+      "claim": "Cache read tokens cost 0.1x base rate, cache creation costs 1.25x (5m) or 2x (1h), uncached tokens cost base rate",
+      "citation": "input_tokens * base_rate + cache_read_input_tokens * base_rate * 0.1 + cache_creation * base_rate * 1.25 (5m) or 2.0 (1h)",
+      "source_location": "section: Response.usage fields (1.2), code example",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing", "cost-model", "cache-tiers"]
+    },
+    {
+      "id": "R7.C5",
+      "claim": "Typical Claude Code sessions achieve 96% cache hit ratio with system prompt + tools + CLAUDE.md (~18k tokens)",
+      "citation": "Claude Code session (96% obserwowane). Anthropic internal data: $50-100 per session pre-cache, $10-19 post-cache (80% savings)",
+      "source_location": "section: Cache hit ratio table (2.1) and Case 2 (4.2)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["benchmark", "claude-code", "real-world"]
+    },
+    {
+      "id": "R7.C6",
+      "claim": "Du'An Lightfoot case: YouTube analytics bot saved $720/month to $72/month (90% reduction) with 81k-token static system prompt",
+      "citation": "System prompt: 81,251 tokens. Pre-cache: $0.244/request = $720/month. Post-cache (5m TTL): $0.024/request = $72/month.",
+      "source_location": "section: Case 1 (4.1)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "savings", "real-data"]
+    },
+    {
+      "id": "R7.C7",
+      "claim": "Haiku 4.5 support ticket processing at scale achieves $37 per 10,000 tickets with Batch + Cache stacking",
+      "citation": "Haiku 4.5 support ticket processing: $37 per 10,000 tickets (~$0.0037 per ticket).",
+      "source_location": "section: Case 3 (4.3)",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["benchmark", "haiku", "batch-api"]
+    },
+    {
+      "id": "R7.C8",
+      "claim": "Team scaling case: solo developer $202/year -> $27/year (86% reduction); 20-dev team $12,120/year -> $1,920/year (84% reduction)",
+      "citation": "Solo developer: $202/y -> $27/y (86% reduction). Team 20 devs: $12,120/y -> $1,920/y (84% reduction).",
+      "source_location": "section: Case 5a (understandingdata.com)",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["case-study", "team-scaling", "cost-projections"]
+    },
+    {
+      "id": "R7.C9",
+      "claim": "flightlesstux/prompt-caching MCP plugin benchmarks show 80-92% savings across bug fix, refactor, and general coding sessions",
+      "citation": "Bug fix (20 turns): 85% savings. Refactor (15 turns): 80%. General coding (40 turns): 92%.",
+      "source_location": "section: Case 5b",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["benchmark", "mcp-plugin", "session-types"]
+    },
+    {
+      "id": "R7.C10",
+      "claim": "masorange/ClaudeUsageTracker real session snapshot: 155.6M cache_read vs 12.4M cache_creation (12.6:1 ratio) = 92.8% hit rate",
+      "citation": "Cache creation: 12,367,742 tokens. Cache read: 155,606,800 tokens. Stosunek: 12.6:1. Cache hit rate = 92.8%.",
+      "source_location": "section: Case 5c",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["real-data", "monitoring-tool", "session-metrics"]
+    },
+    {
+      "id": "R7.C11",
+      "claim": "TTL regression incident (March 2026) cost one developer $949 on Sonnet and $1,582 on Opus across 4 months (119,866 calls)",
+      "citation": "Sonnet 4.6: $5,561.17 actual vs $4,612.09 z 1h TTL = $949 overpaid. Opus 4.6: $9,268.97 actual vs $7,687.17 z 1h TTL = $1,582 overpaid. Total: $2,531 in 4 months.",
+      "source_location": "section: Case 5d / TTL regression (12.2)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["incident", "ttl", "cost-impact"]
+    },
+    {
+      "id": "R7.C12",
+      "claim": "Anthropic Console displays cache rate % aggregate but does NOT export raw cache_read_input_tokens field per request",
+      "citation": "Oficjalny dashboard - sekcja Rate Limit Use + Caching wyswietla Cache rate %, ITPM limit. Brak eksportu raw cache_read_input_tokens.",
+      "source_location": "section: Anthropic Console (9.1)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tool-comparison", "gap", "console"]
+    },
+    {
+      "id": "R7.C13",
+      "claim": "Claude Code Analytics Admin API provides per-user, per-model, per-day granular cache metrics (cache_read + cache_creation)",
+      "citation": "Enterprise/Org API z programmatic access: tokens.cache_read + tokens.cache_creation. Granulacja: per dzien, per user, per model.",
+      "source_location": "section: Claude Code Analytics Admin API (9.2)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["official-tool", "enterprise", "api"]
+    },
+    {
+      "id": "R7.C14",
+      "claim": "Honeycomb offers enterprise observability with anthropic.usage.cache_read_input_tokens gauge and minute-level granularity",
+      "citation": "metrika anthropic.usage.cache_read_input_tokens jako gauge w timeline. Minute-level granularity per API key / workspace / model.",
+      "source_location": "section: Honeycomb (9.3)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["vendor-tool", "enterprise", "observability"]
+    },
+    {
+      "id": "R7.C15",
+      "claim": "Datadog integration provides anthropic.cache_read_input_tokens gauge but lacks pre-built alert templates for cache anomalies",
+      "citation": "Gauge metric anthropic.cache_read_input_tokens. Cloud Cost Management integration. Limitation: brak pre-built alert templates.",
+      "source_location": "section: Datadog (9.4)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["vendor-tool", "enterprise", "gap"]
+    },
+    {
+      "id": "R7.C16",
+      "claim": "Sealos/Grafana PromQL stack enables production-ready cache hit rate visualization via OpenTelemetry + Prometheus",
+      "citation": "PromQL: sum(cache_read) / (sum(cache_read) + sum(input)) * 100. 3-section dashboard: Vital Signs / Efficiency / Trends.",
+      "source_location": "section: Sealos/Grafana (9.5)",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["open-source", "grafana", "monitoring"]
+    },
+    {
+      "id": "R7.C17",
+      "claim": "Spring AI (Java) exposes cache_read_input_tokens and cache_creation_input_tokens natively via AnthropicApi.Usage since October 2025",
+      "citation": "AnthropicApi.Usage: cacheReadInputTokens() + cacheCreationInputTokens(). Production-ready Oct 2025.",
+      "source_location": "section: Pattern D-Java (7.4)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["framework", "java", "spring-ai"]
+    },
+    {
+      "id": "R7.C18",
+      "claim": "OpenTelemetry double-counting bug: pydantic-ai + Langfuse falsify costs by adding input_tokens twice (Anthropic vs OTel semantics mismatch)",
+      "citation": "OpenTelemetry semantic convention: gen_ai.usage.input_tokens = suma wszystkich. Anthropic API input_tokens = uncached only. Frameworks double-count.",
+      "source_location": "section: OpenTelemetry double-counting (11.1)",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["bug", "otel", "framework-gap"]
+    },
+    {
+      "id": "R7.C19",
+      "claim": "Luong Nguyen bisection methodology: Remove half of system prompt, test; isolate single cache invalidation trigger in CLAUDE.md edits",
+      "citation": "Metodologia: Bisekcja, usuwamy polowe CLAUDE.md, testujemy; potem druga polowe. Root cause: pojedyncza linia w CLAUDE.md.",
+      "source_location": "section: Luong Nguyen debug methodology (3.3)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["methodology", "debugging", "bisection"]
+    },
+    {
+      "id": "R7.C20",
+      "claim": "Cache invalidation events taxonomy: model switch, MCP tool add/remove, CLAUDE.md edit, timestamp in static, capitalization drift, TTL expire, compact/clear",
+      "citation": "Gdy ratio spada, szukaj: Model switch, MCP tool add, CLAUDE.md edit, timestamp, capitalization, TTL expire, compact/clear.",
+      "source_location": "section: Invalidation event taxonomy (8.1)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["debugging", "taxonomy", "invalidation"]
+    },
+    {
+      "id": "R7.C21",
+      "claim": "Alex Volkov Max Plan case: quota exhaustion in 70 minutes vs normal 8 hours caused by cache invalidation bugs (10-20x cost spike)",
+      "citation": "Max Plan user: 100% quota exhaustion w 70 minut zamiast 8 godzin. Tokens placone regular rate (10-20x drozsze niz cached).",
+      "source_location": "section: Case 5: Alex Volkov (4.5)",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["case-study", "incident", "quota-exhaustion"]
+    },
+    {
+      "id": "R7.C22",
+      "claim": "Vercel AI SDK v4.0.31 does NOT expose cache_read_input_tokens to response (Issue #4335 closed without fix documentation)",
+      "citation": "Vercel AI SDK (v4.0.x) nie przekazuje cache_read_input_tokens do response. Issue #4335 zamkniety bez dokumentacji fixa.",
+      "source_location": "section: Gaps (Issue flagged)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["sdk-gap", "vercel", "missing-fields"]
+    },
+    {
+      "id": "R7.C23",
+      "claim": "Portkey AI Gateway normalizes cache_read to OpenAI-compatible prompt_tokens, potentially masking true cached token cost",
+      "citation": "Portkey normalizuje cache_read do OpenAI format, gdzie prompt_tokens = inputTokens + cache_read + cache_creation. Moze zaciemniac prawdziwy koszt.",
+      "source_location": "section: Portkey AI Gateway (9.6) + conflicts (12.3)",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["vendor-tool", "gateway", "cost-transparency"]
+    },
+    {
+      "id": "R7.C24",
+      "claim": "GitHub Issue #33978 requests built-in 'claude usage' command; raw data exists in ~/.claude/projects/*.jsonl but requires parsing script",
+      "citation": "Feature request: built-in claude usage command. Data dostepne w JSONL plikach, ale wymagaja parsowania skryptem.",
+      "source_location": "section: GitHub issue #33978 (9.8)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["feature-request", "tool-gap", "claude-code"]
+    },
+    {
+      "id": "R7.C25",
+      "claim": "Community sentiment March-April 2026: negative on Anthropic post-TTL regression, but 90% savings broadly normalized as expected feature",
+      "citation": "Negatywny wobec Anthropic po TTL regression. Ale developerzy akceptuja 90% savings jako normal. Anthropic 1h TTL announcement dobrze przyjety.",
+      "source_location": "section: X/Twitter sentiment (5.1) + Reddit sentiment (6.1)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["sentiment", "community", "adoption"]
+    },
+    {
+      "id": "R7.C26",
+      "claim": "bokonon23/clawdbot-cost-monitor, sstklen/claude-api-cost-optimization, sagargupta16/claude-cost-optimizer are production-grade open-source monitoring tools",
+      "citation": "Community dashboards (bokonon23, sstklen, sagargupta16) oferuja gotowe rozwiazania do live monitoring.",
+      "source_location": "section: Dashboarding patterns (3.1-3.3)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tool-comparison", "open-source", "community"]
+    },
+    {
+      "id": "R7.C27",
+      "claim": "tokenx Python library provides cost monitoring decorators with Anthropic cache support (cacheTokens + calculated cost_usd)",
+      "citation": "tokenx: @measure_cost decorator. metrics['cached_tokens'] = cache_read_input_tokens. metrics['cost_usd'] = calculated with cache rates.",
+      "source_location": "section: tokenx library (9.7)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["python-lib", "decorator", "monitoring"]
+    },
+    {
+      "id": "R7.C28",
+      "claim": "Minimum viable monitoring: log cache_read_input_tokens and cache_creation_input_tokens per request, calculate ratio, alert <50%",
+      "citation": "Minimalny monitoring: loguj cache_read_input_tokens i cache_creation_input_tokens per request. Oblicz ratio. Alert <50%.",
+      "source_location": "section: Recommendation (11.1)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["best-practice", "monitoring", "alerting"]
+    },
+    {
+      "id": "R7.C29",
+      "claim": "Batch API without priming achieves 30-70% cache hit ratio; with priming achieves 95-98%; first request always 0% (all cache_creation)",
+      "citation": "Batch API bez priming: 30-70%. Batch API + priming: 95-98%. Pierwszy request: 0% (wszystko to cache_creation).",
+      "source_location": "section: Cache hit ratio benchmarks table (2.1)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["benchmark", "batch-api", "priming"]
+    },
+    {
+      "id": "R7.C30",
+      "claim": "Default TTL changed from 1 hour to 5 minutes post-March 2026, causing outdated tutorials and developer confusion about cache lifetime",
+      "citation": "Po marcu 2026 default to 5m (przed: 1h). Tutoriale nie sa zaktualizowane - powoduje confusion u nowych developerow.",
+      "source_location": "section: Conflicts (12.4 - TTL default drift)",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl", "versioning", "documentation-gap"]
+    }
+  ],
+  "gaps_flagged": [
+    "Gap 21: Anthropic Console brak raw cache_read_input_tokens export - only % aggregate. Claude Code Analytics API wymaga Admin API key (enterprise only). Individual developers bez dedicated monitoring solution.",
+    "Gap 22: New Relic/PagerDuty brak oficjalnych integracji z Anthropic cache metrics. Tylko Datadog + Honeycomb mają vendor support.",
+    "Gap 23: Brak SLA dla cache availability. Jeśli cache system spadnie, API działa ale placisz full rate - undocumented degradation.",
+    "Gap 24: Vercel AI SDK v4.0.x nie eksponuje cache_read_input_tokens w response. Issue #4335 zamkniety bez fixa - developers mogą nie wiedzieć czy cache działa.",
+    "Gap 25: OTel double-counting bug w pydantic-ai + Langfuse niezalatany. Framework developers mogą mieć 2x zafalszone koszty w raportach.",
+    "Gap 26: Brak built-in 'claude usage' command w Claude Code. Dane w JSONL są dostępne ale wymagają parsowania. Feature request #33978 open."
+  ],
+  "conflicts_flagged": [
+    "Konflikt 15: Anthropic (The Register) zaprzecza TTL regression spowodowało quota drain. Community (GitHub #46829) twierdzi przeciwnie z danymi ($949+$1582 overpaid). Rozstrzygniecie: TTL była JEDNA z 3+ przyczyn - Anthropic zamknelo issue bez odpowiedzi.",
+    "Konflikt 16: Marketing artykuły podają '100x cheaper cache reads'. Faktycznie 10x (0.1x). 100x to exaggeration.",
+    "Konflikt 17: OTel spec mówi gen_ai.usage.input_tokens = suma wszystkich. Anthropic API input_tokens = tylko uncached. Wiele frameworków (pydantic-ai, langfuse) implementuje roznie - double-counting. Potwierdzono w Langfuse #12306 i pydantic-ai #4364.",
+    "Konflikt 18: Portkey normalizuje cache_read do OpenAI prompt_tokens format. Może liczyć cached tokens po full rate jeśli client używa OpenAI-compatible calculator.",
+    "Konflikt 19: TTL default zmienił się 1h (pre-Mar 2026) -> 5m (post-Mar 2026). Starsze tutoriale opisują 1h jako default - confusion u nowych developerów."
+  ]
+}

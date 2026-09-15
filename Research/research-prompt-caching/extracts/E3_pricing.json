@@ -1,0 +1,179 @@
+{
+  "source_report": "R3_pricing_economics.md",
+  "report_words": 2144,
+  "extract_words": 700,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R3.C1",
+      "claim": "Multipliers cache identyczne miedzy modelami: 1.25x 5m write, 2x 1h write, 0.1x read (90% discount)",
+      "citation": "Multipliers per cache operation - uniwersalne. Identyczne miedzy wszystkimi modelami: 5-minute cache write 1.25x, 1-hour cache write 2x, Cache read (hit) 0.1x (90% discount).",
+      "source_location": "section: Details, 2. Multipliers per cache",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing", "multipliers", "uniform"]
+    },
+    {
+      "id": "R3.C2",
+      "claim": "Base input pricing kwiecien 2026: Opus 4.5/4.6/4.7 $5, Sonnet 4.6 $3, Haiku 4.5 $1 / MTok",
+      "citation": "Pelna oficjalna tabela: Opus 4.7/4.6/4.5 $5/MTok, Sonnet 4.6/4.5/4 $3/MTok, Haiku 4.5 $1/MTok.",
+      "source_location": "section: Details, 1. Pricing tabela",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing", "base-rates", "models"]
+    },
+    {
+      "id": "R3.C3",
+      "claim": "Opus 4.5 zmniejszyl sie 3x vs Opus 4/4.1 ($15 -> $5)",
+      "citation": "Observation: Opus 4.5/4.6/4.7 zmniejszyl sie 3x vs Opus 4/4.1 (z $15 na $5). To sam w sobie ogromna wiadomosc dla zespolow heavy-Opus.",
+      "source_location": "section: Details, 1. Pricing tabela",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["opus-deprecation", "pricing-change"]
+    },
+    {
+      "id": "R3.C4",
+      "claim": "Break-even 5m cache: po 1 hit. Math: 2500 extra tokens za write < 9000 saved tokens za read",
+      "citation": "Break-even: po 1 hit (2500 extra na write < 9000 saved na read).",
+      "source_location": "section: Details, 3. Break-even analiza",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["break-even", "math", "5m"]
+    },
+    {
+      "id": "R3.C5",
+      "claim": "Break-even 1h cache: po 2 hitach. 2*9000 saved = 18000 > 10000 extra za 1h write",
+      "citation": "Break-even 1h: po 2 hitach (2 * 9000 = 18000 > 10000 extra).",
+      "source_location": "section: Details, 3. Break-even analiza",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["break-even", "math", "1h"]
+    },
+    {
+      "id": "R3.C6",
+      "claim": "Du'An Lightfoot concrete case: $720/m -> $72/m, 81251 tokens video metadata, 100 requests/day = 90% savings, $648/miesiac",
+      "citation": "Du'An Lightfoot (labeveryday / Medium, 2025): Pre-cache: 81251 * $3 / 1M = $0.244 per request = $732/miesiac. Post-cache: $2.72/day = ~$72. Savings: $720 -> $72 = 90% reduction, $648/miesiac.",
+      "source_location": "section: Details, 4. Case studies",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "savings-90", "real-numbers"]
+    },
+    {
+      "id": "R3.C7",
+      "claim": "Claude Code 100-turn Opus session: $50-100 pre-cache -> $10-19 post-cache (96% hit rate) = 80% savings",
+      "citation": "Pre-cache: 100 turns: $9 input tokens + output costs = $50-100 total. Post-cache (96% hit rate): $1.3 input tokens + output = $10-19 total. Savings: $50-100 -> $10-19 = ~80% reduction.",
+      "source_location": "section: Details, 4. Case studies",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["claude-code", "96-percent", "case-study"]
+    },
+    {
+      "id": "R3.C8",
+      "claim": "Pricing multipliers stackuja: Batch 50% * Cache Read 10% = 5% of base input (95% total discount)",
+      "citation": "These multipliers stack with other pricing modifiers, including the Batch API discount and data residency. Batch + 5m cache read dla Sonnet 4.6: $3 * 0.5 * 0.1 = $0.15 / MTok (95% discount).",
+      "source_location": "section: Details, 5. Pricing modifier stacking",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["stacking", "batch", "discount"]
+    },
+    {
+      "id": "R3.C9",
+      "claim": "Data residency US-only = 1.1x mnoznik - aplikuje sie do WSZYSTKICH kategorii (input, output, cache write, read)",
+      "citation": "Data residency: For Claude Opus 4.7, Opus 4.6, newer models, specifying US-only inference via inference_geo parameter incurs a 1.1x multiplier on all token pricing categories, including input tokens, output tokens, cache writes, and cache reads.",
+      "source_location": "section: Details, 5. Pricing modifier stacking",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["data-residency", "multiplier", "us-only"]
+    },
+    {
+      "id": "R3.C10",
+      "claim": "Fast mode (Opus 4.6 only) 6x base premium, stack z cache multiplier = $3/MTok cache read on Fast",
+      "citation": "Fast Mode + 5m cache read dla Opus 4.6: $30 * 0.1 = $3 / MTok (10% of fast mode base).",
+      "source_location": "section: Details, 5. Pricing modifier stacking",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["fast-mode", "stacking", "opus-46"]
+    },
+    {
+      "id": "R3.C11",
+      "claim": "Long context 1M tokens at standard pricing dla Opus 4.5/4.6/4.7 i Sonnet 4.6 - cache savings zachowane",
+      "citation": "Claude Opus 4.7, 4.6 i Sonnet 4.6 maja full 1M token context window AT STANDARD PRICING. Implikacja dla caching: cache stays valuable nawet w 1M-token context.",
+      "source_location": "section: Details, 6. Long context pricing",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["long-context", "1m-tokens", "standard-pricing"]
+    },
+    {
+      "id": "R3.C12",
+      "claim": "Anthropic vs OpenAI vs Google: Anthropic 90% savings read, OpenAI 50%, Google 75% ale billed per minute storage",
+      "citation": "Porownanie: Anthropic Explicit cache_control 0.1x read, 1.25x/2x write. OpenAI Automatic >1024 tokens 0.5x read, 0% write. Google Gemini Explicit cachedContents API 0.25x read, 0% write (billed storage/minute).",
+      "source_location": "section: Details, 7. Porownanie OpenAI Gemini",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["comparison", "openai", "gemini"]
+    },
+    {
+      "id": "R3.C13",
+      "claim": "Anthropic wymaga PAY FOR WRITE - nie ma 'automagic free cache' jak u OpenAI",
+      "citation": "Anthropic ma najwieksze savings na read (90% vs 50% OpenAI) ale jedyny wymaga PAY FOR WRITE upfront.",
+      "source_location": "section: Details, 7. Porownanie",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anthropic-unique", "pay-for-write"]
+    },
+    {
+      "id": "R3.C14",
+      "claim": "Opus 4.7 tokenizer moze uzyc 35% wiecej tokenow - zaloz 35% bufor w token budget",
+      "citation": "Opus 4.7 uses a new tokenizer compared to previous models, contributing to its improved performance on a wide range of tasks. This new tokenizer may use up to 35% more tokens for the same fixed text.",
+      "source_location": "section: Details, 8. Opus 4.7 tokenizer caveat",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["opus-47", "tokenizer", "budget-impact"]
+    },
+    {
+      "id": "R3.C15",
+      "claim": "Anti-patterns gdzie cache KOSZTUJE WIECEJ: single-shot request, prefix ponizej minimum, high-churn prefix, spread sesji >5m",
+      "citation": "When cache NIE sie oplaca: Single-shot request, Prefiks ponizej minimum, Wysoki churn rate, Session lifetime < 5m and requests > 5 minutes apart.",
+      "source_location": "section: Details, 9. When cache NIE sie oplaca",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-patterns", "when-not", "cost"]
+    },
+    {
+      "id": "R3.C16",
+      "claim": "Output tokens NIE sa cachowane - tylko input. Dlugi output nadal kosztuje full rate.",
+      "citation": "Nie zapomnij ze output tokens NIE sa cachowane. Cache dziala TYLKO na input. Dlugi output nadal kosztuje full rate.",
+      "source_location": "section: Details, warnings",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["output-not-cached", "warning"]
+    },
+    {
+      "id": "R3.C17",
+      "claim": "Effective cost formula: per request uwzgledniaj input_tokens, cache_read * 0.1x, cache_creation 5m * 1.25x, 1h * 2x",
+      "citation": "Cost per request: effective_cost = (input_tokens + cache_read*0.1 + cache_creation_5m*1.25 + cache_creation_1h*2.0) * base_rate / 1M.",
+      "source_location": "section: Details, 10. Cost monitoring",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cost-formula", "monitoring", "calculation"]
+    },
+    {
+      "id": "R3.C18",
+      "claim": "Alert jezeli cache_hit_ratio < 0.5 przez 3+ requesty w rzad - prawdopodobny invalidation trigger",
+      "citation": "Alert jezeli cache_hit_ratio < 0.5 przez 3+ requesty w rzad - cos psuje cache (prawdopodobnie invalidation trigger).",
+      "source_location": "section: Details, 10. Cost monitoring",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["alerting", "threshold", "monitoring"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak empirycznych case studies dla Haiku 4.5 (wiekszosc to Sonnet/Opus)",
+    "Brak community benchmarkow z Batch + Cache stackiem",
+    "Brak Fast Mode + Cache benchmarku (Opus 4.6 only)"
+  ],
+  "conflicts_flagged": [
+    "R3.C8 'up to 95% discount' (LLMindset) mylace - precyzyjnie to 95% total discount vs baseline (5% of base price), nie 95% off od batch",
+    "R3.C1 multipliers: potwierdzone ze SA identyczne per model, ale base prices roznia sie drastycznie (Haiku 3 $0.25 vs Opus 4.7 $5 = 20x roznica)"
+  ]
+}

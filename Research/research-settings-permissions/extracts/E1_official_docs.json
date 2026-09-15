@@ -1,0 +1,361 @@
+{
+  "source_report": "R1_official_docs.md",
+  "report_words": 4200,
+  "extract_words": 720,
+  "extractor_version": "v1",
+  "campaign": "settings-permissions-2026",
+  "claims": [
+    {
+      "id": "R1.C1",
+      "claim": "Domena oficjalnej dokumentacji zostala przeniesiona z docs.claude.com/en/docs/claude-code/* na code.claude.com/docs/en/* 301 redirectami i to jest obecnie kanoniczne zrodlo.",
+      "citation": "Cala dokumentacja, ktora wczesniej zyla na `docs.claude.com/en/docs/claude-code/*`, zostala przeniesiona 301-redirectami na nowy host `code.claude.com/docs/en/*` i to jest dzis kanoniczne zrodlo.",
+      "source_location": "section: 1. Abstract",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["docs-migration", "2026-new", "canonical-source"]
+    },
+    {
+      "id": "R1.C2",
+      "claim": "Strona iam zostala usunieta jako osobny dokument - zawartosc podzielono miedzy authentication (apiKeyHelper, credentiale, precedence) i permissions (rule syntax, tryby, managed settings).",
+      "citation": "Strona `iam` przestala byc osobnym dokumentem - jej tresc podzielono miedzy `authentication` (logowanie, credentiale, apiKeyHelper, precedence) oraz `permissions` (rule syntax, tryby, managed settings).",
+      "source_location": "section: 1. Abstract",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["docs-restructure", "deprecated-page"]
+    },
+    {
+      "id": "R1.C3",
+      "claim": "Hierarchia scope-ow settings jest szescio-warstwowa z precedencja: Managed (server) > Managed (MDM/file) > CLI args > Local > Project > User.",
+      "citation": "Hierarchia scope-ow jest szescio-warstwowa: **Managed (server) > Managed (MDM/file) > CLI args > Local (.claude/settings.local.json) > Project (.claude/settings.json) > User (~/.claude/settings.json)**.",
+      "source_location": "section: 1. Abstract + section 2. Settings lifecycle",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["scopes", "precedence"]
+    },
+    {
+      "id": "R1.C4",
+      "claim": "Array-valued settings (np. permissions.allow, sandbox.filesystem.allowWrite) sa merge-owane i deduplikowane miedzy scope-ami; scalar settings sa nadpisywane.",
+      "citation": "Array-valued settings (np. `permissions.allow`, `sandbox.filesystem.allowWrite`) sa **merge-owane i deduplikowane** miedzy scope-ami; scalar-owe - nadpisywane.",
+      "source_location": "section: 1. Abstract",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["merge-semantics", "scopes"]
+    },
+    {
+      "id": "R1.C5",
+      "claim": "Managed settings moga wymusic allowManagedPermissionRulesOnly, allowManagedHooksOnly, allowManagedMcpServersOnly, sandbox.network.allowManagedDomainsOnly blokujac uzytkownikom modyfikacje tych polityk.",
+      "citation": "Managed settings moga wymusic `allowManagedPermissionRulesOnly`, `allowManagedHooksOnly`, `allowManagedMcpServersOnly`, `sandbox.network.allowManagedDomainsOnly`, co de facto zamyka odpowiednie policy-obszary dla uzytkownikow.",
+      "source_location": "section: 1. Abstract",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["managed-only", "lockdown"]
+    },
+    {
+      "id": "R1.C6",
+      "claim": "Plik ~/.claude.json trzyma globalny state (OAuth session, MCP per-project, autoConnectIde, editorMode) - proba wpisania tych kluczy do settings.json wywoluje schema validation error.",
+      "citation": "Poza `settings.json` istnieje oddzielny plik `~/.claude.json` na globalny state (OAuth session, MCP per-project, `autoConnectIde`, `editorMode`, `terminalProgressBarEnabled` i podobne) - proba wpisania tych kluczy do `settings.json` wywoluje schema validation error.",
+      "source_location": "section: 1. Abstract",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["schema", "global-config", "validation"]
+    },
+    {
+      "id": "R1.C7",
+      "claim": "Stara sciezka C:\\ProgramData\\ClaudeCode\\managed-settings.json przestala byc obslugiwana od v2.1.75 - wymagana migracja do C:\\Program Files\\ClaudeCode\\.",
+      "citation": "stara sciezka `C:\\ProgramData\\ClaudeCode\\managed-settings.json` przestala byc obslugiwana od v2.1.75 - administratorzy MUSZA migrowac pliki do `C:\\Program Files\\ClaudeCode\\` (source: settings#settings-files warning box).",
+      "source_location": "section: 2. Settings lifecycle",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["deprecated", "windows", "breaking-change"]
+    },
+    {
+      "id": "R1.C8",
+      "claim": "Managed settings wspieraja drop-in directory managed-settings.d/*.json merge-owany alfabetycznie na baze managed-settings.json; pliki zaczynajace sie od kropki sa ignorowane.",
+      "citation": "w sciezkach managed istnieje `managed-settings.d/*.json`, merge-owany w kolejnosci alfabetycznej na baze `managed-settings.json`. Konwencja numerycznych prefixow (`10-telemetry.json`, `20-security.json`) jest oficjalnie rekomendowana. Pliki zaczynajace sie od `.` sa ignorowane.",
+      "source_location": "section: 2. Settings lifecycle",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["managed-settings", "drop-in", "conventions"]
+    },
+    {
+      "id": "R1.C9",
+      "claim": "Zrodla managed NIE mergeuja sie miedzy tierami - pierwsze zrodlo ktore dostarczy cokolwiek wygrywa caly managed-level config (server-managed > MDM/OS > file > HKCU).",
+      "citation": "Sources **nie mergeuja sie miedzy tierami** - pierwsze zrodlo ktore dostarczy cokolwiek wygrywa wszystko. W obrebie file-based tier-u drop-in files i baza sa mergowane.",
+      "source_location": "section: 2. Settings lifecycle",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["precedence", "managed-tier", "merge-semantics"]
+    },
+    {
+      "id": "R1.C10",
+      "claim": "Dodanie $schema: https://json.schemastore.org/claude-code-settings.json daje autocomplete w VS Code, ale schema jest updatowana okresowo i moze nie zawierac najswiezszych pol.",
+      "citation": "**Schema URL:** `https://json.schemastore.org/claude-code-settings.json` - dodanie `\"$schema\"` do pliku daje autocomplete w VS Code. Schema jest updatowana okresowo i moze nie zawierac najswiezszych pol.",
+      "source_location": "section: 2. Settings lifecycle",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["schema", "tooling", "schemastore"]
+    },
+    {
+      "id": "R1.C11",
+      "claim": "permissions.defaultMode obecnie akceptuje enum: default, acceptEdits, plan, auto, dontAsk, bypassPermissions - gdzie auto (classifier-based) i dontAsk (auto-deny) to nowosci 2026.",
+      "citation": "**`permissions.defaultMode`** (string, enum) - default permission mode. Valid: `default`, `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`. CLI flag `--permission-mode` override na sesje.",
+      "source_location": "section: 3.2 Permission settings + section 4.1 permission modes table",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["permissions-field", "2026-new", "enum"]
+    },
+    {
+      "id": "R1.C12",
+      "claim": "Tryb auto wykorzystuje classifier-based auto-approve z background safety checks i jest oznaczony jako Research preview.",
+      "citation": "`auto` | Classifier-based auto-approve z background safety checks. **Research preview.**",
+      "source_location": "section: 4.1 Permission modes table",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["2026-new", "auto-mode", "research-preview"]
+    },
+    {
+      "id": "R1.C13",
+      "claim": "Tryb bypassPermissions pomija wszystkie prompty z wyjatkiem writes do .git, .claude, .vscode, .idea, .husky; writes do .claude/commands, .claude/agents, .claude/skills sa bez promptu.",
+      "citation": "`bypassPermissions` | Skip all prompts z wyjatkiem writes do `.git`, `.claude`, `.vscode`, `.idea`, `.husky`. Writes do `.claude/commands`, `.claude/agents`, `.claude/skills` - no prompt. **Tylko w isolated envs**. Blockable przez `disableBypassPermissionsMode`.",
+      "source_location": "section: 4.1 Permission modes table",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["bypass", "safety-exceptions", "permissions-field"]
+    },
+    {
+      "id": "R1.C14",
+      "claim": "Evaluation order regul permissions to deny -> ask -> allow, first match wins.",
+      "citation": "**Rule format:** `Tool` lub `Tool(specifier)`. Evaluation order: **deny -> ask -> allow**. First match wins.",
+      "source_location": "section: 4.1 permissions",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["rule-syntax", "evaluation-order"]
+    },
+    {
+      "id": "R1.C15",
+      "claim": "Compound Bash separators (&&, ||, ;, |, |&, &, newline) powoduja ze kazdy subcommand jest dopasowywany osobno przeciwko regulom.",
+      "citation": "Compound command separators: `&&`, `||`, `;`, `|`, `|&`, `&`, newline. Kazdy subcommand dopasowywany osobno.",
+      "source_location": "section: 4.1 Bash nuances",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash-rules", "compound-commands"]
+    },
+    {
+      "id": "R1.C16",
+      "claim": "Niektore process wrappers (timeout, time, nice, nohup, stdbuf, bare xargs) sa strippowane, ale NIE sa strippowane: direnv exec, devbox run, mise exec, npx, docker exec - wymagaja regul per inner command.",
+      "citation": "Process wrappers stripped: `timeout`, `time`, `nice`, `nohup`, `stdbuf`, bare `xargs`. **NIE** strip: `direnv exec`, `devbox run`, `mise exec`, `npx`, `docker exec` - trzeba pisac rules per inner command.",
+      "source_location": "section: 4.1 Bash nuances",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["bash-rules", "wrappers", "gotcha"]
+    },
+    {
+      "id": "R1.C17",
+      "claim": "Read-only commands (ls, cat, head, tail, grep, find, wc, diff, stat, du, cd, read-only git) sa built-in bez promptu w kazdym mode i nie sa konfigurowalne.",
+      "citation": "Built-in read-only commands (bez promptu w kazdym mode): `ls`, `cat`, `head`, `tail`, `grep`, `find`, `wc`, `diff`, `stat`, `du`, `cd`, read-only git. Nie konfigurowalne.",
+      "source_location": "section: 4.1 Bash nuances",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["read-only", "built-in", "bash-rules"]
+    },
+    {
+      "id": "R1.C18",
+      "claim": "Prefix /path w regulach Read/Edit oznacza PROJECT ROOT, nie absolute filesystem path - dla absolute nalezy uzyc //path.",
+      "citation": "`//path` = absolute filesystem root. `Read(//Users/alice/secrets/**)`. `~/path` = home directory. `/path` = **project root** (NIE absolute!). `Edit(/src/**/*.ts)`. `path` / `./path` = cwd.",
+      "source_location": "section: 4.1 Read/Edit pattern types",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["path-semantics", "rule-syntax", "gotcha"]
+    },
+    {
+      "id": "R1.C19",
+      "claim": "Hooks reference 2026 definiuje 25+ event types z nowymi: InstructionsLoaded, PostToolUseFailure, StopFailure, TaskCreated, TaskCompleted, ConfigChange, TeammateIdle, WorktreeCreate, WorktreeRemove.",
+      "citation": "*Session:* `SessionStart`, `SessionEnd`, `InstructionsLoaded` *Per-turn:* `UserPromptSubmit`, `Stop`, `StopFailure` *Tool exec:* `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest`, `PermissionDenied` *Subagent:* `SubagentStart`, `SubagentStop` *Tasks:* `TaskCreated`, `TaskCompleted` *Env/Files:* `CwdChanged`, `FileChanged`, `ConfigChange` *Compaction:* `PreCompact`, `PostCompact` *Worktree:* `WorktreeCreate`, `WorktreeRemove` *MCP:* `Elicitation`, `ElicitationResult` *Other:* `Notification`, `TeammateIdle`",
+      "source_location": "section: 4.2 hooks Event types",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["hooks", "2026-new", "event-types"]
+    },
+    {
+      "id": "R1.C20",
+      "claim": "Hooks wspieraja cztery transport types: command, http (z URL/headers/allowedEnvVars), prompt (z $ARGUMENTS) i agent - gdzie HTTP hooks to nowosc 2026.",
+      "citation": "**Hook transport types:** `command`, `http` (z URL, headers, allowedEnvVars), `prompt` (prompt string z `$ARGUMENTS`), `agent`.",
+      "source_location": "section: 4.2 hooks",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["hooks", "http-hooks", "2026-new"]
+    },
+    {
+      "id": "R1.C21",
+      "claim": "allowedHttpHookUrls i httpHookAllowedEnvVars sluza do ograniczenia URL patterns i env var names dla HTTP hooks; undefined = no restriction, empty = block all.",
+      "citation": "**`allowedHttpHookUrls`** (string[]) - URL pattern allowlist dla HTTP hooks. `*` wildcard. Merge across scopes. Undefined = no restriction, empty = block all. **`httpHookAllowedEnvVars`** (string[]) - env var names dla HTTP hooks header interpolation.",
+      "source_location": "section: 3.5 Hook policy fields",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["http-hooks", "2026-new", "security"]
+    },
+    {
+      "id": "R1.C22",
+      "claim": "Exit code 2 z hooka to blocking error event-specific (blokuje tool, odrzuca prompt, odmawia permission, prevents stop/compact, rolls back task), pozostale non-blocking.",
+      "citation": "**Exit code behavior:** `0` = success, stdout parsed as JSON. `2` = blocking error (event-specific: blocks tool, rejects prompt, denies permission, prevents stop, prevents compact, rolls back task, itd.). Inne = non-blocking, shows stderr.",
+      "source_location": "section: 4.2 hooks",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hooks", "exit-codes", "blocking"]
+    },
+    {
+      "id": "R1.C23",
+      "claim": "PreToolUse JSON output precedencja decyzji to deny > defer > ask > allow.",
+      "citation": "**PreToolUse JSON output decision precedence:** `deny > defer > ask > allow`.",
+      "source_location": "section: 4.2 hooks",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["hooks", "PreToolUse", "decision-precedence"]
+    },
+    {
+      "id": "R1.C24",
+      "claim": "Blocking hook (exit 2) ma precedencje nad allow rules - zatrzymuje ewaluacje uprawnien przed ocena regul.",
+      "citation": "Blocking hook (exit 2) takes precedence over allow rules (stops before permission evaluation).",
+      "source_location": "section: 4.1 Hook precedence vs rules",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["hooks", "precedence", "security"]
+    },
+    {
+      "id": "R1.C25",
+      "claim": "autoMode to nowa sekcja 2026 z polami environment/allow/soft_deny konfigurujacymi classifier, gdzie allow i soft_deny REPLACE default list (nie merge) - ryzyko utraty reguls jesli nie uruchomi sie 'claude auto-mode defaults' najpierw.",
+      "citation": "**Critical warning:** Ustawienie `allow` lub `soft_deny` **REPLACE** default list. Zawsze uruchom `claude auto-mode defaults` najpierw i skopiuj pelna liste. `environment` oddzielnie - nie replace. `autoMode` nie czytane z shared project settings.",
+      "source_location": "section: 6.1 autoMode",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["autoMode", "2026-new", "gotcha", "replace-semantics"]
+    },
+    {
+      "id": "R1.C26",
+      "claim": "autoMode, autoMemoryDirectory i useAutoModeDuringPlan NIE sa czytane z shared project settings (.claude/settings.json) - to celowe zabezpieczenie CI-risk.",
+      "citation": "**`autoMemoryDirectory`** (string, path) - katalog auto memory. Accept `~/`-expanded paths. **Nie akceptowane w `.claude/settings.json`** (project) bo to security risk. OK w policy/local/user. [...] **`autoMode`** [...] **Nie czytane z shared project settings** (CI-risk).",
+      "source_location": "section: 3.1 Core / runtime",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["project-settings-blocked", "security", "ci-risk"]
+    },
+    {
+      "id": "R1.C27",
+      "claim": "includeCoAuthoredBy jest explicite oznaczone jako DEPRECATED w docs i zastapione przez nowe pole attribution {commit, pr}.",
+      "citation": "**`includeCoAuthoredBy`** (boolean, default `true`) - **DEPRECATED**, uzywac `attribution`. Co-authored-by w commits/PR.",
+      "source_location": "section: 3.1 Core / runtime + section 7 Deprecated",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["deprecated", "attribution"]
+    },
+    {
+      "id": "R1.C28",
+      "claim": "ignorePatterns jest deprecated - zastapione przez permissions.deny z regulami Read(./path/**).",
+      "citation": "**`ignorePatterns`** - old way of excluding files. Docs mowia wprost: \"This replaces the deprecated `ignorePatterns` configuration\" (settings#excluding-sensitive-files). Uzywac `permissions.deny` z `Read(./path/**)`.",
+      "source_location": "section: 7 Deprecated",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["deprecated", "permissions-deny", "sensitive-files"]
+    },
+    {
+      "id": "R1.C29",
+      "claim": "skipDangerousModePermissionPrompt jest ignorowany z project settings jako zabezpieczenie przed auto-bypass przez untrusted repos.",
+      "citation": "**`permissions.skipDangerousModePermissionPrompt`** (boolean) - skip confirmation dialog przed bypass mode. **Ignorowane z project settings** (zapobiega auto-bypass przez untrusted repos).",
+      "source_location": "section: 3.2 Permission settings",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["security", "project-settings-blocked", "bypass"]
+    },
+    {
+      "id": "R1.C30",
+      "claim": "Settings MCP maja piec kluczy: enableAllProjectMcpServers, enabledMcpjsonServers, disabledMcpjsonServers (user-side) + allowedMcpServers, deniedMcpServers (managed-only); deniedMcpServers zawsze wygrywa.",
+      "citation": "**`enableAllProjectMcpServers`** (boolean) - auto-approve wszystkich MCP servers z `.mcp.json` w projekcie. [...] **`enabledMcpjsonServers`** (string[]) - whitelist [...] **`disabledMcpjsonServers`** (string[]) - blacklist. [...] **`allowedMcpServers`** (array of `{serverName}`, **managed only**) [...] **`deniedMcpServers`** (array of `{serverName}`, **managed only**) - denylist. Zawsze wygrywa.",
+      "source_location": "section: 5 MCP-related fields",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp", "managed-only", "precedence"]
+    },
+    {
+      "id": "R1.C31",
+      "claim": "Server-managed settings NIE dystrybuuja MCP configs - to explicit limitation wymieniony w server-managed-settings docs.",
+      "citation": "Server-managed settings **NIE** dystrybuuja MCP configs (limitation wymieniony explicite w server-managed-settings#current-limitations).",
+      "source_location": "section: 5 MCP-related fields",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["mcp", "managed-settings", "limitation"]
+    },
+    {
+      "id": "R1.C32",
+      "claim": "Sandbox filesystem obsluguje cztery sciezki prefiksowe: /abs, ~/home, ./rel-to-project-or-user, //abs-legacy - z merge wszystkich scopes plus reguly Edit()/Read().",
+      "citation": "**`sandbox.filesystem.allowWrite`** / **`denyWrite`** / **`denyRead`** / **`allowRead`** (string[]) - paths. Merge ALL scopes + `Edit()`/`Read()` permission rules. Path prefixes: `/abs`, `~/home`, `./rel-to-project-or-user`, `//abs-legacy`.",
+      "source_location": "section: 3.3 Sandbox settings",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["sandbox", "filesystem", "path-prefixes"]
+    },
+    {
+      "id": "R1.C33",
+      "claim": "strictKnownMarketplaces (managed only) implementuje allowlist marketplace additions z exact matching; pusty array oznacza lockdown plugins.",
+      "citation": "**`strictKnownMarketplaces`** (array, **managed only**) - allowlist marketplace additions. Exact matching (repo, ref, path, url). Empty array = lockdown.",
+      "source_location": "section: 3.7 Plugin settings",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["plugins", "managed-only", "lockdown"]
+    },
+    {
+      "id": "R1.C34",
+      "claim": "statusLine fields to type='command', command, padding (default 0), refreshInterval (sekundy, min 1); skrypt dostaje JSON na stdin z polami model, cwd, workspace, cost, context_window, rate_limits.",
+      "citation": "Fields: `type: \"command\"`, `command` (path lub inline), `padding` (default 0), `refreshInterval` (sekundy, min 1). Script dostaje JSON na stdin - pelna struktura w statusline#available-data. Kluczowe pola: `model.{id,display_name}`, `cwd`, `workspace.{current_dir,project_dir,added_dirs,git_worktree}`, `cost.{total_cost_usd,total_duration_ms,total_lines_added,total_lines_removed}`, `context_window.{total_input_tokens,context_window_size,used_percentage,current_usage}`, `rate_limits.{five_hour,seven_day}.{used_percentage,resets_at}`, `session_id`, `version`, `output_style.name`, `vim.mode`, `agent.name`, `worktree.*`.",
+      "source_location": "section: 6.2 statusLine",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["statusLine", "json-schema", "stdin"]
+    },
+    {
+      "id": "R1.C35",
+      "claim": "disableBypassPermissionsMode: 'disable' blokuje bypass mode i flage --dangerously-skip-permissions i dziala z dowolnego scope (nie wymaga managed).",
+      "citation": "**`permissions.disableBypassPermissionsMode`** (string `\"disable\"`) - blokuje bypass mode i flage `--dangerously-skip-permissions`. Zwykle w managed. Dziala z dowolnego scope.",
+      "source_location": "section: 3.2 Permission settings",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["security", "bypass", "any-scope"]
+    },
+    {
+      "id": "R1.C36",
+      "claim": "ANTHROPIC_SMALL_FAST_MODEL jest deprecated - explicite oznaczony [DEPRECATED] w env-vars.md.",
+      "citation": "**`ANTHROPIC_SMALL_FAST_MODEL`** env var - marked `[DEPRECATED]` w env-vars.md.",
+      "source_location": "section: 7 Deprecated",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["deprecated", "env-vars", "models"]
+    },
+    {
+      "id": "R1.C37",
+      "claim": "cleanupPeriodDays z default 30 kontroluje usuwanie session files starszych niz X dni i orphaned subagent worktrees cleanup; wartosc 0 wywoluje validation error.",
+      "citation": "**`cleanupPeriodDays`** (integer, default `30`, min `1`) - session files starsze niz to usuwane przy startcie. Kontroluje tez orphaned subagent worktrees cleanup. Wartosc `0` wywoluje validation error.",
+      "source_location": "section: 3.1 Core / runtime",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["cleanup", "validation", "sessions"]
+    }
+  ],
+  "gaps_flagged": [
+    "maxOutputTokens top-level field: brief prompt wymienia, ale brak w tabeli settings#available-settings - aktualnie tylko env var CLAUDE_CODE_MAX_OUTPUT_TOKENS; wymaga weryfikacji przez R2 (CHANGELOG/release notes).",
+    "theme i autoUpdate: prompt oryginalny je wymienia, ale aktualne docs maja tylko autoUpdatesChannel; theme prawdopodobnie zyje w ~/.claude.json global config, brak bezposredniej potwierdzenia.",
+    "preferredNotifChannel: wymieniony w prompt, brak w aktualnej tabeli settings; channelsEnabled to inny koncept - prawdopodobnie usuniete.",
+    "WebFetch(domain:*.example.com) wildcard: docs pokazuja tylko literal domain:example.com, brak potwierdzenia wildcard support w domain specifier.",
+    ".claude/settings.local.json automatic gitignore: docs mowia 'Claude Code will configure git to ignore', ale niejasne czy to .gitignore, git update-index --assume-unchanged czy .git/info/exclude.",
+    "modelOverrides vs ANTHROPIC_MODEL precedence: brak opisu czy env override wygrywa nad model setting, czy odwrotnie.",
+    "feedbackSurveyRate vs CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: oba istnieja, relacja nie jest explicite opisana.",
+    "apiKeyHelper scope: docs mowia 'applies to terminal CLI sessions only' ale niejasne ktore desktopy (Desktop app + Web?).",
+    "persistSession SDK option vs --no-session-persistence flag vs CLAUDE_CODE_SKIP_PROMPT_HISTORY: trzy mechanizmy robiace podobna rzecz, ordering nieopisany.",
+    "Windows HKCU vs HKLM: docs mowia HKCU to lowest policy priority, ale niejasne czy HKCU potrafi override HKCU-level project settings.",
+    "Array merging dla permissions.ask: docs opisuja merge dla allow/deny, ale nie explicite dla ask - zakladana symmetry."
+  ],
+  "conflicts_flagged": [
+    "Legacy permission rule prefix //path dla sandbox nadal dziala wg docs, ale preferred jest ./path - potencjalny konflikt z R2/R4 ktore moga cytowac starsze wersje z //path jako primary.",
+    "Hooks guide wymienia wiecej event types (InstructionsLoaded, PostToolUseFailure, StopFailure, TaskCreated/Completed, ConfigChange, TeammateIdle, WorktreeCreate/Remove) niz starszy oryginalny prompt - potencjalny konflikt wersji/dat z raportami opartymi na starszych docs.",
+    "Classic `bypassPermissions` mode w nowych docs pomija prompty dla writes do .claude/commands, .claude/agents, .claude/skills - potencjalny konflikt z blog-ami ktore ostrzegaja przed samoprzepisywaniem agentow w bypass mode.",
+    "autoMode allow/soft_deny REPLACE semantics (nie merge) - moze kolidowac z CRITIC jesli inny raport opisuje to jako merge."
+  ]
+}

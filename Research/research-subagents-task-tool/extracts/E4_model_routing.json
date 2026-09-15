@@ -1,0 +1,149 @@
+{
+  "extract_id": "E4",
+  "source_report": "research/R4_model_routing.md",
+  "role": "res_extractor",
+  "topic": "Model routing across agents, pricing, advisor strategy",
+  "extract_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R4.C1",
+      "claim": "April 2026 Anthropic pricing: Opus 4.7 $5/$25 per M input/output tokens; Sonnet 4.6 $3/$15; Haiku 4.5 $1/$5.",
+      "source": "Anthropic pricing page",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R4.C2",
+      "claim": "Opus costs 5x Sonnet input and 5x Haiku input; 1.67x Sonnet output and 5x Haiku output. This asymmetry matters: output-heavy tasks suffer most from Opus-by-default.",
+      "source": "Anthropic pricing arithmetic",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R4.C3",
+      "claim": "GitHub Issue #27665 documents 93.8% of community-reported real Claude Code usage runs on Opus - indicates severe over-use of Opus for Haiku/Sonnet-appropriate tasks.",
+      "source": "GitHub #27665",
+      "confidence": "high",
+      "category": "usage"
+    },
+    {
+      "id": "R4.C4",
+      "claim": "opusplan flag is currently broken/deprecated - the advertised 'Opus for plan, Sonnet for execution' pattern no longer works reliably as of April 2026.",
+      "source": "GitHub issues + community",
+      "confidence": "high",
+      "category": "bug"
+    },
+    {
+      "id": "R4.C5",
+      "claim": "--model opus sticks across the session: setting it once keeps Opus for everything including trivial Bash/Grep until explicitly reset.",
+      "source": "Community reports",
+      "confidence": "high",
+      "category": "gotcha"
+    },
+    {
+      "id": "R4.C6",
+      "claim": "Advisor strategy (explicit model per subagent, never inherit): Haiku for search/grep/extract/summarize; Sonnet for code edits; Opus for planning, synthesis, and conflict resolution.",
+      "source": "Community consensus + Anthropic multi-agent research system",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R4.C7",
+      "claim": "Maciej's Deep Research v2 preset (internal case study) uses: Orchestrator Opus, Researchers Sonnet, Extractors Haiku, Critic+Syntetyk Opus; proven to cut Opus spend by ~60% vs all-Opus baseline.",
+      "source": "Internal memory feedback_deep_research_v2_model_routing.md",
+      "confidence": "high",
+      "category": "case-study"
+    },
+    {
+      "id": "R4.C8",
+      "claim": "Haiku 4.5 performance on extraction/summarization/grep-style tasks matches Sonnet 4.6 in benchmarks; model-quality is not the constraint for these tasks.",
+      "source": "Anthropic model cards + community",
+      "confidence": "medium",
+      "category": "quality"
+    },
+    {
+      "id": "R4.C9",
+      "claim": "model frontmatter field in subagent definitions accepts specific IDs; setting this explicitly is the most reliable way to route work off Opus.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R4.C10",
+      "claim": "Inherit is the default when model is omitted; this is the primary mechanism by which Opus-by-default leaks to subagents.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "default-behavior"
+    },
+    {
+      "id": "R4.C11",
+      "claim": "Built-in Explore subagent uses Haiku; Plan uses inherit; this is why Explore is explicitly recommended for search/enumeration while Plan inherits for reasoning.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R4.C12",
+      "claim": "Prompt caching (90% discount on cached read) is effective for subagents if the system prompt + CLAUDE.md are identical across calls; cache hits can offset 5-10k tokens of entry tax.",
+      "source": "Anthropic prompt caching docs",
+      "confidence": "high",
+      "category": "cost-optimization"
+    },
+    {
+      "id": "R4.C13",
+      "claim": "Multi-agent systems consume ~15x more tokens than chat; justified only when outcome value is at least that much greater.",
+      "source": "Anthropic engineering blog multi-agent research system",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R4.C14",
+      "claim": "Flags --premium / --budget / --ultra-budget in Deep Research v2 map to model tier overrides: premium = all-Opus, budget = Sonnet-heavy, ultra-budget = Haiku-heavy with Sonnet only for Critic.",
+      "source": "Internal memory",
+      "confidence": "high",
+      "category": "case-study"
+    },
+    {
+      "id": "R4.C15",
+      "claim": "Weekly rate limits on Max plan: ~10 hours of heavy Opus use hits weekly quota; explicit Haiku routing for extractors extends useful session time 3-5x.",
+      "source": "Community reports + Anthropic costs docs",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R4.C16",
+      "claim": "For dev teams sharing a workspace, a CLAUDE.md directive 'default to Sonnet for implementation, Opus only for architecture' shifts routing without code changes.",
+      "source": "Community best-practice",
+      "confidence": "medium",
+      "category": "best-practice"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT-E4-01",
+      "description": "Anthropic docs and SDK examples default model: inherit, but community consensus says this is a footgun. Docs-vs-practice mismatch.",
+      "resolution_hint": "Synthesis should call out: docs' default inheritance is the leading cause of Opus over-use; practitioners should override."
+    },
+    {
+      "id": "CONFLICT-E4-02",
+      "description": "opusplan was once the recommended approach; now deprecated/broken. Older tutorials still cite it.",
+      "resolution_hint": "Mark opusplan as stale; direct readers to explicit per-subagent model."
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "GAP-E4-01",
+      "description": "No official benchmark comparing Haiku 4.5 vs Sonnet 4.6 on agentic tool-use workloads; community evidence only."
+    },
+    {
+      "id": "GAP-E4-02",
+      "description": "No token-cost calculator published for multi-agent workflows; each team has to measure independently."
+    },
+    {
+      "id": "GAP-E4-03",
+      "description": "Interaction between prompt caching and dynamic CLAUDE.md updates unclear - cache invalidation rules not documented."
+    }
+  ],
+  "claim_count": 16,
+  "status": "EXTRACT COMPLETE"
+}

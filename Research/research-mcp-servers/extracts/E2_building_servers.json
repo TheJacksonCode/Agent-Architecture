@@ -1,0 +1,37 @@
+{
+  "source": "R2_building_servers.md",
+  "topic": "Building MCP Servers (Python SDK, TypeScript SDK, stdio/HTTP, production)",
+  "date_accessed": "2026-04-17",
+  "claims": [
+    {"id": "R2.C1", "claim": "Anthropic utrzymuje dwa oficjalne SDK: Python (`mcp` package + FastMCP wrapper) i TypeScript (`@modelcontextprotocol/sdk`).", "url": "https://github.com/modelcontextprotocol/python-sdk", "trust": 1},
+    {"id": "R2.C2", "claim": "FastMCP to recommended high-level API dla Python - decorator-based: @mcp.tool(), @mcp.resource(), @mcp.prompt().", "url": "https://gofastmcp.com/tutorials/create-mcp-server", "trust": 1},
+    {"id": "R2.C3", "claim": "FastMCP 3.0 released 2026-01-19 - dodal component versioning, granular authz, OpenTelemetry, multiple provider types.", "url": "https://pypi.org/project/fastmcp/", "trust": 2},
+    {"id": "R2.C4", "claim": "TypeScript SDK three-step pattern: (1) create McpServer + register tools, (2) create transport, (3) server.connect(transport).", "url": "https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/server.md", "trust": 1},
+    {"id": "R2.C5", "claim": "Decision stdio vs HTTP: stdio dla local dev/personal/zero-config; HTTP dla shared infra/production/SaaS/OAuth.", "url": "https://apigene.ai/blog/mcp-sse-vs-stdio", "trust": 2},
+    {"id": "R2.C6", "claim": "Claude Code konfiguruje MCP: `claude mcp add [--transport stdio|http|sse] <name> <command/url>`.", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R2.C7", "claim": "Trzy poziomy settings: user (~/.claude/settings.json), project (.claude/settings.json + .mcp.json), managed (enterprise IT deploy).", "url": "https://code.claude.com/docs/en/permissions", "trust": 1},
+    {"id": "R2.C8", "claim": "Settings precedence: managed > project > user. Managed wymusza org-wide policies.", "url": "https://code.claude.com/docs/en/permissions", "trust": 1},
+    {"id": "R2.C9", "claim": "`.mcp.json` format w repo ma `mcpServers.<name>.{command, args, env}` z env substitution (${VAR}).", "url": "https://www.builder.io/blog/claude-code-mcp-servers", "trust": 2},
+    {"id": "R2.C10", "claim": "OAuth 2.1 + PKCE wymagany dla HTTP transport per spec.", "url": "https://maurocanuto.medium.com/building-mcp-servers-the-right-way-a-production-ready-guide-in-typescript-8ceb9eae9c7f", "trust": 2},
+    {"id": "R2.C11", "claim": "MCP Inspector (oficjalny debug tool): `npx @modelcontextprotocol/inspector <command>`. GUI na http://localhost:5173.", "url": "https://modelcontextprotocol.io/docs/tools/debugging", "trust": 1},
+    {"id": "R2.C12", "claim": "FastMCP ma dev mode: `fastmcp dev server.py` uruchamia server + Inspector jednoczesnie.", "url": "https://gofastmcp.com", "trust": 2},
+    {"id": "R2.C13", "claim": "Docker MCP Gateway (github.com/docker/mcp-gateway) agreguje wiele MCP servers za jednym HTTP endpointem z auth + rate limiting.", "url": "https://github.com/docker/mcp-gateway", "trust": 2},
+    {"id": "R2.C14", "claim": "Remote hosting options: Cloudflare Workers (zero cold start, OAuth template), Vercel (TS/Edge), AWS Lambda, Azure Container Apps, Render, Fly.io.", "url": "https://www.stainless.com/mcp/mcp-typescript-sdk-for-building-clients-and-servers", "trust": 2},
+    {"id": "R2.C15", "claim": "MCP Registry Anthropic: https://api.anthropic.com/mcp-registry/v0/servers - oficjalny z commercial visibility.", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R2.C16", "claim": "Dystrybucja: PyPI (pip install) dla Python, npm (npx -y) dla TS jako zero-install pattern.", "url": "https://github.com/modelcontextprotocol/servers", "trust": 1},
+    {"id": "R2.C17", "claim": "Best practice: nie commituj credentials do `.mcp.json`, uzyj env vars z ${VAR} substitution.", "url": "https://www.backslash.security/blog/claude-code-security-best-practices", "trust": 2},
+    {"id": "R2.C18", "claim": "Production readiness checklist: OpenTelemetry, rate limiting, input validation (Zod/Pydantic), timeouts, error readable dla LLM, OAuth HTTP, health endpoint, tests.", "url": "https://circleci.com/blog/building-and-deploying-a-python-mcp-server-with-fastmcp/", "trust": 2},
+    {"id": "R2.C19", "claim": "Brak oficjalnego SDK dla Go/Rust/Java - community implementations istnieja.", "url": "https://github.com/modelcontextprotocol/python-sdk", "trust": 1},
+    {"id": "R2.C20", "claim": "Resource templates: URI z parametrami (user://{user_id}/profile) route do handler w FastMCP.", "url": "https://gofastmcp.com", "trust": 2},
+    {"id": "R2.C21", "claim": "Error handling: exceptions -> JSON-RPC error code -32603; TypeScript moze zwrocic content z isError:true.", "url": "https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/server.md", "trust": 1},
+    {"id": "R2.C22", "claim": "Claude Code obsluguje OAuth flow przez browser (otwarcie okna) albo device flow (CLI).", "url": "https://www.truefoundry.com/blog/mcp-authentication-in-claude-code", "trust": 2}
+  ],
+  "conflicts_flagged": [
+    "R2.C10 (OAuth mandate spec) vs community - niektore serwery HTTP nadal dzialaja bez OAuth (np. lokalne). Mandate jest w spec, ale enforce zalezny od klient. CRITIC weryfikacja empirical."
+  ],
+  "gaps_flagged": [
+    "Brak 'Managed MCP' as standalone concept w Claude Code docs 2026 - wszystko przez managed settings file, ale brak formalnego 'Managed MCP' field. Wymaga delta-research oficjalnej dokumentacji enterprise.",
+    "MCP Registry Anthropic jest commercial-visibility only - brak jasnego procesu self-publish dla OSS. Status moze sie zmieniac.",
+    "Brak oficjalnych SDK dla Go/Rust/Java to gap dla enterprise adoption (wielu backend teams nie uzywa TS/Python)."
+  ]
+}

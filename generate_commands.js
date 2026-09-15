@@ -19,8 +19,23 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const HTML_PATH = path.join(__dirname, 'v32.16', 'AGENT_TEAMS_CONFIGURATOR_v32_16.html');
+// v38: sciezka wskazywala na folder v32.16, ktorego juz nie ma. Zrodlem jest najnowsza wersja.
+// v40 (2026-09-13): v38 zszedl z roli zapasu. Zaczepy ('const AD=[', 'AD.push(', 'const PR=')
+// sa w v40 identyczne jak w v38 - sprawdzone przed zmiana.
+const HTML_PATH = path.join(__dirname, 'v41', 'AGENT_TEAMS_CONFIGURATOR_v41.html');
 const COMMANDS_DIR = path.join(os.homedir(), '.claude', 'commands');
+
+// v38: domyslnie tylko TWORZYMY brakujace komendy. --all dodatkowo przepisuje istniejace
+// (podmienia im tabele agentow i modeli wedlug danych z HTML) - to swiadoma decyzja,
+// bo potrafi zmienic model przypisany agentowi w dzialajacym juz presecie.
+const ONLY_MISSING = !process.argv.includes('--all');
+
+// Nazwy faz po polsku. Kolejnosc faz w pliku komendy bierze sie z kolejnosci wezlow w PR.
+const PHASE_LABELS = {
+  strategy: 'STRATEGIA', research: 'RESEARCH', build: 'BUILD', qa: 'QA',
+  debate1: 'FIVE MINDS #1', debate2: 'FIVE MINDS #2', debate: 'FIVE MINDS',
+  hitl: 'HITL', data: 'DANE', product: 'PRODUKT', ops: 'OPS', compliance: 'ZGODNOSC',
+};
 
 // Agent display names (Polish)
 const AGENT_NAMES = {
@@ -179,6 +194,200 @@ function extractJSObject(html, varName) {
   throw new Error(`Could not find matching brace for ${varName}`);
 }
 
+// --- Extract a top-level JS array (AD) from HTML ---
+// Mapy AGENT_NAMES i DEFAULT_MODELS ponizej sa recznie utrzymywane i wlasnie dlatego
+// rozjechaly sie z aplikacja o 13 agentow. AD w HTML ma komplet: nazwe, model, faze i opis,
+// wiec od v38 to ONO jest zrodlem, a mapy sluza juz tylko jako awaryjny zapas.
+// UWAGA: AD nie jest jednym literalem. Deklaracja `const AD=[...]` ma 53 agentow,
+// a pozostali dochodza pozniej przez `AD.push({...},{...})` (v32.6 dorzucil 7 agentow).
+// Czytanie samego literalu daje 53 z 60 i po cichu gubi opisy - tak wlasnie powstaly
+// pierwsze wersje komend z pustym opisem przy EDA Analyst i Observability Engineer.
+function skanujDoZamkniecia(html, from, otwiera, zamyka) {
+  let depth = 0, inString = false, stringChar = '';
+  for (let i = from; i < html.length; i++) {
+    const ch = html[i];
+    if (inString) {
+      if (ch === '\\') { i++; continue; }
+      if (ch === stringChar) inString = false;
+      continue;
+    }
+    if (ch === "'" || ch === '"' || ch === '`') { inString = true; stringChar = ch; continue; }
+    if (ch === otwiera) depth++;
+    if (ch === zamyka) { depth--; if (depth === 0) return i; }
+  }
+  return -1;
+}
+
+function extractAD(html) {
+  const startIdx = html.indexOf('const AD=[');
+  if (startIdx === -1) throw new Error('Could not find AD in HTML');
+
+  const arrStart = html.indexOf('[', startIdx);
+  const arrEnd = skanujDoZamkniecia(html, arrStart, '[', ']');
+  if (arrEnd === -1) throw new Error('Could not find end of AD array');
+
+  let agents = new Function('return ' + html.substring(arrStart, arrEnd + 1))();
+
+  // Doklejamy kazdy blok AD.push(...) z literalami obiektow (pomijamy wywolania
+  // runtime w rodzaju AD.push(agent), gdzie argumentem jest zmienna).
+  let szukaj = html.indexOf('AD.push(', arrEnd);
+  while (szukaj !== -1) {
+    const nawias = szukaj + 'AD.push('.length - 1;
+    const koniec = skanujDoZamkniecia(html, nawias, '(', ')');
+    if (koniec !== -1) {
+      const wnetrze = html.substring(nawias + 1, koniec).trim();
+      if (wnetrze.startsWith('{')) {
+        try {
+          agents = agents.concat(new Function('return [' + wnetrze + ']')());
+        } catch (e) {
+          console.log(`  UWAGA: nie udalo sie odczytac bloku AD.push: ${e.message}`);
+        }
+      }
+    }
+    szukaj = html.indexOf('AD.push(', szukaj + 1);
+  }
+
+  return agents;
+}
+
+// Effort z frontmattera pliku skilla (czytane raz na agenta).
+const _effortCache = {};
+function effortZeSkilla(id) {
+  if (_effortCache[id] !== undefined) return _effortCache[id];
+  const p = path.join(os.homedir(), '.claude', 'skills', `${id}.md`);
+  let v = null;
+  if (fs.existsSync(p)) {
+    const m = fs.readFileSync(p, 'utf-8').match(/^effort:\s*(\S+)\s*$/m);
+    if (m) v = m[1];
+  }
+  _effortCache[id] = v;
+  return v;
+}
+
+// --- Build a brand new command file from HTML data ---
+function buildNewCommand(presetKey, preset, nodes, agentInfo) {
+  // Deduplicate agents, keep first occurrence and original order
+  const seen = new Set();
+  const agents = [];
+  for (const n of nodes) {
+    if (!seen.has(n.d)) { seen.add(n.d); agents.push(n); }
+  }
+
+  const info = id => agentInfo[id] || {};
+  const nameOf = id => info(id).name || AGENT_NAMES[id] || id;
+  const modelOf = n => n.m || info(n.d).model || DEFAULT_MODELS[n.d] || 'sonnet';
+  // Effort deklaruje w danych aplikacji tylko czesc agentow (nowsze roczniki). Dla reszty
+  // zrodlem jest frontmatter pliku skilla - inaczej cala kolumna pokazywalaby "high",
+  // a orkiestrator i eksperci debaty chodza na "xhigh".
+  const effortOf = id => info(id).effort || effortZeSkilla(id) || 'high';
+
+  // Kroki = CIAGLE odcinki tej samej fazy w kolejnosci z PR. Grupowanie "wszyscy agenci
+  // danej fazy razem" psulo narracje: w Five Minds syntetyk ma faze strategy, tak jak
+  // orkiestrator, wiec ladowal na poczatku - a on wydaje werdykt PO debacie.
+  const kroki = [];
+  agents.forEach(n => {
+    const ph = info(n.d).phase || 'build';
+    const ost = kroki[kroki.length - 1];
+    if (ost && ost.phase === ph) ost.agenci.push(n);
+    else kroki.push({ phase: ph, agenci: [n] });
+  });
+
+  // Etykieta kroku: nazwa fazy, a przy jej powrocie dopisek, zeby bylo widac, ze to ta sama faza.
+  const uzyte = new Set();
+  kroki.forEach(k => {
+    const baza = PHASE_LABELS[k.phase] || k.phase.toUpperCase();
+    k.label = uzyte.has(baza) ? baza + ' (ciag dalszy)' : baza;
+    uzyte.add(baza);
+  });
+
+  const L = [];
+  const name = preset.n || presetKey;
+  // W linii Workflow kazda faza pada raz, w kolejnosci pierwszego wystapienia.
+  const workflow = [...new Set(kroki.map(k => PHASE_LABELS[k.phase] || k.phase.toUpperCase()))].join(' -> ');
+
+  L.push('---');
+  L.push(`description: "${name} - ${(preset.use || preset.dsc || '').replace(/"/g, '\\"')}"`);
+  L.push('---');
+  L.push('');
+  L.push(`# ${name}`);
+  L.push('');
+  L.push(`Jestes orkiestratorem presetu **${name}** (${agents.length} agentow, wzorzec: ${preset.pt || 'Orchestrator-Worker'}).`);
+  L.push('');
+  L.push('## ZADANIE');
+  L.push('');
+  L.push('$ARGUMENTS');
+  L.push('');
+  L.push('Jesli $ARGUMENTS jest pusty, zapytaj uzytkownika o zadanie i NIE kontynuuj bez odpowiedzi.');
+  L.push('');
+  L.push('## OPIS PRESETU');
+  L.push('');
+  L.push(`- **Zastosowanie:** ${preset.use || preset.dsc || ''}`);
+  L.push(`- **Wzorzec:** ${preset.pt || 'Orchestrator-Worker'}`);
+  L.push(`- **Workflow:** ${workflow}`);
+  if (preset.t) L.push(`- **Szacowane zuzycie:** ${preset.t} tokenow${preset.$ ? ' (' + preset.$ + ')' : ''}`);
+  L.push('');
+  L.push('## MANIFEST.md');
+  L.push('');
+  L.push('Przed rozpoczeciem pracy stworz plik MANIFEST.md z sekcjami:');
+  L.push('- ## Zadanie (opis od uzytkownika)');
+  L.push('- ## Decyzje Architektoniczne');
+  L.push('- ## Stack Technologiczny');
+  L.push('- ## Known Risks');
+  L.push('- ## Open Questions');
+  L.push('');
+  L.push('MANIFEST.md sluzy jako shared scratchpad miedzy agentami.');
+  L.push('');
+  L.push('## INSTRUKCJE WYKONANIA');
+  L.push('');
+  L.push('Wykonuj fazy sekwencyjnie. W ramach fazy uruchamiaj agentow ROWNOLEGLE (wiele wywolan Agent tool w jednej wiadomosci).');
+  L.push('');
+
+  kroki.forEach((k, idx) => {
+    L.push(`### Faza: ${k.label}`);
+    L.push('');
+    if (k.agenci.length > 1) {
+      L.push(`Uruchom rownolegle (${k.agenci.length} agentow):`);
+      L.push('');
+    }
+    k.agenci.forEach(n => {
+      const rola = (info(n.d).role || '').trim();
+      L.push(`**${nameOf(n.d)}** [${modelOf(n).toUpperCase()}] - ${rola}`);
+      L.push('');
+    });
+    if (idx < kroki.length - 1) {
+      L.push('> **BRAMA:** Przed przejsciem do nastepnej fazy sprawdz, czy wyniki sa kompletne. Jesli nie - powtorz faze.');
+      L.push('');
+    }
+  });
+
+  L.push('---');
+  L.push('');
+  L.push('## REFERENCJE DO SKILLS');
+  L.push('');
+  L.push('Przed uruchomieniem kazdego agenta:');
+  L.push('1. Przeczytaj jego plik skill uzywajac Read tool');
+  L.push('2. Przekaz PELNY prompt (od ROLE do REPORT FORMAT) jako instrukcje do Agent tool');
+  L.push('3. Uzyj parametrow model ORAZ effort zgodnie z kolumnami ponizej');
+  L.push('');
+  L.push('| # | Agent | Model | Effort | Skill File |');
+  L.push('|---|-------|-------|--------|------------|');
+  agents.forEach((n, i) => {
+    L.push(`| ${i + 1} | ${nameOf(n.d)} | ${modelOf(n)} | ${effortOf(n.d)} | ~/.claude/skills/${n.d}.md |`);
+  });
+  L.push('');
+  L.push('## ZASADY OGOLNE');
+  L.push('');
+  L.push('- Kazdy agent pracuje W IZOLACJI - przekazuj mu TYLKO potrzebny kontekst');
+  L.push('- MANIFEST.md jest jedynym shared scratchpad');
+  L.push('- Maksymalizuj rownoleglosc - uruchamiaj niezaleznych agentow jednoczesnie');
+  L.push('- Po kazdej fazie zaktualizuj MANIFEST.md');
+  L.push('- Eskaluj do uzytkownika gdy: brak jednoznacznej odpowiedzi, ryzyko > srednie, decyzja architektoniczna nieodwracalna');
+  L.push('- Model i effort przekazuj jako parametry wywolania Agent tool (model: "opus"/"sonnet"/"haiku", effort: "low"/"medium"/"high"/"xhigh")');
+  L.push('');
+
+  return L.join('\n');
+}
+
 // --- Transform a command file ---
 function transformFile(content, presetKey, prData) {
   // Normalize line endings
@@ -280,21 +489,78 @@ function transformFile(content, presetKey, prData) {
   return [...before, ...refLines, ...after].join('\n');
 }
 
+// --- Kontrola pokrycia ---
+// Komenda jest warta tyle, ile pliki skilli, ktore wywoluje. Jesli preset odwoluje sie
+// do agenta bez skilla, komenda uruchomi sie i wywroci w polowie - lepiej wiedziec od razu.
+function sprawdzPokrycie(pm, pr, agentInfo) {
+  const SKILLS_DIR = path.join(os.homedir(), '.claude', 'skills');
+  const komendy = new Set(fs.readdirSync(COMMANDS_DIR).filter(f => f.endsWith('.md')).map(f => f.slice(0, -3)));
+  const skille = new Set(fs.readdirSync(SKILLS_DIR).filter(f => f.endsWith('.md')).map(f => f.slice(0, -3)));
+
+  const bezKomendy = Object.keys(pm).filter(pid => !komendy.has(pid.replace(/_/g, '-')));
+  const uzywani = new Set();
+  Object.keys(pm).forEach(pid => (pr[pid] || []).forEach(n => uzywani.add(n.d)));
+  const bezSkilla = [...uzywani].filter(id => !skille.has(id));
+  const osierocone = [...komendy].filter(f => !Object.keys(pm).some(pid => pid.replace(/_/g, '-') === f));
+
+  console.log('\n=== POKRYCIE ===');
+  console.log(`Presety: ${Object.keys(pm).length} | komendy: ${komendy.size} | bez komendy: ${bezKomendy.length}`);
+  bezKomendy.forEach(p => console.log(`  BRAK KOMENDY: /${p.replace(/_/g, '-')}`));
+  console.log(`Agenci uzywani przez presety: ${uzywani.size} | skille: ${skille.size} | bez skilla: ${bezSkilla.length}`);
+  bezSkilla.forEach(a => console.log(`  BRAK SKILLA: ${a}`));
+  if (osierocone.length) {
+    console.log(`Komendy bez presetu w HTML: ${osierocone.length}`);
+    osierocone.forEach(f => console.log(`  OSIEROCONA: /${f}`));
+  }
+  if (!bezKomendy.length && !bezSkilla.length) {
+    console.log('Komplet: kazdy preset ma komende, kazdy uzywany agent ma skill.');
+  }
+}
+
 // --- Main ---
 function main() {
   console.log('=== generate_commands.js ===');
   console.log(`HTML: ${HTML_PATH}`);
   console.log(`Target: ${COMMANDS_DIR}\n`);
 
-  console.log('Reading v32.16 HTML...');
+  console.log('Reading ' + path.basename(HTML_PATH) + '...');
   const html = fs.readFileSync(HTML_PATH, 'utf-8');
 
   console.log('Extracting PR (preset agent compositions)...');
   const pr = extractJSObject(html, 'PR');
-  const presetCount = Object.keys(pr).length;
-  console.log(`Found ${presetCount} presets in PR\n`);
+  const pm = extractJSObject(html, 'PM');
+  const ad = extractAD(html);
+  const agentInfo = {};
+  ad.forEach(a => { agentInfo[a.id] = a; });
+  console.log(`Found ${Object.keys(pr).length} presets in PR, ${Object.keys(pm).length} in PM, ${ad.length} agents in AD\n`);
 
-  // Process command files
+  // --- Krok 1: brakujace komendy (presety, ktore w ogole nie maja pliku) ---
+  const istniejace = new Set(fs.readdirSync(COMMANDS_DIR).filter(f => f.endsWith('.md')).map(f => f.slice(0, -3)));
+  const brakujace = Object.keys(pm).filter(pid => !istniejace.has(pid.replace(/_/g, '-')));
+
+  console.log(`Brakujace komendy: ${brakujace.length}`);
+  let utworzone = 0;
+  for (const pid of brakujace) {
+    const nodes = pr[pid];
+    if (!nodes) { console.log(`  [POMINIETE] ${pid} (brak skladu w PR)`); continue; }
+    const md = buildNewCommand(pid, pm[pid], nodes, agentInfo);
+    const plik = pid.replace(/_/g, '-') + '.md';
+    fs.writeFileSync(path.join(COMMANDS_DIR, plik), md, 'utf-8');
+    const ilu = new Set(nodes.map(n => n.d)).size;
+    console.log(`  [NOWA] ${plik} (${ilu} agentow, ${md.length} bajtow)`);
+    utworzone++;
+  }
+  console.log(`Utworzone: ${utworzone}\n`);
+
+  if (ONLY_MISSING) {
+    console.log('Tryb: tylko BRAKUJACE. Istniejace pliki komend nietkniete.');
+    console.log('Pelne przepisanie istniejacych: --all (UWAGA: podmienia modele agentow');
+    console.log('na te z HTML, wiec moze zmienic zachowanie dzialajacych juz presetow).');
+    sprawdzPokrycie(pm, pr, agentInfo);
+    return;
+  }
+
+  // --- Krok 2 (--all): przepisanie istniejacych plikow ---
   const files = fs.readdirSync(COMMANDS_DIR).filter(f => f.endsWith('.md')).sort();
   console.log(`Processing ${files.length} command files...\n`);
 

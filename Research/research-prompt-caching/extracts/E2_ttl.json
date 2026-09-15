@@ -1,0 +1,197 @@
+{
+  "source_report": "R2_ttl_invalidation.md",
+  "report_words": 1753,
+  "extract_words": 680,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R2.C1",
+      "claim": "Anthropic oferuje 5m (default) i 1h (extended) TTL dla prompt caching",
+      "citation": "Prompt caching w Claude API oferuje dwie wartosci TTL: 5 minut (default) i 1 godzina (extended), wybierane przez pole ttl w parametrze cache_control ('5m' lub '1h').",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl", "duration", "options"]
+    },
+    {
+      "id": "R2.C2",
+      "claim": "5m write cost: 1.25x base input. 1h write cost: 2x base input. Break-even odpowiednio po 1 i 2 odczytach.",
+      "citation": "5-minute TTL (default): Koszt write: 1.25x base input price. Break-even po 1 odczycie. 1-hour TTL (extended): Koszt write: 2x base input price. Break-even po 2 odczytach.",
+      "source_location": "section: Details, 1. Dwie wartosci TTL",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing", "break-even", "ttl"]
+    },
+    {
+      "id": "R2.C3",
+      "claim": "TTL resetuje sie przy kazdym cache hit ('TTL resets on each use')",
+      "citation": "'TTL resets on each use' - kazdy cache hit odswieza licznik. Oznacza to, ze aktywna sesja multi-turn z requestami co 2-3 minuty moze utrzymac 5m cache przez godziny bez platnosci za 1h cache.",
+      "source_location": "section: Details, 2. TTL refresh on use",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-refresh", "keep-alive", "multi-turn"]
+    },
+    {
+      "id": "R2.C4",
+      "claim": "6 marca 2026 Anthropic cicho zmienil default TTL z 1h na 5m, wywolujac krytyke klientow Max Plan",
+      "citation": "Mar 6, 2026: Anthropic cicho zmienia default cache TTL z 1h na 5m. Zmiana nie jest ogloszona w changelogu, nie pojawia sie w docs przez ~tydzien.",
+      "source_location": "section: Details, 3. March 6, 2026",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["march-2026", "regression", "silent-change", "controversy"]
+    },
+    {
+      "id": "R2.C5",
+      "claim": "Max Plan uzytkownicy doznali 100% wyczerpania quoty w 70 minut zamiast normalnych 8 godzin",
+      "citation": "Wielu uzytkownikow API (gl. Claude Code Max Plan) zauwaza drastyczne zwiekszenie tokenow uzywanych przez sesje. Niektorzy ludzie raportuja 100% wyczerpanie limitu w 70 minut vs poprzednio dzialajace 8 godzin.",
+      "source_location": "section: Details, 3. March 6 chronologia",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["max-plan", "quota-drain", "impact"]
+    },
+    {
+      "id": "R2.C6",
+      "claim": "Anthropic oficjalnie (The Register 13 kwietnia 2026) zaprzeczyl ze TTL zmiana spowodowala quota drain",
+      "citation": "Apr 13, 2026: The Register publikuje 'Anthropic: Claude quota drain not caused by cache tweaks' - oficjalne stanowisko ze quota drain mialo inne przyczyny.",
+      "source_location": "section: Details, 3. March 6 chronologia",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["anthropic-denial", "controversy", "the-register"]
+    },
+    {
+      "id": "R2.C7",
+      "claim": "Tools array change (dodanie/usuniecie tool, zmiana description, name, input_schema) kasuje CALY cache",
+      "citation": "Absolute invalidators (kasuja WSZYSTKO): Zmiana definicji tools (dodanie / usuniecie narzedzia, zmiana name/description/input_schema)",
+      "source_location": "section: Details, 4. Triggery inwalidacji",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tools-invalidation", "cascade", "trigger"]
+    },
+    {
+      "id": "R2.C8",
+      "claim": "tool_choice change invaliduje tools + system (messages zostaja). Images added/removed tez.",
+      "citation": "Layer invalidators: Zmiana tool_choice -> tools + system invalidated (messages nie). Obecnosc images added/removed -> tools + system invalidated.",
+      "source_location": "section: Details, 4. Triggery",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["layer-invalidation", "tool-choice", "images"]
+    },
+    {
+      "id": "R2.C9",
+      "claim": "Timestamp w system prompt to automatyczny invalidator - kazdy request ma rozny timestamp",
+      "citation": "Timestamp w system prompt (KAZDY timestamp to auto-invalidator bo rozni sie request-to-request)",
+      "source_location": "section: Details, 4. Subtle invalidators",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["timestamp", "anti-pattern", "invalidation"]
+    },
+    {
+      "id": "R2.C10",
+      "claim": "Dodanie jednej message do konwersacji NIE inwaliduje poprzedniego prefiksu - nowa message jest po breakpoincie i platna regular rate",
+      "citation": "Dodanie nowej wiadomosci na koncu messages array NIE inwaliduje poprzedniego prefiksu - nowa wiadomosc jest po prostu za breakpointem i platna jako regular input.",
+      "source_location": "section: Details, 5. Edge case adding 1 message",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["edge-case", "message-add", "breakpoint-behavior"]
+    },
+    {
+      "id": "R2.C11",
+      "claim": "Dodanie jednego tool mid-session kasuje CALY cache (tools + system + messages)",
+      "citation": "Kazda zmiana tools array (dodanie jednego tool, zmiana description istniejacego) kasuje caly cache - tools, system i messages.",
+      "source_location": "section: Details, 6. Edge case adding 1 tool",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tool-add", "full-invalidation", "mcp"]
+    },
+    {
+      "id": "R2.C12",
+      "claim": "Claude Code --continue lub /resume invaliduje caly cache nawet przy powrocie w sekundy - bug v2.1.89+",
+      "citation": "Session resume (--continue or /resume): Cala cache prefix invalidated, nawet jezeli wracasz 10 sekund po zakonczeniu. Issue #42338: forces a full cache_creation of 400-500k tokens each time.",
+      "source_location": "section: Details, 7. Claude Code specific",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["claude-code", "resume-bug", "regression"]
+    },
+    {
+      "id": "R2.C13",
+      "claim": "v2.1.62 server-side KV cache stale context regression - model otrzymywal outdated context po compaction",
+      "citation": "v2.1.62 (Feb 2026?): Server-side KV cache stale context (Issue #29230). Model pracuje na nieaktualnym kontekscie po compaction. P1 severity.",
+      "source_location": "section: Details, 7. Claude Code",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["claude-code", "server-cache-bug", "compaction"]
+    },
+    {
+      "id": "R2.C14",
+      "claim": "v2.1.100+ cache_creation inflation - ta sama payload inflates ~20K tokens vs v2.1.98",
+      "citation": "v2.1.100+ (Mar 2026): Cache creation inflates ~20K tokens vs v2.1.98. Issue #46917.",
+      "source_location": "section: Details, 7. Claude Code",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["claude-code", "v2.1.100", "inflation"]
+    },
+    {
+      "id": "R2.C15",
+      "claim": "Du'An Lightfoot case: bez cache $720/m, z cache $72/m dla 81251-token video metadata w 100 requests/day",
+      "citation": "Du'An Lightfoot case: 81,251 tokens video metadata w system prompt. Bez cache: $0.24 per request. Z cache: $0.024 per request. Tracenie $648/miesiac bez cache, $72/miesiac z cache (100 requestow dziennie).",
+      "source_location": "section: Details, 8. Operational impact",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "savings", "90-percent"]
+    },
+    {
+      "id": "R2.C16",
+      "claim": "Gdy cache pada, koszt rosnie 10-20x dla tej tury",
+      "citation": "Gdy cache pada, koszt rosnie 10-20x dla tej tury.",
+      "source_location": "section: Details, 8. Operational impact",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cost-multiplier", "cache-loss"]
+    },
+    {
+      "id": "R2.C17",
+      "claim": "Issue #24147: cache read tokens konsumuja 99.93% quota due to CLAUDE.md re-reads - architectural scaling issue",
+      "citation": "Issue #24147 report: cache read tokens konsumuja 99.93% quota due to CLAUDE.md re-reads - architecturalne scaling issue.",
+      "source_location": "section: Details, 8. Operational impact",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["scaling-issue", "claude-md", "quota"]
+    },
+    {
+      "id": "R2.C18",
+      "claim": "Context compaction jest 'hard semantic break' - prefix cached przed compaction jest guaranteed stale",
+      "citation": "Context compaction replaces conversation history with a summary - a hard semantic break. Any prefix cached before compaction is guaranteed stale after it.",
+      "source_location": "section: Details, 4. Absolute invalidators",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compaction", "semantic-break", "staleness"]
+    },
+    {
+      "id": "R2.C19",
+      "claim": "Plugin state change w Claude Code powoduje full user content rewrite (Issue #27048)",
+      "citation": "Plugin state change: Jezeli plugin Claude Code zmienia swoje state (np. plugin CLAUDE.md doloda linie), cala user content jest rewritten.",
+      "source_location": "section: Details, 7. Claude Code specific",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["plugin", "state-change", "invalidation"]
+    },
+    {
+      "id": "R2.C20",
+      "claim": "Rekomendacja: freeze CCh version w zespole, wait 2 weeks po release zanim upgrade",
+      "citation": "Rekomendacja: freeze CCh version w zespole na v2.1.88 lub >=v2.1.105 (po fixach). Max Plan users z marca 2026 odnotowali rate limit exhaustion.",
+      "source_location": "section: Details, 7. Claude Code",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["recommendation", "version-pinning", "ops"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak oficjalnej dokumentacji kiedy dokladnie TTL sie resetuje",
+    "Brak oficjalnej liczby cache entries pool per klient",
+    "Oficjalne Anthropic stanowisko nie przyznaje wprost ze default TTL sie zmienil w marcu"
+  ],
+  "conflicts_flagged": [
+    "R2.C6 vs R2.C4: Anthropic zaprzecza TTL-related quota drain, community udowadnia z logami - obie strony moga miec czesciowa racje (regression byla, ale nie jedyna przyczyna)",
+    "R2.C3 '5-minute cache duration' vs community: 'minimum 5 minutes' - rozstrzygniecie: oba prawdziwe dzieki TTL refresh on use"
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "source_report": "R5_cache_first_design.md",
+  "report_words": 2095,
+  "extract_words": 700,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R5.C1",
+      "claim": "Zlota zasada cache-first: 'static content first, dynamic content last' - wszystko od poczatku do breakpointu to kandydat do hit, wszystko po - platne regular rate",
+      "citation": "Cache dziala prefiksowo - wszystko od poczatku requesta do breakpointu wlacznie jest kandydatem do cache hit, wszystko po breakpoincie jest platne per request.",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["golden-rule", "static-first", "principle"]
+    },
+    {
+      "id": "R5.C2",
+      "claim": "Natural order API (tools -> system -> messages) sprzyja cache-first - tools zmieniaja sie najrzadziej, messages najczesciej",
+      "citation": "Naturalny porzadek Anthropic API (tools -> system -> messages) juz sprzyja temu patternowi - tools zmieniaja sie najrzadziej, system rzadko, messages najczesciej.",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hierarchy", "ordering", "natural"]
+    },
+    {
+      "id": "R5.C3",
+      "claim": "Wzorzec 1 - Single breakpoint at end of static content - rekomendowany dla 80% use cases",
+      "citation": "Single breakpoint at end of static content (rekomendowany dla 80% przypadkow) - jeden cache_control na ostatnim statycznym bloku.",
+      "source_location": "section: Details, 2. Wzorzec 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pattern-1", "single-breakpoint", "default"]
+    },
+    {
+      "id": "R5.C4",
+      "claim": "Wzorzec 2 - Two breakpoints dla rarely vs frequently changing - np. rules 1h + RAG docs 5m",
+      "citation": "Dwa breakpointy: 1. Po system rules (1h TTL). 2. Po RAG documents (5m TTL). Zmiana daily documents NIE invaliduje rules cache.",
+      "source_location": "section: Details, 3. Wzorzec 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pattern-2", "two-breakpoints", "rag"]
+    },
+    {
+      "id": "R5.C5",
+      "claim": "Wzorzec 3 - Incremental conversation caching: automatic top-level cache_control, breakpoint przesuwa sie z kazda tura, 20-block lookback",
+      "citation": "System sam: Umiesci breakpoint na ostatnim cacheable bloku w messages. W kolejnym requestcie automatycznie przesunie breakpoint do przodu. Utrzyma 20-block lookback.",
+      "source_location": "section: Details, 4. Wzorzec 3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pattern-3", "automatic-caching", "multi-turn"]
+    },
+    {
+      "id": "R5.C6",
+      "claim": "Wzorzec 4 - Prefix promotion (priming): 1 request pisze cache, nastepne requesty zbiorowe czytaja - amortyzacja write cost",
+      "citation": "Step 1: Wyslij jeden request z pelnym prefiksem i cache_control. Step 2: Teraz WSZYSTKIE subsequent requests z tym samym prefix daja cache hit. Amortyzuj koszt write na duzej liczbie reads.",
+      "source_location": "section: Details, 5. Wzorzec 4",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pattern-4", "priming", "batch-workflow"]
+    },
+    {
+      "id": "R5.C7",
+      "claim": "Wzorzec 5 - Tool prefix stability: rejestruj wszystkie tools na starcie, NIE zmieniaj description mid-session",
+      "citation": "Rejestruj wszystkie tools na starcie sesji. Jezeli masz optional tools (nieuzywane w niektorych sesjach), LEPIEJ je zalaczyc zawsze z warunkowym tool_choice='none' niz dodawac dynamicznie.",
+      "source_location": "section: Details, 6. Wzorzec 5",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pattern-5", "tool-stability", "mcp"]
+    },
+    {
+      "id": "R5.C8",
+      "claim": "Wzorzec 6 - Few-shot prefix ZAWSZE w system, NIGDY w messages - cleaner cache, nie dynamic turns",
+      "citation": "Jezeli uzywasz few-shot examples, ZAWSZE w system prompt, NIGDY w messages. Cache cleanly hits na examples, current_query placone regular rate.",
+      "source_location": "section: Details, 7. Wzorzec 6",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pattern-6", "few-shot", "system-placement"]
+    },
+    {
+      "id": "R5.C9",
+      "claim": "Wzorzec 7 - Multi-user isolation: user-specific dane w messages, shared prefix w system",
+      "citation": "Jezeli twoja aplikacja serwuje wielu uzytkownikow, user-specific dane powinny byc W MESSAGES, nigdy w system. Shared cache dla WSZYSTKICH userow w workspace.",
+      "source_location": "section: Details, 8. Wzorzec 7",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pattern-7", "multi-user", "isolation"]
+    },
+    {
+      "id": "R5.C10",
+      "claim": "Anti-pattern: timestamp w system prompt - kazdy request invaliduje cache, uzyj system-reminder w messages",
+      "citation": "Timestamp in system prompt - kazdy request invaliduje cache. Zamiast tego: <system-reminder> w messages.",
+      "source_location": "section: Details, 9. Anti-patterns",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-pattern", "timestamp", "invalidation"]
+    },
+    {
+      "id": "R5.C11",
+      "claim": "Anti-pattern: Cache_control na blokach ponizej minimum (1024/2048/4096) - fail silently, no savings",
+      "citation": "Cache_control na bardzo krotkich blokach - ponizej minimum (1024/2048/4096) nie zadziala. Zamiast tego: pilnuj dlugosci.",
+      "source_location": "section: Details, 9. Anti-patterns",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-pattern", "minimum-tokens", "silent-fail"]
+    },
+    {
+      "id": "R5.C12",
+      "claim": "Anti-pattern: 1h TTL dla krotkotrwalych konwersacji - placisz 2x write bez osiagniecia break-even",
+      "citation": "1h TTL dla krotkotrwalych konwersacji - placisz 2x write, nigdy nie dochodzisz do break-even. Zamiast tego: 5m default dla interaktywnych chatow.",
+      "source_location": "section: Details, 9. Anti-patterns",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["anti-pattern", "ttl-wrong-choice", "1h"]
+    },
+    {
+      "id": "R5.C13",
+      "claim": "RAG pattern wymaga 2 breakpoints: rules (1h) -> docs (5m), 1h entries MUST appear BEFORE 5m w requestcie",
+      "citation": "Dla aplikacji RAG: [system: role + rules] 1h cache, [system: RAG documents] 5m cache. 1h-cache entries musza appear BEFORE 5m-cache entries w requestcie.",
+      "source_location": "section: Details, 10. RAG pattern",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["rag", "ordering-constraint", "two-tier"]
+    },
+    {
+      "id": "R5.C14",
+      "claim": "Agentic workflow typowo ma DUZO messages (tool_use + tool_result) - automatic caching kluczowy, breakpoint przesuwa sie per step",
+      "citation": "Agentic workflow typowo ma DUZO messages (tool calls + results), wiec automatic caching jest kluczowy - breakpoint przesuwa sie do przodu i kazdy step cache'uje cala historie.",
+      "source_location": "section: Details, 11. Agentic workflow",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["agentic", "automatic-cache", "tool-use"]
+    },
+    {
+      "id": "R5.C15",
+      "claim": "Tools array order MATTERS - zmiana kolejnosci [A,B,C] -> [A,C,B] kasuje cache. Rekomendacja: alphabetic order",
+      "citation": "Tools sa w tablicy i order MATTERS dla cache. Jezeli dzisiaj masz tools = [A, B, C], a jutro [A, C, B] - cache jest invalidated. Rekomendacja: alphabetyczny order tools.",
+      "source_location": "section: Details, 13. Tools best practice",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["ordering", "tools-array", "serialization"]
+    },
+    {
+      "id": "R5.C16",
+      "claim": "OpenAI automatic caching >1024 tokenow (zero config, 50% savings) vs Anthropic explicite (90% savings ale wymaga design)",
+      "citation": "OpenAI: Automatic caching dla promptow >1024 tokenow. Zero config. Savings 50% na read. Anthropic: Explicite cache_control. Savings 90% na read. Kontrola nad breakpointami.",
+      "source_location": "section: Details, 12. Comparison",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["comparison", "openai", "explicit-vs-auto"]
+    },
+    {
+      "id": "R5.C17",
+      "claim": "LangChain middleware AnthropicPromptCachingMiddleware i LlamaIndex integration auto-implementuja patterny",
+      "citation": "LangChain middleware (AnthropicPromptCachingMiddleware) i LlamaIndex integration (Anthropic Prompt Caching) automatycznie implementuja ten pattern - po prostu wlaczasz flaga.",
+      "source_location": "section: Details, 11. Agentic workflow",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["frameworks", "langchain", "llamaindex"]
+    },
+    {
+      "id": "R5.C18",
+      "claim": "Capitalization drift - 2 literkowe zmiany w statycznym bloku kasuja caly cache prefix",
+      "citation": "Capitalization drift - dwie literkowe zmiany kasuja cache. Zamiast tego: freeze text statycznych blokow, nie generuj ich dynamicznie.",
+      "source_location": "section: Details, 9. Anti-patterns",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["capitalization", "drift", "sensitivity"]
+    },
+    {
+      "id": "R5.C19",
+      "claim": "Nie ufaj defaults 'ttl: 1h' bez eksperymentu - po marcowej regression default moze byc inne niz docs",
+      "citation": "NIE ufaj ttl: 1h bez eksperymentu. Po marcowej regression domyslne TTL moze byc inne niz udokumentowane.",
+      "source_location": "section: Issues / Flags",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["warning", "default-trust", "regression"]
+    },
+    {
+      "id": "R5.C20",
+      "claim": "7 solidnych patternow dziala dla 95% aplikacji - single, two-tier, automatic, priming, tool-stable, few-shot, multi-user",
+      "citation": "Cache-first design jest bardziej sztuka niz nauka ale istnieje 7 solidnych patternow do zastosowania. Przy follow-up na anti-patterns otrzymasz 80-90% tokens savings.",
+      "source_location": "section: Recommendation",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["patterns-summary", "coverage", "roi"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak benchmarku dla 4 breakpointow vs 1 breakpoint w zlozonych RAG (intuicyjnie 4 lepsze ale empirical data brak)",
+    "Brak wzorcow dla multi-modal (images + text + tools) - czy images na poczatku czy koncu messages",
+    "Brak oficjalnej guidance jak obslugiwac burst workflow gdzie 100 userow jednoczesnie odpala identyczny prefix"
+  ],
+  "conflicts_flagged": [
+    "R5.C3 (single breakpoint) vs R5.C4 (two breakpoints): oba prawdziwe dla roznych use cases - single dla prostych, two dla RAG. Nie ma konfliktu samego przez sie.",
+    "DigitalOcean rekomenduje 4 breakpointy max (zgodne z docs) vs inne blogi 'use as many as needed' - oba prawdy: max 4 explicit, cost nie rosnie."
+  ]
+}

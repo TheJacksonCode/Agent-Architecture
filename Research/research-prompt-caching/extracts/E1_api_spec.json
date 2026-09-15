@@ -1,0 +1,197 @@
+{
+  "source_report": "R1_api_spec_cache_control.md",
+  "report_words": 1703,
+  "extract_words": 650,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R1.C1",
+      "claim": "cache_control parametr obsluguje wylacznie type='ephemeral' plus opcjonalny ttl ('5m' default lub '1h')",
+      "citation": "Parametr cache_control jest obiektem z polem type (zawsze 'ephemeral') i opcjonalnie ttl (domyslnie 5 minut, alternatywnie '1h' dla 1 godziny).",
+      "source_location": "section: Details, 1. Skladnia cache_control",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["api-spec", "cache_control", "ttl"]
+    },
+    {
+      "id": "R1.C2",
+      "claim": "Request ma maksimum 4 explicit cache_control breakpoints. Automatic caching zajmuje 1 slot dodatkowy.",
+      "citation": "A call supports up to 4 cache_control parameters. If more than 4 are specified, only the most recent 4 (from back to front) will be used.",
+      "source_location": "section: Details, 2. Limit breakpointow",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["breakpoints", "limit", "api-spec"]
+    },
+    {
+      "id": "R1.C3",
+      "claim": "Minimum token threshold per model grupa: Opus 4.7/4.6/4.5 i Haiku 4.5 = 4096, Sonnet 4.6 = 2048, Sonnet 4.5/4 = 1024.",
+      "citation": "Dla Sonnet 4.6 minimum to 2048 tokenow, dla Opus 4.7 i Haiku 4.5 to 4096 tokenow, dla starszych Sonnet/Opus 4.x - 1024 tokeny.",
+      "source_location": "section: Details, 3. Minimum tokens per model",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["minimum-tokens", "model-differences", "api-spec"]
+    },
+    {
+      "id": "R1.C4",
+      "claim": "Ponizej progu cache fail silently - brak bledu, response.usage.cache_creation_input_tokens = 0",
+      "citation": "Ponizej progu cache 'fails silently without error'. Aplikacja nie dostaje bledu - po prostu request jest niecachowalny. Programista musi sprawdzic response.usage.cache_creation_input_tokens.",
+      "source_location": "section: Details, 3. Minimum tokens per model",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["silent-fail", "debugging", "minimum-tokens"]
+    },
+    {
+      "id": "R1.C5",
+      "claim": "Cache hierarchia procesuje tools -> system -> messages. Zmiana w wyzszej warstwie invaliduje ta warstwe i wszystkie ponizej.",
+      "citation": "Cache jest budowany w sekwencji: tools -> system -> messages. Zmiana w wyzszej warstwie uniewaznia te warstwe i wszystkie ponizej.",
+      "source_location": "section: Details, 4. Hierarchia zawartosci",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hierarchy", "invalidation", "cascade"]
+    },
+    {
+      "id": "R1.C6",
+      "claim": "Zmiana modelu (nawet patch version) invaliduje caly cache. Opus i Haiku maja osobne cache pools.",
+      "citation": "Zmiana modelu (nawet o patch version) uniewaznia cache calkowicie, bo 'caches are per-model. Opus and Haiku have separate caches.'",
+      "source_location": "section: Details, 4. Hierarchia",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["model-switch", "invalidation", "isolation"]
+    },
+    {
+      "id": "R1.C7",
+      "claim": "Zmiana kapitalizacji 2 literek lamie prefix matching - udokumentowany test z 2727-token cache",
+      "citation": "Zmiana capitalization nawet w drobnym fragmencie systemu lamie prefix matching: 'Changing capitalization of TWO letters broke the entire cache,' invalidating 2,727 tokens of stored computation.",
+      "source_location": "section: Details, 4. Hierarchia",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["subtle-invalidation", "prefix-match", "case-sensitivity"]
+    },
+    {
+      "id": "R1.C8",
+      "claim": "Tools, system blocks, messages content (user+assistant), tool_use, tool_result, images i documents sa cacheable",
+      "citation": "Wszystkie ponizsze bloki sa cacheable: Tools array, System blocks, messages.content blocks, tool_use/tool_result blocks, Images/documents (tylko user turns).",
+      "source_location": "section: Details, 5. Cacheable content types",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cacheable-content", "tool-use", "images"]
+    },
+    {
+      "id": "R1.C9",
+      "claim": "Thinking blocks NIE moga miec cache_control bezposrednio, ALE sa cached w poprzednich assistant turns z tool_result blocks",
+      "citation": "Thinking blocks (nie mozna ustawic cache_control bezposrednio na nich). JEDNAK thinking blocks w poprzednich assistant turns SA cacheowane jezeli w kolejnym requestcie pojawiaja sie tool_result blocks.",
+      "source_location": "section: Details, 5. Cacheable content types",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["thinking-blocks", "extended-thinking", "cacheable"]
+    },
+    {
+      "id": "R1.C10",
+      "claim": "Response.usage ma 4 pola caching: input_tokens (po breakpoincie), cache_read_input_tokens, cache_creation_input_tokens, cache_creation breakdown (5m/1h)",
+      "citation": "input_tokens to tokeny PO ostatnim breakpoincie (nie biora udzialu w cache). cache_read_input_tokens to tokeny pobrane z istniejacego cache (tanie, 0.1x). cache_creation_input_tokens to tokeny nowo wpisane do cache.",
+      "source_location": "section: Details, 6. Response usage fields",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["response-fields", "usage", "monitoring"]
+    },
+    {
+      "id": "R1.C11",
+      "claim": "Wzor: total_input = input_tokens + cache_read_input_tokens + cache_creation_input_tokens",
+      "citation": "Wzor total: total_input = input_tokens + cache_read_input_tokens + cache_creation_input_tokens",
+      "source_location": "section: Details, 6. Response usage fields",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["math", "usage", "formula"]
+    },
+    {
+      "id": "R1.C12",
+      "claim": "Automatic caching (top-level cache_control) przesuwa breakpoint do przodu przy kazdym requestcie, z 20-block lookback window",
+      "citation": "System automatycznie applies breakpoint to last cacheable block. Breakpoint moves forward as conversation grows. 20-block lookback window for cache hits.",
+      "source_location": "section: Details, 7. Automatic vs Explicit",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["automatic-caching", "lookback", "breakpoint"]
+    },
+    {
+      "id": "R1.C13",
+      "claim": "Dodawanie wiekszej liczby breakpointow NIE zwieksza kosztow - platnosc bazuje na tym co zostalo cacheowane i odczytane",
+      "citation": "Dodawanie wiekszej liczby breakpointow NIE zwieksza kosztow - platnosc bazuje na tym co faktycznie zostalo cacheowane i odczytane. Breakpointy to tylko kontrola granularnosci.",
+      "source_location": "section: Details, 7. Automatic vs Explicit",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["breakpoints", "cost", "granularity"]
+    },
+    {
+      "id": "R1.C14",
+      "claim": "Dla 1h cache: 1h entries musza wystapic PRZED 5m entries w requestcie (ordering constraint)",
+      "citation": "Constraint: 1-hour cache entries must appear BEFORE 5-minute entries w requestcie (kolejnosc fizyczna).",
+      "source_location": "section: Details, 8. Mixing TTLs",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mixing-ttls", "ordering", "constraint"]
+    },
+    {
+      "id": "R1.C15",
+      "claim": "Wszystkie aktywne Claude modele (Opus 4.x, Sonnet 4.x, Haiku 4.x/3.x, Mythos Preview) wspieraja prompt caching",
+      "citation": "Wszystkie aktywne Claude modele wspieraja prompt caching: Opus 4.7, 4.6, 4.5, 4.1, 4, Sonnet 4.6, 4.5, 4, 3.7, Haiku 4.5, 3.5, 3, Claude Mythos Preview.",
+      "source_location": "section: Details, 9. Supported models",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["supported-models", "compatibility"]
+    },
+    {
+      "id": "R1.C16",
+      "claim": "Od 5 lutego 2026 cache ma workspace-level isolation zamiast organization-level",
+      "citation": "Starting February 5, 2026, prompt caching will use workspace-level isolation instead of organization-level isolation, with caches isolated per workspace to ensure data separation.",
+      "source_location": "section: Details, 10. Workspace isolation",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["isolation", "workspace", "security", "2026-change"]
+    },
+    {
+      "id": "R1.C17",
+      "claim": "Opus 4.7 ma nowy tokenizer ktory moze uzyc do 35% wiecej tokenow dla tego samego tekstu",
+      "citation": "Opus 4.7 ma nowy tokenizer 'may use up to 35% more tokens for the same fixed text'. Oznacza ze Twoje oszczednosci w tokenach vs poprzedni tokenizer moga byc mniejsze.",
+      "source_location": "section: Details, warnings / 10. Workspace",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["opus-47", "tokenizer", "caveat"]
+    },
+    {
+      "id": "R1.C18",
+      "claim": "Cache entries sa tworzone asynchronicznie - w burst parallel requestach drugi moze jeszcze nie widziec cache pierwszego",
+      "citation": "Cache entries sa tworzone asynchronicznie. W burst scenariuszach (parallel requests tuz po pierwszym) drugi request moze jeszcze nie widziec cache pierwszego - trzeba poczekac na response pierwszego.",
+      "source_location": "section: Details, warnings",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["concurrency", "async", "race-condition"]
+    },
+    {
+      "id": "R1.C19",
+      "claim": "Lookback dziala TYLKO dla entries ktore wczesniejsze requesty juz zapisaly - nie znajdzie stable content za breakpointem sam w pierwszym requestcie",
+      "citation": "Place cache_control on the last block whose prefix is identical across requests. The lookback does not find stable content behind the breakpoint; it only finds entries that earlier requests already wrote.",
+      "source_location": "section: Details, 2. Limit breakpointow",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["lookback", "first-request", "write-before-read"]
+    },
+    {
+      "id": "R1.C20",
+      "claim": "Billing mix dla 5m+1h: Pozycja A (max hit), B (max 1h write po A), C (last breakpoint). Oplaty: read dla A, 1h write (B-A), 5m write (C-B)",
+      "citation": "Billing calculation: Pozycja A najwiekszy cache hit token count, B najwiekszy 1-hour cache_control block po A, C ostatni cache_control block. Oplaty: Cache read tokens dla A, 1-hour write tokens dla (B-A), 5-minute write tokens dla (C-B).",
+      "source_location": "section: Details, 8. Mixing TTLs",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["billing", "mixing-ttls", "math"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak wzmianki w docs czy prompt_caching ma tiery dostepu (Free vs Pro vs Enterprise)",
+    "Brak oficjalnych danych p50/p95 TTL dla 5m cache - community wnioskuje z obserwacji",
+    "Brak danych o pool size - czy jest limit ile unikalnych prefiksow mozna trzymac jednoczesnie"
+  ],
+  "conflicts_flagged": [
+    "R1.C3 minimum tokens: oficjalne docs mowia 4096 dla Opus/Haiku 4.5, niektore Medium/Dev.to twierdza 1024 dla wszystkich - odrzucic blogs jako outdated",
+    "R1.C9 thinking blocks caching: LangChain docs twierdza 'nigdy nie cached', oficjalne docs wskazuja wyjatek dla previous assistant turns z tool_result - LangChain to uproszczenie"
+  ]
+}

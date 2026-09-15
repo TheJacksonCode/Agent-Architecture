@@ -1,0 +1,133 @@
+{
+  "extract_id": "E5",
+  "source_report": "research/R5_parallel_execution.md",
+  "role": "res_extractor",
+  "topic": "Parallel execution - concurrency limits, batching, case studies",
+  "extract_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R5.C1",
+      "claim": "Claude Code has a 10-concurrent-Task cap: if the main agent fires 15 Task calls, 10 run concurrently and 5 queue FIFO (batch-not-pipe).",
+      "source": "Anthropic docs + community",
+      "confidence": "high",
+      "category": "limit"
+    },
+    {
+      "id": "R5.C2",
+      "claim": "Safe parallel conditions (all three required): 3+ genuinely unrelated tasks; no shared file/resource state; clear file-ownership boundaries per agent.",
+      "source": "Anthropic docs + Agent Teams best-practices",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R5.C3",
+      "claim": "Sequential triggers (any of these = do not parallelize): task dependencies; shared file writes; unclear scope/overlapping responsibility.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R5.C4",
+      "claim": "Sweet spot: 2-5 parallel agents. Above 5 coordination overhead dominates. Above 10 rarely beats focused single session.",
+      "source": "Anthropic docs + community consensus",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R5.C5",
+      "claim": "Anthropic C compiler case study (Feb 5 2026): 16 agents, $20,000 cost, 2 billion input tokens + 140 million output tokens, ~2000 sessions, 2 weeks, Opus 4.6.",
+      "source": "Anthropic engineering blog 2026-02-05",
+      "confidence": "high",
+      "category": "case-study"
+    },
+    {
+      "id": "R5.C6",
+      "claim": "C compiler project used git-based lock files in current_tasks/ directory for task claiming - a file-lock is the concurrency primitive for Agent Teams task claims.",
+      "source": "Anthropic engineering blog",
+      "confidence": "high",
+      "category": "pattern"
+    },
+    {
+      "id": "R5.C7",
+      "claim": "Time blindness anti-pattern: the orchestrator does not experience wall-clock time, can let parallel agents run 30+ minutes on wrong paths without noticing. Mitigation: explicit check-ins, TeammateIdle hooks, Monitor tool.",
+      "source": "Anthropic engineering blog + community",
+      "confidence": "high",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R5.C8",
+      "claim": "Parallel output is a token flood risk for main context: 5 agents each returning 2k-token summaries = 10k of incoming context in one synchronization point. Orchestrator must summarize-of-summaries.",
+      "source": "Community measurements",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R5.C9",
+      "claim": "Batch-not-pipe scheduling: tasks queue in FIFO and run when a slot opens; there is no streaming concurrency adjustment. Send 15 at once, get 10 running and 5 waiting.",
+      "source": "Anthropic docs + community",
+      "confidence": "medium",
+      "category": "architecture"
+    },
+    {
+      "id": "R5.C10",
+      "claim": "Weekly rate limits: on Max plan, ~10 hours of heavy parallel use hits weekly quota; explicit model routing (Haiku extractors) extends effective time 3-5x.",
+      "source": "Community + Anthropic costs docs",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R5.C11",
+      "claim": "Agent Teams shared task list provides built-in coordination: pending/in-progress/completed states + dependencies. Avoids manual orchestrator bookkeeping.",
+      "source": "Anthropic docs /en/agent-teams",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R5.C12",
+      "claim": "Task dependencies in Agent Teams: a pending task with unresolved dependencies cannot be claimed until deps complete; unblocking happens automatically.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R5.C13",
+      "claim": "Recommended task count per teammate: 5-6 tasks - keeps teammates productive without excessive context switching.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R5.C14",
+      "claim": "Parallel code review is the canonical 'safe parallel' use case: each reviewer applies a distinct lens (security / performance / tests) without file conflicts.",
+      "source": "Anthropic docs example",
+      "confidence": "high",
+      "category": "pattern"
+    },
+    {
+      "id": "R5.C15",
+      "claim": "Debate-style parallel investigation (5 agents, each assigned a competing hypothesis, instructed to disprove peers) fights anchoring bias in root-cause analysis.",
+      "source": "Anthropic docs example",
+      "confidence": "high",
+      "category": "pattern"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT-E5-01",
+      "description": "Some community guides suggest 10+ parallel agents for exploration; Anthropic and most practitioners cap at 5. 10-concurrent hard cap is separate from recommended sweet spot.",
+      "resolution_hint": "Distinguish technical cap (10) from optimal range (2-5)."
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "GAP-E5-01",
+      "description": "No published performance data on token throughput at different concurrency levels."
+    },
+    {
+      "id": "GAP-E5-02",
+      "description": "C compiler project did not publish the full orchestration graph - task decomposition patterns inferred from narrative."
+    }
+  ],
+  "claim_count": 15,
+  "status": "EXTRACT COMPLETE"
+}

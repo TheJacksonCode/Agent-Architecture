@@ -1,0 +1,292 @@
+{
+  "source_report": "R6_batch_api_caching.md",
+  "report_words": 7821,
+  "extract_words": 487,
+  "extractor_version": "v1",
+  "campaign": "research-prompt-caching",
+  "claims": [
+    {
+      "id": "R6.C1",
+      "claim": "Batch API discount of 50% applies to both input and output tokens",
+      "citation": "Discount: 50% off na BOTH input and output tokens.",
+      "source_location": "section: 1. Batch API - podstawy, subsection Discount",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-pricing", "discount-mechanics", "base-savings"]
+    },
+    {
+      "id": "R6.C2",
+      "claim": "Batch API was released in October 2024",
+      "citation": "Wydanie: pazdziernik 2024. Cel: async processing duzych volumenow z discountem.",
+      "source_location": "section: 1. Batch API - podstawy, opening line",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-timeline", "release-date"]
+    },
+    {
+      "id": "R6.C3",
+      "claim": "Batch and cache pricing multipliers stack compositionally: 50% batch * 10% cache read = 5% of base input price",
+      "citation": "Batch + Cache stacking to najbardziej niewykorzystywany money-saver w stack Anthropic... 95%+ discount rutynowo osiagalne.",
+      "source_location": "section: Summary, pricing mechanics",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-stacking", "compound-discount", "cost-optimization"]
+    },
+    {
+      "id": "R6.C4",
+      "claim": "Sonnet 4.6 batch + 1h cache read costs $0.15 per MTok versus $3 per MTok for standard input",
+      "citation": "Batch + cache read = $0.15 / MTok zamiast $3/MTok (95% savings).",
+      "source_location": "section: Summary, pricing example",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["sonnet-pricing", "cache-read-cost", "cost-comparison"]
+    },
+    {
+      "id": "R6.C5",
+      "claim": "Cache hits in batch are 'best-effort' due to concurrent processing and potential race conditions",
+      "citation": "You can use prompt caching with Batches API requests, however, because asynchronous batch requests can be processed concurrently and in any order, cache hits are provided on a best-effort basis.",
+      "source_location": "section: 3. Best-effort cache hits - subtelnosci, official docs quote",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-cache-interaction", "hit-rate-variability", "concurrency"]
+    },
+    {
+      "id": "R6.C6",
+      "claim": "Observed cache hit rates in batch range from 30% to 98% depending on traffic patterns",
+      "citation": "users typically experiencing cache hit rates ranging from 30% to 98%, depending on their traffic patterns.",
+      "source_location": "section: 3. Best-effort cache hits, Scenario C",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["hit-rate-range", "empirical-observation", "traffic-pattern-dependent"]
+    },
+    {
+      "id": "R6.C7",
+      "claim": "Priming pattern: send single request with 1h TTL cache_control, wait for response, then submit batch",
+      "citation": "Step 1: Prime cache z single request... Step 2: Teraz batch 1000 requests z tym samym prefixem - wszystkie maja 1h TTL chroni przed wygasnieciem",
+      "source_location": "section: 3. Best-effort cache hits - subtelnosci, Scenario B",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-optimization", "priming-pattern", "best-practice"]
+    },
+    {
+      "id": "R6.C8",
+      "claim": "1h TTL cache in batch protects against expiration during 24h batch processing window",
+      "citation": "1h TTL chroni przed wygasnieciem w trakcie przetwarzania batch (batch moze trwac do 24h).",
+      "source_location": "section: Summary, best-practice point 3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-strategy", "batch-sla", "cache-persistence"]
+    },
+    {
+      "id": "R6.C9",
+      "claim": "Batch API is incompatible with Fast mode, Claude Managed Agents, and real-time use cases",
+      "citation": "Batch NIE jest kompatybilny z: Fast mode (Opus 4.6 only) - Batch nie jest dostepny w Fast mode, Claude Managed Agents - sessions sa stateful, batch nie ma sensu, Real-time use cases - batch ma async SLA",
+      "source_location": "section: Summary, incompatibilities",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-limitations", "compatibility", "mode-restrictions"]
+    },
+    {
+      "id": "R6.C10",
+      "claim": "Anthropic extended TTL from 5min to 1h in June 2025 announcement",
+      "citation": "Czer 2025: @AnthropicAI: we now offer an extended 1-hour TTL.",
+      "source_location": "section: 6b. Anthropic X/Twitter announcements",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-timeline", "anthropic-announcement", "feature-evolution"]
+    },
+    {
+      "id": "R6.C11",
+      "claim": "Anthropic silently reduced TTL from 1h to 5min in March 2026",
+      "citation": "Mar 2026: silent TTL regression od 1h do 5min (Anthropic engineer Jarred Sumner tlumaczyl ze 5min TTL jest tanszy per Anthropic's claims).",
+      "source_location": "section: 6b. Anthropic X/Twitter announcements",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["ttl-regression", "community-incident", "anthropic-decision"]
+    },
+    {
+      "id": "R6.C12",
+      "claim": "Batch rate limits are separate from standard Messages API rate limits",
+      "citation": "Batch API ma osobny set rate limits wspoldzielony przez wszystkie modele... Batch rate limits sa oddzielne od standardowych Messages API limits. Nie zjadaja Tier limits interactive API.",
+      "source_location": "section: 6. Batch API rate limits",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["rate-limits", "quota-isolation", "api-architecture"]
+    },
+    {
+      "id": "R6.C13",
+      "claim": "Cached tokens (cache_read_input_tokens) do not count towards ITPM rate limits for most models",
+      "citation": "Cached tokens (cache_read_input_tokens) NIE licza sie do ITPM rate limits dla wiekszosci modeli. Oznacza to ze batch z wysokim cache hit rate moze processowac znacznie wiecej tokenow niz sugeruje Twoj ITPM limit.",
+      "source_location": "section: 6. Batch API rate limits, ITPM paragraph",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["itpm-exemption", "cached-token-accounting", "quota-bypass"]
+    },
+    {
+      "id": "R6.C14",
+      "claim": "Batch Tier 1 has 50 RPM and 100,000 max requests in queue",
+      "citation": "Tier 1 | 50 | 100,000",
+      "source_location": "section: 6. Batch API rate limits, rate limits table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tier-1-limits", "rpm", "queue-capacity"]
+    },
+    {
+      "id": "R6.C15",
+      "claim": "Batch Tier 4 has 4,000 RPM with no single request limit",
+      "citation": "Tier 4 | 4,000 | 500,000 | 100,000",
+      "source_location": "section: 6. Batch API rate limits, rate limits table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tier-4-limits", "high-volume", "rpm-scalability"]
+    },
+    {
+      "id": "R6.C16",
+      "claim": "50k-token prefix with 1000 requests costs $7.79 using batch + 1h cache vs $150 baseline",
+      "citation": "Cache + batch (1h write + 999 batch reads): 1 * 50000 * $6/M + 999 * 50000 * $0.15/M = $0.30 + $7.49 = **~$7.79**. Total savings vs no-cache-no-batch: $150 -> $7.79 = 94.8%.",
+      "source_location": "section: 4. Priming pattern, cost breakdown",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cost-calculation", "savings-example", "sonnet-pricing"]
+    },
+    {
+      "id": "R6.C17",
+      "claim": "Haiku 4.5 with batch + cache achieves 98.3% savings versus Sonnet baseline",
+      "citation": "Haiku 4.5 + Batch + Cache | $2.55 | 98.3%",
+      "source_location": "section: 10. Batch + Cache vs inne strategie oszczednosci, strategy comparison table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["haiku-optimization", "model-selection", "max-savings"]
+    },
+    {
+      "id": "R6.C18",
+      "claim": "Streaming responses are not supported in Batch API",
+      "citation": "Streaming responses (batch jest non-streaming)",
+      "source_location": "section: 5. Batch limitations, Co NIE dziala",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-limitations", "feature-gaps", "api-constraints"]
+    },
+    {
+      "id": "R6.C19",
+      "claim": "Tool use and tool_result blocks cache normally in batch requests",
+      "citation": "Tool use dziala, tool_result bloki cache'uja sie normalnie",
+      "source_location": "section: 5. Batch limitations, Co dziala mimo ograniczen",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-capabilities", "tool-use", "caching-support"]
+    },
+    {
+      "id": "R6.C20",
+      "claim": "Workspace-level cache isolation replaced organization-level in February 2026",
+      "citation": "Feb 2026: workspace-level isolation dla cache entries (wczesniej org-level).",
+      "source_location": "section: 6b. Anthropic X/Twitter announcements, Feb 2026 timeline",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-isolation", "workspace-architecture", "Feb-2026-change"]
+    },
+    {
+      "id": "R6.C21",
+      "claim": "Cache isolation change in Feb 2026 breaks cross-workspace cache sharing from prior patterns",
+      "citation": "Jezeli masz multi-workspace setup, stary pattern wspoldzielenia primed cache miedzy workspaces juz NIE dziala.",
+      "source_location": "section: Warnings, Uwaga 19",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["workspace-breaking-change", "migration-impact", "configuration-alert"]
+    },
+    {
+      "id": "R6.C22",
+      "claim": "LangChain AnthropicPromptCachingMiddleware requires explicit ttl='1h' in config for optimal batch processing",
+      "citation": "AnthropicPromptCachingMiddleware dziala dla Batch endpointu, ale wymaga explicite ustawienia `ttl=\"1h\"` w middleware config dla optimal batch processing.",
+      "source_location": "section: 8. Batch API + cache w frameworkach, LangChain",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["langchain-integration", "ttl-configuration", "framework-support"]
+    },
+    {
+      "id": "R6.C23",
+      "claim": "Concurrent batches with identical prefixes can experience race conditions with redundant cache writes",
+      "citation": "jezeli oba teams submittuja w tej samej sekundzie, kazdy batch moze napisac wlasny cache entry - 2 redundant writes zamiast 1 write + 1 read. Efektywny cache hit rate dla batch_B wtedy bedzie okolo 50%",
+      "source_location": "section: 9. Edge case: concurrent batches z tym samym prefixem",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["concurrency-race-condition", "cache-write-collision", "multi-batch-scenario"]
+    },
+    {
+      "id": "R6.C24",
+      "claim": "LLMindset blog incorrectly states Batch gives 'up to 95% discount' instead of 95% total vs baseline",
+      "citation": "LLMindset (2024) pisze ze Batch daje 'up to 95% discount' - to niedokladne... Batch daje 50% off nawet na 1.25x write tokens (1.25 * 0.5 = 0.625x vs base).",
+      "source_location": "section: Issues / Flags, Konflikt 13",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["source-error", "pricing-precision", "documentation-issue"]
+    },
+    {
+      "id": "R6.C25",
+      "claim": "Cache write costs in batch apply batch discount (contrary to some blog claims)",
+      "citation": "pricing modifiers stackuja sie dla WSZYSTKICH typow tokenow w batch, w tym cache writes. Batch daje 50% off nawet na 1.25x write tokens (1.25 * 0.5 = 0.625x vs base).",
+      "source_location": "section: Issues / Flags, Konflikt 16",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-clarification", "write-token-discount", "source-correction"]
+    },
+    {
+      "id": "R6.C26",
+      "claim": "GitHub SDK issue #553 (Oct 2024) reported Batch + cache incompatibility due to beta headers",
+      "citation": "Oct 2024: developer raportuje blad `'system.0.cache_control: Extra inputs are not permitted'` przy batch + cache combo. Wowczas Batch byl jeszcze w beta i wymaga oddzielnych beta headers. Po GA (Dec 2024) blad znikl",
+      "source_location": "section: 7. Community patterns - GitHub issues",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["github-incident", "beta-era-issue", "sdk-compatibility"]
+    },
+    {
+      "id": "R6.C27",
+      "claim": "Developer report: 1.2M Sonnet tokens processed for $0.18 using batch + cache on 15k-token prefix",
+      "citation": "Jeden developer: 1.2M Sonnet 3.5 tokens za $0.18 uzywajac batch + cache combo na 15k-token cacheable prefix",
+      "source_location": "section: 7. Community patterns - dev.to and Medium",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["real-world-result", "cost-achievement", "developer-report"]
+    },
+    {
+      "id": "R6.C28",
+      "claim": "Priming pattern requires byte-for-byte identical shared prefix matching",
+      "citation": "Priming pattern wymaga precyzyjnego bajt-za-bajtem matching shared prefix. Jakakolwiek zmiana (whitespace, capitalization) kasuje.",
+      "source_location": "section: Warnings, Uwaga 16",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["best-practice", "cache-matching", "precision-requirement"]
+    },
+    {
+      "id": "R6.C29",
+      "claim": "Batch SLA of 24h necessitates cache TTL significantly shorter than batch completion time",
+      "citation": "Batch SLA 24h - planuj cache TTL (1h) znacznie krocej niz batch completion czas jezeli batch jest duzy. Po 1h cache wygasa, pozostale requesty placa rewrite.",
+      "source_location": "section: Warnings, Uwaga 17",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-strategy", "batch-sla-alignment", "operational-guidance"]
+    },
+    {
+      "id": "R6.C30",
+      "claim": "Batch Tier 1 spend limit is $100/month with no hard cap protection",
+      "citation": "Tier 1: $100/month max... Uwaga: Batches 'may go slightly over your Workspace's configured spend limit' - brak hard cap protection.",
+      "source_location": "section: 6. Batch API rate limits, spend limits and warnings",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tier-1-billing", "spend-limit", "cost-control-alert"]
+    }
+  ],
+  "gaps_flagged": [
+    "Gap 18: Brak oficjalnych benchmarkow Anthropic dla Batch + Cache combined cost - trzeba liczyc samodzielnie (nie ma drop-in reference table od Anthropic)",
+    "Gap 19: Niejasne jak batch + cache interaguje z Claude Mythos Preview (1M context) - teoretycznie powinno dzialac identycznie, ale brak potwierdzenia",
+    "Gap 20: Brak oficjalnego guidance co sie dzieje gdy batch trwa >1h TTL - czy cache sie rewrites? Jezeli request #999 w batch trafia 65 minut po rozpoczeciu, czy cache jest juz wygasle?",
+    "Gap 21: Niejasne czy batch requests z roznych workspaces (tej samej org) dziela cache po przejsciu na workspace-level isolation (Feb 2026) - Przed: org-level. Po: workspace isolation - nieznane",
+    "Gap 22: Brak Reddit case studies z produkcyjnymi pomiarami Batch + Cache - community fokusuje sie na Claude Code quota drain, nie Batch API optimization patterns"
+  ],
+  "conflicts_flagged": [
+    "Konflikt 13: LLMindset (2024) 'up to 95% discount' phrasing jest misleading - to nie 95% batch discount, ale 95% total vs baseline. Precyzyjnie: 50% batch * 90% cache read = 95% total (lub 5% of base price dla cache reads)",
+    "Konflikt 14: Blog claim 'batch cache hit rate zawsze ~95%' jest optymistyczne - oficjalne docs podaja 30-98% range. Bez priming, zakladaj konserwatywnie 70-80%",
+    "Konflikt 15: Stary LLMindset (paz 2024) podaje batch limit 'dzi wiekszosci10,000 requests/32MB' - obowiazujace limits (kwiecien 2026) to **100,000 requests** i 256MB. Znaczaca rozbieznosc",
+    "Konflikt 16: Finout.io: 'cache write costs nie maja batch discount' - BLAD. Anthropic docs potwierdzaja ze wszystkie pricing modifiers stackuja, wlaczajac cache writes. Batch daje 50% off na writes rowniez"
+  ]
+}

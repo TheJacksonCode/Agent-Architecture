@@ -1,0 +1,184 @@
+{
+  "extract_id": "E6",
+  "source_report": "research/R6_background_agents.md",
+  "role": "res_extractor",
+  "topic": "Background agents - run_in_background, Monitor, SendMessage, Agent Teams",
+  "extract_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R6.C1",
+      "claim": "Three distinct async mechanisms exist: run_in_background (Bash one-shot), Monitor tool (event stream), Agent Teams + SendMessage (peer agents). Conflating them is the top community anti-pattern.",
+      "source": "Anthropic docs + community",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R6.C2",
+      "claim": "run_in_background is fire-and-complete (one notification at exit); not for streams. Community-stated defaults: 300s timeout, 50KB output buffer, 8-char UUID task ID.",
+      "source": "learn-claude-code community reverse-engineering",
+      "confidence": "medium",
+      "category": "api"
+    },
+    {
+      "id": "R6.C3",
+      "claim": "Monitor tool shipped in Claude Code v2.1.98 on April 9, 2026. Event-driven: each stdout line = one notification; stderr routed to file not stream; silent = 0 tokens.",
+      "source": "Anthropic docs + aiia.ro",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R6.C4",
+      "claim": "Monitor schema: 4 parameters - description (label), command (shell), timeout_ms (default 300000, max 3600000), persistent (boolean).",
+      "source": "claudefa.st + aiia",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R6.C5",
+      "claim": "Monitor delivers ~95% token reduction vs polling for long watches (12k tokens polling -> <600 tokens Monitor for 10-min build watched at 15s intervals).",
+      "source": "claudefa.st measurement",
+      "confidence": "medium",
+      "category": "cost"
+    },
+    {
+      "id": "R6.C6",
+      "claim": "Monitor is unavailable on Amazon Bedrock, Google Vertex AI, Microsoft Foundry - Anthropic API + Claude Code only.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "limit"
+    },
+    {
+      "id": "R6.C7",
+      "claim": "Agent Teams requires Claude Code v2.1.32+ and CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 env var; released alongside Opus 4.6 on Feb 5, 2026.",
+      "source": "Anthropic docs /en/agent-teams",
+      "confidence": "high",
+      "category": "version"
+    },
+    {
+      "id": "R6.C8",
+      "claim": "Agent Teams architecture: team lead (main session) + teammates (separate Claude Code instances, own context) + shared task list + mailbox for peer messaging.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R6.C9",
+      "claim": "SendMessage tool supports 5 message types: message (direct), broadcast (all), shutdown_request, shutdown_response, plan_approval_response.",
+      "source": "Anthropic docs + Claudelog",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R6.C10",
+      "claim": "Subagent definitions can be reused as Agent Teams teammate types, BUT skills and mcpServers frontmatter are NOT applied when running as teammate (docs-documented asymmetry).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "gotcha"
+    },
+    {
+      "id": "R6.C11",
+      "claim": "/resume and /rewind do not restore in-process teammates; lead may message non-existent teammate IDs after resume - fix is respawn.",
+      "source": "Anthropic docs limitations section",
+      "confidence": "high",
+      "category": "limit"
+    },
+    {
+      "id": "R6.C12",
+      "claim": "Agent Teams hard limits: one team per session; no nested teams; lead is fixed for team lifetime; permissions set at spawn; shutdown is slow (finishes current tool call).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "limit"
+    },
+    {
+      "id": "R6.C13",
+      "claim": "Split-pane mode NOT supported in VS Code integrated terminal, Windows Terminal, or Ghostty - requires tmux or iTerm2 (macOS-first).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "platform"
+    },
+    {
+      "id": "R6.C14",
+      "claim": "Hooks for async work: SubagentStart (can inject context, cannot block), SubagentStop (can block), TeammateIdle (can block), TaskCreated (can block), TaskCompleted (can block).",
+      "source": "Anthropic docs /en/hooks",
+      "confidence": "high",
+      "category": "hooks"
+    },
+    {
+      "id": "R6.C15",
+      "claim": "async: true and asyncRewake: true hook flags (released January 2026) enable non-blocking hook execution - asyncRewake wakes Claude on exit code 2.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "hooks"
+    },
+    {
+      "id": "R6.C16",
+      "claim": "Team storage: config at ~/.claude/teams/{team-name}/config.json (runtime state, do not edit by hand); tasks at ~/.claude/tasks/{team-name}/. No project-level equivalent.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "storage"
+    },
+    {
+      "id": "R6.C17",
+      "claim": "GitHub Issue #11716 (critical): background bash processes can cause infinite system-reminder loops and token exhaustion when output emits faster than session drains.",
+      "source": "GitHub #11716",
+      "confidence": "high",
+      "category": "bug"
+    },
+    {
+      "id": "R6.C18",
+      "claim": "Recommended team size 3-5 teammates; broadcast costs scale linearly with team size - use targeted message by name instead.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R6.C19",
+      "claim": "TaskCompleted + exit code 2 is the canonical team-native quality-gate enforcement point: hook runs tests, blocks completion on failure.",
+      "source": "Anthropic docs hooks",
+      "confidence": "high",
+      "category": "pattern"
+    },
+    {
+      "id": "R6.C20",
+      "claim": "Plan approval quality gate: teammate starts in read-only plan mode, sends plan_approval_response to lead, waits for approval; rejection includes feedback and triggers revision.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "pattern"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT-E6-01",
+      "description": "Community confusion between run_in_background and Monitor; some posts use them interchangeably. They solve different problems (one-shot vs stream).",
+      "resolution_hint": "Synthesis must explicitly separate the three mechanisms."
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "GAP-E6-01",
+      "description": "run_in_background official schema not published in Anthropic docs - only community reverse-engineering."
+    },
+    {
+      "id": "GAP-E6-02",
+      "description": "Mailbox persistence semantics under teammate failure not explicit."
+    },
+    {
+      "id": "GAP-E6-03",
+      "description": "SubagentStart hook payload shape not fully published (SubagentStop is)."
+    },
+    {
+      "id": "GAP-E6-04",
+      "description": "Task list file format inside ~/.claude/tasks/{team}/ not documented - cannot manually author or migrate."
+    },
+    {
+      "id": "GAP-E6-05",
+      "description": "No per-session token overhead measurement for teammates - community estimates 2x-10x single session, range too wide."
+    },
+    {
+      "id": "GAP-E6-06",
+      "description": "No documented pattern for a teammate using Monitor tool - presumably works but no example in docs."
+    }
+  ],
+  "claim_count": 20,
+  "status": "EXTRACT COMPLETE - gaps bogate per DD04"
+}

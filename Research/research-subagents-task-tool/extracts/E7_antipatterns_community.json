@@ -1,0 +1,191 @@
+{
+  "extract_id": "E7",
+  "source_report": "research/R7_antipatterns_community.md",
+  "role": "res_extractor",
+  "topic": "Anti-patterns + community failure modes for multi-agent Claude Code",
+  "extract_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R7.C1",
+      "claim": "Anthropic's own multi-agent research system initially spawned 50 subagents for simple queries; fix was explicit effort tiers and delegation rules in the prompt, not better models.",
+      "source": "Anthropic engineering blog June 2025",
+      "confidence": "high",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C2",
+      "claim": "Every subagent pays ~20-50k token entry tax (system + CLAUDE.md + MCP tool descriptions) before useful work; 5 parallel subagents = 100-250k pure overhead.",
+      "source": "dev.to + Anthropic engineering",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R7.C3",
+      "claim": "Anti-pattern 'Don't delegate understanding': subagent summaries destroy nuance; keep reasoning in main context, delegate only flood-producing side-quests.",
+      "source": "Anthropic + morphllm",
+      "confidence": "high",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C4",
+      "claim": "Claude Opus 4.6 has a documented tendency to over-spawn subagents by default; fix is explicit 'do not spawn unless asked' in CLAUDE.md plus plan-mode gates.",
+      "source": "Community posts",
+      "confidence": "medium",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C5",
+      "claim": "Resumed subagents lose user prompts (Issue #11712); they hallucinate 'corrections' trying to infer original task. Workaround: write task spec to file, re-load on resume.",
+      "source": "GitHub #11712",
+      "confidence": "high",
+      "category": "bug"
+    },
+    {
+      "id": "R7.C6",
+      "claim": "Subagents with tools allowlist that mismatches their skill instructions will hallucinate tool outputs silently rather than erroring.",
+      "source": "dev.to routines post-mortem",
+      "confidence": "high",
+      "category": "bug"
+    },
+    {
+      "id": "R7.C7",
+      "claim": "Agent sprawl: multiple dev sessions each spawning own teams with no coordinator is emerging organizational anti-pattern; requires explicit merge ownership.",
+      "source": "Addy Osmani O'Reilly CodeCon 2026",
+      "confidence": "medium",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C8",
+      "claim": "Token waste is more often model-misallocation than prompt-inefficiency: extractors/search/grep should be Haiku; only reasoning/synthesis warrant Opus.",
+      "source": "R4 cross-ref + community",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R7.C9",
+      "claim": "Claude Code multi-agent UX is macOS-first: Windows users stuck with in-process mode + worktree symlink issues (cross-ref R3+R6).",
+      "source": "R3 + R6 cross-reference",
+      "confidence": "high",
+      "category": "platform"
+    },
+    {
+      "id": "R7.C10",
+      "claim": "Multi-agent systems consume ~15x tokens vs chat, ~4x vs single-agent-tool-use; only justified when outcome value is at least that much greater.",
+      "source": "Anthropic engineering blog",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R7.C11",
+      "claim": "Auto-selection of custom subagents via description field is unreliable; only explicit invocation (by name in user message or slash command) routes reliably.",
+      "source": "Community (Khang Nguyen, sankalp)",
+      "confidence": "high",
+      "category": "gotcha"
+    },
+    {
+      "id": "R7.C12",
+      "claim": "Wide-and-flat hierarchy (6 subagents under one orchestrator) is worse than narrow-and-deep (2 leads, each 2-3 specialists); orchestrator cognition degrades at high fan-out.",
+      "source": "Rick Hightower Towards AI",
+      "confidence": "medium",
+      "category": "best-practice"
+    },
+    {
+      "id": "R7.C13",
+      "claim": "Tool proliferation (>20 first-party tools) itself degrades agent performance; Anthropic's solution is progressive disclosure (skills referencing searchable files, specialist subagents).",
+      "source": "Anthropic 'Seeing like an agent'",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R7.C14",
+      "claim": "Early multi-agent systems exhibit source-selection bias toward SEO content farms over authoritative academic/blog sources; requires explicit source-quality prompting.",
+      "source": "Anthropic engineering blog",
+      "confidence": "high",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C15",
+      "claim": "Context-bleed-vs-miss is the core isolation tradeoff: tight scope misses cross-module context; loose scope contaminates peer work. Remedy: contract-driven boundaries + file locking.",
+      "source": "aicrossroads Khang Nguyen",
+      "confidence": "medium",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C16",
+      "claim": "Practical delegation depth limit is 2-3 levels even without recursion hard-limit at 1; token overhead compounds geometrically (27 leaves at fan-out 3 = 540k-1.35M token overhead).",
+      "source": "Community consensus",
+      "confidence": "medium",
+      "category": "best-practice"
+    },
+    {
+      "id": "R7.C17",
+      "claim": "Anthropic's #1 published principle for multi-agent prompt engineering: 'Think like your agents' - develop mental models through simulation before prompting.",
+      "source": "Anthropic engineering blog",
+      "confidence": "high",
+      "category": "principle"
+    },
+    {
+      "id": "R7.C18",
+      "claim": "GitHub Issue #4911 documents 15-76x token inflation for subagent-equivalent work (2-3k main session vs 153.8k subagent, 3m 32s).",
+      "source": "GitHub #4911",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R7.C19",
+      "claim": "'I remember this skill' trap: Claude describes a skill from training data rather than loading the skill file; produces confident stale instructions.",
+      "source": "sankalp blog + dev.to",
+      "confidence": "medium",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C20",
+      "claim": "Broadcast abuse in Agent Teams: using broadcast for everything creates 5x context noise at 5 teammates; docs explicitly warn 'use sparingly'.",
+      "source": "Anthropic docs + Addy Osmani",
+      "confidence": "high",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C21",
+      "claim": "Memory substitution in routines: routines referencing other routines by name get described from training memory rather than invoked as fresh file reads.",
+      "source": "dev.to routines post-mortem",
+      "confidence": "medium",
+      "category": "anti-pattern"
+    },
+    {
+      "id": "R7.C22",
+      "claim": "Persona confusion: a routine given a persona in one turn leaks that persona into the next turn, contaminating subsequent reasoning.",
+      "source": "sankalp blog",
+      "confidence": "medium",
+      "category": "anti-pattern"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT-E7-01",
+      "description": "Opus over-spawn vs Sonnet under-spawn: Opus 4.6 spawns too eagerly, Sonnet sometimes fails to spawn even when appropriate. Different fixes per model.",
+      "resolution_hint": "Model-specific guidance in synthesis: Opus needs 'do not spawn' restraint; Sonnet needs explicit 'use X subagent' invocation."
+    },
+    {
+      "id": "CONFLICT-E7-02",
+      "description": "Some community guides encourage subagents for all research tasks; Anthropic's 'Don't delegate understanding' cautions against it for reasoning-heavy work.",
+      "resolution_hint": "Clarify split: delegate enumeration/search; keep reasoning inline."
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "GAP-E7-01",
+      "description": "No systematic benchmark comparing wide-flat vs narrow-deep orchestration hierarchies; community guidance is qualitative."
+    },
+    {
+      "id": "GAP-E7-02",
+      "description": "No official guidance on merging divergent work from parallel worktree-based agents - merge-time surprises anecdotal."
+    },
+    {
+      "id": "GAP-E7-03",
+      "description": "Broadcast vs message cost-per-teammate numbers not published."
+    }
+  ],
+  "claim_count": 22,
+  "status": "EXTRACT COMPLETE"
+}

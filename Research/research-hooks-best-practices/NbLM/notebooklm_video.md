@@ -1,0 +1,9 @@
+# NotebookLM Ready Video - Hooks Best Practices
+
+## SEKCJA 1: Video - Opis niestandardowego stylu wizualnego
+
+Dark Anthropic terminal aesthetic - tlo #141413, pomaranczowy accent #d97757 dla blokady (exit 2, deny, CVE), mono-blue #6a9bcc dla danych liczbowych. Split-screen 60/40: kod w JetBrains Mono po lewej (syntax highlight matt), po prawej timeline cyklu zycia z 28 eventami pulsujacymi jak heartbeat. Bento 2.0 overlays z corner rounding 16px, exit-code stamps 0/1/2 jako glowing chips. Ciecia co 2-3 sekundy (Fireship pacing), typing animation na settings.json, diff-highlight czerwony->zielony na "exit 1 -> exit 2". Zero ilustracji - tylko terminal, JSON, flow diagram.
+
+## SEKCJA 2: Video - Na czym powinni sie skupiac prezenterzy AI
+
+Cold open 3 sekundy: czarny ekran, pomaranczowy glyph CVE-2025-59536, deadpan voice "Jeden hook. CVSS 8.8. RCE przez settings.json." - sub-bass drop, JSON migocze. To hook. Dalej (3-15s): kontrast exit 1 vs exit 2 - animacja pokazuje ze exit 1 NIE BLOKUJE mimo intuicji dev. To pulapka numer jeden calego ekosystemu. Reveal (15-60s): 28 eventow w rodzinach Session, Prompt, Tool (PreToolUse, PostToolUse), Agent, Permissions, Notification, Stop, Compact - pokaz ze PreToolUse to miejsce blokady PRZED egzekucja. Cztery typy handlerow z timeoutami: command 600s, http 30s, prompt 30s, agent 60s - monospace liczby jako hero. Drabina precedensji: Managed > CLI > Local > Project > User, tablice konkatenuja, deny z wyzszej warstwy nieobchodzalne. Payoff (60-75s): hierarchia sandbox > permissions.deny > hooks, async dla telemetrii, sync dla security, budzet p95 pod 500 ms. CTA: regex-blokery bash sa trywialnie obchodzone przez podwojna spacja albo base64 - uzyj AST. Dual output: master 16:9 2-3 min dla YouTube, crop 9:16 60-75s z burned-in captions dla Shorts, ElevenLabs polski glos deadpan, bez em-dashy w napisach.

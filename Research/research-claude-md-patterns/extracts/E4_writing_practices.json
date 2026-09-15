@@ -1,0 +1,272 @@
+{
+  "extractor": "E4",
+  "source_report": "R4_writing_practices.md",
+  "topic": "Writing best practices for CLAUDE.md (DO/DON'T, length, style, anti-patterns, templates)",
+  "word_count_estimate": 420,
+  "claim_count": 28,
+  "claims": [
+    {
+      "id": "R4.C1",
+      "quote": "target under 200 lines per CLAUDE.md file. Longer files consume more context and reduce adherence",
+      "paraphrase": "Anthropic's explicit size target is under 200 lines per CLAUDE.md; beyond that, context cost rises and rule adherence drops.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["size-limit", "200-lines", "anthropic-official", "token-budget"]
+    },
+    {
+      "id": "R4.C2",
+      "quote": "A focused 30-line file outperforms a comprehensive 200-line file every time",
+      "paraphrase": "Community (dev.to docat0209) claims a 30-line rule outperforms 200-line files; shorter drives better compliance.",
+      "source_ref": "C7 (dev.to docat0209)",
+      "stance": "support",
+      "confidence": "medium",
+      "tags": ["size-limit", "30-line-rule", "community", "lean"]
+    },
+    {
+      "id": "R4.C3",
+      "quote": "Under 60 lines in their root",
+      "paraphrase": "HumanLayer runs their own production CLAUDE.md under 60 lines at root, relying on progressive disclosure for the rest.",
+      "source_ref": "C6 (HumanLayer)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["size-limit", "60-lines", "humanlayer", "benchmark"]
+    },
+    {
+      "id": "R4.C4",
+      "quote": "Metabase (~54 lines, Clojure): skills sections, tool preferences, backend test commands with imperative voice",
+      "paraphrase": "Metabase public CLAUDE.md stays around 54 lines with imperative commands and tool prefs - real-world lean benchmark.",
+      "source_ref": "C4, C13 (awesome-claude-code, Metabase)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["benchmark", "metabase", "lean", "real-world"]
+    },
+    {
+      "id": "R4.C5",
+      "quote": "LangGraphJS (33 lines, TypeScript): three sections - Build/Test, Code Style, Architecture",
+      "paraphrase": "LangGraphJS public CLAUDE.md is just 33 lines, 3-section structure - minimalist benchmark.",
+      "source_ref": "C4, C14 (awesome-claude-code, LangGraphJS)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["benchmark", "langgraphjs", "minimalist", "real-world"]
+    },
+    {
+      "id": "R4.C6",
+      "quote": "Start with Guardrails, Not a Manual. Your CLAUDE.md should start small, documenting based on what Claude is getting wrong",
+      "paraphrase": "Shrivu Shankar: build CLAUDE.md reactively from Claude's actual mistakes, not preemptively from everything imaginable.",
+      "source_ref": "C8 (Shrivu Shankar)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["mental-model", "reactive", "guardrails", "constitution"]
+    },
+    {
+      "id": "R4.C7",
+      "quote": "facts Claude should hold in every session",
+      "paraphrase": "Mid-level abstractions = facts Claude must hold every session; not code-visible details, not platitudes.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["mid-level-abstraction", "mental-model", "scope"]
+    },
+    {
+      "id": "R4.C8",
+      "quote": "WHAT / WHY / HOW",
+      "paraphrase": "HumanLayer structure for CLAUDE.md: WHAT (stack/architecture), WHY (purpose/non-obvious context), HOW (workflows/commands).",
+      "source_ref": "C6 (HumanLayer)",
+      "stance": "support",
+      "confidence": "medium",
+      "tags": ["structure", "what-why-how", "humanlayer", "template"]
+    },
+    {
+      "id": "R4.C9",
+      "quote": "Use 2-space indentation instead of Format code properly",
+      "paraphrase": "Specific + verifiable beats vague: concrete rules ('2-space indent', 'run npm test before commit') outperform generic advice.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["specificity", "verifiable", "anthropic-official"]
+    },
+    {
+      "id": "R4.C10",
+      "quote": "Language models struggle with negation. When you write 'Do NOT use semicolons,' the concept itself gets activated either way",
+      "paraphrase": "Positive over negative: negation still activates the prohibited concept; 'use named exports' beats 'no default exports'.",
+      "source_ref": "C7 (dev.to docat0209)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["positive-instructions", "negation", "llm-behavior"]
+    },
+    {
+      "id": "R4.C11",
+      "quote": "restrictions alone confuse agents trying to accomplish tasks",
+      "paraphrase": "Shrivu: prohibitions without alternatives confuse agents; always pair restriction with the preferred path.",
+      "source_ref": "C8 (Shrivu Shankar)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["positive-instructions", "alternatives", "restrictions"]
+    },
+    {
+      "id": "R4.C12",
+      "quote": "Unlike CLAUDE.md instructions which are advisory, hooks are deterministic and guarantee the action happens",
+      "paraphrase": "CLAUDE.md is advisory (delivered as user message); hooks are deterministic enforcement - use hooks for hard rules.",
+      "source_ref": "C2 (Anthropic best-practices)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["hooks-vs-claudemd", "advisory", "enforcement", "cross-R1-R3"]
+    },
+    {
+      "id": "R4.C13",
+      "quote": "If you have told Claude not to do something 3 times and it keeps doing it, move that rule from CLAUDE.md to a hook",
+      "paraphrase": "Three-strikes rule: if a CLAUDE.md prohibition fails 3+ times, migrate it to a hook or lint tool - don't just add CAPS.",
+      "source_ref": "C7 (dev.to docat0209)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["hooks-vs-claudemd", "three-strikes", "escalation"]
+    },
+    {
+      "id": "R4.C14",
+      "quote": "CLAUDE.md content is delivered as a user message after the system prompt, not as part of the system prompt itself",
+      "paraphrase": "CLAUDE.md loads as user message after system prompt; no strict-compliance guarantee, which is why hooks trump it for enforcement.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["delivery-mechanism", "user-message", "advisory", "cross-R1"]
+    },
+    {
+      "id": "R4.C15",
+      "quote": "A 500-token CLAUDE.md costs you 500 tokens on every single inference, and a 12,000-token skill file costs 12,000 tokens every time",
+      "paraphrase": "alexop.dev token math: CLAUDE.md is always-on cost per inference; a 2000-line bloat drains ~500+ tokens from every single turn.",
+      "source_ref": "C10 (alexop.dev)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["token-budget", "per-inference-cost", "bloat-cost"]
+    },
+    {
+      "id": "R4.C16",
+      "quote": "information placed in the middle of long contexts is recalled less reliably than information at the beginning or end",
+      "paraphrase": "Lost-in-the-middle: rules buried mid-file in a 2000-line CLAUDE.md are ignored; primacy + recency bias favor top/bottom.",
+      "source_ref": "C11 (MindStudio on context rot); also referenced in C17",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["context-rot", "lost-in-middle", "positioning"]
+    },
+    {
+      "id": "R4.C17",
+      "quote": "Bloated CLAUDE.md files cause Claude to ignore your actual instructions!",
+      "paraphrase": "Anthropic's own warning: bloated files trigger rule-dropping - the paradox where MORE rules yields LESS compliance.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["bloat", "failure-mode", "anthropic-official"]
+    },
+    {
+      "id": "R4.C18",
+      "quote": "Never send an LLM to do a linter's job. LLMs are comparably expensive and incredibly slow compared to traditional linters and formatters",
+      "paraphrase": "HumanLayer: don't put linter-enforceable rules (quotes, trailing commas, indent) in CLAUDE.md - run Biome/Prettier/ESLint instead.",
+      "source_ref": "C6 (HumanLayer)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["anti-pattern", "linter-job", "A8"]
+    },
+    {
+      "id": "R4.C19",
+      "quote": "exemplary CLAUDE.md files like pre-commit-hooks achieve quality through being 'thorough but not verbose' and avoid 'primarily consist[ing] in shouting at Claude in all-caps'",
+      "paraphrase": "awesome-claude-code meta-observation: quality = thorough-not-verbose; all-caps shouting (A5 anti-pattern) degrades emphasis signal.",
+      "source_ref": "C4 (awesome-claude-code)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["anti-pattern", "all-caps", "emphasis-inflation", "A5"]
+    },
+    {
+      "id": "R4.C20",
+      "quote": "if two rules contradict each other, Claude may pick one arbitrarily",
+      "paraphrase": "Contradictions between root and nested CLAUDE.md cause arbitrary rule selection - hardest non-compliance to debug.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["anti-pattern", "contradictions", "nested-files", "A9"]
+    },
+    {
+      "id": "R4.C21",
+      "quote": "Don't Auto-Generate: Avoid /init or automated generation. Since this file 'affects every single phase of your workflow,' manual curation ensures quality",
+      "paraphrase": "HumanLayer: /init output is a draft, not a finished product; auto-generated 400-line boilerplate must be pruned manually.",
+      "source_ref": "C6 (HumanLayer)",
+      "stance": "support",
+      "confidence": "medium",
+      "tags": ["anti-pattern", "init-forget", "A12"]
+    },
+    {
+      "id": "R4.C22",
+      "quote": "Information that changes frequently",
+      "paraphrase": "Ephemera rule: task state, current sprint notes, TODO lists belong in plans/ folder (or GitHub issues), NOT in CLAUDE.md - which stays timeless.",
+      "source_ref": "C2 (Anthropic best-practices exclude column)",
+      "stance": "support",
+      "confidence": "medium",
+      "tags": ["ephemera", "plans-folder", "anti-pattern", "A6"]
+    },
+    {
+      "id": "R4.C23",
+      "quote": "use markdown headers and bullets to group related instructions. Claude scans structure the same way readers do",
+      "paraphrase": "Density vs readability: bullet-heavy structure beats dense prose; 80% bullets / 20% prose captions is the working ratio.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["density", "bullets", "structure", "scanability"]
+    },
+    {
+      "id": "R4.C24",
+      "quote": "You can tune instructions by adding emphasis (e.g., 'IMPORTANT' or 'YOU MUST') to improve adherence",
+      "paraphrase": "Emphasis markers (IMPORTANT, YOU MUST) tune adherence when used sparingly - 2-3 times max; inflated usage nullifies the signal.",
+      "source_ref": "C2 (Anthropic best-practices)",
+      "stance": "support",
+      "confidence": "medium",
+      "tags": ["emphasis", "important-marker", "sparing-use"]
+    },
+    {
+      "id": "R4.C25",
+      "quote": "For complex X usage or if you encounter a FooBarError, see path/to/docs.md",
+      "paraphrase": "Shrivu 'pitch-don't-embed' (constitution model): instead of @imports for 500 lines of docs, write pointer sentences so Claude reads on demand.",
+      "source_ref": "C8 (Shrivu Shankar)",
+      "stance": "support",
+      "confidence": "medium",
+      "tags": ["pitch-dont-embed", "progressive-disclosure", "constitution"]
+    },
+    {
+      "id": "R4.C26",
+      "quote": "Treat CLAUDE.md like code: review it when things go wrong, prune it regularly, and test changes by observing whether Claude's behavior actually shifts",
+      "paraphrase": "Anthropic: CLAUDE.md is code - version it, prune it, validate behavior shifts after edits (empirical testing, not one-shot write).",
+      "source_ref": "C2 (Anthropic best-practices)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["maintenance", "treat-as-code", "pruning", "empirical-validation"]
+    },
+    {
+      "id": "R4.C27",
+      "quote": "./CLAUDE.md - team-shared (in git). ~/.claude/CLAUDE.md - personal preferences for all your projects. ./CLAUDE.local.md - personal + project-specific (in .gitignore)",
+      "paraphrase": "Three-tier separation: team project file, global user file, local gitignored file - prevents personal prefs colliding with teammates.",
+      "source_ref": "C1 (Anthropic memory docs)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["three-tier", "scoping", "personal-vs-team", "anti-pattern-A16"]
+    },
+    {
+      "id": "R4.C28",
+      "quote": "5 complete starter templates: TypeScript/React (Next.js 15 + Prisma), Python ML (uv + polars + PyTorch), Rust CLI (cargo + clap), Monorepo (Turborepo + pnpm), Library/SDK (npm publish)",
+      "paraphrase": "Five drop-in starter templates 30-80 lines, stack-specific non-guessable commands + positive rules + 'Read when' reference docs.",
+      "source_ref": "R4 sections 11.1-11.5 (synthesizing C1, C2, C3, C6, C8, C10, C20-C27)",
+      "stance": "support",
+      "confidence": "high",
+      "tags": ["templates", "starter-packs", "drop-in-ready", "project-type"]
+    }
+  ],
+  "gaps_flagged": [
+    "Exact tokenization cutoff where adherence drops (Anthropic says 200 lines, HumanLayer 60, dev.to 30 - no shared benchmark)",
+    "CLAUDE.local.md vs ~/.claude/CLAUDE.md boundary for personal prefs is fuzzy",
+    "Nested CLAUDE.md conflict resolution (deepest wins? ordering?) not documented by Anthropic",
+    "Managed-policy CLAUDE.md real-world enterprise examples absent from public research",
+    "@import performance ceiling at depth 2 vs 5 not benchmarked publicly",
+    "Empirical data on 3 bolded rules vs 30 bolded rules effectiveness missing",
+    "Interaction between CLAUDE.md and auto-memory (MEMORY.md) - boundary softer in practice than principle",
+    "<important if=...> tag effectiveness - community invention or hidden feature?",
+    "Threshold for 'multi-step procedure' when graduating CLAUDE.md rule to skill"
+  ]
+}

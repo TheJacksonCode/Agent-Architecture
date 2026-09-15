@@ -1,0 +1,158 @@
+{
+  "report_id": "R4",
+  "source_file": "research/R4_skill_chaining.md",
+  "extractor_persona": "Haiku-equivalent (Orchestrator-run)",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R4.C1",
+      "claim": "Fundamental chaining mechanism: skills do NOT call each other directly; Claude mediates all chains by invoking each skill sequentially based on reasoning.",
+      "evidence": "Official docs absence of skill-to-skill API + community consensus.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C2",
+      "claim": "Four canonical chaining patterns: Sequential (A->B->C), Fan-Out/Merge (A -> [B,C,D] -> merge), Conditional Routing (A decides B or C), Iterative Loop (A until condition).",
+      "evidence": "Community pattern catalog (AgentSys, Book Factory examples).",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C3",
+      "claim": "Sequential pattern example: cashandcache competitive-intel 4-stage chain (gather->extract->analyze->report); each stage is separate skill, Claude maintains state in conversation.",
+      "evidence": "cashandcache.com competitive-intel case study.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C4",
+      "claim": "Fan-out pattern uses context:fork with multiple subagents to parallelize; results return to main session and Claude synthesizes; cost is N x (subagent startup + skill body) tokens.",
+      "evidence": "Official subagent docs + community parallelization examples.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C5",
+      "claim": "Conditional routing requires orchestrator skill with explicit decision logic (e.g., 'if task is simple use skill-S, else use skill-L'); pattern relies on Claude's reasoning, not code branching.",
+      "evidence": "Community examples (preset-catalog routing patterns).",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C6",
+      "claim": "Iterative loop pattern: Claude invokes skill repeatedly until termination criterion; each invocation re-reads skill body (5k token re-attach after compaction) contributing to token growth.",
+      "evidence": "R1.C9 compaction behavior + iterative use cases (refactor-until-tests-pass).",
+      "confidence": "medium"
+    },
+    {
+      "id": "R4.C7",
+      "claim": "Swarm Orchestration alternative (advanced): uses TeammateTool + Task system + ~/.claude/teams/ to spawn parallel agents. Distinct from skill chaining; bypasses Claude-mediated chain with explicit team definitions.",
+      "evidence": "Swarm Orchestration docs + ~/.claude/teams/ config.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R4.C8",
+      "claim": "Anthropic official skills use chaining patterns: commit-commands chains stage->diff-analyze->message-draft; code-review chains lint->static-analysis->summary.",
+      "evidence": "Anthropic official plugin internals (github.com/anthropics).",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C9",
+      "claim": "Bug #17283 breaks chain isolation: chain step B with context:fork invoked via Skill tool by step A runs in A's context, polluting memory intended for isolation.",
+      "evidence": "R2.C13 + chaining implications analysis.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C10",
+      "claim": "I/O contracts between chained skills are informal: Claude interprets output of skill A and formulates input to skill B. No schema enforcement; brittle for long chains.",
+      "evidence": "Absence of I/O schema in skill spec + community reports of chain failures.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C11",
+      "claim": "Shared state pattern: chained skills share the conversation context (messages, prior skill outputs); explicit state hand-off via conversation text, not via structured storage.",
+      "evidence": "Conversation architecture + community examples.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C12",
+      "claim": "Recursion concern: skill A invokes skill B which invokes skill A. Not prevented by platform; can lead to runaway invocations if Claude reasoning fails to terminate. No official depth limit documented.",
+      "evidence": "Absence of depth limit in docs + community anti-pattern reports.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R4.C13",
+      "claim": "Cross-paradigm chain: Skill -> MCP tool is supported (skill body invokes MCP tool via allowed-tools); enables skill to leverage external APIs without re-implementing.",
+      "evidence": "allowed-tools field + MCP integration examples.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C14",
+      "claim": "Community examples: AgentSys (orchestrator meta-skill), Book Factory (multi-stage document pipeline), Trail of Bits audit workflows (security-focused chain with CodeQL/Semgrep).",
+      "evidence": "Repo observations + awesome-claude-code entries.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C15",
+      "claim": "Anti-patterns in chaining: chains >5 skills deep (token bloat), skill designed to output JSON but chained to skill expecting markdown (contract mismatch), recursive self-invoke without termination.",
+      "evidence": "Community troubleshooting + R7 anti-patterns.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C16",
+      "claim": "Token economics of chains: for chain of N skills, cost = N * (~100 metadata pre-invocation + 1500 body) + inter-step reasoning tokens. 5-skill chain = ~8k + reasoning.",
+      "evidence": "Derived from R2.C17 token numbers.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R4.C17",
+      "claim": "Post-compaction chain survival: only most recent 5k tokens of each skill re-attached; older chain steps may lose their instructions; chains spanning compaction boundary are fragile.",
+      "evidence": "R1.C9 compaction behavior applied to chains.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C18",
+      "claim": "Conditional routing best implemented with explicit decision prompt in orchestrator skill ('analyze task complexity, if simple invoke fast-skill, if complex invoke deep-skill'); avoids ambiguity.",
+      "evidence": "Community orchestration patterns (PRESET_CATALOG.md approach).",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C19",
+      "claim": "Parallel fan-out via context:fork is the only platform-supported parallelism; without fork, Claude serializes invocations even when logically independent.",
+      "evidence": "Absence of parallel skill call mechanism + fork docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R4.C20",
+      "claim": "Maciej's 42 commands effectively implement Claude-mediated chains: each command is orchestrator skill that invokes 3-15 sub-skills in preset order.",
+      "evidence": "CLAUDE.md project description + generate_commands.js structure.",
+      "confidence": "high"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "R4.CONFLICT1",
+      "description": "Chain reliability vs power: deeper chains enable richer workflows but degrade post-compaction; 5k per-skill re-attach cap is insufficient for information-dense chains.",
+      "severity": "high"
+    },
+    {
+      "id": "R4.CONFLICT2",
+      "description": "Skill tool bug #17283 specifically breaks fork-isolation in chains, yet fork is the primary mechanism for parallelism; parallel fan-out workflows silently run in shared context.",
+      "severity": "high"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R4.GAP1",
+      "description": "No official benchmark comparing Claude-mediated chain vs Swarm Orchestration for parallel tasks (e.g., 10 parallel researchers).",
+      "severity": "medium"
+    },
+    {
+      "id": "R4.GAP2",
+      "description": "Missing formal I/O contract syntax for chained skills; community would benefit from convention (e.g., structured output field in frontmatter).",
+      "severity": "medium"
+    },
+    {
+      "id": "R4.GAP3",
+      "description": "Recursion depth limit: undocumented; empirical testing needed to determine if platform caps chain depth or relies on token exhaustion.",
+      "severity": "low"
+    }
+  ],
+  "summary": "R4 establishes Claude-as-mediator as the fundamental chain mechanism, catalogs 4 patterns (Sequential/Fan-Out/Conditional/Iterative), identifies Swarm Orchestration as alternative, flags Bug #17283 as critical for fork-based parallelism, and maps Maciej's 42 commands as orchestrator-skill chains."
+}

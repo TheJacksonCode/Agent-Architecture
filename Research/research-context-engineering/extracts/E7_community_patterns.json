@@ -1,0 +1,306 @@
+{
+  "source_report": "R7_community_patterns.md",
+  "report_words": 6847,
+  "extract_words": 523,
+  "extractor_version": "v1",
+  "extraction_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R7.C1",
+      "claim": "PROGRESS.md pre-clear checkpoint is Tier 1 standard for session continuity",
+      "citation": "Before reaching context limit, ask Claude to summarize: accomplishments, files modified with rationale, next 3 steps, decisions/constraints - save to PROGRESS.md. Then run /clear and paste summary back into fresh session.",
+      "source_location": "PATTERN 1 / Concrete pattern",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["session-management", "context-budgeting", "PROGRESS.md"]
+    },
+    {
+      "id": "R7.C2",
+      "claim": "/handover command generates structured HANDOVER.md with decisions, pitfalls, lessons, failed approaches",
+      "citation": "Custom slash command /handover generates a HANDOVER.md at session end capturing: decisions, pitfalls, lessons, failed approaches (do not repeat), key decisions with rationale, current state (working vs broken), resume instructions with numbered steps.",
+      "source_location": "PATTERN 2 / Description",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["session-handoff", "HANDOVER.md", "custom-commands"]
+    },
+    {
+      "id": "R7.C3",
+      "claim": "/handover pattern is widely copied with independent implementations (claude-handoff, mcpmarket tools)",
+      "citation": "Plugin repos at https://github.com/willseltzer/claude-handoff and https://mcpmarket.com/tools/skills/session-handover confirm validation_status: VALIDATED - independent implementations confirm pattern.",
+      "source_location": "PATTERN 2 / Plugin repos",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["session-handoff", "ecosystem", "community-adoption"]
+    },
+    {
+      "id": "R7.C4",
+      "claim": "/compact with targeted hint prevents critical context loss vs bare /compact",
+      "citation": "Never run bare /compact. Always provide context hint: /compact focus on auth refactor, drop test debugging. This tells Claude what to preserve vs discard during compaction, preventing critical context loss.",
+      "source_location": "PATTERN 3 / Description",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compaction", "context-preservation", "best-practice"]
+    },
+    {
+      "id": "R7.C5",
+      "claim": "MindBranches session fast rules (related follow-up vs new task vs wrong path vs context heavy vs failed branch) are widely shared reference",
+      "citation": "Related follow-up, same working set -> Continue / New task -> /clear / Wrong path, same task -> /rewind (Esc Esc) / Same task, context getting heavy -> /compact [with hint] / Need lessons from failed branch -> HANDOVER.md first",
+      "source_location": "PATTERN 3 / Fast rules",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["session-doctrine", "decision-rules", "viral-pattern"]
+    },
+    {
+      "id": "R7.C6",
+      "claim": "PreCompact hook captures full session transcript (user messages, file mods, task events, sub-agents, skills, MCP tool usage) to JSON/markdown backup",
+      "citation": "Hook fires RIGHT BEFORE compaction, capturing full session transcript to a JSON/markdown backup. Extracts: user messages, file modifications (write/edit tool calls), task events, sub-agent invocations, loaded skills, MCP tool usage, build/test commands.",
+      "source_location": "PATTERN 4 / Description",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["precompact-hook", "backup", "state-capture"]
+    },
+    {
+      "id": "R7.C7",
+      "claim": "PreCompact hook requires async:true to avoid slowing down compaction",
+      "citation": "Implementation key: { 'async': true } // Required - don't slow down compaction",
+      "source_location": "PATTERN 4 / Implementation key",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["precompact-hook", "performance", "async-config"]
+    },
+    {
+      "id": "R7.C8",
+      "claim": "Community consensus on 60-75% as safe autocompact trigger; native settings.json config NOT available (multiple open GitHub issues)",
+      "citation": "Community consensus on 60-75% as safe autocompact trigger. Native settings.json config NOT available (multiple open GitHub issues: #11819, #15719, #25679, #28728, #34126, #46695). Workaround: CLAUDE_AUTOCOMPACT_PCT_OVERRIDE env var (1-100).",
+      "source_location": "PATTERN 5 / Description",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["context-budgeting", "configuration", "feature-gap"]
+    },
+    {
+      "id": "R7.C9",
+      "claim": "claudefa.st recommends 80% threshold to stop complex multi-file work; buildtolaunch recommends 60% threshold",
+      "citation": "Power-user config pattern notes: 80% threshold: stop complex multi-file work (claudefa.st recommendation) / 60% threshold: community recommendation for proactive compaction",
+      "source_location": "PATTERN 5 / Key numbers",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["context-budgeting", "threshold-conflict", "source-variance"]
+    },
+    {
+      "id": "R7.C10",
+      "claim": "33K tokens reserved by auto-compact buffer (non-negotiable); performance degradation at 20% context utilization",
+      "citation": "33K tokens: reserved by auto-compact buffer (non-negotiable) / 20%: context where quality degradation begins (claudefa.st finding)",
+      "source_location": "PATTERN 5 / Key numbers",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["context-budgeting", "buffer-reserve", "performance-threshold"]
+    },
+    {
+      "id": "R7.C11",
+      "claim": "Session per task doctrine: new topic = new chat, no exceptions; effective session cost drops from $2.87 to $0.94 when switching to focused isolated sessions",
+      "citation": "Canonical rule: When you start a new task, start a new session. Effective session cost drops from $2.87 to $0.94 average when switching from long drag-on sessions to focused isolated sessions. Community shorthand: 'New topic = new chat. No exceptions.'",
+      "source_location": "PATTERN 6 / Description",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["session-isolation", "cost-optimization", "best-practice"]
+    },
+    {
+      "id": "R7.C12",
+      "claim": "2-hour sessions result in 2-3 compactions with compounding summary dilution; effective high-quality window ~400K of 1M advertised",
+      "citation": "2-hour session = 2-3 compactions = compounding summary dilution / Performance degradation begins at 20% context utilization (not 80%) / Effective high-quality window: ~400K tokens of the advertised 1M (from 6852-session study)",
+      "source_location": "PATTERN 6 / Additional insight",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["context-budgeting", "empirical-study", "quality-window"]
+    },
+    {
+      "id": "R7.C13",
+      "claim": "Plan acceptance (native ~2026-02 feature) automatically clears context, giving plan execution fresh context window",
+      "citation": "Native Claude Code feature (shipped ~2026-02): accepting a plan automatically clears context, giving plan execution a fresh context window. Boris Cherny (creator): 'We found this helps keep Claude on track longer, and significantly improves plan adherence.'",
+      "source_location": "PATTERN 7 / Description",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["plan-acceptance", "native-feature", "context-management"]
+    },
+    {
+      "id": "R7.C14",
+      "claim": "claude-mem: 5 lifecycle hooks (SessionStart -> UserPromptSubmit -> PostToolUse -> Summary -> SessionEnd) with SQLite DB at ~/.claude-mem/claude-mem.db",
+      "citation": "Tool A: claude-mem (thedotmack/claude-mem) - 5 lifecycle hooks: SessionStart -> UserPromptSubmit -> PostToolUse -> Summary -> SessionEnd / SQLite3 DB at ~/.claude-mem/claude-mem.db / Worker on Express API port 37777",
+      "source_location": "PATTERN 8 / Tool A",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["automated-memory", "hooks", "claude-mem-tool"]
+    },
+    {
+      "id": "R7.C15",
+      "claim": "claude-memory-compiler: Karpathy LLM KB architecture with SessionEnd+PreCompact hooks; 6 PM auto-compilation; no RAG (structured index outperforms vector at 50-500 article scale)",
+      "citation": "Tool B: claude-memory-compiler (coleam00/claude-memory-compiler) - Based on Karpathy LLM Knowledge Base architecture / Hooks: SessionEnd + PreCompact -> flush.py -> daily/YYYY-MM-DD.md -> compile.py / No RAG (structured index outperforms vector at personal scale of 50-500 articles) / SessionStart hook re-injects compiled index",
+      "source_location": "PATTERN 8 / Tool B",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["automated-memory", "knowledge-base", "claude-memory-compiler"]
+    },
+    {
+      "id": "R7.C16",
+      "claim": "claude-mem April 2026 backlog: 93 PRs merged into 138 tracking items (active development signal)",
+      "citation": "April 2026 backlog: 93 PRs, 147 issues merged into 138 tracking items",
+      "source_location": "PATTERN 8 / Tool A",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["automated-memory", "ecosystem-health", "development-velocity"]
+    },
+    {
+      "id": "R7.C17",
+      "claim": "Subagent isolation: use subagent when you need only conclusion, not tool output again; fresh 200K context window returns 1K-2K token summary to parent",
+      "citation": "Mental test: 'Will I need this tool output again, or just the conclusion?' If just the conclusion - use a subagent. Subagents get fresh 200K context windows; only 1K-2K token summaries return to parent session.",
+      "source_location": "PATTERN 9 / Description",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["subagent-isolation", "context-firewall", "cost-reduction"]
+    },
+    {
+      "id": "R7.C18",
+      "claim": "Subagent rule of thumb: anything requiring reading 3-4+ large files is solid subagent candidate",
+      "citation": "Rule of thumb: 'Anything requiring reading more than 3-4 large files is a solid subagent candidate.'",
+      "source_location": "PATTERN 9 / Description",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["subagent-isolation", "heuristic", "decision-rule"]
+    },
+    {
+      "id": "R7.C19",
+      "claim": "Hybrid manual context management: split monolithic CLAUDE.md into domain-specific files (policies.md, wot.md, queries.md); load only relevant files pre-session",
+      "citation": "Split monolithic CLAUDE.md into domain-specific files (e.g., policies.md, wot.md, queries.md). Session starts with manual summary of 'what matters today' before any file reads.",
+      "source_location": "PATTERN 10 / Description",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["context-management", "CLAUDE.md-optimization", "file-organization"]
+    },
+    {
+      "id": "R7.C20",
+      "claim": "Opening context summary gets highest attention weight - earlier context more reliably referenced than context buried in middle",
+      "citation": "'Earlier context is more reliably referenced than context buried in the middle.' - opening context summary gets highest attention weight",
+      "source_location": "PATTERN 10 / Description",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["context-engineering", "attention-weights", "positioning"]
+    },
+    {
+      "id": "R7.C21",
+      "claim": "Single research session consumes 100K+ tokens and costs $40-70; front-load research into reusable documents; keep CLAUDE.md under 500 lines (200 target)",
+      "citation": "A single research session consumes 100K+ tokens and costs $40-70 - front-load research into reusable documents. Keep CLAUDE.md under 500 lines (200 lines target). 5K token CLAUDE.md costs 5K tokens every single turn.",
+      "source_location": "PATTERN 10 / Key finding",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["cost-optimization", "CLAUDE.md-size", "research-strategy"]
+    },
+    {
+      "id": "R7.C22",
+      "claim": "Boris Cherny hidden features thread (2026-03-29) is reference anchor for community; 790K views (viral signal)",
+      "citation": "@bcherny status/2038454336355999749 (date: 2026-03-29) - Hidden + underused Claude Code features - YES (790K views)",
+      "source_location": "Cited Threads table",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["viral-content", "community-reference", "authority-signal"]
+    },
+    {
+      "id": "R7.C23",
+      "claim": "Zara Zhang /handover command became reference, spawned plugin ecosystem; widely copied pattern",
+      "citation": "@zarazhangrui /handover custom command + HANDOVER.md (approx 2026-03) - YES (widely copied)",
+      "source_location": "Cited Threads table",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["community-adoption", "plugin-ecosystem", "pattern-virality"]
+    },
+    {
+      "id": "R7.C24",
+      "claim": "Three competing naming conventions for pre-compaction saves: HANDOVER.md vs SESSION-NOTES.md vs PROGRESS.md with no canonical winner (community fragmentation)",
+      "citation": "HANDOVER.md vs SESSION-NOTES.md vs PROGRESS.md - three competing naming conventions with no canonical winner. Community fragmentation.",
+      "source_location": "Gaps / Requires Validation, item 2",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["naming-fragmentation", "standardization-gap", "usability-issue"]
+    },
+    {
+      "id": "R7.C25",
+      "claim": "autoCompactAt settings.json feature has multiple open GitHub issues (#46695 latest as of 2026-04-17) but no merge yet",
+      "citation": "Multiple GitHub issues open (latest: #46695) but no merge yet as of 2026-04-17. Status may have changed.",
+      "source_location": "Gaps / Requires Validation, item 3",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["feature-gap", "native-configuration", "GitHub-issues"]
+    },
+    {
+      "id": "R7.C26",
+      "claim": "No controlled benchmarks comparing manual PROGRESS.md vs automated claude-mem AI injection for effectiveness",
+      "citation": "Effectiveness of claude-mem AI compression - No controlled benchmarks found comparing manual PROGRESS.md vs automated claude-mem injection.",
+      "source_location": "Gaps / Requires Validation, item 4",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["research-gap", "benchmarking", "tool-comparison"]
+    },
+    {
+      "id": "R7.C27",
+      "claim": "Adaptive thinking / effort level: 73% reasoning depth decline Jan->Mar 2026 (2200 -> 600 chars); power users should set CLAUDE_CODE_EFFORT_LEVEL=max for complex tasks",
+      "citation": "Scortier/Stella Laurenzo study: 73% reasoning depth decline (2200 -> 600 chars) Jan->Mar 2026 / Resolution: power users SHOULD set CLAUDE_CODE_EFFORT_LEVEL=max for complex tasks. This is an underpublicized but important finding.",
+      "source_location": "CONFLICT 3 / Adaptive thinking",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["effort-level", "reasoning-depth", "underpublicized-finding"]
+    },
+    {
+      "id": "R7.C28",
+      "claim": "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1 is workaround for zero-reasoning bug (power-user config layer)",
+      "citation": "Notable env vars: CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING - 1 to disable (workaround for zero-reasoning bug)",
+      "source_location": "Notable env vars section",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["environment-variables", "workaround", "bug-mitigation"]
+    },
+    {
+      "id": "R7.C29",
+      "claim": "awesome-claude-code-toolkit ecosystem contains 135 agents + 176 plugins + 20 hooks (community project health signal)",
+      "citation": "awesome-claude-code-toolkit (rohitg00) - 135 agents + 176 plugins + 20 hooks - ACTIVE",
+      "source_location": "Tool Inventory table",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ecosystem-health", "community-registry", "project-scale"]
+    },
+    {
+      "id": "R7.C30",
+      "claim": "X/Twitter direct fetch blocked by paywall (402); engagement numbers from R7 report sourced from secondary sources",
+      "citation": "X/Twitter direct fetch blocked (402). Engagement numbers ('790K views' for bcherny thread) are from secondary sources.",
+      "source_location": "Gaps / Requires Validation, item 1",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["data-validation", "source-limitation", "methodology-note"]
+    }
+  ],
+  "conflicts_flagged": [
+    "CONFLICT 1: Compaction threshold recommendations diverge - buildtolaunch.substack recommends 60%, claudefa.st recommends 80%, Anthropic official gives no specific threshold. Resolution: likely workflow-dependent. 60% = aggressive (safe, costly), 80% = permissive (efficient, risky). Use 60-70% as default. [See R7.C8, R7.C9]",
+    "CONFLICT 2: 1M context window effectiveness - official Anthropic states 1M available, but empirical Scortier study (6852 sessions) shows effective quality window ~400K tokens; performance degradation at 20% utilization, not 80%. Treats practical budget ~300-400K. [See R7.C12]",
+    "CONFLICT 3: Adaptive thinking/effort level underpublicized - Scortier study shows 73% reasoning depth decline Jan->Mar 2026, but this workaround (CLAUDE_CODE_EFFORT_LEVEL=max) is not widely advertised in official docs. [See R7.C27, R7.C28]"
+  ],
+  "gaps_flagged": [
+    "NAMING FRAGMENTATION: Three competing conventions for pre-compaction saves (HANDOVER.md vs SESSION-NOTES.md vs PROGRESS.md) with no canonical winner. Recommendation: SYNTHESIS should pick one standard. [R7.C24]",
+    "MISSING NATIVE CONFIG: autoCompactAt in settings.json (highly requested, 6 open GitHub issues as of 2026-04-17) remains unmerged. Users must resort to env var CLAUDE_AUTOCOMPACT_PCT_OVERRIDE workaround. Recommendation: SYNTHESIS note this as known gap. [R7.C25]",
+    "BENCHMARK GAP: No controlled comparison of manual PROGRESS.md vs automated claude-mem effectiveness. Tool adoption unvalidated. Recommendation: flag for future campaign or CRITIC validation. [R7.C26]",
+    "EFFORT LEVEL UNDERPUBLICIZED: 73% reasoning depth decline (Scortier study, Jan->Mar 2026) and CLAUDE_CODE_EFFORT_LEVEL=max workaround are not widely broadcast in official Anthropic channels. High practical impact for power users. Recommendation: SYNTHESIS highlight this. [R7.C27]",
+    "X/TWITTER PAYWALL: Direct fetch blocked (402). Engagement metrics (790K views for bcherny hidden features thread) sourced from secondary sources, not authoritative X counts. Lower confidence on exact virality metrics. [R7.C30]"
+  ],
+  "dominant_tags": [
+    "session-management (7 claims)",
+    "context-budgeting (8 claims)",
+    "best-practice (5 claims)",
+    "automated-memory (5 claims)",
+    "feature-gap (2 claims)"
+  ],
+  "low_confidence_claims": [
+    "R7.C5 (MindBranches fast rules virality - med confidence, no direct engagement metrics)",
+    "R7.C9 (threshold conflict variance - med confidence, sourced from competing blogs)",
+    "R7.C12 (6852-session empirical study - med confidence, single research study)",
+    "R7.C15 (claude-memory-compiler effectiveness - med confidence, no benchmarks)",
+    "R7.C27 (reasoning depth decline - med confidence, single study by Scortier/Laurenzo)"
+  ],
+  "recommendation": "GO for SYNTHESIS. 30 claims extracted from 6847-word report (compression ratio 13.1:1). High consensus on Tier 1 patterns (PROGRESS.md, /handover, /compact-with-hint, session doctrine). Three major conflicts flagged (threshold, context window, effort level). Five actionable gaps identified (naming fragmentation, missing native config, benchmark gap, underpublicized effort level, X/Twitter paywall). Tool inventory complete (12 active projects + env var layer). Ready for BRAMA 3 gate (15-30 claims, conflicts+gaps). CRITIC and SYNTHESIZER should prioritize: (1) naming canon decision, (2) threshold recommendation (60-70% as default), (3) effort level highlight in final copy."
+}

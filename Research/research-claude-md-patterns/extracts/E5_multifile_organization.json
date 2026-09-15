@@ -1,0 +1,273 @@
+{
+  "extractor": "E5",
+  "source": "R5_multifile_organization.md",
+  "topic": "CLAUDE.md multi-file organization, @imports, plugin overlay, monorepo patterns",
+  "date": "2026-04-17",
+  "word_count_estimate": 420,
+  "claims": [
+    {
+      "id": "R5.C1",
+      "claim": "@import syntax: CLAUDE.md files can import additional files using @path/to/import syntax; imported files are expanded and loaded into context at launch alongside the parent CLAUDE.md.",
+      "quote": "CLAUDE.md files can import additional files using `@path/to/import` syntax. Imported files are expanded and loaded into context at launch alongside the CLAUDE.md that references them.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["import", "syntax", "official-docs"]
+    },
+    {
+      "id": "R5.C2",
+      "claim": "Import recursion has a hard maximum depth of five hops; deeper chains are blocked or silently truncated.",
+      "quote": "Imported files can recursively import other files, with a maximum depth of five hops.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["import", "limits", "5-hop", "recursion"]
+    },
+    {
+      "id": "R5.C3",
+      "claim": "Both relative and absolute paths are allowed; relative paths resolve relative to the file containing the import, NOT cwd - critical for shared templates in ~/.claude/common/.",
+      "quote": "Both relative and absolute paths are allowed. Relative paths resolve relative to the file containing the import, not the working directory.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["import", "paths", "resolution"]
+    },
+    {
+      "id": "R5.C4",
+      "claim": "Home-relative imports via @~/ tilde expansion are supported and documented (example: @~/.claude/my-project-instructions.md).",
+      "quote": "# Individual Preferences\n- @~/.claude/my-project-instructions.md",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["import", "home-relative", "tilde"]
+    },
+    {
+      "id": "R5.C5",
+      "claim": "Remote URL imports (@https://...) are NOT officially supported; docs only cover local filesystem paths. Community workaround: git clone private repo + local import, or symlinks.",
+      "quote": "Oficjalna dokumentacja nie wspomina wsparcia dla `@https://example.com/rules.md`. Wszystkie przyklady w docs ograniczaja sie do local filesystem paths.",
+      "stance": "gap",
+      "confidence": "high",
+      "tags": ["import", "remote-urls", "gap", "workaround"]
+    },
+    {
+      "id": "R5.C6",
+      "claim": "External-import approval dialog appears on first encounter with imports outside cwd; decline = permanent disable for the project, requiring manual settings edit to reverse.",
+      "quote": "The first time Claude Code encounters external imports in a project, it shows an approval dialog listing the files. If you decline, the imports stay disabled and the dialog does not appear again.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["import", "approval-dialog", "security", "external"]
+    },
+    {
+      "id": "R5.C7",
+      "claim": "Circular @import detection is not explicitly documented in memory docs but is confirmed by community testing and exists analogously for skills loader ('Circular Dependency Detected' error).",
+      "quote": "When Claude Code initializes a skill, it walks the dependency tree before executing any code. The loader maintains a 'currently loading' set. If it encounters a skill that is already in that set, it knows a cycle exists and raises the error immediately rather than entering an infinite loop.",
+      "stance": "disputed",
+      "confidence": "medium",
+      "tags": ["import", "circular-refs", "gap", "skills-analogy"]
+    },
+    {
+      "id": "R5.C8",
+      "claim": "Circular symlinks in .claude/rules/ ARE officially documented as detected and handled gracefully - this is explicit for symlinks but not for @import.",
+      "quote": "Symlinks are resolved and loaded normally, and circular symlinks are detected and handled gracefully.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["symlinks", "circular-refs", "official-docs", "rules"]
+    },
+    {
+      "id": "R5.C9",
+      "claim": "Missing imported files are silently skipped (no error); /memory command is recommended to verify loaded files.",
+      "quote": "Brak pliku: silent skip. Import jak @missing.md zostaje usuniety z kontekstu bez bledu, Claude po prostu nie widzi tego bloku.",
+      "stance": "community",
+      "confidence": "medium",
+      "tags": ["import", "error-handling", "missing-files", "gap"]
+    },
+    {
+      "id": "R5.C10",
+      "claim": "Hierarchical discovery: Claude walks up the directory tree from cwd, loading every CLAUDE.md along the way (eager) and concatenating them into context rather than overriding.",
+      "quote": "Claude Code reads CLAUDE.md files by walking up the directory tree from your current working directory... All discovered files are concatenated into context rather than overriding each other.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["discovery", "hierarchical", "monorepo", "parent-dirs"]
+    },
+    {
+      "id": "R5.C11",
+      "claim": "Subdirectory CLAUDE.md files are LAZY-loaded - included only when Claude reads files in those subdirectories (not at launch). This is the killer feature for monorepos.",
+      "quote": "Claude also discovers CLAUDE.md and CLAUDE.local.md files in subdirectories under your current working directory. Instead of loading them at launch, they are included when Claude reads files in those subdirectories.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["lazy-loading", "monorepo", "subdir", "token-efficient"]
+    },
+    {
+      "id": "R5.C12",
+      "claim": "Plugins do NOT provide their own CLAUDE.md; they contribute namespaced components (skills/agents/commands/hooks/MCP/settings) via plugin-name: prefix. Plugin overlay of project CLAUDE.md is a myth.",
+      "quote": "Brak CLAUDE.md w plugin root - plugin nie dostarcza persistent instructions do kontekstu.",
+      "stance": "cross-confirmed",
+      "confidence": "high",
+      "tags": ["plugins", "overlay-myth", "namespacing", "cross-confirm-R1-R2"]
+    },
+    {
+      "id": "R5.C13",
+      "claim": "Plugin settings.json takes priority over plugin.json settings; unknown keys silently ignored. Plugin hooks ADD to project hooks (sequential execution), not override.",
+      "quote": "Settings from settings.json take priority over settings declared in plugin.json. Unknown keys are silently ignored.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["plugins", "settings", "hooks", "precedence"]
+    },
+    {
+      "id": "R5.C14",
+      "claim": "--plugin-dir local plugin takes precedence over marketplace plugin of same name for the session - key for plugin development flow.",
+      "quote": "When a --plugin-dir plugin has the same name as an installed marketplace plugin, the local copy takes precedence for that session.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["plugins", "local-override", "development"]
+    },
+    {
+      "id": "R5.C15",
+      "claim": "Canonical monorepo pattern: lean root CLAUDE.md (~150-300 lines universal rules) + per-package CLAUDE.md in packages/*/CLAUDE.md loaded on-demand. Example: acme-platform Turborepo with api/web/shared packages.",
+      "quote": "Root CLAUDE.md content (abridged): Tech stack: Turborepo, Node 20, pnpm workspaces... Kazdy package CLAUDE.md zaweza scope: packages/api/CLAUDE.md: Express, Prisma, Zod, port 4000",
+      "stance": "community",
+      "confidence": "high",
+      "tags": ["monorepo", "turborepo", "acme-platform", "example", "lean-root"]
+    },
+    {
+      "id": "R5.C16",
+      "claim": "Lazy subdir loading enables drastic startup context reduction: dev.to anvodev reported 47k words -> 9k words in main CLAUDE.md (~80-90% savings) by moving scoped content to packages.",
+      "quote": "Dev.to article anvodev reported reduction 47k words -> 9k words w main CLAUDE.md (-80%) poprzez przeniesienie scoped content do packages.",
+      "stance": "community",
+      "confidence": "medium",
+      "tags": ["token-savings", "lazy-loading", "monorepo", "empirical"]
+    },
+    {
+      "id": "R5.C17",
+      "claim": "Virtual Monorepo pattern (Medium/DevOps AI) for firms with 35+ independent repos: workspace/ with each subfolder as independent git repo, root CLAUDE.md describes interconnections for cross-service reasoning.",
+      "quote": "Kazdy subfolder to niezalezny git repo (teams keep their workflows). Root CLAUDE.md opisuje interconnections",
+      "stance": "community",
+      "confidence": "medium",
+      "tags": ["virtual-monorepo", "35-repos", "multi-repo", "example"]
+    },
+    {
+      "id": "R5.C18",
+      "claim": "5 splitting strategies: (1) per topic - doc-per-concern in agent_docs/ with Claude choosing which to read; (2) per audience - AGENTS.md + CLAUDE.md pattern for multi-agent compat; (3) per lifecycle - persistent CLAUDE.md vs ephemeral plans/; (4) per path scope - .claude/rules/ with YAML paths: frontmatter; (5) per agent persona - move multi-step procedures to skills/agents.",
+      "quote": "Include a list of these files with a brief description of each, and instruct Claude to decide which (if any) are relevant and to read them before it starts working.",
+      "stance": "community",
+      "confidence": "high",
+      "tags": ["splitting", "strategies", "organization", "5-patterns"]
+    },
+    {
+      "id": "R5.C19",
+      "claim": "Per-audience pattern: Claude reads CLAUDE.md not AGENTS.md; if repo uses AGENTS.md for other coding agents (Cursor/Copilot/Codex), create CLAUDE.md that imports it (@AGENTS.md) to avoid duplication.",
+      "quote": "Claude Code reads CLAUDE.md, not AGENTS.md. If your repository already uses AGENTS.md for other coding agents, create a CLAUDE.md that imports it so both tools read the same instructions without duplicating them.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["AGENTS.md", "multi-agent", "import-pattern"]
+    },
+    {
+      "id": "R5.C20",
+      "claim": ".claude/rules/*.md with YAML frontmatter paths: glob are LAZY-loaded only when Claude reads matching files; rules WITHOUT paths: are eager - key distinction for token budget.",
+      "quote": "Kluczowa roznica vs @imports: rules bez paths: ladowane sa unconditionally na starcie sesji (zjadaja kontekst); rules z paths: ladowane lazownie tylko gdy Claude czyta pliki pasujace do glob pattern.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["rules", "path-scoping", "yaml-frontmatter", "lazy"]
+    },
+    {
+      "id": "R5.C21",
+      "claim": "Loading precedence order: (1) managed policy CLAUDE.md (cannot be excluded), (2) user rules, (3) user CLAUDE.md, (4) project CLAUDE.md (parent->cwd), (5) project rules, (6) CLAUDE.local.md, (7) lazy subdir CLAUDE.md, (8) auto memory, (9) conversation. CLAUDE.local.md appended after CLAUDE.md at same level.",
+      "quote": "Within each directory, CLAUDE.local.md is appended after CLAUDE.md, so when instructions conflict, your personal notes are the last thing Claude reads at that level.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["precedence", "loading-order", "conflicts", "layered"]
+    },
+    {
+      "id": "R5.C22",
+      "claim": "Conflicts between rules are resolved probabilistically - 'If two rules contradict each other, Claude may pick one arbitrarily.' Explicit override wording required in lower-level files.",
+      "quote": "If two rules contradict each other, Claude may pick one arbitrarily.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["conflicts", "arbitrary", "override-pattern"]
+    },
+    {
+      "id": "R5.C23",
+      "claim": "4-layer organization model: L1 Universal (~/.claude/CLAUDE.md, just me), L2 Project-wide (./CLAUDE.md, team via git), L3 Module-specific (packages/*/CLAUDE.md or .claude/rules/, lazy), L4 Task-specific (plans/CURRENT.md, ephemeral).",
+      "quote": "L1 Universal | ~/.claude/CLAUDE.md | Ja w kazdym projekcie | Personal coding preferences... L4 Task-specific | plans/CURRENT.md | Biezacy task/feature",
+      "stance": "community",
+      "confidence": "medium",
+      "tags": ["layered", "organization", "4-layers", "separation-of-concerns"]
+    },
+    {
+      "id": "R5.C24",
+      "claim": "claudeMdExcludes in settings (user/project/local/managed) uses glob patterns against absolute file paths; arrays merge across layers. Managed policy CLAUDE.md CANNOT be excluded.",
+      "quote": "Patterns are matched against absolute file paths using glob syntax. You can configure claudeMdExcludes at any settings layer: user, project, local, or managed policy. Arrays merge across layers.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["excludes", "settings", "glob", "monorepo"]
+    },
+    {
+      "id": "R5.C25",
+      "claim": "--add-dir by default gives file access but does NOT load CLAUDE.md from that dir; env var CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 enables cross-repo CLAUDE.md loading.",
+      "quote": "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["add-dir", "env-vars", "cross-repo"]
+    },
+    {
+      "id": "R5.C26",
+      "claim": "Shared template strategies: (1) ~/.claude/common/ with @ imports in global CLAUDE.md; (2) private GitHub repo cloned to ~/company-rules/ + cron sync; (3) symlinks in .claude/rules/; (4) managed policy via MDM/Ansible; (5) plugin distribution (but plugin cannot provide CLAUDE.md).",
+      "quote": "Dla zespolow (nie-oficjalnie wspierany ale powszechny): Firma tworzy repo acme-corp/claude-code-standards (private), Developers klonuja do ~/acme-standards/, Cron / post-receive hook syncuje",
+      "stance": "community",
+      "confidence": "high",
+      "tags": ["shared-templates", "company-wide", "symlinks", "managed-policy", "5-strategies"]
+    },
+    {
+      "id": "R5.C27",
+      "claim": "Project-root CLAUDE.md survives /compact (re-read from disk and re-injected); nested subdir CLAUDE.md files are NOT re-injected automatically - they reload next time Claude reads files in that subdir.",
+      "quote": "Project-root CLAUDE.md survives compaction: after /compact, Claude re-reads it from disk and re-injects it into the session. Nested CLAUDE.md files in subdirectories are not re-injected automatically; they reload the next time Claude reads a file in that subdirectory.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["compaction", "persistence", "subdir", "reload"]
+    },
+    {
+      "id": "R5.C28",
+      "claim": "Block-level HTML comments (<!-- ... -->) in CLAUDE.md are stripped before context injection - useful for maintainer notes without token cost. Comments in code blocks are NOT stripped.",
+      "quote": "Block-level HTML comments (<!-- maintainer notes -->) in CLAUDE.md files are stripped before the content is injected into Claude's context.",
+      "stance": "official",
+      "confidence": "high",
+      "tags": ["comments", "token-savings", "html-comments", "maintainer-notes"]
+    },
+    {
+      "id": "R5.C29",
+      "claim": "CLAUDE.local.md is NOT deprecated despite GitHub issue #2950 confusion; current docs still describe it as 'loaded alongside CLAUDE.md and treated the same way.' Community trend favors @~/.claude/... imports for worktree portability.",
+      "quote": "For private per-project preferences that shouldn't be checked into version control, create a CLAUDE.local.md at the project root. It loads alongside CLAUDE.md and is treated the same way.",
+      "stance": "official",
+      "confidence": "medium",
+      "tags": ["CLAUDE.local.md", "deprecation", "gitignore", "portability"]
+    },
+    {
+      "id": "R5.C30",
+      "claim": "Import graph hop counting example: CLAUDE.md(0) -> AGENTS.md(1) -> conventions.md(2) -> glossary.md(3), safely within 5-hop limit. Typical patterns use only 2 hops; 5-hop limit mostly affects meta-templates with N levels of delegation.",
+      "quote": "Hops od root: CLAUDE.md (0) -> AGENTS.md (1) -> conventions.md (2) -> glossary.md (3). Bezpiecznie w limicie 5.",
+      "stance": "community",
+      "confidence": "medium",
+      "tags": ["import-graph", "hop-counting", "5-hop-limit", "practical"]
+    }
+  ],
+  "gaps_flagged": [
+    "Remote URL imports: not officially supported, most-requested feature, no native alternative",
+    "Exact error mode at 6+ hops: silent truncation vs warning vs hard error - no spec",
+    "Circular @import error message: community confirms detection but not in official memory docs (only for skills/symlinks)",
+    "Plugin-provided CLAUDE.md: not possible by design, feature request candidate for Next.js-style project configs",
+    "@import in CLAUDE.local.md: implied by 'treated the same way' but not explicitly confirmed",
+    "Interaction of @import with claudeMdExcludes: which wins is unconfirmed",
+    "Relative path with .. upward traversal: probably allowed but external-import dialog may trigger",
+    "Max single imported file size: no hard limit documented (200 lines is recommendation only)",
+    "Async reload: whether /memory after /compact shows updated list",
+    "Layered precedence empirical tests: formal definition for edge cases like user rule with paths: vs project rule without paths"
+  ],
+  "source_citations_key": [
+    "code.claude.com/docs/en/memory (official)",
+    "code.claude.com/docs/en/plugins (official)",
+    "github.com/anthropics/claude-code/issues/1321, #2950, #2365",
+    "MuhammadUsmanGM/claude-code-best-practices (acme-platform example)",
+    "abhishekray07/claude-md-templates (meta-template library)",
+    "dev.to anvodev (monorepo 47k->9k reduction)",
+    "Medium/DevOps AI - Virtual Monorepo Pattern (35 repos)",
+    "HumanLayer blog - Writing a good CLAUDE.md",
+    "Solmaz.io - CLAUDE.md to AGENTS.md migration",
+    "claudecodeguides.com - circular dependency fix"
+  ]
+}

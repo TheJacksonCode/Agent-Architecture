@@ -1,0 +1,295 @@
+{
+  "source_report": "R4_cli_caching.md",
+  "report_words": 4852,
+  "extract_words": 487,
+  "extractor_version": "v1",
+  "campaign": "research-prompt-caching",
+  "extracted_at": "2026-04-17",
+  "claims": [
+    {
+      "id": "R4.C1",
+      "claim": "Claude Code CLI auto-enables prompt caching on 4 prefix layers without user configuration",
+      "citation": "Claude Code CLI (CCh) wbudowal prompt caching jako fundament calej architektury, nie addon. Automatycznie cache'uje 4 warstwy prefiksu w kazdym requestcie - od statycznego system prompt po conversation history - bez zadnej konfiguracji uzytkownika.",
+      "source_location": "Executive Summary, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto-cache", "architecture", "zero-config"]
+    },
+    {
+      "id": "R4.C2",
+      "claim": "Typical Claude Code session achieves 90-96% cache hit rate",
+      "citation": "Obserwowany cache hit rate dla typowej sesji to 90-96%, co sprawia ze long Opus session (100 turns) kosztuje $10-19 zamiast $50-100.",
+      "source_location": "Executive Summary, paragraph 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-hit-rate", "cost-impact", "performance"]
+    },
+    {
+      "id": "R4.C3",
+      "claim": "System prompt remains frozen and cacheable when dynamic data injected via <system-reminder> pattern",
+      "citation": "Dynamic data (daty, user email, git status) injectowane jako XML tagi w messages, NIE w system prompt. System prompt zostaje frozen i w pelni cacheable.",
+      "source_location": "Section 2.4, <system-reminder> mechanizm",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["system-reminder", "cache-strategy", "dynamic-content"]
+    },
+    {
+      "id": "R4.C4",
+      "claim": "Default TTL is 5 minutes for free/pro plans; 1 hour for Max plan users",
+      "citation": "TTL domyslny: 5 minut (standard), 1 godzina (Max plan lub explicit ENABLE_PROMPT_CACHING_1H=1).",
+      "source_location": "Executive Summary, key mechanisms",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["TTL", "tiers", "configuration"]
+    },
+    {
+      "id": "R4.C5",
+      "claim": "Anthropic silently changed default TTL from 1h to 5m for Max plan around March 6 2026",
+      "citation": "TTL regression marzec 2026: Anthropic silently zmienil default 1h -> 5m dla Max plan userow okolo 6 marca 2026 (potwierdzono 119,866 API calls na dwoch niezaleznych maszynach).",
+      "source_location": "Executive Summary, TTL regression",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["regression", "TTL", "March-2026", "cost-impact"]
+    },
+    {
+      "id": "R4.C6",
+      "claim": "DISABLE_TELEMETRY env var disables 1h TTL tier as a side effect",
+      "citation": "DISABLE_TELEMETRY=1 lub CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 wylacza takze 1h TTL (fallback do 5m hardcoded default).",
+      "source_location": "Executive Summary, Telemetry-cache coupling bug",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["telemetry-bug", "privacy-paradox", "TTL"]
+    },
+    {
+      "id": "R4.C7",
+      "claim": "ENABLE_PROMPT_CACHING_1H env var was officially added in v2.1.108",
+      "citation": "Fix (v2.1.108): Dodano ENABLE_PROMPT_CACHING_1H=1 env var ktora explicite opt-in do 1h TTL niezaleznie od telemetrii.",
+      "source_location": "Section 4.2 Telemetry-Cache Coupling Bug",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["env-vars", "official-fix", "v2.1.108"]
+    },
+    {
+      "id": "R4.C8",
+      "claim": "/compact preserves system+tools+CLAUDE.md cache layers but invalidates conversation history",
+      "citation": "System + tools + CLAUDE.md layer: ZACHOWANE (jezeli TTL jeszcze nie wygasl). Conversation history: INVALIDATED. Stary prefix guaranteed stale.",
+      "source_location": "Section 3.1 /compact",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["commands", "compact", "cache-invalidation"]
+    },
+    {
+      "id": "R4.C9",
+      "claim": "/clear removes history while keeping system+tools+CLAUDE.md warm for 5 minutes",
+      "citation": "System + tools + CLAUDE.md layer: ZACHOWANE przez TTL okno (5m lub 1h). Conversation history: CLEARED.",
+      "source_location": "Section 3.2 /clear",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["commands", "clear", "TTL-window"]
+    },
+    {
+      "id": "R4.C10",
+      "claim": "/resume command has cache reuse bug in versions v2.1.69-v2.1.111",
+      "citation": "Observed bug (wiele wersji 2026): System prompt jest regenerowany, tool definitions re-assembled... Jezeli TTL wygas (>5min): pelny cache_write = 400-500k tokenow charged po raz drugi.",
+      "source_location": "Section 3.3 /resume bug",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["resume-bug", "regression", "versions"]
+    },
+    {
+      "id": "R4.C11",
+      "claim": "/rewind command causes full cache miss on entire conversation history",
+      "citation": "Szczegolnie destruktywny. Usuwa ostatnia wiadomosc z historii, ale... Wynik: pelny cache miss na calosci historii konwersacji.",
+      "source_location": "Section 3.4 /rewind",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["rewind", "cache-destructive", "avoid"]
+    },
+    {
+      "id": "R4.C12",
+      "claim": "Caching requires minimum token thresholds: 1024 for Sonnet/Haiku, 2048-4096 for Opus",
+      "citation": "Caching wymaga minimum: Sonnet / Haiku: 1,024 tokenow; Opus: 2,048-4,096 tokenow (zaleznie od wersji).",
+      "source_location": "Section 2.2 Minimum token thresholds",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["thresholds", "architecture", "token-limits"]
+    },
+    {
+      "id": "R4.C13",
+      "claim": "Cache hit rate formula: cache_read / (cache_read + cache_write + input) should exceed 0.90",
+      "citation": "Formula: cache_read / (cache_read + cache_write + input) >= 0.90. Rzeczywisty koszt po 100 turns (Opus): $10-19 vs $50-100 uncached.",
+      "source_location": "Section 2.3 Cache hit rate observed",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["metrics", "diagnostics", "cost-formula"]
+    },
+    {
+      "id": "R4.C14",
+      "claim": "Cache regression v2.1.69: --resume loses cache hit, charges 20x cost increase",
+      "citation": "Cache regression w --print --resume: cache_read frozen na ~14.5k (system prompt only), historia nie cache'owana. 20x cost increase.",
+      "source_location": "Section 5.3 chronologia cache regressions",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["regression", "cost-impact", "v2.1.69"]
+    },
+    {
+      "id": "R4.C15",
+      "claim": "Bun string replacement bug causes cache miss when history contains billing-related terms",
+      "citation": "Bun wykonuje string replacement na kazdym API request. Jezeli conversation history zawiera billing-related terms (np. 'rate limit', 'quota', 'subscription')... replacement breaks cache prefix.",
+      "source_location": "Section 6.2 Bun string replacement bug",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["bun-bug", "string-replacement", "Issue#41930"]
+    },
+    {
+      "id": "R4.C16",
+      "claim": "Batch requests in single session cost 1.65x vs 6.25x for separate sessions",
+      "citation": "5 pytan o ten sam codebase w jednej sesji = 1.65x koszt (vs 5 osobnych sesji = 6.25x).",
+      "source_location": "Section 7.2 Community patterns, Pattern 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["best-practice", "cost-optimization", "sessions"]
+    },
+    {
+      "id": "R4.C17",
+      "claim": "--fork-session creates a fork sharing identical cache prefix with base session",
+      "citation": "--fork-session <session-id> tworzy fork ktory dzieli identyczny prefix z baza. Oba forki trafaja na ten sam cache klucz.",
+      "source_location": "Section 7.2 Community patterns, Pattern 2",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["fork-session", "parallel-work", "cache-sharing"]
+    },
+    {
+      "id": "R4.C18",
+      "claim": "MCP tool definitions are deferred by default and only load full schema on use",
+      "citation": "MCP tool definitions sa domyslnie deferowane w nowszych CCh - tylko nazwy w kontekscie, full schema laduje sie przy uzyciu.",
+      "source_location": "Section 7.2 Community patterns, Pattern 3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["MCP", "defer-loading", "context-optimization"]
+    },
+    {
+      "id": "R4.C19",
+      "claim": "Adding MCP tool mid-session invalidates 15k+ tokens of tool definitions",
+      "citation": "Dodanie jednego tool mid-session inwaliduje 15,000+ tokenow tool definitions + caly prefix. Kosz jednej zmiany mid-session: pelny cache miss.",
+      "source_location": "Section 7.2 Community patterns, Pattern 5",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["MCP", "anti-pattern", "cost-trap"]
+    },
+    {
+      "id": "R4.C20",
+      "claim": "Recommended CLAUDE.md size limit is under 200 lines per Anthropic",
+      "citation": "Trzymaj CLAUDE.md < 200 linii (oficjalna rekomendacja Anthropic w CCh docs).",
+      "source_location": "Section 7.2 Community patterns, Pattern 6",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["CLAUDE.md", "best-practice", "size-limit"]
+    },
+    {
+      "id": "R4.C21",
+      "claim": "Model switching within session causes full cache rebuild for new model",
+      "citation": "Kazdy model ma oddzielny, izolowany cache. Przelaczenie Opus -> Sonnet w trakcie sesji = pelny rebuild dla nowego modelu.",
+      "source_location": "Section 7.2 Community patterns, Pattern 7",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["model-switching", "anti-pattern", "isolation"]
+    },
+    {
+      "id": "R4.C22",
+      "claim": "Community-maintained cache fix (cnighswonger) identifies 3 independent cache regression mechanisms",
+      "citation": "Community-maintained fix identyfikuje 3 odrebne mechanizmy za cache regression: partial block scatter, fingerprint instability, non-deterministic tool ordering.",
+      "source_location": "Section 6.1 anatomia 3 niezaleznych budow",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cache-fix", "community-maintained", "diagnostics"]
+    },
+    {
+      "id": "R4.C23",
+      "claim": "Cache regression versions v2.1.69-v2.1.111 have fingerprint instability bug",
+      "citation": "cc_version fingerprint pochodzi z messages[0] content. Gdy bloki sie relocate, fingerprint sie zmienia. API nie rozpoznaje requestu jako kontynuacji sesji -> pelny rebuild.",
+      "source_location": "Section 6.1 Bug 2: Fingerprint instability",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["v2.1.69-v2.1.111", "fingerprint-bug", "cache-miss"]
+    },
+    {
+      "id": "R4.C24",
+      "claim": "Tool definitions arrive in non-deterministic order, changing cache key between turns",
+      "citation": "Tool definitions przychodza w zmiennej kolejnosci miedzy turnami. Request bytes sie roznia -> inny cache klucz -> miss.",
+      "source_location": "Section 6.1 Bug 3: Non-deterministic tool ordering",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tool-ordering", "determinism", "cache-key"]
+    },
+    {
+      "id": "R4.C25",
+      "claim": "Active session with requests < 5min apart keeps cache warm indefinitely",
+      "citation": "Kazdy cache hit resetuje licznik TTL. Aktywna sesja z requestami co <5min utrzymuje cache indefinitely.",
+      "source_location": "Section 5.1 TTL tiers",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["TTL", "keep-warm", "session-management"]
+    },
+    {
+      "id": "R4.C26",
+      "claim": "March 2026 TTL regression cost active users ~$949 total overpayment",
+      "citation": "Luty 2026 (1h period): overpaid $12.32 (1.1% waste). Marzec 2026 (po regresjii): overpaid $719.09 (25.9% waste). Lacznie kwi 2026: ~$949 strat dla jednego aktywnego uzytkownika.",
+      "source_location": "Section 5.2 Marcowa regresja TTL",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["regression", "cost-impact", "quantified"]
+    },
+    {
+      "id": "R4.C27",
+      "claim": "Anthropic never officially explained the March 2026 1h->5m TTL regression",
+      "citation": "Issue zamkniete jako 'not planned'. Brak oficjalnej odpowiedzi od Anthropic.",
+      "source_location": "Section 5.2 Status",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["regression", "unexplained", "Anthropic-silence"]
+    },
+    {
+      "id": "R4.C28",
+      "claim": "Cache behavior with Agent Teams (new feature, CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1) is undocumented",
+      "citation": "Jak cache zachowuje sie z Agent Teams (nowa feature CCh 2026)? Kazdy agent ma swoj context window, ale czy dzielony cache prefiksu? Brak danych.",
+      "source_location": "Section 8 Gaps, Gap #3",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["Agent-Teams", "undocumented", "gap"]
+    },
+    {
+      "id": "R4.C29",
+      "claim": "Workspace-level cache isolation (Feb 5 2026) impact on team CLAUDE.md sharing is unknown",
+      "citation": "Workspace-level cache isolation (od Feb 5, 2026, Anthropic) - jak to wplywa na team shared cache dla CLAUDE.md? Wszystkie istotne pytania bez odpowiedzi.",
+      "source_location": "Section 8 Gaps, Gap #5",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["workspace-isolation", "team-sharing", "gap"]
+    },
+    {
+      "id": "R4.C30",
+      "claim": "v2.1.88 or >= v2.1.112 are stable versions; intermediate versions have cache regressions",
+      "citation": "Rekomendacja wersji: freeze na v2.1.88 lub >=v2.1.112 (post-fix). Sprawdz changelog na kazdym update przed wdrozeniem.",
+      "source_location": "Section 5.3 chronologia regressions",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["version-pinning", "stability", "recommendation"]
+    }
+  ],
+  "gaps_flagged": [
+    "Agent Teams cache behavior with CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 unknown - no documentation or community reports",
+    "Sub-agent cache inheritance: each spawned subagent has own system prompt, but does it inherit parent cache? No spec found",
+    "Exact /compact summary format and semantics undefined - what gets preserved, what discarded?",
+    "Workspace-level cache isolation (Feb 5 2026) impact on team CLAUDE.md cache sharing - documented as 'all users share' but isolation implications unclear",
+    "CLAUDE_CODE_FORCE_GLOBAL_CACHE official status unknown - community discovery only, no official docs"
+  ],
+  "conflicts_flagged": [
+    "Cache hit rate in literature: '96%' (claudecodecamp.com) vs '90%' (dev.to) - likely measured in different conditions, conservative estimate 85-96%",
+    "Anthropic (The Register April 13 2026) claims quota drain 'not caused by cache tweaks' but community Issue #46829 has data showing 119,866 calls with real TTL change - both may be true (Anthropic refers to lack of intentional change, community shows real change occurred)",
+    "Piebald-AI documents __SYSTEM_PROMPT_DYNAMIC_BOUNDARY__ as internal marker - no official Anthropic documentation but high community trust (reverse-engineering on real binaries)",
+    "Official CCh docs do not list DISABLE_PROMPT_CACHING_HAIKU/SONNET/OPUS as options but community sources (dev.to, claudecodecamp.com) do - not confirmed in changelog"
+  ],
+  "dominant_tags": ["cache-hit-rate", "TTL", "regression"],
+  "extractor_notes": "R4 provides exceptional depth on cache mechanics, empirical cost data (119,866 API calls evidence), and detailed bug anatomy. High-confidence claims on env vars, TTL tiers, and /compact vs /clear semantics. Key gaps: Agent Teams, workspace isolation, sub-agent inheritance."
+}

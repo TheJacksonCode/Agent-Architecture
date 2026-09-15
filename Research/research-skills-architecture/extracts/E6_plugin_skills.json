@@ -1,0 +1,163 @@
+{
+  "report_id": "R6",
+  "source_file": "research/R6_plugin_skills.md",
+  "extractor_persona": "Haiku-equivalent (Orchestrator-run)",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R6.C1",
+      "claim": "Plugins are distribution containers bundling skills + agents + commands + MCP + hooks as atomic installable units; standalone skill is just a SKILL.md file without bundling.",
+      "evidence": "Official plugin docs + plugin.json structure.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C2",
+      "claim": "Plugin namespace format: skill as plugin-name:skill-name (e.g., vercel:deploy), agent as @plugin-name:agent-name (e.g., @team-conventions:migration-agent), command as /plugin-name:cmd-name (e.g., /commit-commands:commit).",
+      "evidence": "Community observation + official docs discover-plugins.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C3",
+      "claim": "Plugin installation: /plugin install plugin-name@marketplace-name; follow with /reload-plugins to activate.",
+      "evidence": "Official docs discover-plugins installation section.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C4",
+      "claim": "Three marketplace levels: (1) Official Anthropic marketplace (claude-plugins-official, auto-available), (2) Public third-party marketplaces (claudemarketplaces.com, skillsmp.com), (3) Custom self-hosted via extraKnownMarketplaces config.",
+      "evidence": "Official docs marketplace section + community catalog.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C5",
+      "claim": "Custom marketplace sources accepted: GitHub repos, Git URLs, local paths, remote URLs.",
+      "evidence": "extraKnownMarketplaces config docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C6",
+      "claim": "Plugin updates via /plugin update plugin-name; pulls latest version from marketplace; plugin.json version field is source of truth (semver).",
+      "evidence": "Plugin update docs + plugin.json spec.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C7",
+      "claim": "Major ecosystem marketplaces (April 2026): sickn33/antigravity-awesome-skills (33k+ stars, 1,410+ skills), travisvn/awesome-claude-skills (22k+ installs), VoltAgent/awesome-agent-skills (1000+ skills), jeremylongshore (340 plugins + 1367 skills via CCPI package manager).",
+      "evidence": "GitHub repo statistics 2026-04.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C8",
+      "claim": "Plugin.json minimum schema: name, version (semver), description, author, license, repository; extended supports skills/agents/commands/mcp/hooks arrays + dependencies map.",
+      "evidence": "Community plugin examples + Anthropic official plugins.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C9",
+      "claim": "Plugin dependencies (plugin.json dependencies.anthropic-code-tools) can gate minimum Claude Code version required; important for skills using 2.1+ features (merged commands+skills).",
+      "evidence": "Observed in advanced plugins.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R6.C10",
+      "claim": "Premium skill DNA (common characteristics): vendor ownership (Remotion team owns Remotion skill), frontmatter discipline (trigger-rich description), multi-file resources (progressive disclosure full-stack), commitment-before-generation pattern, security audit.",
+      "evidence": "R7 cross-reference + premium skill analysis.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C11",
+      "claim": "Frontend Design (Anthropic official plugin): 277k+ installs; bans generic fonts (Inter, Roboto, Arial, Space Grotesk); forces commitment to specific aesthetic direction before code generation.",
+      "evidence": "Community reports + plugin internal structure.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C12",
+      "claim": "Remotion (vendor-maintained): 117k+ weekly installs; signed with Agent Trust Hub + Socket security audit; loads specialized rules for animations/timing/audio/captions/3D on demand.",
+      "evidence": "Community reports + remotion.dev skill repo.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C13",
+      "claim": "Trail of Bits Security skills: CodeQL + Semgrep + variant analysis + structured audit methodologies; distributed via trailofbits/skills + trailofbits/skills-curated marketplace (community-vetted).",
+      "evidence": "trailofbits/skills repo.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C14",
+      "claim": "Standalone vs plugin trade-off: standalone is zero overhead (one file, no plugin.json, no marketplace) but lacks versioning, distribution, namespacing; plugin adds overhead but enables sharing at scale.",
+      "evidence": "R6 analysis section 5.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C15",
+      "claim": "For Maciej's system (private use): standalone skills are optimal (35 skills + 42 commands in ~/.claude/ with zero plugin overhead); migration to plugin only beneficial if publishing as public distribution.",
+      "evidence": "R6 recommendation section + project context.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C16",
+      "claim": "Bug #17283 affects plugin skills identically: namespace prefix does not shield plugin skill from fork-isolation bug when invoked via Skill tool.",
+      "evidence": "R2.C13 + R4.C9 cross-reference applied to plugin context.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C17",
+      "claim": "Namespace scope priority UNKNOWN: whether plugin scope wins over project-level standalone with same base name is undocumented; community reports suggest local project wins but requires verification.",
+      "evidence": "Gap in official docs + community uncertainty.",
+      "confidence": "low"
+    },
+    {
+      "id": "R6.C18",
+      "claim": "Supply chain risk: official Anthropic marketplace presumed to have cryptographic signing (not publicly documented); third-party marketplaces lack signing; Trail of Bits skills-curated attempts community governance gap.",
+      "evidence": "R6 analysis + industry standard practices.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R6.C19",
+      "claim": "Fragmentation concern: 7+ competing awesome-lists + 3+ competing package managers (Anthropic, CCPI, sickn33 installer); ecosystem has not converged on canonical catalog.",
+      "evidence": "R6 section 3.4 ecosystem survey.",
+      "confidence": "high"
+    },
+    {
+      "id": "R6.C20",
+      "claim": "Cross-agent compatibility trend: sickn33, VoltAgent, alirezarezvani write skill frontmatter compatible with Claude Code + Cursor + Codex CLI + Gemini CLI, positioning Claude Code format as de-facto standard.",
+      "evidence": "Repo READMEs cross-agent claims.",
+      "confidence": "medium"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "R6.CONFLICT1",
+      "description": "Namespace scope priority ambiguity (R6.C17): plugin vs project standalone with same base name. No authoritative doc; affects multi-source skill setups.",
+      "severity": "medium"
+    },
+    {
+      "id": "R6.CONFLICT2",
+      "description": "Ecosystem fragmentation: multiple package managers (Anthropic, CCPI, sickn33) with no interoperability; user confusion on canonical install path.",
+      "severity": "medium"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R6.GAP1",
+      "description": "Plugin update mid-session behavior: does active conversation re-read updated skill, or state persists? Unclear.",
+      "severity": "medium"
+    },
+    {
+      "id": "R6.GAP2",
+      "description": "Token cost impact of 1000+ installed plugin skills (sickn33 antigravity case): is listing budget exceeded? Descriptions truncated to useless length?",
+      "severity": "medium"
+    },
+    {
+      "id": "R6.GAP3",
+      "description": "Marketplace signing/provenance: no public docs on Anthropic marketplace signing; security implications for enterprise adoption.",
+      "severity": "high"
+    },
+    {
+      "id": "R6.GAP4",
+      "description": "Plugin namespace in auto-invocation (path A): does Claude consider plugin-name:skill-name differently from plain skill-name in description matching?",
+      "severity": "medium"
+    }
+  ],
+  "summary": "R6 systematizes plugin architecture (namespacing, marketplace, installation), catalogs top ecosystem repos (33k+ stars), identifies premium skill DNA (5 characteristics), and recommends standalone for Maciej's private use. Flags fragmentation and signing gaps."
+}

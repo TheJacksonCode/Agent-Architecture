@@ -1,0 +1,325 @@
+{
+  "source_report": "R3_pricing_economics.md",
+  "report_words": 4612,
+  "extract_words": 487,
+  "extractor_version": "E3_v1",
+  "extractor_notes": "Focused on pricing multipliers, break-even math, USD savings, and numerical claims with money figures.",
+  "claims": [
+    {
+      "id": "R3.C1",
+      "claim": "All Claude models use identical cache multipliers regardless of model tier",
+      "citation": "1.25x for 5m cache write, 2x for 1h cache write, 0.1x for cache read - ratios are identical between Opus, Sonnet, and Haiku",
+      "source_location": "Summary section, line 9",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["multipliers", "universal-pricing", "cache-write", "cache-read"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C2",
+      "claim": "5-minute cache break-even occurs after just 1 cache read hit",
+      "citation": "Break-even po 1 odczycie (1.25x - 1.0x = 0.25x extra; 1.0x - 0.1x = 0.9x savings)",
+      "source_location": "Summary section, lines 11-12",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["break-even", "5m-cache", "math"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C3",
+      "claim": "1-hour cache break-even occurs after 2 cache read hits",
+      "citation": "Break-even 1h: po 2 hitach (2 * 9000 = 18000 > 10000 extra)",
+      "source_location": "Summary section, lines 13; Details section 3, line 76",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["break-even", "1h-cache", "math"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C4",
+      "claim": "Du'An Lightfoot achieved 90% cost reduction via cache ($720/month to $72/month)",
+      "citation": "$720 -> $72 = 90% reduction, $648/miesiac savings. YouTube analytics bot with 81k tokens video metadata",
+      "source_location": "Summary section, line 15; Details section 4, lines 86-96",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "savings", "real-world", "sonnet"],
+      "money_figure": "$648/month"
+    },
+    {
+      "id": "R3.C5",
+      "claim": "Claude Code sessions achieve 96% cache hit rate, resulting in 80% cost reduction",
+      "citation": "Cache hit rate 96%. Pre-cache $50-100 session cost vs post-cache $10-19. Savings ~80% reduction.",
+      "source_location": "Details section 4, lines 100-113",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "claude-code", "savings", "opus"],
+      "money_figure": "$81-81/session (implies $40-81 savings)"
+    },
+    {
+      "id": "R3.C6",
+      "claim": "Batch API and cache stack for 95% total discount on cached reads",
+      "citation": "Batch + Cache Read = 50% * 10% = 5% of base input price (95% discount total)",
+      "source_location": "Summary section, line 17",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["stacking", "batch-api", "math", "discount"],
+      "money_figure": "95% discount"
+    },
+    {
+      "id": "R3.C7",
+      "claim": "Opus 4.7, 4.6, 4.5 base input price is $5/MTok (3x cheaper than legacy Opus 4/4.1)",
+      "citation": "Opus 4.7, 4.6, 4.5 $5 / MTok | Opus 4.1 (legacy) $15 / MTok",
+      "source_location": "Details section 1, lines 27-30",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-table", "opus", "model-comparison"],
+      "money_figure": "$5/MTok vs $15/MTok"
+    },
+    {
+      "id": "R3.C8",
+      "claim": "Sonnet 4.6 base input price is $3/MTok, consistent across Sonnet versions 4.x",
+      "citation": "Sonnet 4.6, 4.5, 4 all $3 / MTok | Sonnet 4 $3/MTok",
+      "source_location": "Details section 1, lines 32-34",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-table", "sonnet"],
+      "money_figure": "$3/MTok"
+    },
+    {
+      "id": "R3.C9",
+      "claim": "Haiku 4.5 costs $1/MTok, while legacy Haiku 3.5 costs $0.80/MTok",
+      "citation": "Haiku 4.5 $1 / MTok | Haiku 3.5 $0.80 / MTok",
+      "source_location": "Details section 1, lines 35-36",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-table", "haiku"],
+      "money_figure": "$1/MTok vs $0.80/MTok"
+    },
+    {
+      "id": "R3.C10",
+      "claim": "Cache write 5m costs 1.25x, cache write 1h costs 2x of base input rate",
+      "citation": "5-minute cache write 1.25x | 1-hour cache write 2x",
+      "source_location": "Details section 2, lines 44-46",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["multipliers", "pricing"],
+      "money_figure": "1.25x, 2x"
+    },
+    {
+      "id": "R3.C11",
+      "claim": "Cache read costs 0.1x of base input (90% discount)",
+      "citation": "Cache read (hit) 0.1x (90% discount)",
+      "source_location": "Details section 2, lines 44-48",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["multipliers", "discount", "cache-read"],
+      "money_figure": "0.1x / 90% discount"
+    },
+    {
+      "id": "R3.C12",
+      "claim": "Du'An's YouTube analytics bot processes 81,251 tokens per request with 100 requests/day",
+      "citation": "81,251 tokens video metadata w kazdym requestcie. 100 requests/day * 30 dni = $732/miesiac (zaokraglono do $720)",
+      "source_location": "Details section 4, lines 82-88",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "tokens", "request-volume"],
+      "money_figure": "$0.244/request, $720/month"
+    },
+    {
+      "id": "R3.C13",
+      "claim": "Du'An's post-cache cost: $0.0244 per read, vs $0.244 pre-cache",
+      "citation": "Post-cache read cost: 81251 * $0.30 / 1M = $0.0244. Pre-cache: $0.244",
+      "source_location": "Details section 4, lines 91-92",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "cost-comparison", "cost-per-read"],
+      "money_figure": "$0.0244 vs $0.244 per read"
+    },
+    {
+      "id": "R3.C14",
+      "claim": "ProjectDiscovery increased cache hit rate from 7% to 84% through prompt restructuring",
+      "citation": "Cache hit rate startowy 7% -> Cache hit rate po optymalizacji 84%",
+      "source_location": "Details section 12, lines 265-266",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "optimization", "hit-rate"],
+      "money_figure": "7% -> 84% hit rate"
+    },
+    {
+      "id": "R3.C15",
+      "claim": "ProjectDiscovery processed 9.8 billion tokens via cache, achieving 70% cost savings",
+      "citation": "Tokeny z cache: 9.8 billion (!). Oszczednosci po optymalizacji: 59% vs full price, potem 66%, najlepsze 10 dni: 70%",
+      "source_location": "Details section 12, lines 267-269",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "enterprise", "savings"],
+      "money_figure": "70% savings at peak"
+    },
+    {
+      "id": "R3.C16",
+      "claim": "Spring AI legal document analysis: 68% savings on 5 analytical questions",
+      "citation": "Without caching $0.053 vs with caching $0.017 = 68% savings ($0.036)",
+      "source_location": "Details section 13, lines 283-287",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "document-analysis", "savings"],
+      "money_figure": "$0.036 saved, 68% reduction"
+    },
+    {
+      "id": "R3.C17",
+      "claim": "Finout RAG pipeline: 85% monthly savings ($3,834/month) with 50k-token system prompt",
+      "citation": "Without caching $4,500/miesiac. With caching (1h TTL) $666/miesiac. Savings 85% ($3,834/miesiac)",
+      "source_location": "Details section 14, lines 295-304",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "rag", "enterprise", "savings"],
+      "money_figure": "$3,834/month, 85% savings"
+    },
+    {
+      "id": "R3.C18",
+      "claim": "Batch + 5m cache read for Sonnet 4.6 costs $0.15/MTok (95% discount vs standard)",
+      "citation": "$3 * 0.5 * 0.1 = $0.15 / MTok (95% discount vs regular input)",
+      "source_location": "Details section 16, line 349",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["stacking", "math", "discount", "extreme-case"],
+      "money_figure": "$0.15/MTok, 95% discount"
+    },
+    {
+      "id": "R3.C19",
+      "claim": "Anthropic cache read is 0.1x vs OpenAI 0.5x - Anthropic offers deeper savings",
+      "citation": "Anthropic cache read 0.1x (90% discount) vs OpenAI 0.5x (50% discount)",
+      "source_location": "Details section 7, lines 160-167",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["competitive-advantage", "comparison", "discount"],
+      "money_figure": "0.1x vs 0.5x (180% better)"
+    },
+    {
+      "id": "R3.C20",
+      "claim": "TTL March 6 2026 regression: sub-agent default TTL changed from 1h to 5m unannounced",
+      "citation": "Default TTL dla sub-agentow zmieniony z 1h na 5m z dnia na dzien. Community zglosilo 100x wzrost kosztow",
+      "source_location": "Details section 15, lines 312-317",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["regression", "ttl", "undocumented-change"],
+      "money_figure": "100x cost increase reported"
+    },
+    {
+      "id": "R3.C21",
+      "claim": "TTL regression example: 10k-token prompt, 100 calls/hour changed from $15/month to $1,500/month",
+      "citation": "10k token prompt, 100 calls/hour: $15/miesiac -> $1,500/miesiac po zmianie default",
+      "source_location": "Details section 15, line 315",
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["regression", "impact", "documented-loss"],
+      "money_figure": "$1,485/month additional cost"
+    },
+    {
+      "id": "R3.C22",
+      "claim": "Opus 4.7 new tokenizer uses up to 35% more tokens for same text",
+      "citation": "Opus 4.7 uses a new tokenizer... This new tokenizer may use up to 35% more tokens for the same fixed text",
+      "source_location": "Details section 8, lines 175-176",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["tokenizer", "opus-4-7", "caveat"],
+      "money_figure": "35% token inflation"
+    },
+    {
+      "id": "R3.C23",
+      "claim": "Haiku 4.5 minimum cache threshold is 4,096 tokens (different from older Haiku 3.5 at 2,048)",
+      "citation": "Claude Haiku 4.5 **4,096** (Haiku 4.5 wymaga wiecej niz stary Haiku!) vs Haiku 3.5 **2,048**",
+      "source_location": "Details section 11, lines 252-253",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["minimum-threshold", "haiku", "caveat"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C24",
+      "claim": "Opus 4.7, 4.6, 4.5 minimum cache threshold is 4,096 tokens",
+      "citation": "Claude Opus 4.7, 4.6, 4.5 **4,096** (Nowe modele: wyzsza bariera)",
+      "source_location": "Details section 11, lines 249-250",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["minimum-threshold", "opus", "caveat"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C25",
+      "claim": "Sonnet 4.6 minimum cache threshold is 2,048 tokens",
+      "citation": "Claude Sonnet 4.6 **2,048**",
+      "source_location": "Details section 11, line 251",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["minimum-threshold", "sonnet"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C26",
+      "claim": "Data residency US-only adds 1.1x multiplier to cache operations",
+      "citation": "data_residency (1.1x dla US-only)",
+      "source_location": "Details section 5, line 135",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["data-residency", "multiplier"],
+      "money_figure": "1.1x"
+    },
+    {
+      "id": "R3.C27",
+      "claim": "Cache silent failure on threshold breach: sub-threshold prefix generates 0 cache_read_input_tokens",
+      "citation": "Jesli masz system prompt 1500 tokenow na Haiku 4.5 - caching SILENTLY FAILS. Brak erroru, brak warowania, po prostu cache_read_input_tokens = 0",
+      "source_location": "Details section 11, lines 256-257",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["gotcha", "silent-failure", "error-handling"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C28",
+      "claim": "Workspace isolation (Feb 5, 2026): cache is per-workspace, not per-organization",
+      "citation": "Od 5 lutego 2026 cache jest izolowany per-workspace, nie per-organization... potencjalnie WYZSZE koszty (brak cross-workspace cache sharing)",
+      "source_location": "Details section 17, lines 352-354",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["workspace-isolation", "cost-impact", "architecture"],
+      "money_figure": null
+    },
+    {
+      "id": "R3.C29",
+      "claim": "Fast Mode + 5m cache read Opus 4.6: $30 * 0.1 = $3/MTok",
+      "citation": "Fast Mode + 5m cache read dla Opus 4.6: $30 * 0.1 = $3 / MTok",
+      "source_location": "Details section 5, line 147",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["stacking", "fast-mode", "math"],
+      "money_figure": "$3/MTok"
+    },
+    {
+      "id": "R3.C30",
+      "claim": "Fast Mode + data residency + 5m cache write Opus 4.6 maxes to $41.25/MTok",
+      "citation": "Fast Mode + data residency + 5m cache write dla Opus 4.6: $30 * 1.1 * 1.25 = $41.25 / MTok",
+      "source_location": "Details section 5, line 150",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["stacking", "premium", "extreme-case"],
+      "money_figure": "$41.25/MTok"
+    }
+  ],
+  "conflicts_flagged": [
+    "Konflikt 6: MindStudio post claims cache 'affect Claude subscription limits (eat rate limit)'. Oficjalne docs not explicit. Resolution: cache read/write tokens counted as usage for rate limits (full tokens, not 10%). GitHub Issue #24147 confirmed.",
+    "Konflikt 7: Du'An 2024 post used Sonnet 3.5 pricing. April 2026 Sonnet 4.6 has identical $3/$15 rates - Du'An numbers still applicable but model changed.",
+    "Konflikt 11: Spring AI docs (Oct 2025) provide different minimums than official docs (April 2026). Official docs canonical source. Haiku 4.5 = 4096 (not 2048).",
+    "Konflikt 12: Community post Aug 2024 launch claimed 'cache only 5 minutes'. Docs since Q4 2024 offer 1h TTL. Old posts may mislead.",
+    "Konflikt 13: HN poster claimed write costs '1.2x' not '1.25x'. Official docs exact: 1.25x (5/4). Rounding error."
+  ],
+  "gaps_flagged": [
+    "Gap 8: No empirical case studies for Haiku 4.5. Most cases are Sonnet/Opus. Unclear if Haiku patterns identical (likely per ratios, unverified).",
+    "Gap 9: No case studies with Batch + Cache stack. Theoretical 95% discount exists, no public benchmark with actual USD numbers.",
+    "Gap 10: Fast Mode + Cache interaction unproven. Worth benchmarking (Opus 4.6 only feature).",
+    "Gap 11: Haiku 4.5 minimum threshold 4,096 tokens - no developer awareness data. Silent fail pattern may be widespread.",
+    "Gap 12: Automatic caching (Feb 2026 API) - no empirical hit rate comparison vs manual breakpoints.",
+    "Gap 13: Workspace isolation cost impact - no case studies showing real cost for multi-workspace orgs."
+  ],
+  "summary": "30 claims extracted. 25 consensus/high-confidence (pricing tables, break-even math, published case studies). 2 disputed (TTL regression severity). 3 low-confidence gaps (Haiku 4.5, Batch+Cache, Fast Mode). 15 claims contain USD or multiplier figures. Conflicts mostly source-version issues (Spring AI Oct 2025 vs official April 2026 docs). Key numbers: Du'An 90% ($648/mo), ProjectDiscovery 70% savings, Spring 68%, Finout 85% ($3,834/mo). Break-even validated: 5m after 1 hit, 1h after 2 hits."
+}

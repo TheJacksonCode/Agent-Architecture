@@ -1,0 +1,141 @@
+{
+  "report_id": "R3",
+  "source_file": "research/R3_invocation_paths.md",
+  "extractor_persona": "Haiku-equivalent (Orchestrator-run)",
+  "date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R3.C1",
+      "claim": "Three invocation paths: (A) automatic description-match, (B) manual /slash command, (C) Skill tool programmatic. Each path has distinct permission controls.",
+      "evidence": "Official docs three invocation paths section.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C2",
+      "claim": "Path A (automatic) selection mechanism is pure LLM forward pass against skill descriptions; there is no regex, no keyword matching, no scoring algorithm exposed to users.",
+      "evidence": "Absence of documented selection heuristic; community reverse-engineering consensus.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C3",
+      "claim": "Path A effectiveness depends on description trigger richness: generic descriptions (helps with X) rarely fire; specific with keywords (programmatic video generation, animation timing) fire reliably.",
+      "evidence": "R7 premium skills pattern (Remotion example) + community troubleshooting reports.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C4",
+      "claim": "Path B (manual) activated via /skill-name in Claude Code CLI; supports argument passing via $ARGUMENTS substitution.",
+      "evidence": "Docs slash command syntax + string substitutions.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C5",
+      "claim": "In Claude Code 2.1+, custom commands and skills are merged: both .claude/commands/name.md and .claude/skills/name/SKILL.md create /name command; skill wins on conflict.",
+      "evidence": "R1.C3 cross-reference + official 2.1 release notes.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C6",
+      "claim": "Path C (Skill tool) allows agents/skills to invoke other skills programmatically; invocation is recorded as Skill tool call in conversation, not as user slash command.",
+      "evidence": "Official Skill tool docs + conversation trace analysis.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C7",
+      "claim": "Permission rules syntax for Skill tool: Skill (deny-all), Skill(exact-name), Skill(name-prefix *), supported in both allow and deny rule sets in settings.",
+      "evidence": "Restrict Claude skill access section docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C8",
+      "claim": "Priority matrix: disable-model-invocation:true blocks path A and C (auto + Skill tool); user-invocable:false blocks only path B visibility (auto and Skill tool unaffected).",
+      "evidence": "Official frontmatter behavior table.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C9",
+      "claim": "Argument passing: Path B supports positional args ($0, $1) and full string ($ARGUMENTS); Path A cannot pass args (Claude generates call); Path C passes args via Skill tool input schema.",
+      "evidence": "String substitutions docs + Skill tool schema.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C10",
+      "claim": "Bug #17283: when skill with context:fork + agent fields is invoked via Skill tool, fork isolation does not occur; skill runs in caller's context silently.",
+      "evidence": "GitHub issue anthropics/claude-code #17283 (Jan 2026).",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C11",
+      "claim": "Live change detection applies to all three invocation paths; modifying skill during active session is reflected immediately in next invocation.",
+      "evidence": "R1.C17 cross-reference.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C12",
+      "claim": "SDK invocation differences: Claude Agent SDK supports paths A and C but not B (slash commands are Claude Code UI feature); allowed-tools field is also Claude Code-specific.",
+      "evidence": "SDK docs comparison with Claude Code.",
+      "confidence": "medium"
+    },
+    {
+      "id": "R3.C13",
+      "claim": "Built-in commands accessible via Skill tool: /init, /review, /security-review. Other built-ins (e.g., /compact) are NOT invokable programmatically.",
+      "evidence": "Docs Skill tool built-in list.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C14",
+      "claim": "Plugin skills use namespace in all three paths: /plugin-name:skill-name (B), description with namespace in listing (A), Skill(plugin-name:skill-name) (C).",
+      "evidence": "Plugin namespace section + community examples.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C15",
+      "claim": "Skill invocation is recorded as single message in conversation trace; after invocation, content persists for remainder of session (not re-read on subsequent turns).",
+      "evidence": "R1.C9 lifecycle + content lifecycle docs.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C16",
+      "claim": "Auto-invocation (path A) is gated by skill description appearing in system prompt; disable-model-invocation removes description, eliminating path A eligibility.",
+      "evidence": "R1.C11 + official behavior table.",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C17",
+      "claim": "Manual invocation via /name works even when description is removed from context (disable-model-invocation:true); Claude Code scans skill directory for slash command availability independently of description injection.",
+      "evidence": "Official behavior table row 2 (disable-model-invocation:true / You invoke: Yes).",
+      "confidence": "high"
+    },
+    {
+      "id": "R3.C18",
+      "claim": "Invocation cost breakdown: path A pays pre-invocation reasoning + skill body tokens; path B pays slash resolution + skill body; path C pays Skill tool schema + skill body. Body tokens identical across paths.",
+      "evidence": "Derived from loading cycle R1.C4.",
+      "confidence": "medium"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "R3.CONFLICT1",
+      "description": "Auto vs manual reliability trade-off: automatic invocation saves user effort but has non-deterministic trigger; manual is 100% deterministic but requires memorization of skill names.",
+      "severity": "low"
+    },
+    {
+      "id": "R3.CONFLICT2",
+      "description": "Skill tool built-in coverage gap: /compact accessible to user but not to agents, preventing programmatic context management in long-running chains.",
+      "severity": "medium"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "R3.GAP1",
+      "description": "No latency benchmark published for path A (description match reasoning) vs path B (direct resolution); community assumes path A adds 1-3s overhead.",
+      "severity": "low"
+    },
+    {
+      "id": "R3.GAP2",
+      "description": "Interaction between paths field (glob filter) and path A: does a skill with paths: ['src/**/*.ts'] get included in description listing globally or only when editing matching files? Unclear.",
+      "severity": "medium"
+    }
+  ],
+  "summary": "R3 systematizes 3 invocation paths with permission/argument/SDK differences, documents merged commands+skills semantics (2.1+), and flags Bug #17283 affecting Skill tool fork behavior. Auto-invocation is pure LLM decision (no regex), depends on description quality."
+}

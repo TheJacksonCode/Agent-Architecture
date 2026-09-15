@@ -1,0 +1,137 @@
+{
+  "extract_id": "E2",
+  "source_report": "research/R2_subagent_lifecycle_context.md",
+  "role": "res_extractor",
+  "topic": "Subagent lifecycle, context inheritance, recursion limits",
+  "extract_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R2.C1",
+      "claim": "Each subagent runs in its own isolated context window - the parent's conversation history does not carry over.",
+      "source": "Anthropic docs /en/sub-agents",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R2.C2",
+      "claim": "A subagent inherits 4 things: CLAUDE.md (project + user + nested), MCP servers, skills registered for its scope, tool allowlist (subject to frontmatter filter).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R2.C3",
+      "claim": "A subagent does NOT inherit 5 things: parent conversation history, parent's open files, parent's current tool state, parent's memory writes since session start, parent's transient variables.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R2.C4",
+      "claim": "Maximum recursion depth is 1: a subagent cannot spawn its own subagents via the Task/Agent tool. This is a hard architectural limit.",
+      "source": "Anthropic docs + GitHub #4182",
+      "confidence": "high",
+      "category": "limit"
+    },
+    {
+      "id": "R2.C5",
+      "claim": "Subagents pay a large 'entry tax' on first turn: system prompt + CLAUDE.md chain + MCP tool descriptions + built-in schemas = commonly 20-50k tokens BEFORE useful work.",
+      "source": "dev.to community measurements",
+      "confidence": "high",
+      "category": "cost"
+    },
+    {
+      "id": "R2.C6",
+      "claim": "Subagent output is returned to the parent as a compressed summary, not raw transcript; the parent does not see the subagent's intermediate tool calls unless the subagent surfaces them.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R2.C7",
+      "claim": "Subagent sessions can be resumed, but user prompts are NOT preserved in the resumed transcript (Issue #11712) - resumed agents must infer original intent, often hallucinating corrections.",
+      "source": "GitHub #11712",
+      "confidence": "high",
+      "category": "bug"
+    },
+    {
+      "id": "R2.C8",
+      "claim": "The Task/Agent tool is NOT automatically exposed to nested agents (Issue #4182) - even the general-purpose subagent cannot spawn further subagents.",
+      "source": "GitHub #4182",
+      "confidence": "high",
+      "category": "limit"
+    },
+    {
+      "id": "R2.C9",
+      "claim": "Subagent transcripts are persisted at ~/.claude/projects/.../subagents/agent-<id>.jsonl for replay/debugging.",
+      "source": "Anthropic hooks docs (agent_transcript_path in SubagentStop payload)",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R2.C10",
+      "claim": "SubagentStart fires when subagent is spawned (cannot block, can inject context). SubagentStop fires when subagent finishes (CAN block - force continuation).",
+      "source": "Anthropic hooks docs",
+      "confidence": "high",
+      "category": "lifecycle"
+    },
+    {
+      "id": "R2.C11",
+      "claim": "GitHub Issue #10164 documents subagent context window sizing confusion: subagents use parent's model context limit unless overridden; easy to exhaust with large initial payloads.",
+      "source": "GitHub #10164",
+      "confidence": "medium",
+      "category": "bug"
+    },
+    {
+      "id": "R2.C12",
+      "claim": "Issue #25569 - subagent tool-use loop can stall on certain tool combinations; workaround is maxTurns cap.",
+      "source": "GitHub #25569",
+      "confidence": "medium",
+      "category": "bug"
+    },
+    {
+      "id": "R2.C13",
+      "claim": "Subagent lifetime: spawned -> initial prompt processed -> tool-use loop (bounded by maxTurns or completion) -> final result returned to parent -> context discarded.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "lifecycle"
+    },
+    {
+      "id": "R2.C14",
+      "claim": "Subagents cannot communicate with siblings directly - only the main agent receives results. For peer-to-peer communication, use Agent Teams (see R6).",
+      "source": "Anthropic docs /en/sub-agents",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R2.C15",
+      "claim": "CLAUDE.md inheritance is cumulative: project > user > plugin files are all concatenated into the subagent's system prompt (no override semantics, additive).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT-E2-01",
+      "description": "Some community posts suggest nested subagent spawn is possible via agent teams, but that's Agent Teams (separate feature), not subagent recursion. True max_depth=1 for Task/Agent tool.",
+      "resolution_hint": "Clarify in synthesis: Task recursion limit = 1; Agent Teams is a separate orchestration layer."
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "GAP-E2-01",
+      "description": "No published token-overhead measurements from Anthropic - only community reports (20-50k entry tax)."
+    },
+    {
+      "id": "GAP-E2-02",
+      "description": "Semantics of skills/MCP inheritance across isolation boundaries not fully explicit in docs."
+    },
+    {
+      "id": "GAP-E2-03",
+      "description": "Max recursion depth not explicitly written in official docs; inferred from Issue #4182 behavior."
+    }
+  ],
+  "claim_count": 15,
+  "status": "EXTRACT COMPLETE"
+}

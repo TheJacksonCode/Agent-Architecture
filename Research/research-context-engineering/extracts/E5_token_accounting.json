@@ -1,0 +1,401 @@
+{
+  "source_report": "R5_token_accounting.md",
+  "report_words": 5843,
+  "extract_words": 482,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R5.C1",
+      "claim": "System prompt (core instructions only) costs 2,600-2,700 tokens",
+      "citation": "claudefa.st /context output pokazuje 'System prompt' jako osobna kategorie",
+      "source_location": "section: Patterns i Wnioski / 1. System Prompt, paragraph 1",
+      "token_count": 2650,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["system-prompt", "baseline", "context-command"]
+    },
+    {
+      "id": "R5.C2",
+      "claim": "System prompt at API level (core + all tool descriptions) costs 14,328 tokens",
+      "citation": "API-level cache_read tracking obejmuje system prompt + wszystkie builtin tool descriptions razem (bo sa przesylane w jednym bloku)",
+      "source_location": "section: TABLE: Component Costs, row 2; Patterns 1, paragraph 2",
+      "token_count": 14328,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["system-prompt", "api-level", "tool-definitions"]
+    },
+    {
+      "id": "R5.C3",
+      "claim": "Claude.ai webapp system prompt is ~24,000 tokens",
+      "citation": "System prompt (z Claude.ai webapp) ~ 24,000",
+      "source_location": "section: TABLE: Component Costs, row 3",
+      "token_count": 24000,
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["system-prompt", "webapp", "divergence"]
+    },
+    {
+      "id": "R5.C4",
+      "claim": "System tools (24 builtin tools) cost 16,800-17,600 tokens per session",
+      "citation": "System tools (builtin 24 narzedzia) 16,800-17,600 [source: claudefa.st + wmedia.es /context]",
+      "source_location": "section: TABLE: Component Costs, rows 4-5; Patterns 2, paragraph 1",
+      "token_count": 17200,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["system-tools", "builtin", "constant-cost"]
+    },
+    {
+      "id": "R5.C5",
+      "claim": "System tools are mandatory and cannot be disabled",
+      "citation": "Nie ma opcji ich wylaczenia. To jest 'cost of entry' niezaleznie od tego co robisz.",
+      "source_location": "section: Patterns i Wnioski / 2. System Tools, paragraph 1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["system-tools", "mandatory"]
+    },
+    {
+      "id": "R5.C6",
+      "claim": "Bash tool description alone costs 1,611 tokens",
+      "citation": "Bash tool (description alone) 1,611 [source: Piebald-AI/claude-code-system-prompts v2.1.112]",
+      "source_location": "section: TABLE: Component Costs, row 6",
+      "token_count": 1611,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["bash-tool", "per-tool-cost"]
+    },
+    {
+      "id": "R5.C7",
+      "claim": "TodoWrite tool costs 2,037 tokens",
+      "citation": "TodoWrite tool 2,037 [source: Piebald-AI/claude-code-system-prompts v2.1.112]",
+      "source_location": "section: TABLE: Component Costs, row 7; Patterns 2, detailed costs",
+      "token_count": 2037,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["todowrite-tool", "per-tool-cost"]
+    },
+    {
+      "id": "R5.C8",
+      "claim": "WebFetch tool costs 297 tokens",
+      "citation": "WebFetch tool 297 [source: Piebald-AI/claude-code-system-prompts v2.1.112]",
+      "source_location": "section: TABLE: Component Costs, row 8",
+      "token_count": 297,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["webfetch-tool", "per-tool-cost"]
+    },
+    {
+      "id": "R5.C9",
+      "claim": "MCP Gmail (7 tools) costs ~2,640 tokens",
+      "citation": "MCP: Gmail (7 tools) ~2,640 [source: jdhodges.com measured]",
+      "source_location": "section: TABLE: Component Costs, row 20",
+      "token_count": 2640,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp-tools", "gmail"]
+    },
+    {
+      "id": "R5.C10",
+      "claim": "MCP GitHub (91 tools) costs ~46,000 tokens",
+      "citation": "MCP: GitHub (91 tools) ~46,000 [source: atcyrus.com report]",
+      "source_location": "section: TABLE: Component Costs, row 23",
+      "token_count": 46000,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp-tools", "github"]
+    },
+    {
+      "id": "R5.C11",
+      "claim": "MCP Docker (135 tools) costs 125,964 tokens - extreme case",
+      "citation": "MCP: mcp-docker (135 tools) 125,964 [source: atcyrus.com extreme case]",
+      "source_location": "section: TABLE: Component Costs, row 25",
+      "token_count": 125964,
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["mcp-tools", "extreme", "docker"]
+    },
+    {
+      "id": "R5.C12",
+      "claim": "Tool Search with deferred loading reduces MCP overhead by 85% (from ~77k to ~8.7k)",
+      "citation": "Tool Search (deferred loading): Gdy MCP tool descriptions > 10k tokens, Tool Search wchodzi automatycznie, reduktujac overhead z ~77k do ~8.7k tokens (85% redukcja)",
+      "source_location": "section: Patterns i Wnioski / 3. MCP Tools, paragraph 3",
+      "token_count": 8700,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp-optimization", "tool-search", "deferred-loading"]
+    },
+    {
+      "id": "R5.C13",
+      "claim": "Tool Search itself adds ~500 tokens overhead",
+      "citation": "Tool Search (deferred loading): Ale sam tool search dodaje ~500 tokens overhead",
+      "source_location": "section: Patterns i Wnioski / 3. MCP Tools, paragraph 3",
+      "token_count": 500,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["mcp-optimization", "tool-search"]
+    },
+    {
+      "id": "R5.C14",
+      "claim": "CLAUDE.md memory files in lean setup cost 302 tokens",
+      "citation": "Lean setup: 302 tokens (wmedia.es example)",
+      "source_location": "section: Patterns i Wnioski / 4. CLAUDE.md, empiryczne snapshots",
+      "token_count": 302,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["memory-files", "claude-md", "lean-setup"]
+    },
+    {
+      "id": "R5.C15",
+      "claim": "CLAUDE.md memory files in medium setup cost 1,700 tokens",
+      "citation": "Medium setup: 1,700 tokens (GitHub #11364)",
+      "source_location": "section: Patterns i Wnioski / 4. CLAUDE.md, empiryczne snapshots",
+      "token_count": 1700,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["memory-files", "claude-md", "medium-setup"]
+    },
+    {
+      "id": "R5.C16",
+      "claim": "Community target for global CLAUDE.md is <500 tokens",
+      "citation": "Cel community: <500 tokens global CLAUDE.md",
+      "source_location": "section: Patterns i Wnioski / 4. CLAUDE.md, paragraph 3",
+      "token_count": 500,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["memory-files", "claude-md", "optimization"]
+    },
+    {
+      "id": "R5.C17",
+      "claim": "Skill file frontmatter (progressive disclosure) costs ~61-100 tokens per skill",
+      "citation": "Frontmatter (name + description only): ~100 tokens per skill... Lean example z /context: Tylko 61 tokens dla 'Skills'",
+      "source_location": "section: Patterns i Wnioski / 5. Skill Files, paragraph 1-2",
+      "token_count": 80,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["skill-files", "progressive-disclosure", "frontmatter"]
+    },
+    {
+      "id": "R5.C18",
+      "claim": "Skill file full body costs 3,000-5,500 tokens per skill when loaded",
+      "citation": "Body (laduje sie gdy skill jest invoked): 1,500-5,000 tokens... uzytkownik reportuje ze /context pokazuje pelne skill bodies juz na starcie: 5.5k (Skill Dev), 4.6k (Command Dev), 3.9k (Hook Dev) per skill",
+      "source_location": "section: Patterns i Wnioski / 5. Skill Files, paragraphs 1-2",
+      "token_count": 4200,
+      "stance": "disputed",
+      "confidence": "med",
+      "tags": ["skill-files", "full-body", "conflict"]
+    },
+    {
+      "id": "R5.C19",
+      "claim": "Multiple skills can reach 50,000+ tokens in total",
+      "citation": "Przy wielu pluginach: 50k+ tokens ze skills samych [GitHub #14882]",
+      "source_location": "section: Patterns i Wnioski / 5. Skill Files, paragraph 2",
+      "token_count": 50000,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["skill-files", "cumulative-cost"]
+    },
+    {
+      "id": "R5.C20",
+      "claim": "Command files have zero baseline cost",
+      "citation": "Slash commands (.claude/commands/*.md i ~/.claude/commands/*.md) maja zero kosztu baseline. Body pliku nie jest ladowany do kontekstu na starcie.",
+      "source_location": "section: Patterns i Wnioski / 6. Command Files",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["command-files", "zero-baseline", "lazy-loading"]
+    },
+    {
+      "id": "R5.C21",
+      "claim": "Command file first invocation costs 500-1,500 tokens",
+      "citation": "Pierwsze wywolanie: 500-1,500 tokens (body skill) [source: tokrepo.com]",
+      "source_location": "section: Patterns i Wnioski / 6. Command Files, measurements",
+      "token_count": 1000,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["command-files", "invoke-cost"]
+    },
+    {
+      "id": "R5.C22",
+      "claim": "Command file subsequent invocations cost 2-3 tokens (cached)",
+      "citation": "Kolejne wywolania w tej sesji: 2-3 tokens (cached) [source: tokrepo.com]",
+      "source_location": "section: Patterns i Wnioski / 6. Command Files, measurements",
+      "token_count": 2.5,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["command-files", "cached-invoke"]
+    },
+    {
+      "id": "R5.C23",
+      "claim": "Read tool result rule-of-thumb: 1 token ~= 4 characters, ~80 char line = ~20 tokens",
+      "citation": "Regula kciuka: 1 token ≈ 4 znaki; Linia kodu (~80 znakow) = ~20 tokens",
+      "source_location": "section: Patterns i Wnioski / 7. Tool Results, paragraph 1",
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["tool-results", "estimation", "read-tool"]
+    },
+    {
+      "id": "R5.C24",
+      "claim": "Read 100 lines costs ~400-600 tokens",
+      "citation": "Read 100 linii = ~400-600 tokens input",
+      "source_location": "section: Patterns i Wnioski / 7. Tool Results, paragraph 1",
+      "token_count": 500,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["tool-results", "read-tool", "estimation"]
+    },
+    {
+      "id": "R5.C25",
+      "claim": "Bash verbose output (git log 200) potentially costs 10,000-50,000 tokens",
+      "citation": "git log 200 commitow (verbose) = potencjalnie 10,000-50,000 tokens",
+      "source_location": "section: Patterns i Wnioski / 7. Tool Results, paragraph 1",
+      "token_count": 30000,
+      "stance": "consensus",
+      "confidence": "low",
+      "tags": ["tool-results", "bash-tool", "warning"]
+    },
+    {
+      "id": "R5.C26",
+      "claim": "Tool results are a 'silent accumulator' - can easily accumulate 50,000-100,000 tokens in one hour of active development",
+      "citation": "tool results to 'silent accumulator' - nikt nie mierzy ich na biezaco, ale po godzinie aktywnego developmentu (read, search, bash) mozna latwo dobrac 50,000-100,000 tokens z samych tool results",
+      "source_location": "section: Patterns i Wnioski / 7. Tool Results, paragraph 2",
+      "token_count": 75000,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["tool-results", "cumulative-cost", "warning"]
+    },
+    {
+      "id": "R5.C27",
+      "claim": "Total baseline (lean setup, no MCP) costs 20,000-25,000 tokens",
+      "citation": "Total baseline (lean setup, bez MCP) ~20,000-25,000 [source: claudefa.st /context snapshot]",
+      "source_location": "section: TABLE: Component Costs, row 27",
+      "token_count": 22500,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["total-baseline", "lean-setup"]
+    },
+    {
+      "id": "R5.C28",
+      "claim": "Total baseline (medium MCP, 4 servers) costs 40,000-60,000 tokens",
+      "citation": "Total baseline (medium MCP, 4 serwery) ~40,000-60,000",
+      "source_location": "section: TABLE: Component Costs, row 28",
+      "token_count": 50000,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["total-baseline", "medium-mcp"]
+    },
+    {
+      "id": "R5.C29",
+      "claim": "Total baseline (heavy MCP, 5+ servers) costs 66,000-86,000+ tokens",
+      "citation": "Total baseline (heavy MCP, 5+ serwerow) 66,000-86,000+ [GitHub #11364]",
+      "source_location": "section: TABLE: Component Costs, row 29",
+      "token_count": 76000,
+      "stance": "consensus",
+      "confidence": "med",
+      "tags": ["total-baseline", "heavy-mcp"]
+    },
+    {
+      "id": "R5.C30",
+      "claim": "Autocompact buffer reservation costs 33,000 tokens",
+      "citation": "Autocompact buffer (zarezerwowany) 33,000 [source: claudefa.st measured]",
+      "source_location": "section: TABLE: Component Costs, row 31",
+      "token_count": 33000,
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["autocompact", "buffer"]
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "conflict_id": "C1",
+      "claim_ids": ["R5.C1", "R5.C2"],
+      "description": "System prompt measured as 2,600-2,700 vs 14,328 tokens",
+      "reason": "R5.C1 = /context 'System prompt' category (core only); R5.C2 = full API system block (core + all tool descriptions cached together)",
+      "resolution": "Both correct - different definitions of 'system prompt'"
+    },
+    {
+      "conflict_id": "C2",
+      "claim_ids": ["R5.C2", "R5.C3"],
+      "description": "System prompt on Claude Code API (14,328) vs Claude.ai webapp (~24,000)",
+      "reason": "Different products, different system prompts",
+      "resolution": "Expected - NOT a conflict, merely product divergence"
+    },
+    {
+      "conflict_id": "C3",
+      "claim_ids": ["R5.C17", "R5.C18"],
+      "description": "Skill frontmatter ~61-100 tokens vs full body 3,000-5,500 tokens; GitHub #14882 reports 50k+ total",
+      "reason": "Progressive disclosure intended design vs observed full-body loading in /context command",
+      "resolution": "REQUIRES CRITIC VALIDATION - unclear if /context shows potential size or actual consumption"
+    },
+    {
+      "conflict_id": "C4",
+      "claim_ids": ["R5.C18"],
+      "description": "Skill body loading: design says 1,500-5,000 vs reported 3,000-5,500 vs 50k+ with multiple skills",
+      "reason": "Range overlaps but high variance suggests methodology difference or progressive disclosure not working uniformly",
+      "resolution": "REQUIRES CRITIC VALIDATION - need /context snapshots with consistent measurement protocol"
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "gap_id": "G1",
+      "description": "No direct measurements of Read vs Bash per-line token cost",
+      "impact": "R5.C24-25 use rule-of-thumb estimation (1 token = 4 chars) but no verified /context snapshots with X lines = Y tokens",
+      "severity": "high"
+    },
+    {
+      "gap_id": "G2",
+      "description": "No granular /context snapshots per CLAUDE.md tier",
+      "impact": "Only 'Memory files: N tokens' total visible; cannot isolate global vs project vs subdirectory costs separately",
+      "severity": "high"
+    },
+    {
+      "gap_id": "G3",
+      "description": "Progressive disclosure skill loading sparsely documented",
+      "impact": "Conflict between intended design (61 tokens frontmatter) and observed behavior (50k+ full body on init)",
+      "severity": "high"
+    },
+    {
+      "gap_id": "G4",
+      "description": "Command file zero-baseline claim lacks /context screenshot proof",
+      "impact": "R5.C20 is architecturally sound but unverified empirically via /context command",
+      "severity": "medium"
+    },
+    {
+      "gap_id": "G5",
+      "description": "No prompt cache TTL and refresh window measurements",
+      "impact": "Community mentions 1-hour cache window for main agent but no impact analysis on actual token cost in long sessions",
+      "severity": "medium"
+    },
+    {
+      "gap_id": "G6",
+      "description": "Subagent token accounting undefined",
+      "impact": "How do subagent tokens (skills, commands) count in parent /context and /cost outputs?",
+      "severity": "medium"
+    },
+    {
+      "gap_id": "G7",
+      "description": "MCP server token cost formula (tokens ≈ (tools × 200) + (chars ÷ 4)) lacks validation dataset",
+      "impact": "Approximation from MindStudio but tested on limited servers; variance in actual measurements suggests formula needs refinement",
+      "severity": "low"
+    }
+  ],
+  "summary": {
+    "total_claims": 30,
+    "claims_with_token_counts": 26,
+    "conflicts_flagged_count": 4,
+    "gaps_flagged_count": 7,
+    "key_findings": [
+      "System tools (24 builtin): 14,400-17,600 tokens - mandatory, fixed cost",
+      "MCP tools: 385 (SQLite) to 125,964 (Docker) tokens - wildly variable, Tool Search reduces by 85%",
+      "Skill loading: contested (61 tokens frontmatter vs 50k+ observed) - requires validation",
+      "Command files: zero baseline, 500-1,500 tokens on first invoke, 2-3 tokens cached",
+      "Tool results: silent accumulator, 50-100k tokens per hour of active dev work",
+      "Total baselines: 20-25k (lean), 40-60k (medium MCP), 66-86k+ (heavy MCP)"
+    ],
+    "confidence_score": 0.78,
+    "primary_sources": [
+      "claudefa.st /context snapshots",
+      "Piebald-AI/claude-code-system-prompts v2.1.112",
+      "jdhodges.com measured (Gmail, Playwright, SQLite)",
+      "atcyrus.com MCP analysis (GitHub, Docker)",
+      "GitHub issues #11364, #14882 community reports"
+    ]
+  }
+}

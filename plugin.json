@@ -1,8 +1,8 @@
 {
   "name": "agent-architecture-designer",
   "display_name": "Agent Architecture Designer",
-  "description": "Visual multi-agent system designer for Claude Code. Educational and developmental tool for understanding how each agent thinks and how teams collaborate. 35 specialized agents, 42 presets, full agent + preset encyclopedia (PL/EN bilingual, richer PL with inline infographics), Five Minds Protocol debate, HITL Decision Gates, Live Simulation, Cost Command Center, Custom Agent Creator Pro.",
-  "version": "0.32.16",
+  "description": "Visual multi-agent system designer for Claude Code. Educational and developmental tool for understanding how each agent thinks and how teams collaborate. 60 specialized agents, 62 presets, full agent + preset encyclopedia (PL/EN bilingual, richer PL with pilot inline infographics), a Hooks Playground covering all 27 Claude Code lifecycle events, an Architecture Patterns reference (10 canonical multi-agent patterns), a 5-step guided tutorial, Five Minds Protocol debate, HITL Decision Gates, Live Simulation, Cost Command Center, Custom Agent Creator Pro.",
+  "version": "0.41.0",
   "author": "TheJacksonCode",
   "homepage": "https://github.com/TheJacksonCode/Agent-Architecture",
   "keywords": [
@@ -15,21 +15,13 @@
     "agent-teams",
     "encyclopedia",
     "education",
-    "bilingual"
-  ],
-  "skills": [
-    {
-      "name": "five-minds",
-      "path": ".claude/skills/five-minds/SKILL.md"
-    },
-    {
-      "name": "hitl-pipeline",
-      "path": ".claude/skills/hitl-pipeline/SKILL.md"
-    }
+    "bilingual",
+    "hooks",
+    "architecture-patterns"
   ],
   "app": {
     "path": "index.html",
     "type": "html"
   },
-  "latest": "v32.16"
+  "latest": "v41"
 }

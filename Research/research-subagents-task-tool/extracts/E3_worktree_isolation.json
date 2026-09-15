@@ -1,0 +1,137 @@
+{
+  "extract_id": "E3",
+  "source_report": "research/R3_worktree_isolation.md",
+  "role": "res_extractor",
+  "topic": "Git worktree isolation for parallel Claude sessions",
+  "extract_date": "2026-04-17",
+  "claims": [
+    {
+      "id": "R3.C1",
+      "claim": "Claude Code integrates git worktrees for isolated parallel sessions: each worktree lives at .claude/worktrees/<name>/ with its own branch based on HEAD.",
+      "source": "Anthropic docs /en/common-workflows",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R3.C2",
+      "claim": "EnterWorktree tool creates a worktree + branch and switches the session's cwd to it; ExitWorktree returns with keep-or-remove choice.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R3.C3",
+      "claim": "Worktrees require a git repository OR WorktreeCreate/WorktreeRemove hooks for VCS-agnostic isolation (non-git projects can plug in custom isolation).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R3.C4",
+      "claim": "CRITICAL BUG #38287: silent commit deletion can occur when Claude Code's worktree cleanup intersects with user-initiated git operations; work can be lost without warning.",
+      "source": "GitHub #38287",
+      "confidence": "high",
+      "category": "bug"
+    },
+    {
+      "id": "R3.C5",
+      "claim": "Windows caveats: symlinks require admin or developer mode; git on Windows uses junctions/symlinks for worktrees, which can fail or behave inconsistently on NTFS.",
+      "source": "Git docs + community reports",
+      "confidence": "high",
+      "category": "platform"
+    },
+    {
+      "id": "R3.C6",
+      "claim": "Worktrees share the same .git object database (not independent clones) - object reads are cheap, but concurrent writes to refs/packs can cause contention.",
+      "source": "Git docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R3.C7",
+      "claim": "Each worktree has independent: HEAD, index, working tree, reflog for its branch. But shares: objects, config, hooks dir (unless configured per-worktree), remote.",
+      "source": "Git docs",
+      "confidence": "high",
+      "category": "architecture"
+    },
+    {
+      "id": "R3.C8",
+      "claim": "Worktree cleanup via ExitWorktree with action: 'remove' deletes the working directory but preserves the branch (unless also branch is force-deleted).",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R3.C9",
+      "claim": "Entering an existing worktree via path parameter requires that path to appear in git worktree list for the current repo - unregistered paths are rejected.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "api"
+    },
+    {
+      "id": "R3.C10",
+      "claim": "Running multiple Claude Code sessions against the same repo without worktree isolation leads to merge conflicts, branch thrash, and stash chaos.",
+      "source": "Community consensus",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R3.C11",
+      "claim": "Worktrees are most useful for Agent Teams teammates (R6) and for user-driven parallel sessions where each agent owns a different feature branch.",
+      "source": "Anthropic docs + Agent Teams docs",
+      "confidence": "high",
+      "category": "pattern"
+    },
+    {
+      "id": "R3.C12",
+      "claim": "CLAUDE.md is resolved from the worktree's cwd, so project-level instructions apply identically across worktrees of the same repo.",
+      "source": "Anthropic docs",
+      "confidence": "high",
+      "category": "config"
+    },
+    {
+      "id": "R3.C13",
+      "claim": "Should be used ONLY when explicitly instructed (via user or CLAUDE.md); EnterWorktree tool intentionally requires explicit opt-in to avoid accidental branch proliferation.",
+      "source": "Anthropic docs (EnterWorktree description)",
+      "confidence": "high",
+      "category": "best-practice"
+    },
+    {
+      "id": "R3.C14",
+      "claim": "WorktreeCreate hook CAN block creation (exit code 2 + prints worktree path to stdout); WorktreeRemove CANNOT block.",
+      "source": "Anthropic hooks docs",
+      "confidence": "high",
+      "category": "hooks"
+    },
+    {
+      "id": "R3.C15",
+      "claim": "Name segment rules: each /-separated segment max 64 chars, letters/digits/dots/underscores/dashes only; random name generated if not provided.",
+      "source": "EnterWorktree tool schema",
+      "confidence": "high",
+      "category": "api"
+    }
+  ],
+  "conflicts_flagged": [
+    {
+      "id": "CONFLICT-E3-01",
+      "description": "Community guides suggest using worktrees for ALL parallel work; Anthropic docs and tool description caution against default use due to branch sprawl and cleanup burden.",
+      "resolution_hint": "Use worktrees for long-lived parallel features; use subagents or Agent Teams in-process for short exploration."
+    }
+  ],
+  "gaps_flagged": [
+    {
+      "id": "GAP-E3-01",
+      "description": "Exact mechanism of Issue #38287 silent commit deletion not fully documented - root cause analysis missing."
+    },
+    {
+      "id": "GAP-E3-02",
+      "description": "Windows support status unclear for split-pane Agent Teams + worktrees combined use."
+    },
+    {
+      "id": "GAP-E3-03",
+      "description": "No official guidance on max concurrent worktrees; performance implications unquantified."
+    }
+  ],
+  "claim_count": 15,
+  "status": "EXTRACT COMPLETE"
+}

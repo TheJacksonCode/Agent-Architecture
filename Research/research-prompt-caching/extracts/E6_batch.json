@@ -1,0 +1,197 @@
+{
+  "source_report": "R6_batch_api_caching.md",
+  "report_words": 2017,
+  "extract_words": 680,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R6.C1",
+      "claim": "Batch API wydany pazdziernik 2024 oferuje 50% discount na BOTH input and output tokens, SLA 1-24h",
+      "citation": "Anthropic Batch API (wydany pazdziernik 2024) oferuje 50% discount na input i output tokeny w zamian za async processing z SLA do 24 godzin.",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-api", "discount-50", "async"]
+    },
+    {
+      "id": "R6.C2",
+      "claim": "Batch + Cache stacking: 50% * 10% = 5% of base input price = 95% TOTAL discount vs regular rate",
+      "citation": "Po stackingu: 50% batch * 10% cache read = 5% of base input price per read, co z Sonnet 4.6 daje $0.15/MTok zamiast $3/MTok (95% savings).",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["stacking", "95-percent", "math"]
+    },
+    {
+      "id": "R6.C3",
+      "claim": "Cache hits w batch sa 'best-effort' - concurrent processing, hit rate 30-98% zalezne od traffic pattern",
+      "citation": "Cache hits w batch sa best-effort. Poniewaz batch requests processuja sie concurrently w jakimkolwiek kolejnosci, niektore requesty moga nie trafic na pre-existing cache. Obserwowane cache hit rates w batch to 30%-98%.",
+      "source_location": "section: Summary",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["best-effort", "hit-rate-range", "concurrency"]
+    },
+    {
+      "id": "R6.C4",
+      "claim": "Priming pattern: 1 request z 1h TTL cache_control wpisuje cache, potem batch 1000 requests czyta - wszystkie hit",
+      "citation": "Step 1: Wyslij 1 request z 'ttl': '1h' i cache_control na wspolnym prefiksie, czekaj na response (cache jest napisany). Step 2: Wyslij batch z tym samym prefiksem - wszystkie requesty w batch trafia na cache napisany w kroku 1.",
+      "source_location": "section: Summary / 4. Priming pattern",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["priming", "pattern", "batch-optimization"]
+    },
+    {
+      "id": "R6.C5",
+      "claim": "Batch NIE jest kompatybilny z: Fast mode (Opus 4.6 only), Managed Agents (stateful), real-time/streaming",
+      "citation": "Batch NIE jest kompatybilny z: Fast mode (Opus 4.6 only), Claude Managed Agents, Real-time use cases. Streaming responses, synchronous UI integration.",
+      "source_location": "section: Summary / 5. Batch limitations",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["incompatibility", "fast-mode", "limitations"]
+    },
+    {
+      "id": "R6.C6",
+      "claim": "Sonnet 4.6 effective rates: Batch regular $1.50, Batch+5m write $1.875, Batch+1h write $3, Batch+read $0.15 /MTok input",
+      "citation": "Sonnet 4.6 compound pricing: Regular $3/MTok, Batch regular $1.50, Batch + 5m cache write $1.875, Batch + 1h cache write $3, Batch + cache read $0.15.",
+      "source_location": "section: Details, 2. Pricing stacking",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["pricing-table", "sonnet-46", "rates"]
+    },
+    {
+      "id": "R6.C7",
+      "claim": "Priming example: 50k prefix, 1000 requests Sonnet 4.6: no-opt $150, Batch only $75, Cache only $15.29, Batch+Cache $7.79 = 94.8% savings",
+      "citation": "Oszczednosc w liczbach (50k-token prefix, 1000 requests, Sonnet 4.6): No cache no batch: $150. Batch only: $75. Cache only: $15.29. Cache + batch: ~$7.79. Total savings: $150 -> $7.79 = 94.8%.",
+      "source_location": "section: Details, 4. Priming pattern",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["case-study", "savings", "concrete-numbers"]
+    },
+    {
+      "id": "R6.C8",
+      "claim": "Haiku 4.5 + Batch + Cache = 98.3% savings vs Sonnet baseline - najtanszy bulk offline workflow",
+      "citation": "Haiku 4.5 + Batch + Cache: $2.55 total, 98.3% savings. Dla offline bulk work z repeated prefix, Haiku 4.5 + Batch + Cache daje 98.3% savings vs Sonnet baseline.",
+      "source_location": "section: Details, 10. Comparison strategies",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["haiku-optimal", "98-percent", "bulk-work"]
+    },
+    {
+      "id": "R6.C9",
+      "claim": "Batch + 1h TTL cache: uzyj 1h bo batch moze trwac do 24h, 5m niewystarczajace",
+      "citation": "1h TTL chroni przed wygasnieciem w trakcie przetwarzania batch (batch moze trwac do 24h). Po 1h cache wygasa, pozostale requesty placa rewrite.",
+      "source_location": "section: Summary / Uwaga 17",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["ttl-1h", "batch-duration", "strategy"]
+    },
+    {
+      "id": "R6.C10",
+      "claim": "Concurrent batches z tym samym prefixem: race condition moze spowodowac 2 redundant writes zamiast 1 write + 1 read",
+      "citation": "Jezeli oba teams submittuja w tej samej sekundzie, kazdy batch moze napisac wlasny cache entry - 2 redundant writes zamiast 1 write + 1 read. Efektywny cache hit rate dla batch_B wtedy bedzie okolo 50%.",
+      "source_location": "section: Details, 9. Edge case",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["race-condition", "concurrent-batches", "edge-case"]
+    },
+    {
+      "id": "R6.C11",
+      "claim": "Batch + 1h write placisz 2x base = tyle samo co regular input, ale daje prawo do 1h tanich reads dla kolejnych batches",
+      "citation": "Batch + 1h write jest tyle samo co regular input - ale daje prawo do 1h tanich reads dla kolejnych batches.",
+      "source_location": "section: Details, 2. Pricing stacking",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["batch-1h-write", "break-even", "trade-off"]
+    },
+    {
+      "id": "R6.C12",
+      "claim": "Batch dziala z tool use, multi-turn self-contained, images+text mix, system+tools+messages caching",
+      "citation": "Co dziala mimo ograniczen: Tool use dziala, tool_result bloki cache'uja sie normalnie. Multi-turn conversations w kazdym batch request. Images + text mix. System + tools + messages caching.",
+      "source_location": "section: Details, 5. Batch limitations",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["compatibility", "works-with", "features"]
+    },
+    {
+      "id": "R6.C13",
+      "claim": "Anthropic czerwiec 2025: 1h extended TTL launch 'reduces costs 90%, latency 85%' - implicitly promuje batch patterns",
+      "citation": "Czer 2025: @AnthropicAI: 'we now offer an extended 1-hour TTL. This reduces costs by up to 90% and reduces latency by up to 85% for long prompts, making extended agent workflows more practical.'",
+      "source_location": "section: Details, 6. Timeline",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["announcement", "1h-launch", "2025"]
+    },
+    {
+      "id": "R6.C14",
+      "claim": "LangChain AnthropicPromptCachingMiddleware wspiera Batch endpoint, wymaga explicite ustawienia ttl='1h' dla batch",
+      "citation": "LangChain AnthropicPromptCachingMiddleware dziala dla Batch endpointu, ale wymaga explicite ustawienia ttl='1h' w middleware config dla optimal batch processing.",
+      "source_location": "section: Details, 8. Frameworks",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["langchain", "framework-support", "config"]
+    },
+    {
+      "id": "R6.C15",
+      "claim": "AWS Bedrock wspiera Batch + cache od 2026-Q1 - enterprise adoption path",
+      "citation": "AWS Bedrock: Batch + cache od 2026-Q1 support. Wymaga Bedrock Batch Inference feature.",
+      "source_location": "section: Details, 8. Frameworks",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["aws-bedrock", "enterprise", "2026"]
+    },
+    {
+      "id": "R6.C16",
+      "claim": "LLMindset 'up to 95% discount' mylace - 95% od regular baseline, nie od batch",
+      "citation": "LLMindset pisze ze Batch daje 'up to 95% discount' - to niedokladne. 50% batch + 90% cache read = 95% od baseline, ale nie 95% od batch. Precyzyjna matematyka: Batch + Cache = 0.5 * 0.1 = 5% of base input price.",
+      "source_location": "section: Issues / Flags",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["baseline-confusion", "marketing-claim", "precision"]
+    },
+    {
+      "id": "R6.C17",
+      "claim": "Shared prefix dla batch wymaga bajt-za-bajtem matching - jakakolwiek zmiana (whitespace, capitalization) kasuje",
+      "citation": "Priming pattern wymaga precyzyjnego bajt-za-bajtem matching shared prefix. Jakakolwiek zmiana (whitespace, capitalization) kasuje.",
+      "source_location": "section: Issues / Flags / Uwaga 16",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["byte-exact", "prefix-matching", "drift"]
+    },
+    {
+      "id": "R6.C18",
+      "claim": "Alert threshold: Batch response cache_read_ratio < 50% = problem z prefix drift lub timing",
+      "citation": "Monitoruj: loguj batch response cache_read_input_tokens vs cache_creation. Alert <50% read ratio.",
+      "source_location": "section: Recommendation",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["monitoring", "threshold", "alert"]
+    },
+    {
+      "id": "R6.C19",
+      "claim": "Fallback plan: jesli Batch + Cache hit rate < 60%, zbadaj czy masz drift w shared prefix",
+      "citation": "Fallback plan: jezeli Batch + Cache hit rate < 60%, zbaduj czy masz drift w shared prefix (capitalization, whitespace).",
+      "source_location": "section: Recommendation",
+      "stance": "unique",
+      "confidence": "med",
+      "tags": ["fallback", "diagnostic", "drift"]
+    },
+    {
+      "id": "R6.C20",
+      "claim": "Batch + Cache stacking to najbardziej niewykorzystywany money-saver w Anthropic stack - 95%+ discount rutynowo osiagalne",
+      "citation": "Batch + Cache stacking to najbardziej niewykorzystywany money-saver w stack Anthropic. Dla offline bulk 95%+ discount rutynowo osiagalne.",
+      "source_location": "section: Recommendation",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["underutilized", "money-saver", "recommendation"]
+    }
+  ],
+  "gaps_flagged": [
+    "Brak oficjalnych Anthropic benchmarkow dla Batch + Cache combined cost - trzeba liczyc samodzielnie",
+    "Niejasne jak batch + cache interaguje z Claude Mythos Preview 1M context - brak potwierdzenia",
+    "Brak oficjalnego guidance gdy batch trwa >1h TTL - czy cache rewrites czy wygasa dla requesta #999"
+  ],
+  "conflicts_flagged": [
+    "R6.C16 LLMindset '95% discount' vs precyzyjna matematyka: marketing myli poziomy (95% vs baseline != 95% off od batch).",
+    "Niektore blogi 'batch cache hit rate zawsze ~95%' vs docs 30-98% - optymistyczne claims vs realistic range."
+  ]
+}

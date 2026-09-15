@@ -1,0 +1,293 @@
+{
+  "source_report": "R3_compact_mechanics.md",
+  "report_words": 5278,
+  "extract_words": 487,
+  "extractor_version": "v1",
+  "claims": [
+    {
+      "id": "R3.C1",
+      "claim": "Compaction is a separate billable API call requiring an additional sampling step beyond the main message request.",
+      "citation": "The compaction process is a separate API call - an additional 'sampling step': (1) Context token count is checked, (2) A separate LLM call is made using the full conversation as input, (3) The LLM generates a <summary>...</summary> block, (4) A compaction block is inserted into the message history.",
+      "source_location": "Section 1: /compact Command, subsection What Happens Under the Hood",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["billing", "API-mechanics", "compaction-call"]
+    },
+    {
+      "id": "R3.C2",
+      "claim": "Auto-compact threshold is approximately 83.5% context usage, reflecting a hardcoded 33,000 token buffer reserved for the compaction process itself.",
+      "citation": "The actual trigger closer to 83-85% for standard models. This discrepancy is because a hardcoded buffer of ~33,000 tokens (16.5% of 200K) is always reserved for the compaction process itself - the 'compaction working space.'",
+      "source_location": "Section 2: Auto-Compact Trigger, subsection Default Threshold",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["threshold", "buffer", "auto-compact"]
+    },
+    {
+      "id": "R3.C3",
+      "claim": "The buffer was reduced from 45K (22.5%) to 33K (16.5%) in version 2.1.21, moving the effective trigger from ~77% to ~83.5%.",
+      "citation": "[v2.1.21 change] Buffer reduced from 45K (22.5%) to 33K (16.5%). Compaction trigger moved from ~77% to ~83.5% effective.",
+      "source_location": "Section 2: Auto-Compact Trigger, subsection Default Threshold",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["versioning", "buffer-history", "threshold-evolution"]
+    },
+    {
+      "id": "R3.C4",
+      "claim": "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE env var can only lower the threshold, not raise it above the default ~83% due to Math.min clamp in source.",
+      "citation": "Can only LOWER the threshold (Math.min clamp in source - cannot raise above default). Example: export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70 - compact earlier at 70%.",
+      "source_location": "Section 2: Auto-Compact Trigger, subsection Configurable via Environment Variable",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["env-var", "limitation", "threshold-config"]
+    },
+    {
+      "id": "R3.C5",
+      "claim": "VS Code extension auto-compacts at ~35% remaining context (65% usage), creating a 60-70% efficiency gap compared to CLI which compacts at ~95% capacity.",
+      "citation": "VS Code Extension: auto-compacts at ~35% remaining context (65% usage). CLI: auto-compacts at ~95% capacity (~83.5% effective). This 60-70% efficiency gap causes power users on complex multi-file tasks to be interrupted much more frequently in the VS Code extension than in CLI.",
+      "source_location": "Section 2: Auto-Compact Trigger, subsection VS Code Extension vs CLI",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["interface-difference", "performance", "UX-impact"]
+    },
+    {
+      "id": "R3.C6",
+      "claim": "The /compact command accepts optional instructions that replace or supplement the default summary prompt to steer what is retained.",
+      "citation": "The instructions appended to /compact replace or supplement the default summary prompt, allowing users to steer what the LLM retains in the compressed summary.",
+      "source_location": "Section 1: /compact Command, subsection Basic Usage",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["user-control", "instructions", "customization"]
+    },
+    {
+      "id": "R3.C7",
+      "claim": "What is preserved during compaction: generated summary, messages after compaction block, system prompt (cached separately), CLAUDE.md (reloaded at session start), and MEMORY.md (first 200 lines / 25KB).",
+      "citation": "Always preserved: The generated summary (replaces old messages), Messages sent AFTER the compaction block, System prompt (cached separately, always present), CLAUDE.md content (reloaded at every session start, survives compaction), MEMORY.md (first 200 lines / 25KB loaded at session start - survives compaction).",
+      "source_location": "Section 3: What /compact Preserves vs What It Loses, subsection Official Documentation",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["preservation", "context-structure", "survival-rules"]
+    },
+    {
+      "id": "R3.C8",
+      "claim": "Compaction loses specific error messages, stack traces, file paths, line numbers, architectural rationale, exploratory dead ends, tool call outputs, exact code snippets, and project conventions.",
+      "citation": "What the LLM compressor discards or degrades: Specific error messages and stack traces, File paths and exact line numbers, Multi-step debugging sequences, Architectural decision rationale, Exploratory dead ends and rejected approaches, Tool call outputs, Exact code snippets from early exploration, Project conventions, code style rules, banned patterns.",
+      "source_location": "Section 3: What /compact Preserves vs What It Loses, subsection What Is Lost",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["information-loss", "degradation", "compression-tradeoff"]
+    },
+    {
+      "id": "R3.C9",
+      "claim": "After compaction on a 142-agent framework, agent identification accuracy dropped to 83% with 3/5 average fidelity score, showing compaction preserves what was discussed but loses who and why.",
+      "citation": "Blind testing on 142-agent framework: after compaction, agent identification accuracy dropped to 83% with 3/5 average fidelity score. Compaction preserves *what* was discussed but loses *who was discussing it* and *why*.",
+      "source_location": "Section 3: What /compact Preserves vs What It Loses, subsection What Is Lost",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["agent-fidelity", "identity-loss", "empirical-study"]
+    },
+    {
+      "id": "R3.C10",
+      "claim": "The default summary prompt instructs the LLM to preserve state, next steps, and learnings in a <summary></summary> block for continuity.",
+      "citation": "You have written a partial transcript for the initial task above. Please write a summary of the transcript... Write down anything that would be helpful, including the state, next steps, learnings etc. You must wrap your summary in a <summary></summary> block.",
+      "source_location": "Section 3: What /compact Preserves vs What It Loses, subsection The Summary Prompt Template",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["prompt-template", "summary-structure", "official-docs"]
+    },
+    {
+      "id": "R3.C11",
+      "claim": "PreCompact hook was added in v2.1.105 (2026-04-13) and can block compaction by exiting with code 2 or returning decision:block.",
+      "citation": "PreCompact hook support was added in v2.1.105: 'Added PreCompact hook support: hooks can now block compaction by exiting with code 2 or returning {\"decision\":\"block\"}'. Exit 0: Compression proceeds normally, Exit 2 / {\"decision\":\"block\"}: Blocks compaction.",
+      "source_location": "Section 4: Auto vs Manual - Hook Behavior Differences, subsection PreCompact Hook",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hooks", "v2.1.105", "blocking-mechanism"]
+    },
+    {
+      "id": "R3.C12",
+      "claim": "PreCompact hook distinguishes between auto and manual compaction via trigger field, but manual /compact does not reliably fire the hook (GitHub issue #13572).",
+      "citation": "The trigger field is 'auto' for automatic compaction and 'manual' for user-invoked /compact. Known bug: PreCompact hook with matcher '*' does not fire on manual /compact invocations (GitHub issue #13572, December 2025). This means manual /compact may silently bypass hook infrastructure.",
+      "source_location": "Section 4: Auto vs Manual - Hook Behavior Differences, subsections PreCompact Hook and Known Bug",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["bug", "hook-reliability", "manual-compact"]
+    },
+    {
+      "id": "R3.C13",
+      "claim": "No official PostCompact hook exists as of April 2026; the workaround is to hook into PostToolUse with a compact matcher.",
+      "citation": "As of April 2026, no official PostCompact hook event exists. GitHub issue #40492 (March 2026) requests one but is open with 'duplicate' label. Workaround pattern... This hooks into PostToolUse with a compact matcher to inject context after compaction.",
+      "source_location": "Section 4: Auto vs Manual - Hook Behavior Differences, subsection No PostCompact Hook",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hook-absence", "workaround", "feature-request"]
+    },
+    {
+      "id": "R3.C14",
+      "claim": "When resuming a compacted session with --resume, the next session sees the same compacted state; /resume does not undo compaction.",
+      "citation": "When resumed, Claude sees: (1) Everything before the compaction block (still in file but dropped from context), (2) The compaction summary block, (3) Everything after the compaction block. Effectively: the next session sees the same compacted state. /resume does not 'undo' compaction.",
+      "source_location": "Section 5: Session Continuity After /compact, subsection /resume After Compaction",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["resume", "session-state", "persistence"]
+    },
+    {
+      "id": "R3.C15",
+      "claim": "A critical edge case exists: if context grows too fast and overshoots the auto-compact threshold, manual /compact itself can fail with 'conversation too long.'",
+      "citation": "Critical failure scenario: (1) Context grows rapidly, (2) Context overshoots auto-compact threshold before trigger fires, (3) Claude stops working, suggests running /compact manually, (4) Manual /compact fails: 'Conversation too long. Press esc twice...'",
+      "source_location": "Section 6: Edge Case - 'Conversation Too Long' Failure, subsection The Failure Mode",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["edge-case", "failure-mode", "critical-bug"]
+    },
+    {
+      "id": "R3.C16",
+      "claim": "The 'Conversation too long' failure affects multiple GitHub issues (#10556, #10299, #9799, #9493, #18211, #28728) with most closed as 'not planned' or 'duplicate', suggesting Anthropic does not plan a user-configurable fix.",
+      "citation": "Related issues documenting recurring problem: #10556, #10299, #9799, #9493, #18211, #28728. Status of most: closed as 'not planned' or 'duplicate' - suggesting Anthropic does not plan to fix the threshold edge case via user-configurable means.",
+      "source_location": "Section 6: Edge Case - 'Conversation Too Long' Failure, subsection The Failure Mode",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["issue-tracking", "product-direction", "unfixed-bugs"]
+    },
+    {
+      "id": "R3.C17",
+      "claim": "Recovery options for 'Conversation too long' are limited: /clear destroys conversation, Esc twice provides limited help, or fork/start new session.",
+      "citation": "Recovery Options: /clear - destroys conversation, start fresh. Esc twice - go up in message history (limited help). claude --fork-session before reaching limit (proactive only).",
+      "source_location": "Section 6: Edge Case - 'Conversation Too Long' Failure, subsection Recovery Options",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["recovery", "workaround", "limitations"]
+    },
+    {
+      "id": "R3.C18",
+      "claim": "Community best practice is to run /compact proactively at 60% context utilization with explicit preservation instructions covering 5-10 key items maximum.",
+      "citation": "Most common manual pattern: Run /compact proactively at 60% context utilization, not reactively when warnings appear. Always include preservation instructions covering: (1) Architectural decisions, (2) Current bugs being debugged, (3) File modifications and scope boundaries, (4) Active constraints, (5) 5-10 items maximum.",
+      "source_location": "Section 7: Community Patterns, subsection Pattern 1: /compact with Explicit Instructions",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["best-practice", "proactive", "user-behavior"]
+    },
+    {
+      "id": "R3.C19",
+      "claim": "SESSION_STATE.md protocol requires writing structured pre-compaction state (task, decisions, files modified, errors, next steps, constraints) before compacting.",
+      "citation": "Before compacting, instruct Claude to write: SESSION_STATE.md containing: Current task, Key decisions with rationale, Files modified with reason, Errors encountered + solutions, Next steps ordered, Constraints.",
+      "source_location": "Section 7: Community Patterns, subsection Pattern 2: SESSION_STATE.md Protocol",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["pattern", "structured-state", "manual-workflow"]
+    },
+    {
+      "id": "R3.C20",
+      "claim": "MEMORY.md survives compaction because it is loaded fresh at every session start; critical session state can be written to it during a session.",
+      "citation": "MEMORY.md survives compaction because it is loaded fresh at every session start. Auto-memory (first 200 lines / 25KB) is always injected into context. Critical session state can be written to MEMORY.md during a session.",
+      "source_location": "Section 7: Community Patterns, subsection Pattern 3: MEMORY.md as Compaction-Proof Store",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["persistence", "workaround", "documented-feature"]
+    },
+    {
+      "id": "R3.C21",
+      "claim": "PreCompact hook can archive full transcript to SQLite, with one tested implementation archiving 69,000+ messages across 1,300 sessions in ~1GB database with 0 message loss.",
+      "citation": "Full automation via hooks: [SQLite transcript save]. Results: 0 messages lost, 69,000+ searchable messages, ~1GB DB for 1,300 sessions.",
+      "source_location": "Section 7: Community Patterns, subsection Pattern 4: PreCompact Hook - SQLite Transcript Archive",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["archival", "empirical", "hook-implementation"]
+    },
+    {
+      "id": "R3.C22",
+      "claim": "PostCompact rules injection pattern injects context-essentials.md (under 50 lines) via PostToolUse hook with compact matcher to restore essential rules after compaction.",
+      "citation": "Context essentials file injected post-compaction via PostToolUse hook: matcher 'compact', command: 'cat .claude/context-essentials.md'. Keep context-essentials.md under 50 lines - focused 'rules that must survive' not architecture docs.",
+      "source_location": "Section 7: Community Patterns, subsection Pattern 5: PostCompact Rules Injection",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["workaround", "rules-preservation", "PostToolUse-hook"]
+    },
+    {
+      "id": "R3.C23",
+      "claim": "Background summary threading can start summarization at 60% threshold for instant swap at hard limit (0s wait vs 40s) with ~80% cost savings via prompt caching.",
+      "citation": "Start summarizing in background thread once soft threshold (~60%) is reached. At hard threshold: instant swap to pre-built summary (0s wait vs 40s). Use prompt caching on summary updates for ~80% cost savings.",
+      "source_location": "Section 7: Community Patterns, subsection Pattern 6: Background Summary Threading",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["optimization", "async", "caching-strategy"]
+    },
+    {
+      "id": "R3.C24",
+      "claim": "API compaction via beta feature uses versioned type 'compact_20260112' with token-based triggers (min 50K, default 150K) and optional pause_after_compaction control.",
+      "citation": "type: must be 'compact_20260112' (versioned API). trigger.value: default 150,000 tokens, minimum 50,000. pause_after_compaction: bool, return stop_reason: 'compaction' to allow manual intervention before continuing.",
+      "source_location": "Section 8: API-Level Compaction Control",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["API", "beta-feature", "token-control"]
+    },
+    {
+      "id": "R3.C25",
+      "claim": "A /recap command was added in v2.1.108 (2026-04-14) to provide context when returning to a session, distinct from compaction undo and available even with telemetry disabled.",
+      "citation": "A new /recap command was added to provide context when returning to a session... Available even with telemetry disabled (Bedrock, Vertex, Foundry). Opt out via /config or CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0. This is a session recap feature, NOT a compaction undo mechanism.",
+      "source_location": "Section 5: Session Continuity After /compact, subsection /recap Feature",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["new-feature", "v2.1.108", "session-recovery"]
+    },
+    {
+      "id": "R3.C26",
+      "claim": "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE is sometimes silently ignored and cannot raise threshold above default; observed cases of sessions exceeding configured threshold without triggering (issues #18843, #36381).",
+      "citation": "Known Bugs: CLAUDE_AUTOCOMPACT_PCT_OVERRIDE is sometimes silently ignored. Sessions observed exceeding configured threshold without compacting (reported at 67%, 80% without trigger). Issue #31806: The env var cannot raise the threshold above the default (~83%) due to Math.min clamp.",
+      "source_location": "Section 2: Auto-Compact Trigger, subsection Known Bugs with Threshold Override",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["bug", "env-var", "unreliability"]
+    },
+    {
+      "id": "R3.C27",
+      "claim": "Official docs state auto-compact threshold is ~95%, but community measurement shows 83.5% effective due to hardcoded 33K buffer; both are technically correct at different measurement levels.",
+      "citation": "Official docs state the default is '~95% capacity,' but community measurement (via /context monitoring) shows the actual trigger closer to 83-85%... This discrepancy is because a hardcoded buffer of ~33,000 tokens (16.5% of 200K) is always reserved for the compaction process itself.",
+      "source_location": "Section 2: Auto-Compact Trigger, subsection Default Threshold",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["terminology", "measurement-levels", "documentation-gap"]
+    },
+    {
+      "id": "R3.C28",
+      "claim": "The /context command displays the default buffer size (~33K) even when CLAUDE_AUTOCOMPACT_PCT_OVERRIDE is active, though the override correctly affects actual trigger point.",
+      "citation": "The /context command always displays the default buffer size (~33K) even when override is active, though the override correctly affects actual trigger point.",
+      "source_location": "Section 2: Auto-Compact Trigger, subsection Known Bugs with Threshold Override",
+      "stance": "disputed",
+      "confidence": "high",
+      "tags": ["display-bug", "UI", "misleading-info"]
+    },
+    {
+      "id": "R3.C29",
+      "claim": "Full-context compaction at 180K tokens on Claude Sonnet 4 rates (~$3/M input) costs approximately $0.54 per compaction event.",
+      "citation": "A full-context compaction at 180K tokens at Claude Sonnet 4 rates ($3/M input) = ~$0.54 per compaction event.",
+      "source_location": "Section 1: /compact Command, subsection Billing Impact",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["cost", "billing", "economics"]
+    },
+    {
+      "id": "R3.C30",
+      "claim": "Compaction users must sum all iterations entries for total tokens consumed; top-level input_tokens in API response only reflects non-compaction iterations.",
+      "citation": "Users must sum all iterations entries for total tokens consumed and billed: iterations array with compaction and message entries. Top-level input_tokens in the response only reflects non-compaction iterations.",
+      "source_location": "Section 1: /compact Command, subsection Billing Impact",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["billing", "API", "measurement"]
+    }
+  ],
+  "gaps_flagged": [
+    "Exact summary prompt used by Claude Code CLI vs API - official API prompt documented, unclear if CLI uses identical or different internal prompt",
+    "tool_use block preservation mechanics - unclear whether tool_use blocks (file reads, bash outputs) are preserved in summary or only referenced",
+    "Summary quality variance by model - no data on whether Sonnet summarizes differently than Opus",
+    "1M context window compaction timing - new behavior for Opus with 1M context; threshold math changes significantly but not documented",
+    "SubAgent compaction behavior - whether subagents use same threshold as main context (issue #46695 hints at 500+ tool calls)",
+    "/resume + compaction disk interaction - exact behavior when resuming compacted session unclear from docs"
+  ],
+  "conflicts_flagged": [
+    "Threshold terminology: official docs say ~95%, community measures 83.5% effective - both correct but at different measurement points (nominal vs effective after buffer)",
+    "PreCompact hook reliability: documented to support manual /compact (trigger field can be 'manual'), but bug #13572 reports it doesn't fire on manual invocation - confirmed unfixed",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE behavior: documented as configurable, but issues #18843 #36381 report silent ignoring; #31806 confirms Math.min clamp prevents raising above default",
+    "/context display: claims to show buffer override status, but testing shows it displays default (~33K) even when override active - misleading UI",
+    "API default threshold (150K) vs CLI default (83.5%) - different trigger logic not directly comparable; may be by design but not explicitly documented"
+  ]
+}

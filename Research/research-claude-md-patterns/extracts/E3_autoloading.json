@@ -1,0 +1,310 @@
+{
+  "extractor": "E3",
+  "source_report": "R3_autoloading.md",
+  "campaign": "CLAUDE.md Patterns 2026",
+  "model": "Opus 4.7",
+  "date": "2026-04-17",
+  "word_count_source": 4050,
+  "claims": [
+    {
+      "id": "R3.C01",
+      "claim": "CLAUDE.md content is delivered as a user message after the system prompt, not as part of the system prompt itself.",
+      "quote": "CLAUDE.md content is delivered as a user message after the system prompt, not as part of the system prompt itself. Claude reads it and tries to follow it, but there's no guarantee of strict compliance, especially for vague or conflicting instructions.",
+      "source": "memory docs, 'Claude isn't following my CLAUDE.md'",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["position", "system_prompt", "user_message", "cross_confirm_R1"]
+    },
+    {
+      "id": "R3.C02",
+      "claim": "Project-root CLAUDE.md, unscoped rules, and MEMORY.md are re-injected from disk after /compact, but nested CLAUDE.md and paths:-scoped rules are lost until a matching file is read again.",
+      "quote": "Project-root CLAUDE.md and unscoped rules | Re-injected from disk ... Rules with paths: frontmatter | Lost until a matching file is read again ... Nested CLAUDE.md in subdirectories | Lost until a file in that subdirectory is read again",
+      "source": "context-window doc, 'What survives compaction' table",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["compact", "reinjection", "asymmetry", "nested", "paths_scoped"]
+    },
+    {
+      "id": "R3.C03",
+      "claim": "No /reload command exists in Claude Code - two feature requests closed as duplicates confirm demand but no shipped solution.",
+      "quote": "The requested /reload / /refresh / /config reload does not exist. /reload-plugins exists (for plugins only, not CLAUDE.md).",
+      "source": "GitHub Issues #17127 and #22085, both closed as duplicates Jan 2026",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["no_reload", "runtime", "limitation", "issue_17127", "issue_22085"]
+    },
+    {
+      "id": "R3.C04",
+      "claim": "Default ephemeral prompt-cache TTL silently regressed from 1 hour to 5 minutes around early March 2026.",
+      "quote": "Issue #46829 documents that Claude Code silently changed default from 1 hour to 5 minutes sometime in early March 2026, confirmed by JSONL log analysis across Jan 11 - Apr 11 2026 by third parties.",
+      "source": "GitHub Issue #46829; recca0120.github.io 2026-04-14 log analysis",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["cache_ttl", "regression", "march_2026", "issue_46829"]
+    },
+    {
+      "id": "R3.C05",
+      "claim": "Editing CLAUDE.md mid-session does not cause Claude to re-read it; edits stay inert until a re-injection event (compact or restart).",
+      "quote": "Editing CLAUDE.md during a session does not cause Claude to re-read it. ... Memory re-loads only happen at two events: session start, and /compact (which re-reads from disk).",
+      "source": "R3 section 11, inferred from absence of skills-style live change detection",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["inert_edits", "runtime_reload", "lifecycle"]
+    },
+    {
+      "id": "R3.C06",
+      "claim": "CwdChanged hook fires on cd but does NOT re-walk the ancestor tree for new CLAUDE.md - nested files load lazily when Claude next reads a file in that subtree.",
+      "quote": "What CwdChanged does NOT do: it does not re-walk the ancestor tree and load new CLAUDE.md files. The mechanism for a new subdirectory's CLAUDE.md to enter context is the same as for any other subdirectory: when Claude reads a file inside that subtree, the nested CLAUDE.md is lazy-loaded at that moment (load_reason: 'nested_traversal' on InstructionsLoaded).",
+      "source": "hooks doc, CwdChanged entry + R3 section 5",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["cd", "CwdChanged", "lazy", "ancestor_walk"]
+    },
+    {
+      "id": "R3.C07",
+      "claim": "Baseline Claude Code empty 'hi' prompt consumes approximately 53,000 tokens, with memory files (CLAUDE.md) accounting for 10,000-18,000 tokens (19-34%).",
+      "quote": "Issue #19105 measured an empty 'hi' prompt against Claude Code and got ~53k tokens before the conversation begins. ... Memory files (CLAUDE.md) | 10,000-18,000 | 19-34% | Yes",
+      "source": "GitHub Issue #19105",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["baseline", "token_cost", "memory_share", "issue_19105"]
+    },
+    {
+      "id": "R3.C08",
+      "claim": "Anthropic recommends a soft ceiling of 200 lines per CLAUDE.md file (~2,500 tokens); longer files reduce adherence, not just cost.",
+      "quote": "Anthropic's recommended ceiling for CLAUDE.md is 200 lines per file, 'longer files consume more context and reduce adherence'. 200 lines at ~10 words/line = 2,000 words = ~2,600 tokens per CLAUDE.md file.",
+      "source": "memory doc, 'Write effective instructions'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["soft_limit", "200_lines", "adherence", "budget"]
+    },
+    {
+      "id": "R3.C09",
+      "claim": "InstructionsLoaded hook exposes load_reason enum including nested_traversal, path_glob_match, include, compact, and session_start for observability.",
+      "quote": "InstructionsLoaded with load_reason: 'compact': Fires during compaction for each instruction file that is re-loaded. Non-blocking, audit-only. This is how you observe exactly which files get re-injected after a compact event.",
+      "source": "hooks reference + cross-ref Research/research-hooks-best-practices/research/R1_anthropic_official_docs.md",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["hook", "InstructionsLoaded", "load_reason", "cross_confirm_R1"]
+    },
+    {
+      "id": "R3.C10",
+      "claim": "@import directives in CLAUDE.md are resolved eagerly at launch with a maximum depth of 5 hops; relative paths resolve relative to the importing file, not cwd.",
+      "quote": "Imported files are expanded and loaded into context at launch alongside the CLAUDE.md that references them... recursively, with a maximum depth of five hops. Relative paths resolve relative to the importing file, not the cwd.",
+      "source": "memory doc, 'Import additional files'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["import", "eager", "5_hops", "relative_path"]
+    },
+    {
+      "id": "R3.C11",
+      "claim": "What happens past 5 @import hops is underspecified - docs do not say whether failure is silent-skip, warning, or hard error.",
+      "quote": "What happens past 5 hops is underspecified. The docs say 'with a maximum depth of five hops' but do not say whether the error is silent-skip, warning, or hard fail. GAP: need runtime test to observe behavior.",
+      "source": "R3 section 12.3",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "import", "hop_6", "failure_mode"]
+    },
+    {
+      "id": "R3.C12",
+      "claim": "PreCompact hook can block compaction via exit code 2 or JSON decision:block (added in v2.1.105); PostCompact cannot block.",
+      "quote": "Can block via exit code 2 or JSON {\"decision\": \"block\", \"reason\": \"...\"}. Blocking is intentional; the v2.1.105 changelog entry specifically added this. ... PostCompact: Cannot block (exit code ignored).",
+      "source": "hooks doc, PreCompact/PostCompact entries; CHANGELOG v2.1.105",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["PreCompact", "PostCompact", "block", "v2_1_105"]
+    },
+    {
+      "id": "R3.C13",
+      "claim": "Any byte change in the cached prefix (system prompt + tools + CLAUDE.md + history) invalidates the prompt cache - a CLAUDE.md edit triggers a cache-miss turn at 25% write-rate premium.",
+      "quote": "If any byte changes in that prefix, the cache misses. ... A CLAUDE.md edit mid-session invalidates the cached prefix. On the next turn, the full CLAUDE.md block is uploaded as cache_creation_input_tokens at write rate (25% premium over standard input), not as cache_read_input_tokens at read rate (10% of normal price).",
+      "source": "claudecodecamp.com, 'How Prompt Caching Actually Works in Claude Code'",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["cache_invalidation", "byte_change", "cost", "write_rate"]
+    },
+    {
+      "id": "R3.C14",
+      "claim": "Behavior of user CLAUDE.md (~/.claude/CLAUDE.md) post-compact is unclear; docs say 'Project-root CLAUDE.md and unscoped rules' re-inject but never mention user-scope by name, and Issue #22085 suggests it may not always re-inject.",
+      "quote": "GAP: the context-window table does not disambiguate between project-root CLAUDE.md and user CLAUDE.md post-compact. The community experience in #22085 suggests user CLAUDE.md behavior has been inconsistent or was patched silently, but no official commit reference is visible.",
+      "source": "R3 section 4.3; GitHub Issue #22085",
+      "stance": "disputed",
+      "confidence": "low",
+      "tags": ["gap", "disputed", "user_scope", "post_compact", "issue_22085"]
+    },
+    {
+      "id": "R3.C15",
+      "claim": "Four CLAUDE.md scopes load eagerly at session start in precedence order: Managed policy, User (~/.claude/CLAUDE.md), Project (ancestor walk + CLAUDE.local.md), and unscoped .claude/rules/*.md.",
+      "quote": "Anthropic's memory docs list four scopes, in precedence order: Managed policy ... User ~/.claude/CLAUDE.md ... Project (ancestor walk) ... Project rules (unscoped) .claude/rules/*.md without paths: frontmatter | session start",
+      "source": "memory doc, 'Choose where to put CLAUDE.md files' + 'Set up rules'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["scopes", "precedence", "eager_load", "session_start"]
+    },
+    {
+      "id": "R3.C16",
+      "claim": "Skill startup listing is dropped after /compact (noSurviveCompact:true) but invoked skill bodies are re-attached with a 5,000-token-per-skill cap and 25,000-token total cap, oldest first.",
+      "quote": "Invoked skill bodies | Re-injected, capped at 5,000 tokens per skill and 25,000 tokens total; oldest dropped first ... The startup listing of skill descriptions is dropped after compact (it is rebuilt fresh at the cwd resolution), but invoked skill bodies are re-attached within a per-skill cap of 5,000 tokens and total cap of 25,000 tokens, oldest first.",
+      "source": "context-window doc + R3 section 4.1",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["skills", "compact", "cap", "5000_per_skill", "25000_total"]
+    },
+    {
+      "id": "R3.C17",
+      "claim": "--add-dir grants file access but does NOT load CLAUDE.md from added directories by default; opt-in requires CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1.",
+      "quote": "By default, --add-dir grants file access but does not load CLAUDE.md from added directories. To opt in: CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config. This loads CLAUDE.md, .claude/CLAUDE.md, .claude/rules/*.md, and CLAUDE.local.md from the added path.",
+      "source": "memory doc, 'Load from additional directories'",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["add_dir", "env_var", "opt_in", "multi_root"]
+    },
+    {
+      "id": "R3.C18",
+      "claim": "Auto-memory MEMORY.md is shared across all worktrees and subdirectories within the same git repository, but not across machines or cloud environments.",
+      "quote": "All worktrees and subdirectories within the same git repository share one auto memory directory. Files are not shared across machines or cloud environments.",
+      "source": "memory doc, 'Storage location'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto_memory", "MEMORY_md", "worktrees", "git_scope"]
+    },
+    {
+      "id": "R3.C19",
+      "claim": "Concurrent writes to the same MEMORY.md from two parallel sessions have no documented atomicity or locking semantics - undocumented race condition.",
+      "quote": "This is an undocumented race: concurrent writes to the same MEMORY.md from two sessions are not atomic-protected per the docs. GAP: Anthropic does not document concurrency semantics for auto-memory.",
+      "source": "R3 section 10",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "concurrency", "auto_memory", "race_condition"]
+    },
+    {
+      "id": "R3.C20",
+      "claim": "Auto-compact numeric trigger threshold (e.g. 80% or 90% of context) is not stated in primary Anthropic documentation; community reports suggest 85-90% but no primary source confirms.",
+      "quote": "Auto-compact numeric trigger threshold. 'When context fills up' is the only documented trigger. Specific percentage (80%? 90%?) is not stated. Community reports suggest auto-compact fires around 85-90% of context limit; no primary source confirms.",
+      "source": "R3 section 13, gap #7",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "auto_compact", "threshold", "undocumented"]
+    },
+    {
+      "id": "R3.C21",
+      "claim": "Ancestor-walk concatenation order (root-first vs cwd-first) for multi-level CLAUDE.md in monorepos is not documented.",
+      "quote": "GAP: for monorepos with three-level CLAUDE.md (e.g. /repo/CLAUDE.md, /repo/packages/CLAUDE.md, /repo/packages/frontend/CLAUDE.md), the actual concatenation order is not documented. Experiments via the InstructionsLoaded hook with load_reason: 'session_start' would establish this empirically.",
+      "source": "R3 section 3.4, gap #1",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "ancestor_walk", "order", "monorepo"]
+    },
+    {
+      "id": "R3.C22",
+      "claim": "The # quick-memory prefix was deprecated; current 2026 memory docs make no mention of it, though community sources confirm it existed in earlier 2024/2025 versions.",
+      "quote": "The # (hash) prefix was a previous quick-memory shortcut - several community sources confirmed it existed in earlier 2024/2025 Claude Code versions, but by the current docs the recommended pattern is conversational ... The 2026 memory docs do not list the # prefix.",
+      "source": "R3 section 6; dev.to/rajeshroyal; threads.com/boris_cherny",
+      "stance": "consensus",
+      "confidence": "medium",
+      "tags": ["deprecation", "hash_prefix", "history", "gap"]
+    },
+    {
+      "id": "R3.C23",
+      "claim": "CLAUDE.local.md is appended AFTER CLAUDE.md at each directory level, so personal notes are the last thing Claude reads at that level (conflict resolution advantage).",
+      "quote": "Inside each directory, CLAUDE.local.md is appended after CLAUDE.md, so 'when instructions conflict, your personal notes are the last thing Claude reads at that level'.",
+      "source": "memory doc, 'How CLAUDE.md files load'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["local_md", "append_order", "conflict_resolution"]
+    },
+    {
+      "id": "R3.C24",
+      "claim": "Multi-worktree personal overlay pattern: @~/.claude/my-project-instructions.md in CLAUDE.local.md shares personal instructions across worktrees without polluting ~/.claude/CLAUDE.md.",
+      "quote": "To share personal instructions across worktrees, import a file from your home directory instead: # Individual Preferences - @~/.claude/my-project-instructions.md ... This pattern effectively creates a user-scoped project overlay without polluting ~/.claude/CLAUDE.md.",
+      "source": "memory doc, 'Import additional files' + R3 section 12.4",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["worktree", "import_pattern", "personal_overlay"]
+    },
+    {
+      "id": "R3.C25",
+      "claim": "Skills have live change detection mid-session, but CLAUDE.md does not - the skills doc explicitly documents live reload while no equivalent language exists for CLAUDE.md.",
+      "quote": "Skills have live change detection; CLAUDE.md does not. The skills doc explicitly says: 'Claude Code watches skill directories for file changes. Adding, editing, or removing a skill... takes effect within the current session without restarting'. No equivalent language exists for CLAUDE.md.",
+      "source": "skills doc, 'Live change detection' + R3 section 11",
+      "stance": "unique",
+      "confidence": "high",
+      "tags": ["asymmetry", "skills_vs_claudemd", "live_reload"]
+    },
+    {
+      "id": "R3.C26",
+      "claim": "Prompt-cache interaction with @import'd files on mid-session edit is not explicitly documented - inferred that cache breaks only at re-injection (next compact), not immediately on disk write.",
+      "quote": "If @docs/x.md is imported and docs/x.md is edited mid-session, does the cache break now (mid-session) or only at re-injection (next compact)? Inferred answer: only at re-injection, but not explicitly documented.",
+      "source": "R3 section 13, gap #8",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "cache", "import", "edit_timing"]
+    },
+    {
+      "id": "R3.C27",
+      "claim": "Auto memory MEMORY.md is capped at the first 200 lines or 25KB, whichever is smaller; representative load ~680 tokens in the context-window visualization.",
+      "quote": "Auto memory (MEMORY.md) | 680 | first 200 lines or 25KB, whichever smaller",
+      "source": "context-window doc visualization + R3 section 3.3",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["auto_memory", "cap", "200_lines_or_25KB"]
+    },
+    {
+      "id": "R3.C28",
+      "claim": "/memory command lists loaded CLAUDE.md / CLAUDE.local.md / rules files and opens them for editing, but does NOT force a re-read of CLAUDE.md mid-session.",
+      "quote": "Critically: /memory does not force a re-read of CLAUDE.md mid-session. Selecting a file opens it for editing. The in-memory copy Claude has is not updated until a re-injection event (compaction, new session).",
+      "source": "R3 section 6.1 + memory doc 'View and edit with /memory'",
+      "stance": "consensus",
+      "confidence": "high",
+      "tags": ["memory_command", "no_live_reload", "editor_only"]
+    },
+    {
+      "id": "R3.C29",
+      "claim": "Managed policy CLAUDE.md post-compact behavior is not documented - same open question as user CLAUDE.md.",
+      "quote": "Managed policy CLAUDE.md post-compact. Same question as #2 but for Managed tier. Not addressed in docs.",
+      "source": "R3 section 13, gap #3",
+      "stance": "gap",
+      "confidence": "low",
+      "tags": ["gap", "managed_policy", "post_compact"]
+    },
+    {
+      "id": "R3.C30",
+      "claim": "First-time external @import from outside the project triggers an approval dialog; declining once silently disables it thereafter.",
+      "quote": "First-time external imports (outside project) trigger approval dialog. Decline once = silently disabled thereafter.",
+      "source": "memory doc, 'Import additional files'",
+      "stance": "unique",
+      "confidence": "medium",
+      "tags": ["import", "approval", "external", "silent_disable"]
+    }
+  ],
+  "summary_stats": {
+    "total_claims": 30,
+    "by_stance": {
+      "consensus": 13,
+      "unique": 8,
+      "disputed": 1,
+      "gap": 8
+    },
+    "by_confidence": {
+      "high": 14,
+      "medium": 8,
+      "low": 8
+    },
+    "gaps_flagged": 8,
+    "cross_confirm_R1": 2
+  },
+  "top_priorities_addressed": [
+    "CLAUDE.md delivered as user message post system prompt (C01) - unique high, cross-confirms R1",
+    "Asymmetric re-injection post /compact: root+unscoped+MEMORY yes, nested+paths: no (C02) - unique high",
+    "No /reload exists, #17127 + #22085 closed as duplicates (C03) - consensus high",
+    "Cache TTL regression 1h to 5min early March 2026, #46829 (C04) - unique high",
+    "CLAUDE.md edits inert until compact/restart (C05) - consensus high",
+    "CwdChanged does NOT re-walk ancestor tree (C06) - unique medium",
+    "Baseline 53k tokens, memory 10-18k = 19-34%, #19105 (C07) - consensus medium",
+    "Anthropic 200 lines / ~2.5k tokens soft limit per CLAUDE.md (C08) - consensus high",
+    "InstructionsLoaded load_reason enum: nested_traversal/path_glob_match/include/compact/session_start (C09) - consensus high",
+    "@import hop-6 failure mode unclear (C11) - gap",
+    "User CLAUDE.md post-compact disputed, #22085 vs docs (C14) - disputed low",
+    "Auto-compact numeric threshold unknown (C20) - gap"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "source": "R3_security_cve.md",
+  "topic": "MCP Security Model, CVE-2025-59536, CVE-2026-21852",
+  "date_accessed": "2026-04-17",
+  "claims": [
+    {"id": "R3.C1", "claim": "MCP server to arbitrary code execution boundary - moze uruchomic cokolwiek (shell, API, filesystem).", "url": "https://code.claude.com/docs/en/mcp", "trust": 1},
+    {"id": "R3.C2", "claim": "Dwa poziomy consent w Claude Code: install-time (explicit add command) + first-run trust dialog (per server).", "url": "https://claudefa.st/blog/guide/development/permission-management", "trust": 2},
+    {"id": "R3.C3", "claim": "Po zaufaniu MCP server tools dzialaja bez per-call permission prompt (asymetria vs Bash tool).", "url": "https://claudefa.st/blog/guide/development/permission-management", "trust": 2},
+    {"id": "R3.C4", "claim": "Permissions patterns dla MCP uzywaja wzorca `mcp__<server>__<tool>` (np. mcp__github__create_issue).", "url": "https://code.claude.com/docs/en/permissions", "trust": 1},
+    {"id": "R3.C5", "claim": "Settings precedence dla security: managed > project > user. Managed bije wszystko.", "url": "https://code.claude.com/docs/en/permissions", "trust": 1},
+    {"id": "R3.C6", "claim": "Flaga enableAllProjectMcpServers: true skip trust dialog dla WSZYSTKICH serwerow z .mcp.json.", "url": "https://www.backslash.security/blog/claude-code-security-best-practices", "trust": 2},
+    {"id": "R3.C7", "claim": "enableAllProjectMcpServers istnieje dla CI/CD (GitHub Actions headless). Oficjalne claude-code-action ustawia to na true w env CI.", "url": "https://github.com/anthropics/claude-code-action/blob/main/docs/configuration.md", "trust": 1},
+    {"id": "R3.C8", "claim": "Best practice: zamiast enableAllProjectMcpServers uzywac enabledMcpjsonServers explicit whitelist (np. ['github', 'memory']).", "url": "https://claudefa.st/blog/guide/development/permission-management", "trust": 2},
+    {"id": "R3.C9", "claim": "permissions.deny ma precedencje nad allow (deny wygrywa). Pattern mcp__* blokuje wszystkie MCP tool calls.", "url": "https://code.claude.com/docs/en/permissions", "trust": 1},
+    {"id": "R3.C10", "claim": "enableAllProjectMcpServers dziala wczesniej niz permission layer - startup commands wykonuja sie PRZED permission check (rdzen CVE-2025-59536).", "url": "https://research.checkpoint.com/2026/rce-and-api-token-exfiltration-through-claude-code-project-files-cve-2025-59536/", "trust": 1},
+    {"id": "R3.C11", "claim": "CVE-2025-59536: Remote Code Execution via pre-trust Hook execution + MCP consent bypass. Reported 2025-07-21, Fixed 2025-08-26, Published 2025-10-03.", "url": "https://research.checkpoint.com/2026/rce-and-api-token-exfiltration-through-claude-code-project-files-cve-2025-59536/", "trust": 1},
+    {"id": "R3.C12", "claim": "CVE-2025-59536 CVSS: 8.7 High (some sources), affected Claude Code pre-patch (approximately pre-1.0.x z 2025-08-26).", "url": "https://www.mintmcp.com/blog/claude-code-cve", "trust": 2},
+    {"id": "R3.C13", "claim": "Attack vector CVE-2025-59536: repo z .claude/settings.json + .mcp.json + enableAllProjectMcpServers:true + malicious hook -> RCE przy cd do katalogu.", "url": "https://research.checkpoint.com/2026/rce-and-api-token-exfiltration-through-claude-code-project-files-cve-2025-59536/", "trust": 1},
+    {"id": "R3.C14", "claim": "CVE-2026-21852: API Key Exfiltration via ANTHROPIC_BASE_URL injection. Reported 2025-10-28, Fixed 2025-12-28, Published 2026-01-21.", "url": "https://www.mintmcp.com/blog/claude-code-cve", "trust": 2},
+    {"id": "R3.C15", "claim": "CVE-2026-21852 mechanism: Claude Code wysylal test requests do Anthropic API PRZED trust dialog, gdy ANTHROPIC_BASE_URL bylo overridden - atakujacy przechwytywal Bearer token.", "url": "https://research.checkpoint.com/2026/rce-and-api-token-exfiltration-through-claude-code-project-files-cve-2025-59536/", "trust": 1},
+    {"id": "R3.C16", "claim": "Fix CVE-2026-21852: Claude Code odklada API calls do post-trust-dialog, waliduje URL.", "url": "https://thehackernews.com/2026/02/claude-code-flaws-allow-remote-code.html", "trust": 2},
+    {"id": "R3.C17", "claim": "Config vectors = attack surface: .claude/settings.json hooks, .mcp.json servers, enableAllProjectMcpServers, ANTHROPIC_BASE_URL, env vars w serwerach.", "url": "https://blog.checkpoint.com/research/check-point-researchers-expose-critical-claude-code-flaws/", "trust": 1},
+    {"id": "R3.C18", "claim": "Prompt injection w tool descriptions jest uznany open risk - spec explicit flag 'annotations untrusted unless from trusted server'.", "url": "https://modelcontextprotocol.io/specification/2025-11-25", "trust": 1},
+    {"id": "R3.C19", "claim": "Data exfiltration via tool results: malicious server moze zwrocic content z injection instruction; Claude ma defensive training ale nie 100% niezawodne.", "url": "https://www.zscaler.com/blogs/security-research/anthropic-claude-code-leak", "trust": 2},
+    {"id": "R3.C20", "claim": "Enterprise hardening: managed settings moga wymusic permissions.deny ['mcp__*'], enabledMcpjsonServers whitelist, pin ANTHROPIC_BASE_URL.", "url": "https://code.claude.com/docs/en/permissions", "trust": 1},
+    {"id": "R3.C21", "claim": "Rekomendowane monitoring: diff .mcp.json w PR review, alert na nowe MCP servers w ~/.claude/settings.json, EDR na subprocess spawned przez Claude Code.", "url": "https://www.backslash.security/blog/claude-code-security-best-practices", "trust": 2},
+    {"id": "R3.C22", "claim": "Check Point Research byl primary disclosure channel (CVE-2025-59536 + CVE-2026-21852); Anthropic implementowal fixy w embargo 2 miesiace responsible disclosure.", "url": "https://research.checkpoint.com/2026/rce-and-api-token-exfiltration-through-claude-code-project-files-cve-2025-59536/", "trust": 1},
+    {"id": "R3.C23", "claim": "Post-fix (2026-04-17) stan: hooks wymagaja approve per hook per project, enableAllProjectMcpServers pokazuje warning banner w non-CI, ANTHROPIC_BASE_URL walidowany dialog.", "url": "https://code.claude.com/docs/en/hooks", "trust": 1}
+  ],
+  "conflicts_flagged": [
+    "R3.C3 (MCP tools bez permission prompt) vs R5 - R5 mowi o decision framework gdzie permissions moga blokowac MCP. Oba prawdziwe: trust is server-level, permissions is tool-call-level. Synthesis musi to rozdzielic.",
+    "R3.C10 (startup przed permission check) - to krytyczny claim z CVE. Weryfikacja post-fix moze zmienic status. Rekomendowany empirical test.",
+    "R3.C12 CVSS 8.7 (some sources) - exact value varies: Check Point research nie podalo explicit CVSS, The Hacker News raportuje 'high', MintMCP wymieniaja 8.7. Synthesis powinien flag jako 'CVSS High severity (exact score varies by source)'."
+  ],
+  "gaps_flagged": [
+    "Exact CVSS dla CVE-2025-59536 nie jest formalnie w NVD (nie dostep w research) - rozne sources podaja rozne liczby. Gap dla compliance reporting.",
+    "Q3 z MANIFEST (enableAllProjectMcpServers vs permissions deny precedence) rozstrzygniety TYLKO na podstawie architektury + exploit; brak oficjalnego Anthropic statement.",
+    "Managed MCP jako osobne pole settings - unclear. Q2 z MANIFEST nadal open.",
+    "Kompletna lista fixed versions Claude Code per CVE - nie zawsze explicit w disclosure."
+  ]
+}
