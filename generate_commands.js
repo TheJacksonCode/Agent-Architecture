@@ -13,6 +13,10 @@
  * Target: ~/.claude/commands/ (42 global command files)
  *
  * Usage: node generate_commands.js
+ *        node generate_commands.js --out <path> --plugin   (katalog commands/ w pluginie:
+ *          odwolania do skilli w wygenerowanych plikach wskazuja na ${CLAUDE_PLUGIN_ROOT}/agents/
+ *          zamiast na prywatny ~/.claude/skills/ - inaczej swiezy `/plugin install` bez
+ *          wczesniejszego `node generate_skills.js` mialby komendy wskazujace donikad)
  */
 
 const fs = require('fs');
@@ -23,7 +27,15 @@ const os = require('os');
 // v40 (2026-09-13): v38 zszedl z roli zapasu. Zaczepy ('const AD=[', 'AD.push(', 'const PR=')
 // sa w v40 identyczne jak w v38 - sprawdzone przed zmiana.
 const HTML_PATH = path.join(__dirname, 'v41', 'AGENT_TEAMS_CONFIGURATOR_v41.html');
-const COMMANDS_DIR = path.join(os.homedir(), '.claude', 'commands');
+// --out <path> overrides the default (v41: dodane dla commands/ w pluginie Claude Code,
+// ten sam wzorzec co w generate_catalog.js / generate_skills.js).
+const outFlagIdx = process.argv.indexOf('--out');
+const COMMANDS_DIR = outFlagIdx !== -1 && process.argv[outFlagIdx + 1]
+  ? path.resolve(process.argv[outFlagIdx + 1])
+  : path.join(os.homedir(), '.claude', 'commands');
+const SKILL_REF_PREFIX = process.argv.includes('--plugin')
+  ? '${CLAUDE_PLUGIN_ROOT}/agents/'
+  : '~/.claude/skills/';
 
 // v38: domyslnie tylko TWORZYMY brakujace komendy. --all dodatkowo przepisuje istniejace
 // (podmienia im tabele agentow i modeli wedlug danych z HTML) - to swiadoma decyzja,
@@ -372,7 +384,7 @@ function buildNewCommand(presetKey, preset, nodes, agentInfo) {
   L.push('| # | Agent | Model | Effort | Skill File |');
   L.push('|---|-------|-------|--------|------------|');
   agents.forEach((n, i) => {
-    L.push(`| ${i + 1} | ${nameOf(n.d)} | ${modelOf(n)} | ${effortOf(n.d)} | ~/.claude/skills/${n.d}.md |`);
+    L.push(`| ${i + 1} | ${nameOf(n.d)} | ${modelOf(n)} | ${effortOf(n.d)} | ${SKILL_REF_PREFIX}${n.d}.md |`);
   });
   L.push('');
   L.push('## ZASADY OGOLNE');
@@ -462,7 +474,7 @@ function transformFile(content, presetKey, prData) {
   uniqueAgents.forEach((agent, idx) => {
     const name = AGENT_NAMES[agent.d] || agent.d;
     const model = agent.m || DEFAULT_MODELS[agent.d] || 'sonnet';
-    refLines.push(`| ${idx + 1} | ${name} | ${model} | ~/.claude/skills/${agent.d}.md |`);
+    refLines.push(`| ${idx + 1} | ${name} | ${model} | ${SKILL_REF_PREFIX}${agent.d}.md |`);
   });
 
   refLines.push('');

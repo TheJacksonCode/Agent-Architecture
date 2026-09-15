@@ -910,33 +910,78 @@ dzis nie klika), **D5** (wlasny silnik - de facto rozstrzygniete przez zbudowani
 
 # >>> PO KOMPAKCJI - ZACZNIJ TUTAJ <<<
 
-## STAN NA 2026-09-15 (najswiezszy - czytaj TO, reszta ponizej to historia)
+## STAN NA 2026-09-15 WIECZOR (najswiezszy - czytaj TO, reszta ponizej to historia)
 
-**v41: 7 090 972 bajty. 422 testy zielone, 0 bledow.** Nic nie wypchniete na GitHub.
+**v41 OPUBLIKOWANY NA GITHUB.** `index.html` = kopia v41. Push `d056d9b`, zgoda Macieja
+wprost ("czy mozna zrobić tak ze ty pushniesz wszystko do githuba"). 499 testow zielonych,
+0 bledow (262+21+86+77+35+18). `git status` czysty poza `DESIGN_DECISIONS.md` (swiadomie
+lokalny, zobacz nizej).
 
-**Zamkniete w sesji 2026-09-14/15:**
-- Runda kosmetyczna: DD59-DD70 (Layout, przelacznik motywu, plakietki werdyktu, zamkniecie
-  encyklopedii, szerokosci kafli, Centrum kosztow, META, sklad modeli).
-- **Caly backlog A, B i C** - DD71-DD73 plus usuniete piec pustych plikow.
-- **Anonimizacja Research** - DD74. To byl jeden z trzech warunkow blokujacych publikacje.
-- Plakietka "rzadki" usunieta - DD75.
-- **Dwie rundy wydajnosciowe:** encyklopedia (DD76) i canvas (DD77).
+**Co doszlo PO poprzednim "PO KOMPAKCJI" (bylo 422 testy/DD77, jest 499/DD83):**
+- **DD78-79:** pasek faz nad canvasem - licznik agentow dostal wlasna plakietke (byl golym
+  tekstem, zlewal sie z nazwami konczacymi sie cyfra typu "FIVE MINDS #1"); prog pokazywania
+  paska obnizony z "3+ faz" na "1+ faza" - wczesniej **11 z 62 presetow** nigdy go nie
+  pokazywalo (zmierzone).
+- **DD81:** 33 litery cyrylicy usuniete z tekstow (25 slow, 32 wystapienia, dziedziczone
+  z v38). Mapowanie slowo-po-slowie, nie regula na klase znakow - inaczej "wpisywaс" stalo
+  by sie "wpisywań" zamiast "wpisywać".
+- **DD80, DD82, DD83:** rog naglowka - usunieta plakietka wersji i separator, logo +4,5%,
+  kontener marki wyrownany DOKLADNIE do krawedzi lewego sidebara (rachunek w CSS, nie oko).
+  **DD82 sam siebie poprawil w DD83:** pierwsza wersja zmierzyla kontener w DOM (0px roznicy -
+  prawda, ale niepelna) i przegapila, ze SAM TEKST zostawial 44px pustki przed krawedzia.
+  Maciej przyslal prawdziwy zrzut ekranu; zmierzony piksel-po-pikselu przez Puppeteer
+  (nowe narzedzie w projekcie) - margines skrocony do 18px, font 11px->13px.
+- **index.html = v41** (byl kopia v32 - to byl JEDYNY warunek blokujacy).
+
+**Publikacja - co naprawde zrobione, nie tylko przygotowane:**
+1. `.gitignore`: dodane `v33/`-`v40/` (56,7 MB historii dev, zostaje lokalnie) i `screen/`.
+2. `README.md` przepisany calkowicie pod v41 (60/62, nowy tagline "if Claude Code is the
+   engine..." z dopiskiem Maciej-poprawka, tabela wersji v32-v41, sekcje Hooki/Wzorce).
+3. **`INSTALL.md` (nowy)** - pelna instrukcja podpiecia agentow/presetow do Claude Code.
+4. **`generate_catalog.js` (nowy, trzeci skrypt)** - buduje `~/.claude/PRESET_CATALOG.md`
+   z tych samych danych HTML co dwa pozostale skrypty. Zamknieta luka: auto-routing dzialal
+   wczesniej tylko z prywatnego, recznie robionego katalogu Macieja. Stary katalog
+   zbackupowany do `PRESET_CATALOG.md.bak_pre_v41`. Wszystkie 62 nazwy komend zweryfikowane
+   1:1 z prawdziwymi plikami w `~/.claude/commands/`.
+5. `plugin.json`, `docs/SKILLS_ARCHITECTURE.md`, `docs/ROUTING_SYSTEM.md` przepisane na v41
+   (byly v32.16/35/42). Z `plugin.json` usuniete martwe odniesienia do skilli spod sciezek,
+   ktore nie istnialy pod tą nazwa i tak czy inaczej sa gitignored.
+6. **Modul Wzorcow przeniesiony**: `v39/plans/wzorce_kod.js` skopiowany do
+   `v41/plans/wzorce_kod.js` - inaczej repo publikowaloby v41 bez zrodla jednego z dwoch
+   duzych modulow (samouczek juz mial swoje zrodlo w v41/). **v39 zostaje zamrozone jak
+   bylo - nowe edycje modulu Wzorce ida teraz do kopii w v41/.**
+7. **GitHub push protection zlapal Stripe test key** w przykladzie "czego NIE robic" w
+   `Research/research-claude-md-patterns/research/R4_writing_practices.md` (prawdziwy
+   format klucza Stripe, mimo ze to ich wlasny publiczny przyklad). Zredagowany, commit
+   zamendowany, push powtorzony - czysto. **Lekcja: przy nastepnej publikacji grep po
+   wzorcach kluczy (sk_test_, sk-ant-, AKIA, ghp_, xox...) PRZED commitem, nie polegac na
+   tym ze GitHub zlapie.**
+
+**Czego SWIADOMIE NIE zrobiono (potwierdzone przez Macieja, nie do zrobienia bez nowego
+zlecenia):**
+- **`DESIGN_DECISIONS.md` zostaje lokalny i niepolinkowany.** 2067 linii, po polsku, imie
+  Macieja 36 razy w kontekscie typu "Maciej wybral ten wariant". Nie jest w gicie.
+- **Wlasne nazwisko Macieja w `research-skills-architecture`** (4 wystapienia) - zostaje,
+  to atrybucja.
+- **Kolizja nazw agentow** `writer`/`technical_writer` - oba pokazuja sie jako "Technical
+  Writer" po angielsku. Zauwazone przy audycie, zostawione na teraz.
+- **Zrzuty ekranu w README** - dalej z ery v32 (nie pokazuja Hookow/Wzorcow/samouczka).
+  README ma to wprost napisane. Maciej sam podmieni bezposrednio w GitHub UI.
 
 **Co zostaje do decyzji Macieja - nic nie zaczynac bez slowa:**
-1. **`index.html` to nadal kopia v32** - czy demo na GitHub Pages ma pokazywac v41.
-   To JEDYNY otwarty warunek przed publikacja.
-2. **Wieksze tematy D:** szesc brakujacych zdarzen hookow (mamy 27 z 33), 33 litery cyrylicy
-   z v38, luki Wzorcow z `WZORCE_SYSTEM.md` sekcja 10 i `BADANIA_SKALOWANIE.md`, szesciu
-   agentow z repo agency-agents, Akt 2 samouczka, tryb Live (**ten PO publikacji**).
-3. **Wlasne nazwisko Macieja** w `research-skills-architecture` (4 wystapienia, w tym jako
-   `"author"` w przykladach JSON). Zostawione swiadomie - to atrybucja, nie dana osoby
-   trzeciej.
-4. **Czy encyklopedia i canvas sa juz plynne** - tego nie da sie sprawdzic bez patrzenia
-   na ekran. Jesli nie, nastepne dzwignie sa nazwane w DD76 (content-visibility) i DD77.
+1. **Wieksze tematy D:** szesc brakujacych zdarzen hookow (mamy 27 z 33 - oficjalnej listy),
+   luki Wzorcow z `WZORCE_SYSTEM.md` sekcja 10 i `BADANIA_SKALOWANIE.md`, szesciu agentow
+   z repo agency-agents, Akt 2 samouczka, tryb Live (**ten PO publikacji - juz jest po**).
+2. **Marketplace** - trzeci krok z pierwotnej kolejnosci Macieja ("backlog, GitHub,
+   marketplace"), wciaz wymaga osobnej, wyraznej zgody. Publikacja GitHub NIE jest zgoda
+   na marketplace.
+3. **Czy encyklopedia i canvas sa juz plynne** - Maciej potwierdzil: "działa płynnie wiec
+   mozemy przejsc dalej". Zamkniete, nie wracac bez nowego zgloszenia.
 
 **ZASADA, KTORA MUSI PRZEZYC KOMPAKCJE: publikacja wymaga WYRAZNEJ ZGODY za kazdym razem.**
-Zapowiedz kolejnosci "backlog, GitHub, marketplace" to PLAN, nie zgoda. Gdy przyjdzie moment
-wypchniecia, zapytac wprost i poczekac na "tak". To samo dotyczy marketplace.
+GitHub 2026-09-15 mial wyrazna zgode ("czy mozna zrobić tak ze ty pushniesz"), wiec zostal
+zrobiony. To NIE jest zgoda na kolejne publikacje - marketplace i kazdy przyszly push
+potrzebuja wlasnego pytania i wlasnego "tak".
 
 ---
 

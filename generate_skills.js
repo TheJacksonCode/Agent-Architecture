@@ -9,6 +9,7 @@
  *
  * Usage: node generate_skills.js          (tylko brakujace pliki)
  *        node generate_skills.js --all    (nadpisuje wszystkie)
+ *        node generate_skills.js --out <path>   (inny katalog docelowy, np. agents/ w pluginie)
  */
 
 const fs = require('fs');
@@ -21,7 +22,12 @@ const os = require('os');
 // v40 (2026-09-13): v38 zszedl z roli zapasu, wiec przestal byc zrodlem. Zaczepy parsera
 // ('const AGENT_EDU_PL = {') sa w v40 dokladnie te same - sprawdzone przed zmiana.
 const HTML_PATH = path.join(__dirname, 'v41', 'AGENT_TEAMS_CONFIGURATOR_v41.html');
-const SKILLS_DIR = path.join(os.homedir(), '.claude', 'skills');
+// --out <path> overrides the default (v41: dodane dla agents/ w pluginie Claude Code,
+// ten sam wzorzec co w generate_catalog.js).
+const outFlagIdx = process.argv.indexOf('--out');
+const SKILLS_DIR = outFlagIdx !== -1 && process.argv[outFlagIdx + 1]
+  ? path.resolve(process.argv[outFlagIdx + 1])
+  : path.join(os.homedir(), '.claude', 'skills');
 
 // v38: domyslnie generujemy TYLKO brakujace pliki. Pelny przebieg (--all) nadpisuje wszystko
 // w ~/.claude/skills, a te pliki bywaja recznie dostrajane - kasowanie ich bez pytania

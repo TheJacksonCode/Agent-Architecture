@@ -38,9 +38,6 @@ v30/CHANGES_pl.md
 # Claude Code local settings (may contain API keys)
 .claude/settings.local.json
 
-# Agent architect working files
-agent-architect/
-
 # OrgChart experiments (separate project)
 orgchart/
 orgchart-demo/

@@ -17,6 +17,21 @@ All three are **global** - once generated, they work in every project on your ma
 this repo. Nothing is installed into Claude Code's own settings; these are plain Markdown files it
 reads when you invoke them.
 
+## Fastest path - install as a plugin
+
+Skip everything below if you just want the agents and presets, not the ability to regenerate them.
+The repo is itself a Claude Code plugin:
+
+```
+/plugin marketplace add TheJacksonCode/Agent-Architecture
+/plugin install agent-architecture-designer@Agent-Architecture
+```
+
+This installs the same 60 agents and 62 presets, bundled in-repo as `agents/*.md` and
+`commands/*.md`. The rest of this file covers the clone-and-generate path instead - use it if you
+want to regenerate after editing the source HTML, add your own agent, or keep the files in
+`~/.claude/` directly rather than as a plugin.
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 18 or newer (only used to run the generator scripts below -

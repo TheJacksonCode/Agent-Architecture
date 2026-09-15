@@ -18,6 +18,8 @@
 
 ---
 
+> **Looking for the visual designer?** Open [`index.html`](index.html) directly in your browser, or use the live version on [GitHub Pages](https://thejacksoncode.github.io/Agent-Architecture/) - no install, no build step. Everything below also documents the Claude Code plugin (60 subagents + 62 orchestration presets) generated from that same app - see [Claude Code integration](#claude-code-integration).
+
 ## Why this exists
 
 Agent Architecture Designer is **primarily an educational and developmental tool**. It is not a production orchestrator - it is a place where you can slow down and study multi-agent systems the way you would study a complex machine: one moving part at a time.
@@ -172,7 +174,18 @@ Agent Architecture Designer includes a complete orchestration layer: **60 agent 
 
 **Full walkthrough:** [INSTALL.md](INSTALL.md) - covers installation, updating after a new version, troubleshooting, and how to add your own agent to the catalog.
 
-### Quick start
+### Quick start - as a plugin (fastest)
+
+The repo itself is a valid Claude Code plugin (`.claude-plugin/plugin.json`, 60 bundled agents, 62 bundled presets) - no clone, no generator scripts:
+
+```
+/plugin marketplace add TheJacksonCode/Agent-Architecture
+/plugin install agent-architecture-designer@Agent-Architecture
+```
+
+### Quick start - from source
+
+Use this path if you want to regenerate the agents/presets yourself after editing the HTML, or add your own agent to the catalog:
 
 ```bash
 git clone https://github.com/TheJacksonCode/Agent-Architecture.git
@@ -208,13 +221,19 @@ Each preset orchestrates a team of agents across phases (Strategy -> Research ->
 ### Architecture
 
 ```
-~/.claude/skills/*.md        # 60 agent prompts (single source of truth)
-~/.claude/commands/*.md      # 62 preset files (reference skills, not duplicate them)
+.claude-plugin/plugin.json   # Plugin manifest (what the marketplace install reads)
+agents/*.md                  # 60 agent prompts, bundled in-repo for the plugin install
+commands/*.md                # 62 preset files, bundled in-repo for the plugin install
+~/.claude/skills/*.md        # Same 60 agent prompts, generated locally (source-from-clone path)
+~/.claude/commands/*.md      # Same 62 preset files, generated locally (source-from-clone path)
 ~/.claude/PRESET_CATALOG.md  # Routing catalog (task -> best preset)
-generate_skills.js           # Regenerate skills from HTML source (v41)
-generate_commands.js         # Regenerate commands from HTML source (v41)
+generate_skills.js           # Regenerate skills from HTML source (v41); --out for the agents/ copy
+generate_commands.js         # Regenerate commands from HTML source (v41); --out --plugin for commands/
 generate_catalog.js          # Regenerate the routing catalog from HTML source (v41)
 ```
+
+The `agents/` and `commands/` folders are generated the same way as their `~/.claude/` counterparts -
+just pointed at a different `--out` directory - so both installation paths always match.
 
 See [`docs/SKILLS_ARCHITECTURE.md`](docs/SKILLS_ARCHITECTURE.md) for the full skill format, model routing, and how to add new agents.
 

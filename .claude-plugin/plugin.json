@@ -1,0 +1,20 @@
+{
+  "name": "agent-architecture-designer",
+  "description": "60 specialized subagents and 62 team-orchestration presets (research, build, QA, Five Minds debate, HITL gates) generated from the Agent Architecture Designer app. Covers strategy, research, build, QA, data & AI, infra/ops, product and compliance phases. Full visual designer + encyclopedia at the GitHub repo (see homepage).",
+  "version": "0.41.0",
+  "author": {
+    "name": "TheJacksonCode"
+  },
+  "homepage": "https://github.com/TheJacksonCode/Agent-Architecture",
+  "repository": "https://github.com/TheJacksonCode/Agent-Architecture.git",
+  "license": "MIT",
+  "keywords": [
+    "multi-agent",
+    "orchestration",
+    "five-minds",
+    "hitl",
+    "agent-teams",
+    "subagents",
+    "presets"
+  ]
+}
