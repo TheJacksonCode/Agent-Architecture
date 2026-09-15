@@ -63,7 +63,6 @@ The interface is fully bilingual with a one-click language toggle. **Polish is m
 
 - All 60 agent + 62 preset encyclopedia entries exist in both languages
 - The Hooks and Patterns modules are fully bilingual, including every hook's cadence/trigger/matcher description
-- The Polish version ships with **inline infographics** for a handful of pilot agents, rendered directly in the encyclopedia bento - the English version does not have them yet
 - Polish is the default authoring language; English translations are technical/direct US English with no em/en-dashes
 
 If you are an English-speaking user and feel something is missing, please open an issue - we want to know which parts you would like to see expanded.
@@ -145,16 +144,17 @@ Each pattern entry explains the idea, when to reach for it, when NOT to, and whi
 
 ## Screenshots
 
-> **Note:** the screenshots below are from the v32 encyclopedia and cost center - they still represent the core UI accurately, but do not yet show the v41-only modules (Hooks Playground, Architecture Patterns, guided tutorial, phase-flow bar). A v41 screenshot refresh is planned.
-
 ### Agent encyclopedia (bento layout)
 <img src="docs/screenshots/encyclopedia-bento.png" alt="Agent Encyclopedia - bento layout with numbered kickers" width="100%">
 
-### Inline infographics (Polish encyclopedia)
-<img src="docs/screenshots/polish-infographic.png" alt="Polish encyclopedia with inline infographic" width="100%">
-
 ### Preset verdict panel (green / red)
 <img src="docs/screenshots/preset-verdict.png" alt="Preset sidebar dual-column verdict panel" width="100%">
+
+### Hooks Playground
+<img src="docs/screenshots/hooks-playground.png" alt="Hooks Playground - all 27 Claude Code lifecycle events across 4 lanes" width="100%">
+
+### Architecture Patterns
+<img src="docs/screenshots/architecture-patterns.png" alt="Architecture Patterns - 10 canonical multi-agent patterns tied to real agents and presets" width="100%">
 
 ### Cost Command Center
 <img src="docs/screenshots/cost-command-center.png" alt="Cost Command Center modal with donut, breakdown, what-if and export tabs" width="100%">
@@ -239,7 +239,7 @@ See [`docs/SKILLS_ARCHITECTURE.md`](docs/SKILLS_ARCHITECTURE.md) for the full sk
 
 ## Technical details
 
-- **Format** - single HTML file, ~7.1 MB (includes all encyclopedia content in PL + EN, inline SVG icons, inline infographics for pilot agents)
+- **Format** - single HTML file, ~7.1 MB (includes all encyclopedia content in PL + EN, inline SVG icons)
 - **Dependencies** - zero. No npm, no CDN, no build step
 - **Stack** - Vanilla JS (ES2022) + inline SVG + CSS transitions + Canvas 2D + container queries
 - **State** - localStorage persistence (canvas, theme, icon mode, language preference, custom agents), with a versioned migration chain
@@ -276,7 +276,6 @@ This project is still growing and **we actively want your feedback** - especiall
 
 - Did the encyclopedia help you understand a specific agent you were confused about? Which one?
 - Is there an agent role or pattern missing from the 60 / 62 catalog?
-- Do you want infographics in the English version too?
 - Did the Hooks Playground or Architecture Patterns module change how you think about your own Claude Code setup?
 
 Please open a [GitHub issue](https://github.com/TheJacksonCode/Agent-Architecture/issues) or start a [discussion](https://github.com/TheJacksonCode/Agent-Architecture/discussions). Short comments and screenshots are very welcome.
@@ -291,4 +290,4 @@ Built by **[TheJacksonCode](https://github.com/TheJacksonCode)**.
 
 ---
 
-<sub>Interface languages: Polish (more comprehensive, with pilot inline infographics) and English (full parity for the core encyclopedia, Hooks, and Patterns modules) | Documentation language: English | Primary purpose: education and development - understanding how multi-agent systems think</sub>
+<sub>Interface languages: Polish (more comprehensive) and English (full parity for the core encyclopedia, Hooks, and Patterns modules) | Documentation language: English | Primary purpose: education and development - understanding how multi-agent systems think</sub>
